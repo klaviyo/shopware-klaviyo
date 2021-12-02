@@ -1,0 +1,46 @@
+services:
+    Klaviyo\Integration\Entity\Job\JobDefinition:
+        tags:
+            - { name: 'shopware.entity.definition', entity: 'klaviyo_job' }
+
+    # Template service definition for real job scheduler
+    klaviyo.tracking_integration.job.scheduler.configurable:
+        class: Klaviyo\Integration\Job\ConfigurableJobScheduler
+        abstract: true
+        arguments:
+            - '@Klaviyo\Integration\Entity\Helper\JobHelper'
+            - '@messenger.bus.shopware'
+            - '@logger'
+
+    Klaviyo\Integration\Job\JobExecutor:
+        arguments:
+            - '@Klaviyo\Integration\Entity\Helper\JobHelper'
+            - '@Klaviyo\Integration\Job\VirtualProxyJobProcessor'
+            - '@logger'
+
+    Klaviyo\Integration\Job\VirtualProxyJobProcessor:
+        arguments:
+            - !tagged_iterator klaviyo.tracking_integration.job.processor
+
+    Klaviyo\Integration\Async\JobExecutionMessageHandler:
+        arguments:
+            - '@Klaviyo\Integration\Job\JobExecutor'
+            - '@logger'
+        tags:
+            - { name: 'messenger.message_handler' }
+
+    Klaviyo\Integration\Async\ClearOldJobsScheduledTask:
+        tags:
+            - { name: 'shopware.scheduled.task' }
+
+    Klaviyo\Integration\Async\ClearOldJobsScheduledTaskHandler:
+        arguments:
+            - '@scheduled_task.repository'
+            - '@Klaviyo\Integration\Entity\Helper\JobHelper'
+            - '@logger'
+        tags:
+            - { name: 'messenger.message_handler' }
+
+    Klaviyo\Integration\Job\VirtualProxyJobScheduler:
+        arguments:
+            - !tagged_iterator klaviyo.tracking_integration.job.scheduler

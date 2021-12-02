@@ -1,29 +1,23 @@
-# README #
+Klaviyo Integration Plugin
+============================
 
-This README would normally document whatever steps are necessary to get your application up and running.
+### Overview
 
-### What is this repository for? ###
+This Shopware 6 plugin provides an integration between [Klaviyo Event Tracking](https://help.klaviyo.com/hc/en-us/articles/115005082927-Integrate-a-Custom-Ecommerce-Cart-or-Platform)
+and Shopware 6
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+* [Installation instruction](./Resources/doc/installation.md)
+* [Capabilities and restrictions](./Resources/doc/capabilities_and_restrictions.md)
+* [Plugin Implementation Overview](Resources/doc/plugin_implementation_overview.md)
 
-### How do I get set up? ###
+### Testing
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
-
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+To perform tests, phpunit.xml.dist must be configured properly ( at least KLAVIYO_PRIVATE_KEY env parameter), overwise this tests willl be skipped.
+Run the following command to execute common testsuite in module root:
+```
+./bin/phpunit.sh --testsuite General
+```
+How to run load tests:
+```
+./bin/phpunit.sh --testsuite Load
+```

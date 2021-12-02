@@ -1,0 +1,15 @@
+{% sw_extends '@Storefront/storefront/page/checkout/confirm/index.html.twig' %}
+
+{% block page_checkout_main_content %}
+    {{ parent() }}
+
+    {% if page.hasExtension('klaviyoIntegrationPluginExtension') %}
+        {% set extensionData =  page.getExtension('klaviyoIntegrationPluginExtension') %}
+            {% set klaviyoComponentOptions = {
+                'startedCheckoutEventTrackingRequest': extensionData.startedCheckoutEventTrackingRequest
+            }
+        %}
+        <div style="display: none;" data-klaviyo-checkout-started-event-tracking-component=""
+             data-klaviyo-checkout-started-event-tracking-component-options="{{ klaviyoComponentOptions|json_encode }}"> </div>
+    {% endif %}
+{% endblock %}

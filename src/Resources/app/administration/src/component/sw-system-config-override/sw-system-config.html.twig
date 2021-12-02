@@ -1,0 +1,7 @@
+{% block sw_system_config_content_card %}
+    <klaviyo-historical-events-synchronization-control v-if="domain==='KlaviyoIntegrationPlugin.config'">
+    </klaviyo-historical-events-synchronization-control>
+    {% parent %}
+{% endblock %}
+
+{% parent %}

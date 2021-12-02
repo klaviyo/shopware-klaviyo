@@ -1,0 +1,28 @@
+services:
+    klaviyo.tracking_integration.guzzle_client.test:
+        class: Klaviyo\Integration\Test\Mock\GuzzleClientTestProxy
+        decorates: klaviyo.tracking_integration.guzzle_client
+        decoration_inner_name: klaviyo.tracking_integration.guzzle_client.test.inner
+        calls:
+            - [ 'setProxiedClient', [ '@klaviyo.tracking_integration.guzzle_client.test.inner' ] ]
+
+    klaviyo.tracking_integration.tracking.job.historical_events_job_processor.test:
+        class: Klaviyo\Integration\Test\Mock\TestHistoricalEventsTrackingJobProcessor
+        decorates: Klaviyo\Integration\Tracking\Job\HistoricalEventsTrackingJobProcessor
+        parent: Klaviyo\Integration\Tracking\Job\HistoricalEventsTrackingJobProcessor
+
+    klaviyo.tracking_integration.guzzle_client.test.public:
+        alias: klaviyo.tracking_integration.guzzle_client
+        public: true
+
+    klaviyo.tracking_integration.gateway.client_registry.test:
+        alias: Klaviyo\Integration\Klaviyo\Gateway\ClientRegistry
+        public: true
+
+    klaviyo.tracking_integration.gateway.test.public:
+        alias: Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway
+        public: true
+
+    klaviyo.tracking_integration.job.full.processor.test.public:
+        alias: Klaviyo\Integration\Subscriber\Job\FullResynchronizationJobProcessor
+        public: true

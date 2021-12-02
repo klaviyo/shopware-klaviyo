@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+         bootstrap="../../../src/TestBootstrap.php"
+         cacheResult="false">
+  <coverage>
+    <include>
+      <directory suffix=".php">./</directory>
+    </include>
+  </coverage>
+  <php>
+    <ini name="error_reporting" value="-1"/>
+    <server name="KERNEL_CLASS" value="Shopware\Core\Kernel"/>
+    <env name="APP_ENV" value="test"/>
+    <env name="APP_DEBUG" value="1"/>
+    <env name="APP_SECRET" value="s$cretf0rt3st"/>
+    <env name="SHELL_VERBOSITY" value="-1"/>
+    <!-- Klaviyo creds for integration and load testing -->
+    <const name="KLAVIYO_PRIVATE_KEY" value="s$cretf0rt3st"/>
+    <const name="KLAVIYO_LIST_NAME" value="phpunit"/>
+    <!-- /Klaviyo creds for integration and load testing -->
+  </php>
+  <testsuites>
+    <testsuite name="General">
+      <directory>src/Tests</directory>
+      <exclude>src/Tests/LoadTests</exclude>
+    </testsuite>
+    <testsuite name="Load">
+      <directory>src/Tests/LoadTests</directory>
+    </testsuite>
+  </testsuites>
+</phpunit>

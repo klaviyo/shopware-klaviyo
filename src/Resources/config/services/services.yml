@@ -1,0 +1,116 @@
+services:
+    Klaviyo\Integration\Configuration\ConfigurationFactory:
+        arguments:
+            - '@Shopware\Core\System\SystemConfig\SystemConfigService'
+
+    Klaviyo\Integration\Configuration\ConfigurationRegistry:
+        arguments:
+            - '@Klaviyo\Integration\Configuration\ConfigurationFactory'
+
+    Klaviyo\Integration\Tracking\EventsTracker:
+        arguments:
+            - '@Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway'
+            - '@Klaviyo\Integration\Configuration\ConfigurationRegistry'
+            - '@logger'
+
+    Klaviyo\Integration\Tracking\TrackingCatalogFeedProvider:
+        arguments:
+            - '@Klaviyo\Integration\Klaviyo\CatalogFeed\CatalogFeedConstructor'
+            - '@logger'
+
+    Klaviyo\Integration\Entity\Helper\JobHelper:
+        arguments:
+            - '@klaviyo_job.repository'
+            - '@logger'
+
+    Klaviyo\Integration\Controller\Backoffice\JobController:
+        public: true
+        arguments:
+            - '@Klaviyo\Integration\Entity\Helper\JobHelper'
+            - '@Klaviyo\Integration\Job\VirtualProxyJobScheduler'
+            - '@logger'
+
+    Klaviyo\Integration\Controller\Backoffice\PromotionsExportController:
+        public: true
+        arguments:
+            - '@Klaviyo\Integration\Klaviyo\Promotion\PromotionsExporter'
+
+    Klaviyo\Integration\Controller\Storefront\CatalogFeedController:
+        public: true
+        arguments:
+            - '@Klaviyo\Integration\Tracking\TrackingCatalogFeedProvider'
+
+    Klaviyo\Integration\EventListener\CheckoutOrderPlacedEventListener:
+        arguments:
+            - '@Klaviyo\Integration\Tracking\EventsTracker'
+            - '@sales_channel.repository'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    Klaviyo\Integration\EventListener\OrderStateChangedEventListener:
+        arguments:
+            - '@Klaviyo\Integration\Tracking\EventsTracker'
+            - '@sales_channel.repository'
+            - '@order.repository'
+            - '@order_transaction.repository'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    Klaviyo\Integration\EventListener\RestartConsumerAfterPluginConfigChangedEventListener:
+        arguments:
+            - '@cache.messenger.restart_workers_signal'
+        tags:
+            - { 'name': 'kernel.event_subscriber' }
+
+    Klaviyo\Integration\EventListener\AddPluginExtensionToPageDTOEventListener:
+        arguments:
+            - '@Klaviyo\Integration\Configuration\ConfigurationRegistry'
+            - '@Klaviyo\Integration\Klaviyo\Gateway\Translator\CustomerPropertiesTranslator'
+            - '@Klaviyo\Integration\Klaviyo\FrontendApi\Translator\ProductTranslator'
+            - '@Klaviyo\Integration\Klaviyo\FrontendApi\Translator\StartedCheckoutEventTrackingRequestTranslator'
+            - '@logger'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    Klaviyo\Integration\EventListener\AddedToCartEventListener:
+        arguments:
+            - '@Klaviyo\Integration\Tracking\EventsTracker'
+            - '@logger'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    Klaviyo\Integration\Entity\Helper\AddressDataHelper:
+        arguments:
+            - '@country_state.repository'
+            - '@country.repository'
+
+    Klaviyo\Integration\Entity\Helper\ProductDataHelper:
+        arguments:
+            - '@router.default'
+            - '@product.repository'
+            - '@product_media.repository'
+            - '@category.repository'
+            - '@product_manufacturer.repository'
+
+    Klaviyo\Integration\Klaviyo\FrontendApi\Translator\ProductTranslator:
+        arguments:
+            - '@Klaviyo\Integration\Entity\Helper\ProductDataHelper'
+
+    Klaviyo\Integration\Klaviyo\FrontendApi\Translator\StartedCheckoutEventTrackingRequestTranslator:
+        arguments:
+            - '@router.default'
+            - '@Klaviyo\Integration\Entity\Helper\ProductDataHelper'
+
+    Klaviyo\Integration\Klaviyo\CatalogFeed\CatalogFeedConstructor:
+        arguments:
+            - '@product.repository'
+            - '@Klaviyo\Integration\Klaviyo\CatalogFeed\CatalogFeedProductItemTranslator'
+            - '@Klaviyo\Integration\Configuration\ConfigurationRegistry'
+
+    Klaviyo\Integration\Klaviyo\CatalogFeed\CatalogFeedProductItemTranslator:
+        arguments:
+            - '@Klaviyo\Integration\Entity\Helper\ProductDataHelper'
+
+    Klaviyo\Integration\Klaviyo\Promotion\PromotionsExporter:
+        arguments:
+            - '@promotion.repository'

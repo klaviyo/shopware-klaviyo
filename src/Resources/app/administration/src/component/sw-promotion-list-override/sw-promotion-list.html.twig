@@ -1,0 +1,18 @@
+{% block sw_promotion_list_smart_bar_actions_add %}
+    {% parent %}
+    <sw-button
+            v-tooltip="{
+                message: $tc('sw-privileges.tooltip.warning'),
+                disabled: acl.can('promotion.viewer'),
+                showOnDisabledElements: true,
+                position: 'bottom'
+            }"
+            :router-link="/api/klaviyo/integration/promotion/export"
+            :disabled="!acl.can('promotion.creator')"
+            variant="primary"
+    >
+        {{ $tc('klaviyo_integration_plugin.promotion.exportInKlaviyoFormatButtonLabel') }}
+    </sw-button>
+{% endblock %}
+
+{% parent %}

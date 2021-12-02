@@ -1,0 +1,27 @@
+parameters:
+    klaviyo.tracking_integration.historical_events.job.maximum_pending_time: 20
+    klaviyo.tracking_integration.historical_events.job.maximum_execution_time: 240
+
+services:
+    klaviyo.tracking_integration.historical_events.job.scheduler:
+        parent: klaviyo.tracking_integration.job.scheduler.configurable
+        arguments:
+            - '@klaviyo.tracking_integration.historical_events.job.stuck.specification'
+            - 'historical_events_synchronization'
+        tags:
+            - { name: klaviyo.tracking_integration.job.scheduler }
+
+    klaviyo.tracking_integration.historical_events.job.stuck.specification:
+        class: Klaviyo\Integration\Entity\Specification\StuckJobSpecification
+        arguments:
+            - '%klaviyo.tracking_integration.historical_events.job.maximum_pending_time%'
+            - '%klaviyo.tracking_integration.historical_events.job.maximum_execution_time%'
+
+    Klaviyo\Integration\Tracking\Job\HistoricalEventsTrackingJobProcessor:
+        arguments:
+            - '@Klaviyo\Integration\Tracking\EventsTracker'
+            - '@sales_channel.repository'
+            - '@order.repository'
+            - '@Klaviyo\Integration\Entity\Helper\JobHelper'
+        tags:
+            - { name: klaviyo.tracking_integration.job.processor }

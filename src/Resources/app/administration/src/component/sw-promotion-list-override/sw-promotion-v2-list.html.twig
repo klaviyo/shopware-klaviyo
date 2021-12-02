@@ -1,0 +1,11 @@
+{% block sw_promotion_v2_list_smart_bar_actions_add %}
+    {% parent %}
+    <sw-button
+            :link="getExportUrl()"
+            variant="primary"
+    >
+        {{ $tc('klaviyo_integration_plugin.promotion.exportInKlaviyoFormatButtonLabel') }}
+    </sw-button>
+{% endblock %}
+
+{% parent %}

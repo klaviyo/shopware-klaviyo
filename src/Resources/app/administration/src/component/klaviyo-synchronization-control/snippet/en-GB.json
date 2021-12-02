@@ -1,0 +1,40 @@
+{
+    "klaviyo_integration_plugin": {
+        "not_available": "N/A",
+        "subscribers": {
+            "last_synchronization_status": {
+                "finished": "Last Synchronization: {status} ({date})",
+                "not_finished": "Last Synchronization: {status}"
+            },
+            "last_success_synchronization": "Last Success Synchronization: {date}",
+            "get_synchronization_status": {
+                "failed": "Failed to get Last Subscribers synchronization status"
+            },
+            "schedule_synchronization": {
+                "button_label": "Synchronize subscribers",
+                "success": "Subscribers synchronization scheduled",
+                "failed": "Subscribers synchronization failed to schedule",
+                "is_running": "Subscribers synchronization is already running"
+            }
+        },
+        "historical_events_tracking": {
+            "last_synchronization_status": {
+                "finished": "Last Synchronization: {status} ({date})",
+                "not_finished": "Last Synchronization: {status}"
+            },
+            "last_success_synchronization": "Last Success Synchronization: {date}",
+            "get_synchronization_status": {
+                "failed": "Failed to get Last Historical Events Tracking synchronization status"
+            },
+            "schedule_synchronization": {
+                "button_label": "Synchronize historical events",
+                "success": "Historical events tracking synchronization scheduled",
+                "failed": "Historical events tracking synchronization failed to schedule",
+                "is_running": "Historical events tracking synchronization is already running"
+            }
+        },
+        "promotion": {
+            "exportInKlaviyoFormatButtonLabel": "Export in Klaviyo Format"
+        }
+    }
+}
