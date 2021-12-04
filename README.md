@@ -12,7 +12,7 @@ and Shopware 6
 
 ### Testing
 
-To perform tests, phpunit.xml.dist must be configured properly ( at least KLAVIYO_PRIVATE_KEY env parameter), overwise this tests willl be skipped.
+To perform tests, phpunit.xml.dist must be configured properly (at least KLAVIYO_PRIVATE_KEY const parameter), overwise this tests willl be skipped.
 Run the following command to execute common testsuite in module root:
 ```
 ./bin/phpunit.sh --testsuite General
