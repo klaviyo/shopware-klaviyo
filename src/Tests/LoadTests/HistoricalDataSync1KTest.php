@@ -28,7 +28,6 @@ class HistoricalDataSync1KTest extends AbstractIntegrationTestCase
 
     const BATCH_SIZE = 500;
 
-    private SalesChannelEntity $salesChannelEntity;
     private KlaviyoSubscriberManagement $subscriberManagement;
     private HistoricalEventsTrackingJobProcessor $historyDataSyncProcessor;
     private VirtualProxyJobScheduler $jobScheduler;
@@ -41,15 +40,16 @@ class HistoricalDataSync1KTest extends AbstractIntegrationTestCase
         parent::setUp();
         $this->executeFixtures([new DataFixtures\RegisterDefaultSalesChannel()]);
 
-        $this->salesChannelEntity = $this->getByReference('klaviyo_tracking_integration.sales_channel.storefront');
+        /** @var SalesChannelEntity $salesChannelEntity */
+        $salesChannelEntity = $this->getByReference('klaviyo_tracking_integration.sales_channel.storefront');
         $klaviyoGateway = $this->getContainer()->get('klaviyo.tracking_integration.gateway.test.public');
         $this->historyDataSyncProcessor = $this->getContainer()->get('klaviyo.tracking_integration.tracking.job.historical_events_job_processor.test.public');
         $this->jobScheduler = $this->getContainer()->get(VirtualProxyJobScheduler::class);
-        $this->subscriberManagement = new KlaviyoSubscriberManagement($this->salesChannelEntity, $klaviyoGateway);
+        $this->subscriberManagement = new KlaviyoSubscriberManagement($salesChannelEntity, $klaviyoGateway);
         $this->customerRepo = $this->getContainer()->get('customer.repository');
         $this->orderRepo = $this->getContainer()->get('order.repository');
 
-        $countryId = $this->getValidCountryId($this->salesChannelEntity->getId());
+        $countryId = $this->getValidCountryId($salesChannelEntity->getId());
         $salutationId = $this->getValidSalutationId();
         $orderNumberRange = new IntRange(1, 3);
         $productNumberRange = new IntRange(1, 3);
@@ -57,7 +57,7 @@ class HistoricalDataSync1KTest extends AbstractIntegrationTestCase
         $this->executeFixtures([new DataFixtures\HistoricalData\GenerateOrdersAndCustomers(
             $countryId,
             $salutationId,
-            2,
+            1000,
             $orderNumberRange,
             $productNumberRange
         )]);
