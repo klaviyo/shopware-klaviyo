@@ -6,6 +6,7 @@ use Klaviyo\Integration\Entity\Helper\JobHelper;
 use Klaviyo\Integration\Entity\Job\JobEntity;
 use Klaviyo\Integration\Job\AbstractJobProcessor;
 use Klaviyo\Integration\Tracking\EventsTracker;
+use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -62,7 +63,12 @@ class HistoricalEventsTrackingJobProcessor extends AbstractJobProcessor
         // Use butches to avoid memory limit and performance issues
         $orderIdChunks = array_chunk($ordersIds, $this->orderExportChunkSize);
         foreach ($orderIdChunks as $orderIds) {
-            $orders = $this->orderRepository->search(new Criteria($orderIds), $context);
+            $orderCriteria = new Criteria($orderIds);
+            $orderCriteria->addAssociation('orderCustomer.customer.defaultBillingAddress');
+            $orderCriteria->addAssociation('orderCustomer.customer.defaultShippingAddress');
+            $orders = $this->orderRepository->search($orderCriteria, $context);
+
+            /** @var OrderEntity $order */
             foreach ($orders as $order) {
                 if (!$this->eventsTracker->trackPlacedOrder($context, $salesChannelEntity, $order)) {
                     $success = false;

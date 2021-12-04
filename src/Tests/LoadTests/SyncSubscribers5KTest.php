@@ -2,12 +2,10 @@
 
 namespace Klaviyo\Integration\Tests\LoadTests;
 
-use GuzzleHttp\Client;
 use Klaviyo\Integration\Entity\Job\JobEntity;
 use Klaviyo\Integration\Job\VirtualProxyJobScheduler;
-use Klaviyo\Integration\Klaviyo\Gateway\Exception\ProfilesListNotFoundException;
-use Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway;
 use Klaviyo\Integration\Subscriber\Job\FullResynchronizationJobProcessor;
+use Klaviyo\Integration\Test\KlaviyoSubscriberManagement;
 use Klaviyo\Integration\Tests\AbstractIntegrationTestCase;
 use Klaviyo\Integration\Tests\DataFixtures;
 use Shopware\Core\Content\Newsletter\Aggregate\NewsletterRecipient\NewsletterRecipientEntity;
@@ -19,9 +17,8 @@ use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 class SyncSubscribers5KTest extends AbstractIntegrationTestCase
 {
     private SalesChannelEntity $salesChannelEntity;
-    private KlaviyoGateway $klaviyoGateway;
+    private KlaviyoSubscriberManagement $subscriberManagement;
     private FullResynchronizationJobProcessor $fullJobProcessor;
-    private Client $guzzleClient;
     private VirtualProxyJobScheduler $jobScheduler;
     private string $currentListId;
 
@@ -34,13 +31,13 @@ class SyncSubscribers5KTest extends AbstractIntegrationTestCase
         ]);
 
         $this->salesChannelEntity = $this->getByReference('klaviyo_tracking_integration.sales_channel.storefront');
-        $this->klaviyoGateway = $this->getContainer()->get('klaviyo.tracking_integration.gateway.test.public');
+        $klaviyoGateway = $this->getContainer()->get('klaviyo.tracking_integration.gateway.test.public');
         $this->fullJobProcessor = $this->getContainer()->get('klaviyo.tracking_integration.job.full.processor.test.public');
         $this->jobScheduler = $this->getContainer()->get(VirtualProxyJobScheduler::class);
-        $this->guzzleClient = new Client();
 
-        $this->deleteKlaviyoTestList(KLAVIYO_LIST_NAME);
-        $this->currentListId = $this->createKlaviyoTestList(KLAVIYO_LIST_NAME);
+        $this->subscriberManagement = new KlaviyoSubscriberManagement($this->salesChannelEntity, $klaviyoGateway);
+        $this->subscriberManagement->deleteKlaviyoTestList(KLAVIYO_LIST_NAME);
+        $this->currentListId =  $this->subscriberManagement->createKlaviyoTestList(KLAVIYO_LIST_NAME);
     }
 
     public function testSyncBigAmountOfSubscribers()
@@ -69,13 +66,12 @@ class SyncSubscribers5KTest extends AbstractIntegrationTestCase
 
         $recipientsFromKlaviyo = array_map(function ($memberData) {
             return $memberData['email'] ?? 'undefined_email';
-        }, $this->getKlaviyoListMembers());
-        $emailsDiff = array_diff($generatedRecipientsEmails, $recipientsFromKlaviyo);
+        },  $this->subscriberManagement->getKlaviyoListMembers($this->currentListId));
 
         self::assertEquals(
             $generatedRecipientsEmails,
             $recipientsFromKlaviyo,
-            'Some emails are missing in Klaviyo List' . (count($emailsDiff) < 5 ? ': ' . implode(',', $emailsDiff) : '')
+            'Some emails are missing in Klaviyo List'
         );
     }
 
@@ -83,64 +79,6 @@ class SyncSubscribers5KTest extends AbstractIntegrationTestCase
     {
         parent::tearDown();
 
-        $this->deleteKlaviyoTestList(KLAVIYO_LIST_NAME);
-    }
-
-    private function getKlaviyoListMembers(int $marker = 0): array
-    {
-        $urlSchema = $marker === 0
-            ? 'https://a.klaviyo.com/api/v2/group/%s/members/all?api_key=%s'
-            : 'https://a.klaviyo.com/api/v2/group/%s/members/all?api_key=%s&marker=%s';
-        $response = $this->guzzleClient->get(
-            sprintf($urlSchema, $this->currentListId, KLAVIYO_PRIVATE_KEY, $marker),
-        );
-
-        $responseData = json_decode($response->getBody()->getContents(), true);
-        $marker = $responseData['marker'] ?? 0;
-        $records = $responseData['records'] ?: [];
-
-        if ($marker) {
-            $records = array_merge($records, $this->getKlaviyoListMembers($marker));
-        }
-
-        return $records;
-    }
-
-    private function deleteKlaviyoTestList(string $listName): void
-    {
-        try {
-            $listId = $this->klaviyoGateway->getListIdByListName($this->salesChannelEntity, $listName);
-            $request = new \GuzzleHttp\Psr7\Request(
-                'DELETE',
-                sprintf('https://a.klaviyo.com/api/v2/list/%s?api_key=%s', $listId, KLAVIYO_PRIVATE_KEY)
-            );
-
-            $this->guzzleClient->sendRequest($request);
-        } catch (ProfilesListNotFoundException $e) {
-            null;
-        }
-    }
-
-    private function createKlaviyoTestList(string $listName): string
-    {
-        $requestBodyObject = new \stdClass();
-        $requestBodyObject->list_name = $listName;
-
-        $response = $this->guzzleClient->request(
-            'POST',
-            sprintf('https://a.klaviyo.com/api/v2/lists?api_key=%s', KLAVIYO_PRIVATE_KEY),
-            [
-                \GuzzleHttp\RequestOptions::HEADERS => [
-                    'Accept' => 'application/json',
-                    'Content-Type' => 'application/x-www-form-urlencoded'
-                ],
-                \GuzzleHttp\RequestOptions::FORM_PARAMS => [
-                    'list_name' => $listName
-                ]
-            ]
-        );
-        $responseData = json_decode($response->getBody()->getContents(), true);
-
-        return (string)$responseData['list_id'];
+        $this->subscriberManagement->deleteKlaviyoTestList(KLAVIYO_LIST_NAME);
     }
 }

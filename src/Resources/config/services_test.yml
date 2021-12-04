@@ -6,10 +6,9 @@ services:
         calls:
             - [ 'setProxiedClient', [ '@klaviyo.tracking_integration.guzzle_client.test.inner' ] ]
 
-    klaviyo.tracking_integration.tracking.job.historical_events_job_processor.test:
-        class: Klaviyo\Integration\Test\Mock\TestHistoricalEventsTrackingJobProcessor
-        decorates: Klaviyo\Integration\Tracking\Job\HistoricalEventsTrackingJobProcessor
-        parent: Klaviyo\Integration\Tracking\Job\HistoricalEventsTrackingJobProcessor
+    klaviyo.tracking_integration.tracking.job.historical_events_job_processor.test.public:
+        alias: Klaviyo\Integration\Tracking\Job\HistoricalEventsTrackingJobProcessor
+        public: true
 
     klaviyo.tracking_integration.guzzle_client.test.public:
         alias: klaviyo.tracking_integration.guzzle_client

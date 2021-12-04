@@ -106,10 +106,10 @@ class OrderEventRequestTranslator
             $orderAddressEntity->getStreet(),
             $orderAddressEntity->getAdditionalAddressLine1(),
             $orderAddressEntity->getCity(),
-            $state->getName(),
-            $state->getShortCode(),
-            $country->getName(),
-            $country->getIso(),
+            $state ? $state->getName() : null,
+            $state ? $state->getShortCode() : null,
+            $country ? $country->getName() : null,
+            $country ? $country->getIso() : null,
             $orderAddressEntity->getZipcode(),
             $orderAddressEntity->getPhoneNumber()
         );

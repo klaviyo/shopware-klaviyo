@@ -38,7 +38,7 @@ class ConfigurableOrderEventTrackingRequestNormalizer extends AbstractNormalizer
         $normalizedItems = [];
         /** @var OrderProductItemInfo $product */
         foreach ($object->getProducts() as $product) {
-            array_push($categories, $product->getCategories());
+            $categories = array_merge($categories, $product->getCategories());
             $itemNames[] = $product->getProductName();
             $brands[] = $product->getBrand();
             $normalizedItems[] = [
