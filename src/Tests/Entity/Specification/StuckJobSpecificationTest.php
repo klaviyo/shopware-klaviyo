@@ -1,6 +1,6 @@
 <?php
 
-namespace Klaviyo\Integration\Tests\Unit\Entity\Specification;
+namespace Klaviyo\Integration\Tests\Entity\Specification;
 
 use Klaviyo\Integration\Entity\Job\JobEntity;
 use Klaviyo\Integration\Entity\Specification\StuckJobSpecification;
