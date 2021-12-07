@@ -1,4 +1,4 @@
-Klaviyo Integration Plugin
+Klaviyo Integration Plugin 
 ============================
 
 ### Overview
