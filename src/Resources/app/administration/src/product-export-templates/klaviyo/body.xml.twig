@@ -1,0 +1,11 @@
+<Product>
+    <id>{{ product.productNumber }}</id>
+    <title>{{ product.translated.name|escape }}</title>
+    <link>{{ seoUrl('frontend.detail.page', {'productId': product.id}) }}</link>
+    <description>{{ product.translated.description|escape }}</description>
+    <price>{% set price = product.calculatedPrice %} {% if product.calculatedPrices.count %} {% set price = product.calculatedPrices.last %} {% endif %} {{ price.unitPrice }}</price>
+    <image_link>{{ product.cover.media.url }}</image_link>
+    <categories>{{ product.categories.first.getBreadCrumb|slice(1)|join(' > ')|raw|escape }}</categories>
+    <inventory_quantity>{{ product.availableStock }}</inventory_quantity>
+    <inventory_policy>1</inventory_policy>
+</Product>
