@@ -15,7 +15,7 @@ class Migration1626690788 extends MigrationStep
     public function update(Connection $connection): void
     {
         $sql = <<<SQL
-        CREATE TABLE `klaviyo_job` (
+        CREATE TABLE IF NOT EXISTS `klaviyo_job` (
             `id` BINARY(16) NOT NULL,
             `status` VARCHAR(255) NOT NULL,
             `type` VARCHAR(255) NOT NULL,
