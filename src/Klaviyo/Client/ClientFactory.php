@@ -17,9 +17,15 @@ class ClientFactory
         $this->guzzleClient = $guzzleClient;
     }
 
-    public function create(ConfigurationInterface $configuration): Client
+    public function create(ConfigurationInterface $configuration): ClientInterface
     {
+        $useAsync = true;
         $translatorRegistry = $this->translatorsRegistryFactory->create($configuration);
+
+        if ($useAsync) {
+            return new AsyncClient($translatorRegistry, $this->guzzleClient, $configuration);
+        }
+
         return new Client($translatorRegistry, $this->guzzleClient, $configuration);
     }
 }

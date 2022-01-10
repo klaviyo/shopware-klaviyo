@@ -16,7 +16,8 @@ class KlaviyoIntegrationPlugin extends Plugin
 
         /** @var Connection $connection */
         $connection = $this->container->get(Connection::class);
-        $dropPagesTableSQL = 'DROP TABLE IF EXISTS `klaviyo_job`';
-        $connection->executeStatement($dropPagesTableSQL);
+        $connection->executeStatement('DROP TABLE IF EXISTS `klaviyo_job_message`');
+        $connection->executeStatement('DROP TABLE IF EXISTS `klaviyo_job`');
+        $connection->executeStatement('DROP TABLE IF EXISTS `klaviyo_job_event`');
     }
 }

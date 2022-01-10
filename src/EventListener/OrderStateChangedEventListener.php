@@ -2,7 +2,9 @@
 
 namespace Klaviyo\Integration\EventListener;
 
-use Klaviyo\Integration\Tracking\EventsTracker;
+use Klaviyo\Integration\System\Tracking\Event\OrderEvent;
+use Klaviyo\Integration\System\Tracking\EventsTrackerInterface;
+use Klaviyo\Integration\System\Tracking\OrderTrackingEventsBag;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
@@ -18,13 +20,13 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class OrderStateChangedEventListener implements EventSubscriberInterface
 {
-    private EventsTracker $eventsTracker;
+    private EventsTrackerInterface $eventsTracker;
     private EntityRepositoryInterface $salesChannelRepository;
     private EntityRepositoryInterface $orderRepository;
     private EntityRepositoryInterface $orderTransactionRepository;
 
     public function __construct(
-        EventsTracker $eventsTracker,
+        EventsTrackerInterface $eventsTracker,
         EntityRepositoryInterface $salesChannelRepository,
         EntityRepositoryInterface $orderRepository,
         EntityRepositoryInterface $orderTransactionRepository
@@ -46,8 +48,8 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
         $state = $event->getNextState();
         if ($event->getTransitionSide() === StateMachineStateChangeEvent::STATE_MACHINE_TRANSITION_SIDE_ENTER
             && $event->getTransition()->getEntityName() === OrderDefinition::ENTITY_NAME
-            && in_array($state->getTechnicalName(), $supportedStates, true)) {
-
+            && in_array($state->getTechnicalName(), $supportedStates, true)
+        ) {
             /** @var OrderEntity $order */
             $order = $this->orderRepository
                 ->search(new Criteria([$event->getTransition()->getEntityId()]), $event->getContext())
@@ -70,8 +72,8 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
         $state = $event->getNextState();
         if ($event->getTransitionSide() === StateMachineStateChangeEvent::STATE_MACHINE_TRANSITION_SIDE_ENTER
             && $event->getTransition()->getEntityName() === OrderTransactionDefinition::ENTITY_NAME
-            && in_array($state->getTechnicalName(), $supportedStates, true)) {
-
+            && in_array($state->getTechnicalName(), $supportedStates, true)
+        ) {
             $orderTransactionCriteria = new Criteria([$event->getTransition()->getEntityId()]);
             $orderTransactionCriteria->addAssociation('order');
             /** @var OrderTransactionEntity $orderTransaction */
@@ -91,31 +93,19 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
 
     private function trackEvent(Context $context, SalesChannelEntity $salesChannel, OrderEntity $order, string $state)
     {
-        $now = new \DateTime('now', new \DateTimeZone('UTC'));
+        $eventsBag = new OrderTrackingEventsBag();
+        $orderPlacedEvent = new OrderEvent($order);
+        $eventsBag->add($orderPlacedEvent);
+
         switch ($state) {
             case OrderStates::STATE_COMPLETED:
-                $this->eventsTracker->trackFulfilledOrder(
-                    $context,
-                    $salesChannel,
-                    $order,
-                    $now
-                );
+                $this->eventsTracker->trackFulfilledOrders($context, $eventsBag);
                 return;
             case OrderStates::STATE_CANCELLED:
-                $this->eventsTracker->trackCanceledOrder(
-                    $context,
-                    $salesChannel,
-                    $order,
-                    $now
-                );
+                $this->eventsTracker->trackCanceledOrders($context, $eventsBag);
                 return;
             case OrderTransactionStates::STATE_REFUNDED:
-                $this->eventsTracker->trackRefundOrder(
-                    $context,
-                    $salesChannel,
-                    $order,
-                    $now
-                );
+                $this->eventsTracker->trackRefundOrders($context, $eventsBag);
                 return;
         }
     }

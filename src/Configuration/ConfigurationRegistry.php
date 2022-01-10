@@ -20,6 +20,17 @@ class ConfigurationRegistry
         $this->configurationFactory = $configurationFactory;
     }
 
+    public function getConfigurationByChannelId(string $channelId): ConfigurationInterface
+    {
+        if (!isset($this->configurationPerSalesChannel[$channelId])) {
+            $this->configurationPerSalesChannel[$channelId] = $this->configurationFactory
+                ->create($channelId);
+        }
+
+        return $this->configurationPerSalesChannel[$channelId];
+    }
+
+    // TODO: remove later
     public function getConfiguration(SalesChannelEntity $salesChannelEntity): ConfigurationInterface
     {
         if (!isset($this->configurationPerSalesChannel[$salesChannelEntity->getId()])) {

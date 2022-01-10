@@ -15,10 +15,8 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
         $this->systemConfigService = $systemConfigService;
     }
 
-    public function create(?SalesChannelEntity $salesChannelEntity): ConfigurationInterface
+    public function create(?string $salesChannelId = null): ConfigurationInterface
     {
-        $salesChannelId = $salesChannelEntity ? $salesChannelEntity->getId() : null;
-
         $privateApiKey = $this->systemConfigService
             ->get('KlaviyoIntegrationPlugin.config.privateApiKey', $salesChannelId);
         if (!$privateApiKey) {

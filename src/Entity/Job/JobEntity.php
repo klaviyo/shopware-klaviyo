@@ -7,39 +7,109 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 
 class JobEntity extends Entity
 {
-    public const STATUS_NEW = 'new';
+    use EntityIdTrait;
+
     public const STATUS_PENDING = 'pending';
-    public const STATUS_IN_PROGRESS = 'in_progress';
+    public const STATUS_RUNNING = 'running';
     public const STATUS_SUCCESS = 'success';
     public const STATUS_FAILED = 'failed';
     public const STATUS_STUCK = 'stuck';
 
+    public const TYPE_FULL_SUBSCRIBER_SYNC = 'full-subscriber-sync';
+    public const TYPE_FULL_ORDERS_SYNC = 'full-order-sync';
+    public const TYPE_SUBSCRIBER_SYNC = 'subscriber-sync';
+    public const TYPE_ORDERS_SYNC = 'order-sync';
+    public const TYPE_ORDERS_EVENTS_SYNC = 'order-events-sync';
+
     public const HISTORICAL_EVENTS_SYNCHRONIZATION_TYPE = 'historical_events_synchronization';
     public const SUBSCRIBERS_SYNCHRONIZATION_TYPE = 'subscribers_synchronization';
 
-    use EntityIdTrait;
-
-    protected ?\DateTimeInterface $finishedAt = null;
+    protected ?string $parentId = null;
+    protected string $status;
+    protected string $type;
+    protected string $name;
+    protected ?string $message = null;
     protected ?\DateTimeInterface $startedAt = null;
-    protected ?string $status = null;
-    protected ?string $type = null;
-    protected ?bool $active = null;
-    protected ?bool $createdBySchedule = null;
+    protected ?\DateTimeInterface $finishedAt = null;
 
     /**
-     * @return \DateTimeInterface|null
+     * @return string|null
      */
-    public function getFinishedAt(): ?\DateTimeInterface
+    public function getParentId(): ?string
     {
-        return $this->finishedAt;
+        return $this->parentId;
     }
 
     /**
-     * @param \DateTimeInterface|null $finishedAt
+     * @param string|null $parentId
      */
-    public function setFinishedAt(?\DateTimeInterface $finishedAt): void
+    public function setParentId(?string $parentId): void
     {
-        $this->finishedAt = $finishedAt;
+        $this->parentId = $parentId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param string $status
+     */
+    public function setStatus(string $status): void
+    {
+        $this->status = $status;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string $type
+     */
+    public function setType(string $type): void
+    {
+        $this->type = $type;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName(string $name): void
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getMessage(): ?string
+    {
+        return $this->message;
+    }
+
+    /**
+     * @param string|null $message
+     */
+    public function setMessage(?string $message): void
+    {
+        $this->message = $message;
     }
 
     /**
@@ -59,62 +129,33 @@ class JobEntity extends Entity
     }
 
     /**
-     * @return string|null
+     * @return \DateTimeInterface|null
      */
-    public function getStatus(): ?string
+    public function getFinishedAt(): ?\DateTimeInterface
     {
-        return $this->status;
+        return $this->finishedAt;
     }
 
     /**
-     * @param string|null $status
+     * @param \DateTimeInterface|null $finishedAt
      */
-    public function setStatus(?string $status): void
+    public function setFinishedAt(?\DateTimeInterface $finishedAt): void
     {
-        $this->status = $status;
+        $this->finishedAt = $finishedAt;
     }
 
-    public function getType(): ?string
+    public function toArray(): array
     {
-        return $this->type;
-    }
-
-    public function setType(?string $type): void
-    {
-        $this->type = $type;
-    }
-
-    /**
-     * @return bool|null
-     */
-    public function getActive(): ?bool
-    {
-        return $this->active;
-    }
-
-    /**
-     * @param bool|null $active
-     */
-    public function setActive(?bool $active): void
-    {
-        $this->active = $active;
-    }
-
-    public function getCreatedBySchedule(): ?bool
-    {
-        return $this->createdBySchedule;
-    }
-
-    public function setCreatedBySchedule(?bool $createdBySchedule): void
-    {
-        $this->createdBySchedule = $createdBySchedule;
-    }
-
-    public function isStarted(): bool
-    {
-        return !in_array(
-            $this->getStatus(),
-            [self::STATUS_PENDING, self::STATUS_NEW]
-        );
+        return [
+            'id' => $this->getId(),
+            'parentId' => $this->getParentId(),
+            'status' => $this->getStatus(),
+            'type' => $this->getType(),
+            'name' => $this->getName(),
+            'message' => $this->getMessage(),
+            'startedAt' => $this->getStartedAt(),
+            'finishedAt' => $this->getFinishedAt(),
+            'createdAt' => $this->getCreatedAt(),
+        ];
     }
 }

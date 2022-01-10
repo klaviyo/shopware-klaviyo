@@ -67,7 +67,7 @@ class HistoricalEventsTrackingJobProcessor extends AbstractJobProcessor
             $orderCriteria->addAssociation('orderCustomer.customer.defaultBillingAddress');
             $orderCriteria->addAssociation('orderCustomer.customer.defaultShippingAddress');
             $orders = $this->orderRepository->search($orderCriteria, $context);
-
+            $orders->getElements();
             /** @var OrderEntity $order */
             foreach ($orders as $order) {
                 if (!$this->eventsTracker->trackPlacedOrder($context, $salesChannelEntity, $order)) {

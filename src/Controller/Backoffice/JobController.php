@@ -2,10 +2,9 @@
 
 namespace Klaviyo\Integration\Controller\Backoffice;
 
-use Klaviyo\Integration\Entity\Helper\JobHelper;
 use Klaviyo\Integration\Entity\Job\JobEntity;
-use Klaviyo\Integration\Job\Exception\JobIsAlreadyRunningException;
-use Klaviyo\Integration\Job\JobSchedulerInterface;
+use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
+use Klaviyo\Integration\System\Job\JobHelper;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
@@ -21,17 +20,17 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class JobController
 {
+    private ScheduleBackgroundJob $scheduleBackgroundJob;
     private JobHelper $jobHelper;
-    private JobSchedulerInterface $jobScheduler;
     private LoggerInterface $logger;
 
     public function __construct(
+        ScheduleBackgroundJob $scheduleBackgroundJob,
         JobHelper $jobHelper,
-        JobSchedulerInterface $jobScheduler,
         LoggerInterface $logger
     ) {
+        $this->scheduleBackgroundJob = $scheduleBackgroundJob;
         $this->jobHelper = $jobHelper;
-        $this->jobScheduler = $jobScheduler;
         $this->logger = $logger;
     }
 
@@ -48,7 +47,7 @@ class JobController
     {
         return $this->getJobSynchronizationStatusesJsonResponse(
             $context,
-            JobEntity::HISTORICAL_EVENTS_SYNCHRONIZATION_TYPE
+            JobEntity::TYPE_FULL_ORDERS_SYNC
         );
     }
 
@@ -65,7 +64,7 @@ class JobController
     {
         return $this->getJobSynchronizationStatusesJsonResponse(
             $context,
-            JobEntity::SUBSCRIBERS_SYNCHRONIZATION_TYPE
+            JobEntity::TYPE_FULL_SUBSCRIBER_SYNC
         );
     }
 
@@ -80,7 +79,11 @@ class JobController
      */
     public function scheduleHistoricalEventTrackingSynchronizationAction(Context $context)
     {
-        return $this->scheduleSynchronization($context, JobEntity::HISTORICAL_EVENTS_SYNCHRONIZATION_TYPE);
+        $this->scheduleBackgroundJob->scheduleFullOrderSyncJob($context);
+
+        // TODO: add try/catch block and add specific exceptions (already running etc.)
+
+        return new JsonResponse(['isScheduled' => true, 'errorCode' => ''], 200);
     }
 
     /**
@@ -94,13 +97,17 @@ class JobController
      */
     public function scheduleSubscribersSynchronizationAction(Context $context)
     {
-        return $this->scheduleSynchronization($context, JobEntity::SUBSCRIBERS_SYNCHRONIZATION_TYPE);
+        $this->scheduleBackgroundJob->scheduleFullSubscriberSyncJob($context);
+
+        // TODO: add try/catch block and add specific exceptions (already running etc.)
+
+        return new JsonResponse(['isScheduled' => true, 'errorCode' => ''], 200);
     }
 
     private function getJobSynchronizationStatusesJsonResponse(Context $context, string $jobType): JsonResponse
     {
         try {
-            $lastSuccessJob = $this->jobHelper->getLastSuccessJob($context, $jobType);
+            $lastSuccessJob = $this->jobHelper->getLastSucceedJob($context, $jobType);
             $lastJob = $this->jobHelper->getLastJob($context, $jobType);
 
             return new JsonResponse(
@@ -119,25 +126,5 @@ class JobController
 
             throw new HttpException(500, 'Internal server error');
         }
-    }
-
-    private function scheduleSynchronization(Context $context, string $jobType): JsonResponse
-    {
-        $errorCode = '';
-        $isScheduled = false;
-        $responseCode = 200;
-        try {
-            $this->jobScheduler->scheduleJob($context, $jobType);
-            $isScheduled = true;
-        } catch (JobIsAlreadyRunningException $exception) {
-            $errorCode = 'SYNCHRONIZATION_IS_ALREADY_RUNNING';
-        } catch (\Throwable $exception) {
-            $errorCode = 'SYNCHRONIZATION_IS_FAILED';
-            $responseCode = 503;
-            $this->logger
-                ->error('Synchronization schedule failed', ['exception' => $exception]);
-        }
-
-        return new JsonResponse(['isScheduled' => $isScheduled, 'errorCode' => $errorCode], $responseCode);
     }
 }

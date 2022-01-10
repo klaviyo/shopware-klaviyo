@@ -21,10 +21,10 @@ class ClientConfigurationFactory
         $this->pluginConfigurationRegistry = $pluginConfigurationRegistry;
     }
 
-    public function create(SalesChannelEntity $salesChannelEntity): ConfigurationInterface
+    public function create(string $channelId): ConfigurationInterface
     {
         $pluginConfiguration = $this->pluginConfigurationRegistry
-            ->getConfiguration($salesChannelEntity);
+            ->getConfigurationByChannelId($channelId);
 
         return new Configuration(
             $pluginConfiguration->getPrivateApiKey(),

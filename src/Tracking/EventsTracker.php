@@ -4,6 +4,8 @@ namespace Klaviyo\Integration\Tracking;
 
 use Klaviyo\Integration\Configuration\ConfigurationRegistry;
 use Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway;
+use Klaviyo\Integration\Klaviyo\Gateway\Result\OrderTrackingResult;
+use Klaviyo\Integration\System\Tracking\OrderTrackingBag;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
@@ -28,28 +30,30 @@ class EventsTracker
         $this->logger = $logger;
     }
 
-    public function trackPlacedOrder(
-        Context $context,
-        SalesChannelEntity $salesChannelEntity,
-        OrderEntity $orderEntity
-    ): bool {
-        $configuration = $this->configurationRegistry->getConfiguration($salesChannelEntity);
+    /**
+     * @param Context $context
+     * @param OrderTrackingBag $trackingBag
+     * @return OrderTrackingResult
+     */
+    public function trackPlacedOrders(Context $context, OrderTrackingBag $trackingBag): OrderTrackingResult
+    {
+        $trackingResult = new OrderTrackingResult();
 
-        $success = true;
-        if ($configuration->isTrackPlacedOrder()) {
-            if (!$this->gateway->trackPlacedOrder($context, $salesChannelEntity, $orderEntity)) {
-                $success = false;
-                $this->logger->error('Unable to track klaviyo placed order event');
+        foreach ($trackingBag->getIterator() as $channelId => $orders) {
+            $configuration = $this->configurationRegistry->getConfigurationByChannelId($channelId);
+
+            if ($configuration->isTrackPlacedOrder()) {
+                $placedOrderTrackingResult = $this->gateway->trackPlacedOrders($context, $channelId, $orders);
+                $trackingResult->mergeWith($placedOrderTrackingResult);
+            }
+
+            if ($configuration->isTrackOrderedProduct()) {
+                $orderedProductTrackingResult = $this->gateway->trackOrderedProducts($context, $channelId, $orders);
+                $trackingResult->mergeWith($orderedProductTrackingResult);
             }
         }
-        if ($configuration->isTrackOrderedProduct()) {
-            if (!$this->gateway->trackOrderedProducts($context, $salesChannelEntity, $orderEntity)) {
-                $success = false;
-                $this->logger->error('Unable to track klaviyo ordered products event');
-            }
-        }
 
-        return $success;
+        return $trackingResult;
     }
 
     public function trackFulfilledOrder(

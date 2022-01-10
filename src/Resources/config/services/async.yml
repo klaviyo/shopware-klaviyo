@@ -1,0 +1,83 @@
+services:
+    ### Message Handlers and Scheduled Tasks ###
+
+    Klaviyo\Integration\Async\MessageHandler\FullOrderSyncHandler:
+        arguments:
+            - '@Klaviyo\Integration\Model\UseCase\Operation\FullOrderSyncOperation'
+            - '@logger'
+        tags:
+            - { name: 'messenger.message_handler' }
+
+    Klaviyo\Integration\Async\MessageHandler\FullSubscriberSyncHandler:
+        arguments:
+            - '@Klaviyo\Integration\Model\UseCase\Operation\FullSubscriberSyncOperation'
+            - '@logger'
+        tags:
+            - { name: 'messenger.message_handler' }
+
+    Klaviyo\Integration\Async\MessageHandler\OrderEventsSyncHandler:
+        arguments:
+            - '@Klaviyo\Integration\Model\UseCase\Operation\OrderEventsSyncOperation'
+            - '@logger'
+        tags:
+            - { name: 'messenger.message_handler' }
+
+    Klaviyo\Integration\Async\MessageHandler\OrderSyncHandler:
+        arguments:
+            - '@Klaviyo\Integration\Model\UseCase\Operation\OrderSyncOperation'
+            - '@logger'
+        tags:
+            - { name: 'messenger.message_handler' }
+
+    Klaviyo\Integration\Async\MessageHandler\SubscriberSyncHandler:
+        arguments:
+            - '@Klaviyo\Integration\Model\UseCase\Operation\SubscriberSyncOperation'
+            - '@logger'
+        tags:
+            - { name: 'messenger.message_handler' }
+
+    Klaviyo\Integration\Async\ClearOldJobsScheduledTask:
+        tags:
+            - { name: 'shopware.scheduled.task' }
+
+    Klaviyo\Integration\Async\Task\ScheduleEventJobsTask:
+        tags:
+            - { name: 'shopware.scheduled.task' }
+
+    Klaviyo\Integration\Async\TaskHandler\ScheduleEventJobsHandler:
+        arguments:
+            - '@scheduled_task.repository'
+            - '@klaviyo_job_event.repository'
+            - '@Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob'
+        tags:
+            - { name: 'messenger.message_handler' }
+
+    ### Operations' definitions ###
+
+    Klaviyo\Integration\Model\UseCase\Operation\FullOrderSyncOperation:
+        arguments:
+            - '@Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob'
+            - '@order.repository'
+
+    Klaviyo\Integration\Model\UseCase\Operation\FullSubscriberSyncOperation:
+        arguments:
+            - '@Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob'
+            - '@newsletter_recipient.repository'
+
+    Klaviyo\Integration\Model\UseCase\Operation\OrderEventsSyncOperation:
+        arguments:
+            - '@klaviyo_job_event.repository'
+            - '@order.repository'
+            - '@Klaviyo\Integration\System\Tracking\OrderEventsTracker'
+
+    Klaviyo\Integration\Model\UseCase\Operation\OrderSyncOperation:
+        arguments:
+            - '@order.repository'
+            - '@Klaviyo\Integration\System\Tracking\OrderEventsTracker'
+
+    Klaviyo\Integration\Model\UseCase\Operation\SubscriberSyncOperation:
+        arguments:
+            - '@Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway'
+            - '@Klaviyo\Integration\Configuration\ConfigurationRegistry'
+            - '@newsletter_recipient.repository'
+            - '@sales_channel.repository'

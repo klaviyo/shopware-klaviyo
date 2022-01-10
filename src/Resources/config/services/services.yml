@@ -13,12 +13,32 @@ services:
             - '@Klaviyo\Integration\Configuration\ConfigurationRegistry'
             - '@logger'
 
-    Klaviyo\Integration\Tracking\TrackingCatalogFeedProvider:
+    Klaviyo\Integration\System\Tracking\OrderEventsTracker:
         arguments:
-            - '@Klaviyo\Integration\Klaviyo\CatalogFeed\CatalogFeedConstructor'
+            - '@Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway'
+            - '@Klaviyo\Integration\Configuration\ConfigurationRegistry'
             - '@logger'
 
-    Klaviyo\Integration\Entity\Helper\JobHelper:
+    Klaviyo\Integration\System\Tracking\ScheduledEventsTracker:
+        arguments:
+            - '@klaviyo_job_event.repository'
+
+#    Klaviyo\Integration\Tracking\TrackingCatalogFeedProvider:
+#        arguments:
+#            - '@Klaviyo\Integration\Klaviyo\CatalogFeed\CatalogFeedConstructor'
+#            - '@logger'
+
+    Klaviyo\Integration\System\Job\BackgroundJobScheduler:
+        arguments:
+            - '@klaviyo_job.repository'
+            - '@messenger.transport.native_php_serializer'
+            - '@messenger.bus.shopware'
+
+    Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob:
+        arguments:
+            - '@Klaviyo\Integration\System\Job\BackgroundJobScheduler'
+
+    Klaviyo\Integration\System\Job\JobHelper:
         arguments:
             - '@klaviyo_job.repository'
             - '@logger'
@@ -26,30 +46,31 @@ services:
     Klaviyo\Integration\Controller\Backoffice\JobController:
         public: true
         arguments:
-            - '@Klaviyo\Integration\Entity\Helper\JobHelper'
-            - '@Klaviyo\Integration\Job\VirtualProxyJobScheduler'
+            - '@Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob'
+            - '@Klaviyo\Integration\System\Job\JobHelper'
             - '@logger'
 
-    Klaviyo\Integration\Controller\Backoffice\PromotionsExportController:
-        public: true
-        arguments:
-            - '@Klaviyo\Integration\Klaviyo\Promotion\PromotionsExporter'
-
-    Klaviyo\Integration\Controller\Storefront\CatalogFeedController:
-        public: true
-        arguments:
-            - '@Klaviyo\Integration\Tracking\TrackingCatalogFeedProvider'
+# TODO: check is this needed
+#    Klaviyo\Integration\Controller\Backoffice\PromotionsExportController:
+#        public: true
+#        arguments:
+#            - '@Klaviyo\Integration\Klaviyo\Promotion\PromotionsExporter'
+#
+#    Klaviyo\Integration\Controller\Storefront\CatalogFeedController:
+#        public: true
+#        arguments:
+#            - '@Klaviyo\Integration\Tracking\TrackingCatalogFeedProvider'
 
     Klaviyo\Integration\EventListener\CheckoutOrderPlacedEventListener:
         arguments:
-            - '@Klaviyo\Integration\Tracking\EventsTracker'
+            - '@Klaviyo\Integration\System\Tracking\ScheduledEventsTracker'
             - '@sales_channel.repository'
         tags:
             - { name: kernel.event_subscriber }
 
     Klaviyo\Integration\EventListener\OrderStateChangedEventListener:
         arguments:
-            - '@Klaviyo\Integration\Tracking\EventsTracker'
+            - '@Klaviyo\Integration\System\Tracking\ScheduledEventsTracker'
             - '@sales_channel.repository'
             - '@order.repository'
             - '@order_transaction.repository'

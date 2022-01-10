@@ -2,7 +2,6 @@
 
 namespace Klaviyo\Integration\Klaviyo\Gateway;
 
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\Common\EventTrackingRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\AddMembersToList\AddProfilesToListResponse;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Common\ProfileContactInfoCollection;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Common\ProfileInfo;
@@ -13,18 +12,19 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetLists\Get
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetLists\GetProfilesListsResponse;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfilesFromList\RemoveProfilesFromListRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfilesFromList\RemoveProfilesFromListResponse;
+use Klaviyo\Integration\Klaviyo\Client\ClientResult;
 use Klaviyo\Integration\Klaviyo\Gateway\Exception\ProfilesListNotFoundException;
 use Klaviyo\Integration\Klaviyo\Gateway\Exception\UnableToGetListProfilesException;
+use Klaviyo\Integration\Klaviyo\Gateway\Result\OrderTrackingResult;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\OrderEventRequestTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\ProductEventRequestTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\SubscribersToKlaviyoRequestsTranslator;
+use Klaviyo\Integration\System\Tracking\Event\OrderEventInterface;
 use Klaviyo\Integration\Utils\Logger\ContextHelper;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
-use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
-use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Content\Newsletter\Aggregate\NewsletterRecipient\NewsletterRecipientCollection;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -55,159 +55,116 @@ class KlaviyoGateway
         $this->logger = $logger;
     }
 
-    public function trackPlacedOrder(
-        Context $context,
-        SalesChannelEntity $salesChannelEntity,
-        OrderEntity $orderEntity
-    ): bool {
-        try {
-            $placedOrderEventRequest = $this->orderEventRequestTranslator
-                ->translateToPlacedOrderEventRequest($context, $orderEntity);
+    public function trackPlacedOrders(Context $context, string $channelId, array $orderEvents): OrderTrackingResult
+    {
+        $requestOrderIdMap = $requests = [];
+        $result = new OrderTrackingResult();
 
-            $this->trackEvent($salesChannelEntity, $placedOrderEventRequest);
-
-            return true;
-        } catch (\Throwable $exception) {
-            $this->logger->error(
-                sprintf(
-                    'Could not track PlacedOrderEvent, reason: %s',
-                    $exception->getMessage()
-                ),
-                ContextHelper::createContextFromException($exception)
-            );
-
-            return false;
+        foreach ($orderEvents as $orderEvent) {
+            try {
+                $request = $this->orderEventRequestTranslator->translateToPlacedOrderEventRequest(
+                    $context,
+                    $orderEvent->getOrder()
+                );
+                $requestOrderIdMap[spl_object_id($request)] = $orderEvent->getOrder()->getId();
+                $requests[] = $request;
+            } catch (\Throwable $e) {
+                $result->addFailedOrder($orderEvent->getOrder()->getId(), $e);
+            }
         }
+
+        $clientResult = $this->trackEvents($channelId, $requests);
+
+        return $result->mergeWith(
+            $this->handleClientTrackingResult($clientResult, $requestOrderIdMap, 'PlacedOrder')
+        );
     }
 
-    public function trackOrderedProducts(
-        Context $context,
-        SalesChannelEntity $salesChannelEntity,
-        OrderEntity $orderEntity
-    ): bool {
-        $isSuccess = true;
-        /** @var OrderLineItemEntity $lineItem */
-        foreach ($orderEntity->getLineItems() as $lineItem) {
-            if ($lineItem->getType() !== 'product') {
-                continue;
-            }
+    public function trackOrderedProducts(Context $context, string $channelId, array $orderEvents): OrderTrackingResult
+    {
+        $result = new OrderTrackingResult();
+        $requestOrderIdMap = $requests = [];
 
-            $trackEventResult = $this->trackOrderedProduct(
+        /** @var OrderEventInterface $event */
+        foreach ($orderEvents as $event) {
+            foreach ($event->getOrder()->getLineItems() as $lineItem) {
+                if ($lineItem->getType() !== 'product') {
+                    continue;
+                }
+
+                try {
+                    $request = $this->productEventTranslator
+                        ->translateToOrderedProductEventRequest($context, $lineItem, $event->getOrder());
+                    $requestOrderIdMap[spl_object_id($request)] = $event->getOrder()->getId();
+                    $requests[] = $request;
+                } catch (\Throwable $e) {
+                    $result->addFailedOrder($event->getOrder()->getId(), $e);
+                }
+            }
+        }
+
+        $clientResult = $this->trackEvents($channelId, $requests);
+
+        return $result->mergeWith(
+            $this->handleClientTrackingResult($clientResult, $requestOrderIdMap, 'OrderedProduct')
+        );
+    }
+
+    public function trackFulfilledOrders(Context $context, string $channelId, array $orderEvents): OrderTrackingResult
+    {
+        $requestOrderIdMap = [];
+        $requests = array_map(function (OrderEventInterface $event) use ($context, $requestOrderIdMap) {
+            $request = $this->orderEventRequestTranslator->translateToFulfilledOrderEventRequest(
                 $context,
-                $salesChannelEntity,
-                $lineItem,
-                $orderEntity
+                $event->getOrder(),
+                $event->getEventDateTime()
             );
-            if (!$trackEventResult) {
-                $isSuccess = false;
-            }
-        }
+            $requestOrderIdMap[spl_object_id($request)] = $event->getOrder()->getId();
 
-        return $isSuccess;
+            return $request;
+        }, $orderEvents);
+
+        $clientResult = $this->trackEvents($channelId, $requests);
+
+        return $this->handleClientTrackingResult($clientResult, $requestOrderIdMap, 'FulfilledOrder');
     }
 
-    public function trackOrderedProduct(
-        Context $context,
-        SalesChannelEntity $salesChannelEntity,
-        OrderLineItemEntity $lineItem,
-        OrderEntity $orderEntity
-    ): bool {
-        try {
-            $event = $this->productEventTranslator
-                ->translateToOrderedProductEventRequest($context, $lineItem, $orderEntity);
-
-            $this->trackEvent($salesChannelEntity, $event);
-
-            return true;
-        } catch (\Throwable $exception) {
-            $this->logger->error(
-                sprintf(
-                    'Could not track OrderedProduct, reason: %s',
-                    $exception->getMessage()
-                ),
-                ContextHelper::createContextFromException($exception)
+    public function trackCancelledOrders(Context $context, string $channelId, array $orderEvents): OrderTrackingResult
+    {
+        $requestOrderIdMap = [];
+        $requests = array_map(function (OrderEventInterface $event) use ($context, $requestOrderIdMap) {
+            $request = $this->orderEventRequestTranslator->translateToCanceledOrderEventRequest(
+                $context,
+                $event->getOrder(),
+                $event->getEventDateTime()
             );
+            $requestOrderIdMap[spl_object_id($request)] = $event->getOrder()->getId();
 
-            return false;
-        }
+            return $request;
+        }, $orderEvents);
+
+        $clientResult = $this->trackEvents($channelId, $requests);
+
+        return $this->handleClientTrackingResult($clientResult, $requestOrderIdMap, 'CancelledOrder');
     }
 
-    public function trackFulfilledOrder(
-        Context $context,
-        SalesChannelEntity $salesChannelEntity,
-        OrderEntity $orderEntity,
-        \DateTimeInterface $eventHappenedDateTime
-    ): bool {
-        try {
-            $fulfilledOrderEventRequest = $this->orderEventRequestTranslator
-                ->translateToFulfilledOrderEventRequest($context, $orderEntity, $eventHappenedDateTime);
-
-            $this->trackEvent($salesChannelEntity, $fulfilledOrderEventRequest);
-
-            return true;
-        } catch (\Throwable $exception) {
-            $this->logger->error(
-                sprintf(
-                    'Could not track FulfilledOrder, reason: %s',
-                    $exception->getMessage()
-                ),
-                ContextHelper::createContextFromException($exception)
+    public function trackRefundedOrders(Context $context, string $channelId, array $orderEvents): OrderTrackingResult
+    {
+        $requestOrderIdMap = [];
+        $requests = array_map(function (OrderEventInterface $event) use ($context, $requestOrderIdMap) {
+            $request = $this->orderEventRequestTranslator->translateToRefundedOrderEventRequest(
+                $context,
+                $event->getOrder(),
+                $event->getEventDateTime()
             );
+            $requestOrderIdMap[spl_object_id($request)] = $event->getOrder()->getId();
 
-            return false;
-        }
-    }
+            return $request;
+        }, $orderEvents);
 
-    public function trackCancelledOrder(
-        Context $context,
-        SalesChannelEntity $salesChannelEntity,
-        OrderEntity $orderEntity,
-        \DateTimeInterface $eventHappenedDateTime
-    ): bool {
-        try {
-            $canceledOrderEventRequest = $this->orderEventRequestTranslator
-                ->translateToCanceledOrderEventRequest($context, $orderEntity, $eventHappenedDateTime);
+        $clientResult = $this->trackEvents($channelId, $requests);
 
-            $this->trackEvent($salesChannelEntity, $canceledOrderEventRequest);
-
-            return true;
-        } catch (\Throwable $exception) {
-            $this->logger->error(
-                sprintf(
-                    'Could not track CancelledOrder, reason: %s',
-                    $exception->getMessage()
-                ),
-                ContextHelper::createContextFromException($exception)
-            );
-
-            return false;
-        }
-    }
-
-    public function trackRefundedOrder(
-        Context $context,
-        SalesChannelEntity $salesChannelEntity,
-        OrderEntity $orderEntity,
-        \DateTimeInterface $eventHappenedDateTime
-    ): bool {
-        try {
-            $refundedOrderEventRequest = $this->orderEventRequestTranslator
-                ->translateToRefundedOrderEventRequest($context, $orderEntity, $eventHappenedDateTime);
-
-            $this->trackEvent($salesChannelEntity, $refundedOrderEventRequest);
-
-            return true;
-        } catch (\Throwable $exception) {
-            $this->logger->error(
-                sprintf(
-                    'Could not track CancelledOrder, reason: %s',
-                    $exception->getMessage()
-                ),
-                ContextHelper::createContextFromException($exception)
-            );
-
-            return false;
-        }
+        return $this->handleClientTrackingResult($clientResult, $requestOrderIdMap, 'RefundedOrder');
     }
 
     public function trackAddedToCart(
@@ -411,16 +368,42 @@ class KlaviyoGateway
     }
 
     /**
-     * @param SalesChannelEntity $salesChannelEntity
-     * @param EventTrackingRequest $request
+     * @param string $channelId
+     * @param object[] $requests
      *
-     * @throws \Klaviyo\Integration\Klaviyo\Client\Exception\ClientException
-     * @throws \Throwable
+     * @return ClientResult
      */
-    private function trackEvent(SalesChannelEntity $salesChannelEntity, EventTrackingRequest $request): void
+    private function trackEvents(string $channelId, array $requests): ClientResult
     {
-        $this->clientRegistry
-            ->getClient($salesChannelEntity)
-            ->sendRequest($request);
+        $client = $this->clientRegistry->getClient($channelId);
+
+        return $client->sendRequests($requests);
+    }
+
+    protected function handleClientTrackingResult(
+        ClientResult $result,
+        array $requestOrderIdMap,
+        string $eventType
+    ): OrderTrackingResult {
+        $trackingResult = new OrderTrackingResult();
+
+        foreach ($result->getRequestErrors() as $requestObjectId => $errorArray) {
+            foreach ($errorArray as $error) {
+                if ($failedOrderId = $requestOrderIdMap[$requestObjectId] ?? null) {
+                    $trackingResult->addFailedOrder($failedOrderId, $error);
+                }
+
+                $this->logger->error(
+                    sprintf(
+                        'Could not track %s, reason: %s',
+                        $eventType,
+                        $error->getMessage()
+                    ),
+                    ContextHelper::createContextFromException($error)
+                );
+            }
+        }
+
+        return $trackingResult;
     }
 }

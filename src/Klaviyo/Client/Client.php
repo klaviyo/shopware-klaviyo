@@ -5,69 +5,64 @@ namespace Klaviyo\Integration\Klaviyo\Client;
 use GuzzleHttp\ClientInterface as GuzzleClient;
 use GuzzleHttp\RequestOptions;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator\TranslatorsRegistry;
-use Klaviyo\Integration\Klaviyo\Client\Configuration\Configuration;
+use Klaviyo\Integration\Klaviyo\Client\Configuration\ConfigurationInterface;
 use Klaviyo\Integration\Klaviyo\Client\Exception\ClientException;
 use Klaviyo\Integration\Klaviyo\Client\Exception\EventTrackingOperationRequestFailedException;
 use Klaviyo\Integration\Klaviyo\Client\Exception\TranslationException;
 
-class Client
+class Client implements ClientInterface
 {
     private TranslatorsRegistry $translatorsRegistry;
     private GuzzleClient $guzzleClient;
-    private Configuration $configuration;
+    private ConfigurationInterface $configuration;
 
     public function __construct(
         TranslatorsRegistry $translatorsRegistry,
         GuzzleClient $guzzleClient,
-        Configuration $configuration
+        ConfigurationInterface $configuration
     ) {
         $this->translatorsRegistry = $translatorsRegistry;
         $this->guzzleClient = $guzzleClient;
         $this->configuration = $configuration;
     }
 
-    /**
-     * @param object $request
-     *
-     * @throws ClientException
-     * @throws \Throwable
-     */
-    public function sendRequest(object $request): object
+    public function sendRequests(array $requests): ClientResult
     {
-        $response = null;
-        $guzzleRequest = null;
+        $clientResult = new ClientResult();
+        $guzzleRequestOptions = [
+            RequestOptions::CONNECT_TIMEOUT => $this->configuration->getConnectionTimeout(),
+            RequestOptions::TIMEOUT => $this->configuration->getRequestTimeout(),
+            RequestOptions::HTTP_ERRORS => false,
+        ];
 
-        try {
-            $translator = $this->translatorsRegistry->getTranslatorForRequest($request);
-            if (!$translator) {
-                throw new TranslationException($request, 'Applicable translator for request DTO was not found');
-            }
+        foreach ($requests as $request) {
+            $response = null;
+            $guzzleRequest = null;
 
-            $guzzleRequest = $translator->translateRequest($request);
+            try {
+                $translator = $this->translatorsRegistry->getTranslatorForRequest($request);
+                if (!$translator) {
+                    throw new TranslationException($request, 'Applicable translator for request DTO was not found');
+                }
 
-            $options = [
-                RequestOptions::CONNECT_TIMEOUT => $this->configuration->getConnectionTimeout(),
-                RequestOptions::TIMEOUT => $this->configuration->getRequestTimeout(),
-                RequestOptions::HTTP_ERRORS => false,
-            ];
-            $response = $this->guzzleClient->send($guzzleRequest, $options);
-
-            return $translator->translateResponse($response);
-        } catch (\Throwable $exception) {
-            if ($exception instanceof ClientException) {
-                $clientException = $exception;
-            } else {
+                $guzzleRequest = $translator->translateRequest($request);
+                $this->guzzleClient->send($guzzleRequest, $guzzleRequestOptions);
+            } catch (ClientException $exception) {
+                $exception->addToLoggableContext('requestDTO', $request);
+                $clientResult->addRequestError($request, $exception);
+            } catch (\Throwable $exception) {
                 $clientException = new EventTrackingOperationRequestFailedException(
                     sprintf('Klaviyo API request failed. Reason: %s', $exception->getMessage()),
                     $exception,
                     $guzzleRequest,
                     $response
                 );
+
+                $clientException->addToLoggableContext('requestDTO', $request);
+                $clientResult->addRequestError($request, $clientException);
             }
-
-            $clientException->addToLoggableContext('requestDTO', $request);
-
-            throw $clientException;
         }
+
+        return $clientResult;
     }
 }

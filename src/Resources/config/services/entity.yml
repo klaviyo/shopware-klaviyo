@@ -1,0 +1,8 @@
+services:
+    Klaviyo\Integration\Entity\Job\JobDefinition:
+        tags:
+            - { name: 'shopware.entity.definition', entity: 'klaviyo_job' }
+
+    Klaviyo\Integration\Entity\Event\EventDefinition:
+        tags:
+            - { name: 'shopware.entity.definition', entity: 'klaviyo_job_event' }

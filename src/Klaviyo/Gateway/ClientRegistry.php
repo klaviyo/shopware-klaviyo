@@ -2,14 +2,13 @@
 
 namespace Klaviyo\Integration\Klaviyo\Gateway;
 
-use Klaviyo\Integration\Klaviyo\Client\Client;
 use Klaviyo\Integration\Klaviyo\Client\ClientFactory;
-use Shopware\Core\System\SalesChannel\SalesChannelEntity;
+use Klaviyo\Integration\Klaviyo\Client\ClientInterface;
 
 class ClientRegistry
 {
     /**
-     * @var array|Client
+     * @var ClientInterface[]
      */
     private array $clientPerSalesChannelHashMap = [];
 
@@ -24,11 +23,10 @@ class ClientRegistry
         $this->clientConfigurationFactory = $clientConfigurationFactory;
     }
 
-    public function getClient(SalesChannelEntity $salesChannelEntity): Client
+    public function getClient(string $salesChannelId): ClientInterface
     {
-        $salesChannelId = $salesChannelEntity->getId();
         if (!isset($this->clientPerSalesChannelHashMap[$salesChannelId])) {
-            $clientConfiguration = $this->clientConfigurationFactory->create($salesChannelEntity);
+            $clientConfiguration = $this->clientConfigurationFactory->create($salesChannelId);
             $this->clientPerSalesChannelHashMap[$salesChannelId] = $this->clientFactory->create($clientConfiguration);
         }
 
