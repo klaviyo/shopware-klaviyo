@@ -16,8 +16,7 @@ class KlaviyoIntegrationPlugin extends Plugin
 
         /** @var Connection $connection */
         $connection = $this->container->get(Connection::class);
-        $connection->executeStatement('DROP TABLE IF EXISTS `klaviyo_job_message`');
-        $connection->executeStatement('DROP TABLE IF EXISTS `klaviyo_job`');
         $connection->executeStatement('DROP TABLE IF EXISTS `klaviyo_job_event`');
+        $connection->executeStatement('DROP TABLE IF EXISTS `klaviyo_job_cart_request`');
     }
 }

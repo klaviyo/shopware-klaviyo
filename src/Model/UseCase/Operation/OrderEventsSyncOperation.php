@@ -2,26 +2,30 @@
 
 namespace Klaviyo\Integration\Model\UseCase\Operation;
 
+use Klaviyo\Integration\Async\Message\OrderEventSyncMessage;
 use Klaviyo\Integration\Entity\Event\EventEntity;
-use Klaviyo\Integration\System\OperationResult;
-use Klaviyo\Integration\System\Tracking\Event\OrderEvent;
+use Klaviyo\Integration\Klaviyo\Gateway\Result\OrderTrackingResult;
+use Klaviyo\Integration\System\Tracking\Event\Order\OrderEvent;
+use Klaviyo\Integration\System\Tracking\Event\Order\OrderTrackingEventsBag;
 use Klaviyo\Integration\System\Tracking\EventsTrackerInterface;
-use Klaviyo\Integration\System\Tracking\OrderTrackingEventsBag;
+use Od\Scheduler\Model\Job\JobHandlerInterface;
+use Od\Scheduler\Model\Job\JobResult;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 
-class OrderEventsSyncOperation
+class OrderEventsSyncOperation implements JobHandlerInterface
 {
+    public const OPERATION_HANDLER_CODE = 'od-klaviyo-order-event-sync-handler';
     private const ALLOWED_EVENT_TYPES = [
-        EventEntity::TYPE_ORDER_FULFILLED,
-        EventEntity::TYPE_ORDER_CANCELED,
-        EventEntity::TYPE_ORDER_REFUNDED,
+        EventsTrackerInterface::ORDER_EVENT_PLACED,
+        EventsTrackerInterface::ORDER_EVENT_REFUNDED,
+        EventsTrackerInterface::ORDER_EVENT_CANCELED,
+        EventsTrackerInterface::ORDER_EVENT_FULFILLED,
     ];
 
-    private array $eventIds = [];
     private EntityRepositoryInterface $eventsRepository;
     private EntityRepositoryInterface $orderRepository;
     private EventsTrackerInterface $eventsTracker;
@@ -36,21 +40,23 @@ class OrderEventsSyncOperation
         $this->eventsTracker = $eventsTracker;
     }
 
-    public function setEventIds(array $eventIds)
+    /**
+     * @param OrderEventSyncMessage $message
+     * @return JobResult
+     */
+    public function execute(object $message): JobResult
     {
-        $this->eventIds = $eventIds;
-    }
+        $result = new JobResult();
+        $context = Context::createDefaultContext();
 
-    public function execute(Context $context): OperationResult
-    {
         foreach (self::ALLOWED_EVENT_TYPES as $eventType) {
             $eventCriteria = new Criteria();
             $eventCriteria->addFilter(new EqualsFilter('type', $eventType));
-            $eventCriteria->addFilter(new EqualsAnyFilter('id', $this->eventIds));
-            $events = $this->eventsRepository->search($eventCriteria, $context);
+            $eventCriteria->addFilter(new EqualsAnyFilter('id', $message->getEventIds()));
+            $events = $this->eventsRepository->search($eventCriteria, $context)->getElements();
 
             $eventsBag = new OrderTrackingEventsBag();
-            $eventTypeOrderIds = array_map(fn(EventEntity $event) => $event->getEntityId(), $events->getElements());
+            $eventTypeOrderIds = array_map(fn(EventEntity $event) => $event->getEntityId(), $events);
             $orderCriteria = new Criteria();
             $orderCriteria->addFilter(new EqualsAnyFilter('id', $eventTypeOrderIds));
             $orderCriteria->addAssociation('orderCustomer.customer.defaultBillingAddress');
@@ -66,18 +72,38 @@ class OrderEventsSyncOperation
             }
 
             switch ($eventType) {
-                case EventEntity::TYPE_ORDER_FULFILLED:
-                    $this->eventsTracker->trackFulfilledOrders($context, $eventsBag);
+                case EventsTrackerInterface::ORDER_EVENT_PLACED:
+                    $trackingResult = $this->eventsTracker->trackPlacedOrders($context, $eventsBag);
                     break;
-                case EventEntity::TYPE_ORDER_CANCELED:
-                    $this->eventsTracker->trackCanceledOrders($context, $eventsBag);
+                case EventsTrackerInterface::ORDER_EVENT_CANCELED:
+                    $trackingResult = $this->eventsTracker->trackCanceledOrders($context, $eventsBag);
                     break;
-                case EventEntity::TYPE_ORDER_REFUNDED:
-                    $this->eventsTracker->trackRefundOrders($context, $eventsBag);
+                case EventsTrackerInterface::ORDER_EVENT_REFUNDED:
+                    $trackingResult = $this->eventsTracker->trackRefundOrders($context, $eventsBag);
                     break;
+                case EventsTrackerInterface::ORDER_EVENT_FULFILLED:
+                    $trackingResult = $this->eventsTracker->trackFulfilledOrders($context, $eventsBag);
+                    break;
+                default:
+                    $trackingResult = new OrderTrackingResult();
+                    break;
+            }
+
+            $deleteDataSet = array_map(function (EventEntity $event) {
+                return ['id' => $event->getId()];
+                }, array_values($events));
+            $this->eventsRepository->delete($deleteDataSet, $context);
+
+            foreach ($trackingResult->getFailedOrdersErrors() as $orderId => $orderErrors) {
+                /** @var \Throwable $error */
+                foreach ($orderErrors as $error) {
+                    $result->addError(new \Exception(
+                        \sprintf('Order[id: %s] error: %s', $orderId, $error->getMessage())
+                    ));
+                }
             }
         }
 
-        return new OperationResult();
+        return $result;
     }
 }

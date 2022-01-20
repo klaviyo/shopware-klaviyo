@@ -12,7 +12,6 @@ class ScheduleEventJobsTask extends ScheduledTask
     }
 
     /**
-     * TODO: what interval ????
      * 5 min interval
      *
      * @return int

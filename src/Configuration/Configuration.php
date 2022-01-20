@@ -7,7 +7,6 @@ class Configuration implements ConfigurationInterface
     private string $privateApiKey;
     private string $publicApiKey;
     private string $subscribersListName;
-    private TimeInfo $subscribersSynchronizationTime;
     private int $catalogFeedProductsCount;
     private bool $trackViewedProduct;
     private bool $trackRecentlyViewedItems;
@@ -23,7 +22,6 @@ class Configuration implements ConfigurationInterface
         string $privateApiKey,
         string $publicApiKey,
         string $subscribersListName,
-        TimeInfo $subscribersSynchronizationTime,
         int $catalogFeedProductsCount,
         bool $trackViewedProduct,
         bool $trackRecentlyViewedItems,
@@ -38,7 +36,6 @@ class Configuration implements ConfigurationInterface
         $this->privateApiKey = $privateApiKey;
         $this->publicApiKey = $publicApiKey;
         $this->subscribersListName = $subscribersListName;
-        $this->subscribersSynchronizationTime = $subscribersSynchronizationTime;
         $this->catalogFeedProductsCount = $catalogFeedProductsCount;
         $this->trackViewedProduct = $trackViewedProduct;
         $this->trackRecentlyViewedItems = $trackRecentlyViewedItems;
@@ -64,11 +61,6 @@ class Configuration implements ConfigurationInterface
     public function getSubscribersListName(): string
     {
         return $this->subscribersListName;
-    }
-
-    public function getSubscribersSynchronizationTime(): TimeInfo
-    {
-        return $this->subscribersSynchronizationTime;
     }
 
     public function getCatalogFeedProductsCount(): int

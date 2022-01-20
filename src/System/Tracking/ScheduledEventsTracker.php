@@ -3,7 +3,8 @@
 namespace Klaviyo\Integration\System\Tracking;
 
 use Klaviyo\Integration\Klaviyo\Gateway\Result\OrderTrackingResult;
-use Klaviyo\Integration\System\Tracking\Event\OrderEventInterface;
+use Klaviyo\Integration\System\Tracking\Event\Cart\CartEventRequestBag;
+use Klaviyo\Integration\System\Tracking\Event\Order\OrderTrackingEventsBag;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -11,31 +12,51 @@ use Shopware\Core\Framework\Uuid\Uuid;
 class ScheduledEventsTracker implements EventsTrackerInterface
 {
     private EntityRepositoryInterface $eventRepository;
+    private EntityRepositoryInterface $cartEventRequestRepository;
 
-    public function __construct(EntityRepositoryInterface $eventRepository)
-    {
+    public function __construct(
+        EntityRepositoryInterface $eventRepository,
+        EntityRepositoryInterface $cartEventRequestRepository
+    ) {
         $this->eventRepository = $eventRepository;
+        $this->cartEventRequestRepository = $cartEventRequestRepository;
     }
 
     public function trackPlacedOrders(Context $context, OrderTrackingEventsBag $trackingBag): OrderTrackingResult
     {
-        // TODO: event type to constants
-        return $this->trackEventsForBackgroundProcessing($context, $trackingBag, 'order-placed');
+        return $this->trackEventsForBackgroundProcessing($context, $trackingBag, self::ORDER_EVENT_PLACED);
     }
 
     public function trackFulfilledOrders(Context $context, OrderTrackingEventsBag $trackingBag): OrderTrackingResult
     {
-        return $this->trackEventsForBackgroundProcessing($context, $trackingBag, 'order-fulfilled');
+        return $this->trackEventsForBackgroundProcessing($context, $trackingBag, self::ORDER_EVENT_FULFILLED);
     }
 
     public function trackCanceledOrders(Context $context, OrderTrackingEventsBag $trackingBag): OrderTrackingResult
     {
-        return $this->trackEventsForBackgroundProcessing($context, $trackingBag, 'order-canceled');
+        return $this->trackEventsForBackgroundProcessing($context, $trackingBag, self::ORDER_EVENT_CANCELED);
     }
 
     public function trackRefundOrders(Context $context, OrderTrackingEventsBag $trackingBag): OrderTrackingResult
     {
-        return $this->trackEventsForBackgroundProcessing($context, $trackingBag, 'order-refunded');
+        return $this->trackEventsForBackgroundProcessing($context, $trackingBag, self::ORDER_EVENT_REFUNDED);
+    }
+
+    public function trackAddedToCart(Context $context, CartEventRequestBag $requestBag)
+    {
+        $scheduledEventRequests = [];
+
+        foreach ($requestBag->all() as $channelId => $requests) {
+            foreach ($requests as $request) {
+                $scheduledEventRequests[] = [
+                    'id' => Uuid::randomHex(),
+                    'salesChannelId' => $channelId,
+                    'serializedRequest' => base64_encode(serialize($request)),
+                ];
+            }
+        }
+
+        $this->cartEventRequestRepository->create($scheduledEventRequests, $context);
     }
 
     private function trackEventsForBackgroundProcessing(
@@ -47,12 +68,13 @@ class ScheduledEventsTracker implements EventsTrackerInterface
         $result = new OrderTrackingResult();
 
         foreach ($trackingBag->all() as $channelId => $events) {
-            /** @var OrderEventInterface $event */
+            /** @var Event\Order\OrderEventInterface $event */
             foreach ($events as $event) {
                 $scheduledEvents[] = [
                     'id' => Uuid::randomHex(),
                     'type' => $eventType,
                     'entityId' => $event->getOrder()->getId(),
+                    'metadata' => null,
                     'salesChannelId' => $channelId,
                     'happenedAt' => $event->getEventDateTime()
                 ];

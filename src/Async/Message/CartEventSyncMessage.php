@@ -2,34 +2,34 @@
 
 namespace Klaviyo\Integration\Async\Message;
 
-use Klaviyo\Integration\Model\UseCase\Operation\OrderEventsSyncOperation;
+use Klaviyo\Integration\Model\UseCase\Operation\CartEventSyncOperation;
 use Od\Scheduler\Async\ParentAwareMessageInterface;
 
-class OrderEventSyncMessage extends AbstractBasicMessage implements ParentAwareMessageInterface
+class CartEventSyncMessage extends AbstractBasicMessage implements ParentAwareMessageInterface
 {
-    protected static string $defaultName = 'Order Events Sync Operation';
-    private array $eventIds;
+    private array $eventRequestIds;
     private string $parentJobId;
+    protected static string $defaultName = 'Cart Events Sync Operation';
 
     public function __construct(
         string $jobId,
         string $parentJobId,
-        array $eventIds,
+        array $eventRequestIds,
         ?string $name = null
     ) {
         parent::__construct($jobId, $name);
-        $this->eventIds = $eventIds;
+        $this->eventRequestIds = $eventRequestIds;
         $this->parentJobId = $parentJobId;
     }
 
-    public function getEventIds(): array
+    public function getEventRequestIds(): array
     {
-        return $this->eventIds;
+        return $this->eventRequestIds;
     }
 
     public function getHandlerCode(): string
     {
-        return OrderEventsSyncOperation::OPERATION_HANDLER_CODE;
+        return CartEventSyncOperation::OPERATION_HANDLER_CODE;
     }
 
     public function getParentJobId(): string

@@ -29,18 +29,6 @@
                 In case of duplicate names first found list will be used
             </helpText>
         </input-field>
-        <input-field type="text">
-            <name>subscribersSynchronizationTime</name>
-            <label>Subscribers Synchronization time (UTC)</label>
-            <required>true</required>
-            <helpText>
-                Subscribers synchronization will happen once per day automatically,
-                so this setting define the specific time when synchronization will be started.
-                Time should be in UTC (+00:00) in next format: 22:57, where 22 is the number of hours and 57
-                is the number of minutes
-            </helpText>
-            <defaultValue>21:00</defaultValue>
-        </input-field>
         <input-field type="int">
             <name>catalogFeedProductsCount</name>
             <label>Klaviyo Catalog Feed Maximum items count</label>

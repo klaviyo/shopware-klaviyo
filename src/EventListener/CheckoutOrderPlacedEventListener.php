@@ -2,9 +2,8 @@
 
 namespace Klaviyo\Integration\EventListener;
 
-use Klaviyo\Integration\System\Tracking\Event\OrderEvent;
+use Klaviyo\Integration\System\Tracking\Event\Order;
 use Klaviyo\Integration\System\Tracking\EventsTrackerInterface;
-use Klaviyo\Integration\System\Tracking\OrderTrackingEventsBag;
 use Shopware\Core\Checkout\Cart\Event\CheckoutOrderPlacedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -19,8 +18,8 @@ class CheckoutOrderPlacedEventListener implements EventSubscriberInterface
 
     public function onOrderPlaced(CheckoutOrderPlacedEvent $event)
     {
-        $eventsBag = new OrderTrackingEventsBag();
-        $orderPlacedEvent = new OrderEvent($event->getOrder());
+        $eventsBag = new Order\OrderTrackingEventsBag();
+        $orderPlacedEvent = new Order\OrderEvent($event->getOrder());
         $eventsBag->add($orderPlacedEvent);
 
         $this->eventsTracker->trackPlacedOrders($event->getContext(), $eventsBag);

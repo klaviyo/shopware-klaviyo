@@ -5,11 +5,6 @@ class KlaviyoHistoricalEventsSynchronizationApiService {
         this.name = 'klaviyoHistoricalEventsSynchronizationApiService';
     }
 
-    getJobStatus() {
-        const headers = this.getHeaders();
-        return this.httpClient.get('/klaviyo/integration/job/_action/historical-event-tracking/synchronization/get_status', {}, { headers });
-    }
-
     scheduleSynchronization() {
         const headers = this.getHeaders();
         return this.httpClient.post('/klaviyo/integration/job/_action/historical-event-tracking/synchronization/schedule', {}, { headers });

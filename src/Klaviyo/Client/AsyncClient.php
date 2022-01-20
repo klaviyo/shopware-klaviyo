@@ -42,6 +42,15 @@ class AsyncClient implements ClientInterface
             $this->createAndSendRequests($requests),
             [
                 'concurrency' => $concurrency,
+                'fulfilled' => function (Response $response, $index) {
+                    if (isset($this->requests[$index])) {
+                        $translator = $this->translatorsRegistry->getTranslatorForRequest($this->requests[$index]);
+                        $this->clientResult->addRequestResponse(
+                            $this->requests[$index],
+                            $translator->translateResponse($response)
+                        );
+                    }
+                },
                 'rejected' => function (TransferException $reason, $index) {
                     if (isset($this->requests[$index])) {
                         $this->clientResult->addRequestError($this->requests[$index], $reason);

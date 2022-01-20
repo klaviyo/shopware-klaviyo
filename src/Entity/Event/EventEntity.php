@@ -15,6 +15,7 @@ class EventEntity extends Entity
     const TYPE_ORDER_REFUNDED = 'order-refunded';
 
     protected string $type;
+    protected string $metadata;
     protected string $entityId;
     protected string $salesChannelId;
     protected \DateTimeInterface $happenedAt;
@@ -33,6 +34,22 @@ class EventEntity extends Entity
     public function setType(string $type): void
     {
         $this->type = $type;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMetadata(): string
+    {
+        return $this->metadata;
+    }
+
+    /**
+     * @param string $type
+     */
+    public function setMetadata(string $metadata): void
+    {
+        $this->metadata = $metadata;
     }
 
     /**

@@ -46,7 +46,7 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
 
             /** @var Configuration $configuration */
             $configuration = $this->configurationRegistry
-                ->getConfiguration($salesChannelContext->getSalesChannel());
+                ->getConfiguration($salesChannelContext->getSalesChannel()->getId());
 
             $page = $event->getPage();
 

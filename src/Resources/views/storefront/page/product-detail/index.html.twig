@@ -2,7 +2,7 @@
 
 {% block base_content %}
     {{ parent() }}
-
+    {{ dump() }}
     {% if page.hasExtension('klaviyoIntegrationPluginExtension') %}
         {% set extensionData =  page.getExtension('klaviyoIntegrationPluginExtension') %}
         {% set klaviyoComponentOptions = {

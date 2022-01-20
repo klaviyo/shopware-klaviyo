@@ -3,102 +3,96 @@
 namespace Klaviyo\Integration\Model\UseCase;
 
 use Klaviyo\Integration\Async\Message;
-use Klaviyo\Integration\Entity\Job\JobEntity;
-use Klaviyo\Integration\System\Job\BackgroundJobFactory;
-use Klaviyo\Integration\System\Job\SchedulerInterface;
+use Klaviyo\Integration\Exception\JobAlreadyRunningException;
+use Klaviyo\Integration\Exception\JobAlreadyScheduledException;
+use Klaviyo\Integration\Model\UseCase\Operation\FullOrderSyncOperation;
+use Klaviyo\Integration\Model\UseCase\Operation\FullSubscriberSyncOperation;
+use Od\Scheduler\Entity\Job\JobEntity;
+use Od\Scheduler\Model\JobScheduler;
 use Shopware\Core\Framework\Context;
-use Symfony\Component\Messenger\Envelope;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\AndFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Uuid\Uuid;
 
 class ScheduleBackgroundJob
 {
-    private SchedulerInterface $scheduler;
-    private BackgroundJobFactory $jobFactory;
+    private EntityRepositoryInterface $jobRepository;
+    private JobScheduler $scheduler;
 
     public function __construct(
-        SchedulerInterface $scheduler,
-        ?BackgroundJobFactory $jobFactory = null
+        EntityRepositoryInterface $jobRepository,
+        JobScheduler $scheduler
     ) {
+        $this->jobRepository = $jobRepository;
         $this->scheduler = $scheduler;
-        $this->jobFactory = $jobFactory ?? new BackgroundJobFactory();
     }
 
-    public function scheduleFullSubscriberSyncJob(Context $context): JobEntity
+    public function scheduleFullSubscriberSyncJob()
     {
-        $newJob = $this->jobFactory->create(
-            'Full subscribers synchronisation job',
-            JobEntity::TYPE_FULL_SUBSCRIBER_SYNC
-        );
-
-        $jobMessage = new Message\FullSubscriberSyncMessage();
-        $jobMessage->setJobId($newJob->getId());
-
-        return $this->scheduler->scheduleJob($context, $newJob, Envelope::wrap($jobMessage));
+        $this->checkJobStatus(FullSubscriberSyncOperation::OPERATION_HANDLER_CODE);
+        $jobMessage = new Message\FullSubscriberSyncMessage(Uuid::randomHex());
+        $this->scheduler->schedule($jobMessage);
     }
 
-    public function scheduleSubscriberSyncJob(
-        Context $context,
-        array $subscriberIds,
-        ?string $parentJobId = null
-    ): JobEntity {
-        $newJob = $this->jobFactory->create(
-            'Subscribers synchronisation job',
-            JobEntity::TYPE_SUBSCRIBER_SYNC
+    public function scheduleSubscriberSyncJob(array $subscriberIds, string $parentJobId)
+    {
+        $jobMessage = new Message\SubscriberSyncMessage(
+            Uuid::randomHex(),
+            $parentJobId,
+            $subscriberIds
         );
 
-        if ($parentJobId !== null) {
-            $newJob->setParentId($parentJobId);
+        $this->scheduler->schedule($jobMessage);
+    }
+
+    public function scheduleFullOrderSyncJob()
+    {
+        $this->checkJobStatus(FullOrderSyncOperation::OPERATION_HANDLER_CODE);
+        $jobMessage = new Message\FullOrderSyncMessage(Uuid::randomHex());
+        $this->scheduler->schedule($jobMessage);
+    }
+
+    public function scheduleOrderSyncJob(array $orderIds, string $parentJobId)
+    {
+        $jobMessage = new Message\OrderSyncMessage(Uuid::randomHex(), $parentJobId, $orderIds);
+        $this->scheduler->schedule($jobMessage);
+    }
+
+    public function scheduleOrderEventsSyncJob(array $eventIds, string $parentJobId)
+    {
+        $jobMessage = new Message\OrderEventSyncMessage(Uuid::randomHex(), $parentJobId, $eventIds);
+        $this->scheduler->schedule($jobMessage);
+    }
+
+    public function scheduleCartEventsSyncJob(array $eventRequestIds, string $parentJobId)
+    {
+        $jobMessage = new Message\CartEventSyncMessage(Uuid::randomHex(), $parentJobId, $eventRequestIds);
+        $this->scheduler->schedule($jobMessage);
+    }
+
+    public function scheduleEventsProcessingJob()
+    {
+        $jobMessage = new Message\EventsProcessingMessage(Uuid::randomHex());
+        $this->scheduler->schedule($jobMessage);
+    }
+
+    private function checkJobStatus(string $type)
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new AndFilter([
+            new EqualsFilter('type', $type),
+            new EqualsAnyFilter('status', [JobEntity::TYPE_PENDING, JobEntity::TYPE_RUNNING])
+        ]));
+        /** @var JobEntity $job */
+        if ($job = $this->jobRepository->search($criteria, Context::createDefaultContext())->first()) {
+            if ($job->getStatus() === JobEntity::TYPE_PENDING) {
+                throw new JobAlreadyScheduledException('Job is already scheduled.');
+            } else {
+                throw new JobAlreadyRunningException('Job is already running.');
+            }
         }
-
-        $jobMessage = new Message\SubscriberSyncMessage();
-        $jobMessage->setJobId($newJob->getId());
-        $jobMessage->setSubscriberIds($subscriberIds);
-
-        return $this->scheduler->scheduleJob($context, $newJob, Envelope::wrap($jobMessage));
-    }
-
-    public function scheduleFullOrderSyncJob(Context $context, array $salesChannelIds = []): JobEntity
-    {
-        $newJob = $this->jobFactory->create(
-            'Full orders synchronisation job',
-            JobEntity::TYPE_FULL_ORDERS_SYNC
-        );
-
-        $jobMessage = new Message\FullOrderSyncMessage();
-        $jobMessage->setSalesChannelIds($salesChannelIds);
-        $jobMessage->setJobId($newJob->getId());
-
-        return $this->scheduler->scheduleJob($context, $newJob, Envelope::wrap($jobMessage));
-    }
-
-    public function scheduleOrderSyncJob(
-        Context $context,
-        array $orderIds,
-        ?string $parentJobId = null
-    ): JobEntity {
-        $newJob = $this->jobFactory->create('Orders synchronisation job', JobEntity::TYPE_ORDERS_SYNC);
-
-        if ($parentJobId !== null) {
-            $newJob->setParentId($parentJobId);
-        }
-
-        $jobMessage = new Message\OrderSyncMessage();
-        $jobMessage->setJobId($newJob->getId());
-        $jobMessage->setOrderIds($orderIds);
-
-        return $this->scheduler->scheduleJob($context, $newJob, Envelope::wrap($jobMessage));
-    }
-
-    public function scheduleOrderEventsSyncJob(Context $context, array $eventIds)
-    {
-        $newJob = $this->jobFactory->create(
-            'Orders events synchronisation job',
-            JobEntity::TYPE_ORDERS_EVENTS_SYNC
-        );
-
-        $jobMessage = new Message\OrderEventSyncMessage();
-        $jobMessage->setJobId($newJob->getId());
-        $jobMessage->setEventIds($eventIds);
-
-        return $this->scheduler->scheduleJob($context, $newJob, Envelope::wrap($jobMessage));
     }
 }

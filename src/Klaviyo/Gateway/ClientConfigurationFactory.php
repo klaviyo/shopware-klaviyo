@@ -23,8 +23,7 @@ class ClientConfigurationFactory
 
     public function create(string $channelId): ConfigurationInterface
     {
-        $pluginConfiguration = $this->pluginConfigurationRegistry
-            ->getConfigurationByChannelId($channelId);
+        $pluginConfiguration = $this->pluginConfigurationRegistry->getConfiguration($channelId);
 
         return new Configuration(
             $pluginConfiguration->getPrivateApiKey(),

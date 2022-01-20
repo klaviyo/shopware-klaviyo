@@ -27,6 +27,4 @@ interface ConfigurationInterface
     public function getSubscribersListName(): string;
 
     public function getCatalogFeedProductsCount(): int;
-
-    public function getSubscribersSynchronizationTime(): TimeInfo;
 }

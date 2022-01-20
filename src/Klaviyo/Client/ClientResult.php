@@ -4,21 +4,12 @@ namespace Klaviyo\Integration\Klaviyo\Client;
 
 class ClientResult
 {
-//    private array $responses;
     private array $errors;
+    private array $responses = [];
 
-    public function __construct(
-//        array $responses = [],
-//        array $errors = []
-    ) {
-//        foreach ($errors as $error) {
-//            if (!$error instanceof \Throwable) {
-//                throw new \LogicException(sprintf('Error %s must be of \Throwable type.', get_class($error)));
-//            }
-//        }
-//
-//        $this->responses = $responses;
-        $this->errors = [];
+    public function __construct(array $errors = [])
+    {
+        $this->errors = $errors;
     }
 
     /**
@@ -34,8 +25,17 @@ class ClientResult
         $this->errors[spl_object_id($request)][] = $error;
     }
 
-    public function getResponses(): \Traversable
+    public function getRequestResponse(object $request): object
     {
-        yield $this->responses;
+        if (!isset($this->responses[spl_object_id($request)])) {
+            throw new \Exception('By some reasons, response was not received properly.');
+        }
+
+        return $this->responses[spl_object_id($request)];
+    }
+
+    public function addRequestResponse(object $request, object $response): void
+    {
+        $this->responses[spl_object_id($request)] = $response;
     }
 }

@@ -2,8 +2,9 @@
 
 namespace Klaviyo\Integration\Model\UseCase\Operation;
 
+use Klaviyo\Integration\Async\Message\FullSubscriberSyncMessage;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
-use Klaviyo\Integration\System\OperationResult;
+use Od\Scheduler\Model\Job\{GeneratingHandlerInterface, JobHandlerInterface, JobResult};
 use Shopware\Core\Content\Newsletter\SalesChannel\NewsletterSubscribeRoute;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
@@ -11,11 +12,11 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 
-class FullSubscriberSyncOperation
+class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHandlerInterface
 {
-    const SUBSCRIBER_BATCH_SIZE = 100;
+    public const OPERATION_HANDLER_CODE = 'od-klaviyo-full-subscriber-sync-handler';
+    private const SUBSCRIBER_BATCH_SIZE = 100;
 
-    private string $parentJobId;
     private ScheduleBackgroundJob $scheduleBackgroundJob;
     private EntityRepositoryInterface $subscriberRepository;
 
@@ -27,26 +28,20 @@ class FullSubscriberSyncOperation
         $this->subscriberRepository = $subscriberRepository;
     }
 
-    public function setParentJobId(string $parentJobId): void
+    /**
+     * @param FullSubscriberSyncMessage $message
+     * @return JobResult
+     */
+    public function execute(object $message): JobResult
     {
-        $this->parentJobId = $parentJobId;
-    }
-
-    public function execute(Context $context): OperationResult
-    {
-        $this->doOperation($context);
-
-        return new OperationResult();
-    }
-
-    protected function doOperation(Context $context)
-    {
+        $context = Context::createDefaultContext();
         $criteria = new Criteria();
         $criteria->setLimit(self::SUBSCRIBER_BATCH_SIZE);
         $criteria->addFilter(
             new EqualsAnyFilter(
                 'status',
                 [
+                    NewsletterSubscribeRoute::STATUS_OPT_OUT,
                     NewsletterSubscribeRoute::STATUS_OPT_IN,
                     NewsletterSubscribeRoute::STATUS_DIRECT
                 ]
@@ -56,10 +51,11 @@ class FullSubscriberSyncOperation
 
         while (($subscriberIds = $iterator->fetchIds()) !== null) {
             $this->scheduleBackgroundJob->scheduleSubscriberSyncJob(
-                $context,
                 $subscriberIds,
-                $this->parentJobId
+                $message->getJobId()
             );
         }
+
+        return new JobResult();
     }
 }

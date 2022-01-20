@@ -7,7 +7,6 @@
                                    :processSuccess="historicalEventsJobInteractor.isSynchronizationSuccess"
                                    @click="scheduleHistoricalEventsSynchronization"
                                    @process-finish="resetHistoricalEventsSynchronizationState"
-                                   v-tooltip="scheduleHistoricalEventsSynchronizationTooltip"
                 >
                     {{ $tc('klaviyo_integration_plugin.historical_events_tracking.schedule_synchronization.button_label') }}
                 </sw-button-process>
@@ -18,7 +17,6 @@
                                    :processSuccess="subscribersSynchronizationJobInteractor.isSynchronizationSuccess"
                                    @click="scheduleSubscribersSynchronization"
                                    @process-finish="resetSubscribersSynchronizationState"
-                                   v-tooltip="scheduleSubscribersSynchronizationTooltip"
                 >
                     {{ $tc('klaviyo_integration_plugin.subscribers.schedule_synchronization.button_label') }}
                 </sw-button-process>

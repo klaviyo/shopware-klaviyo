@@ -4,9 +4,6 @@ namespace Klaviyo\Integration\Klaviyo\Gateway;
 
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\AddMembersToList\AddProfilesToListResponse;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Common\ProfileContactInfoCollection;
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Common\ProfileInfo;
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetListProfiles\GetListProfilesRequest;
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetListProfiles\GetListProfilesResponse;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetLists\DTO\ProfilesListInfo;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetLists\GetProfilesListsRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetLists\GetProfilesListsResponse;
@@ -14,20 +11,16 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfil
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfilesFromList\RemoveProfilesFromListResponse;
 use Klaviyo\Integration\Klaviyo\Client\ClientResult;
 use Klaviyo\Integration\Klaviyo\Gateway\Exception\ProfilesListNotFoundException;
-use Klaviyo\Integration\Klaviyo\Gateway\Exception\UnableToGetListProfilesException;
 use Klaviyo\Integration\Klaviyo\Gateway\Result\OrderTrackingResult;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\OrderEventRequestTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\ProductEventRequestTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\SubscribersToKlaviyoRequestsTranslator;
-use Klaviyo\Integration\System\Tracking\Event\OrderEventInterface;
+use Klaviyo\Integration\System\Tracking\Event\Order\OrderEventInterface;
 use Klaviyo\Integration\Utils\Logger\ContextHelper;
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Checkout\Cart\Cart;
-use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Content\Newsletter\Aggregate\NewsletterRecipient\NewsletterRecipientCollection;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 class KlaviyoGateway
@@ -167,94 +160,9 @@ class KlaviyoGateway
         return $this->handleClientTrackingResult($clientResult, $requestOrderIdMap, 'RefundedOrder');
     }
 
-    public function trackAddedToCart(
-        SalesChannelContext $context,
-        Cart $cart,
-        LineItem $lineItem
-    ): bool {
-        try {
-            $now = new \DateTime('now', new \DateTimeZone('UTC'));
-            $eventRequest = $this->cartEventRequestTranslator
-                ->translateToAddedToCartEventRequest($context, $cart, $lineItem, $now);
-
-            $salesChannelEntity = $context->getSalesChannel();
-            $this->trackEvent($salesChannelEntity, $eventRequest);
-
-            return true;
-        } catch (\Throwable $exception) {
-            $this->logger->error(
-                sprintf(
-                    'Could not track AddedToCartEvent, reason: %s',
-                    $exception->getMessage()
-                ),
-                ContextHelper::createContextFromException($exception)
-            );
-
-            return false;
-        }
-    }
-
-    /**
-     * @param SalesChannelEntity $salesChannelEntity
-     * @param string $listId
-     *
-     * @return \Generator|ProfileInfo[]
-     */
-    public function getKlaviyoListMembersGenerator(SalesChannelEntity $salesChannelEntity, string $listId): \Generator
+    public function trackAddedToCartRequests(string $channelId, array $cartRequests): ClientResult
     {
-        do {
-            $members = $this->getKlaviyoListMembersResponse($salesChannelEntity, $listId, null);
-
-            foreach ($members->getProfiles() as $profile) {
-                yield $profile;
-            }
-        } while ($members->getLastRequestCursorMarker() !== null && $members->getProfiles()->count() > 0);
-    }
-
-    /**
-     * @param SalesChannelEntity $salesChannelEntity
-     * @param string $listId
-     * @param int|null $cursorMarker
-     *
-     * @return GetListProfilesResponse
-     * @throws UnableToGetListProfilesException
-     */
-    private function getKlaviyoListMembersResponse(
-        SalesChannelEntity $salesChannelEntity,
-        string $listId,
-        ?int $cursorMarker
-    ): GetListProfilesResponse {
-        try {
-            $request = new GetListProfilesRequest($listId, $cursorMarker);
-
-            /** @var GetListProfilesResponse $result */
-            $result = $this->clientRegistry
-                ->getClient($salesChannelEntity)
-                ->sendRequest($request);
-        } catch (\Throwable $exception) {
-            $message = sprintf(
-                'Could not get Klaviyo profiles from list, reason: %s',
-                $exception->getMessage()
-            );
-            $this->logger->error(
-                $message,
-                ContextHelper::createContextFromException($exception)
-            );
-
-            throw new UnableToGetListProfilesException($message);
-        }
-
-        if (!$result->isSuccess()) {
-            $message = sprintf(
-                'Could not get Klaviyo profiles from list, reason: %s',
-                $result->getErrorDetails()
-            );
-            $this->logger->error($message);
-
-            throw new UnableToGetListProfilesException($message);
-        }
-
-        return $result;
+        return $this->trackEvents($channelId, $cartRequests);
     }
 
     public function addToKlaviyoProfilesList(
@@ -265,11 +173,12 @@ class KlaviyoGateway
         try {
             $request = $this->subscribersTranslator
                 ->translateToAddProfilesRequest($newsletterRecipientCollection, $profilesListId);
+            $clientResult = $this->clientRegistry
+                ->getClient($salesChannelEntity->getId())
+                ->sendRequests([$request]);
 
             /** @var AddProfilesToListResponse $result */
-            $result = $this->clientRegistry
-                ->getClient($salesChannelEntity)
-                ->sendRequest($request);
+            $result = $clientResult->getRequestResponse($request);
             if (!$result->isSuccess()) {
                 $this->logger->error(
                     sprintf(
@@ -299,16 +208,13 @@ class KlaviyoGateway
         string $profilesListId
     ): bool {
         try {
-            $request = new RemoveProfilesFromListRequest(
-                $profilesListId,
-                $profileInfoCollection
-            );
+            $request = new RemoveProfilesFromListRequest($profilesListId, $profileInfoCollection);
+            $clientResult = $this->clientRegistry
+                ->getClient($salesChannelEntity->getId())
+                ->sendRequests([$request]);
 
             /** @var RemoveProfilesFromListResponse $result */
-            $result = $this->clientRegistry
-                ->getClient($salesChannelEntity)
-                ->sendRequest($request);
-
+            $result = $clientResult->getRequestResponse($request);
             if (!$result->isSuccess()) {
                 $this->logger->error(
                     sprintf(
@@ -332,23 +238,17 @@ class KlaviyoGateway
         }
     }
 
-    /**
-     * @param SalesChannelEntity $salesChannelEntity
-     * @param string $profilesListName
-     *
-     * @return string
-     * @throws \Klaviyo\Integration\Klaviyo\Client\Exception\ClientException
-     * @throws \Throwable
-     */
     public function getListIdByListName(
         SalesChannelEntity $salesChannelEntity,
         string $profilesListName
     ): string {
-        /** @var GetProfilesListsResponse $result */
-        $result = $this->clientRegistry
-            ->getClient($salesChannelEntity)
-            ->sendRequest(new GetProfilesListsRequest());
+        $request = new GetProfilesListsRequest();
+        $clientResult = $this->clientRegistry
+            ->getClient($salesChannelEntity->getId())
+            ->sendRequests([$request]);
 
+        /** @var GetProfilesListsResponse $result */
+        $result = $clientResult->getRequestResponse($request);
         if (!$result->isSuccess()) {
             throw new ProfilesListNotFoundException(
                 sprintf('Could not get Profiles list from Klaviyo. Reason: %s', $result->getErrorDetails())

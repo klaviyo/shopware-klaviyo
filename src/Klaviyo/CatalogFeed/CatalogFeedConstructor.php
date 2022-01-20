@@ -29,7 +29,7 @@ class CatalogFeedConstructor
 
     public function constructCatalogFeed(Context $context, SalesChannelEntity $salesChannelEntity): CatalogFeedProductItemCollection
     {
-        $configuration = $this->configurationRegistry->getConfiguration($salesChannelEntity);
+        $configuration = $this->configurationRegistry->getConfiguration($salesChannelEntity->getId());
 
         $catalogFeedProductsCount = $configuration->getCatalogFeedProductsCount();
         $products = $this->getMostRecentCatalogFeedProducts($context, $catalogFeedProductsCount);

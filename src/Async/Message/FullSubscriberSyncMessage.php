@@ -2,17 +2,14 @@
 
 namespace Klaviyo\Integration\Async\Message;
 
-class FullSubscriberSyncMessage
+use Klaviyo\Integration\Model\UseCase\Operation\FullSubscriberSyncOperation;
+
+class FullSubscriberSyncMessage extends AbstractBasicMessage
 {
-    private string $jobId;
+    protected static string $defaultName = 'Full Subscriber Sync Operation';
 
-    public function setJobId(string $jobId): void
+    public function getHandlerCode(): string
     {
-        $this->jobId = $jobId;
-    }
-
-    public function getJobId(): string
-    {
-        return $this->jobId;
+        return FullSubscriberSyncOperation::OPERATION_HANDLER_CODE;
     }
 }

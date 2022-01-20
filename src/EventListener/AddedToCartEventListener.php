@@ -2,21 +2,29 @@
 
 namespace Klaviyo\Integration\EventListener;
 
-use Klaviyo\Integration\Tracking\EventsTracker;
+use Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator;
+use Klaviyo\Integration\System\Tracking\Event\Cart\CartEventRequestBag;
+use Klaviyo\Integration\System\Tracking\EventsTrackerInterface;
 use Klaviyo\Integration\Utils\Logger\ContextHelper;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\Event\AfterLineItemAddedEvent;
 use Shopware\Core\Checkout\Cart\Event\AfterLineItemQuantityChangedEvent;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
+use Shopware\Core\Framework\Context;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class AddedToCartEventListener implements EventSubscriberInterface
 {
-    private EventsTracker $eventsTracker;
+    private CartEventRequestTranslator $cartEventRequestTranslator;
+    private EventsTrackerInterface $eventsTracker;
     private LoggerInterface $logger;
 
-    public function __construct(EventsTracker $eventsTracker, LoggerInterface $logger)
-    {
+    public function __construct(
+        CartEventRequestTranslator $cartEventRequestTranslator,
+        EventsTrackerInterface $eventsTracker,
+        LoggerInterface $logger
+    ) {
+        $this->cartEventRequestTranslator = $cartEventRequestTranslator;
         $this->eventsTracker = $eventsTracker;
         $this->logger = $logger;
     }
@@ -29,12 +37,23 @@ class AddedToCartEventListener implements EventSubscriberInterface
                 return;
             }
 
-            $cart = $event->getCart();
+            $now = new \DateTime('now', new \DateTimeZone('UTC'));
+            $requestBag = new CartEventRequestBag();
 
             /** @var LineItem $lineItem */
             foreach ($event->getLineItems() as $lineItem) {
-                $this->eventsTracker->trackAddedToCart($salesChannelContext, $cart, $lineItem);
+                $requestBag->add(
+                    $this->cartEventRequestTranslator->translateToAddedToCartEventRequest(
+                        $salesChannelContext,
+                        $event->getCart(),
+                        $event->getCart()->get($lineItem->getId()),
+                        $now
+                    ),
+                    $salesChannelContext->getSalesChannelId()
+                );
             }
+
+            $this->eventsTracker->trackAddedToCart($salesChannelContext->getContext(), $requestBag);
         } catch (\Throwable $throwable) {
             $this->logger
                 ->error(
@@ -47,21 +66,29 @@ class AddedToCartEventListener implements EventSubscriberInterface
     public function onLineItemQuantityChanged(AfterLineItemQuantityChangedEvent $event)
     {
         try {
+            $now = new \DateTime('now', new \DateTimeZone('UTC'));
             $cart = $event->getCart();
             $salesChannelContext = $event->getSalesChannelContext();
             if (!$salesChannelContext->getCustomer()) {
                 return;
             }
 
-            $lineItems = [];
+            $requestBag = new CartEventRequestBag();
+
             /** @var LineItem $lineItem */
             foreach ($event->getItems() as $itemData) {
-                $lineItems[] = $cart->getLineItems()->get($itemData['id']);
+                $requestBag->add(
+                    $this->cartEventRequestTranslator->translateToAddedToCartEventRequest(
+                        $salesChannelContext,
+                        $event->getCart(),
+                        $cart->getLineItems()->get($itemData['id']),
+                        $now
+                    ),
+                    $salesChannelContext->getSalesChannelId()
+                );
             }
 
-            foreach ($lineItems as $lineItem) {
-                $this->eventsTracker->trackAddedToCart($salesChannelContext, $cart, $lineItem);
-            }
+            $this->eventsTracker->trackAddedToCart(Context::createDefaultContext(), $requestBag);
         } catch (\Throwable $throwable) {
             $this->logger
                 ->error(

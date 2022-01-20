@@ -2,9 +2,9 @@
 
 namespace Klaviyo\Integration\EventListener;
 
-use Klaviyo\Integration\System\Tracking\Event\OrderEvent;
+use Klaviyo\Integration\System\Tracking\Event\Order\OrderEvent;
+use Klaviyo\Integration\System\Tracking\Event\Order\OrderTrackingEventsBag;
 use Klaviyo\Integration\System\Tracking\EventsTrackerInterface;
-use Klaviyo\Integration\System\Tracking\OrderTrackingEventsBag;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
@@ -21,18 +21,15 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class OrderStateChangedEventListener implements EventSubscriberInterface
 {
     private EventsTrackerInterface $eventsTracker;
-    private EntityRepositoryInterface $salesChannelRepository;
     private EntityRepositoryInterface $orderRepository;
     private EntityRepositoryInterface $orderTransactionRepository;
 
     public function __construct(
         EventsTrackerInterface $eventsTracker,
-        EntityRepositoryInterface $salesChannelRepository,
         EntityRepositoryInterface $orderRepository,
         EntityRepositoryInterface $orderTransactionRepository
     ) {
         $this->eventsTracker = $eventsTracker;
-        $this->salesChannelRepository = $salesChannelRepository;
         $this->orderRepository = $orderRepository;
         $this->orderTransactionRepository = $orderTransactionRepository;
     }
@@ -55,11 +52,7 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
                 ->search(new Criteria([$event->getTransition()->getEntityId()]), $event->getContext())
                 ->first();
 
-            $salesChannel = $this->salesChannelRepository
-                ->search(new Criteria([$order->getSalesChannelId()]), $event->getContext())
-                ->first();
-
-            $this->trackEvent($event->getContext(), $salesChannel, $order, $state->getTechnicalName());
+            $this->trackEvent($event->getContext(), $order, $state->getTechnicalName());
         }
     }
 
@@ -83,15 +76,11 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
 
             $order = $orderTransaction->getOrder();
 
-            $salesChannel = $this->salesChannelRepository
-                ->search(new Criteria([$order->getSalesChannelId()]), $event->getContext())
-                ->first();
-
-            $this->trackEvent($event->getContext(), $salesChannel, $order, $state->getTechnicalName());
+            $this->trackEvent($event->getContext(), $order, $state->getTechnicalName());
         }
     }
 
-    private function trackEvent(Context $context, SalesChannelEntity $salesChannel, OrderEntity $order, string $state)
+    private function trackEvent(Context $context, OrderEntity $order, string $state)
     {
         $eventsBag = new OrderTrackingEventsBag();
         $orderPlacedEvent = new OrderEvent($order);

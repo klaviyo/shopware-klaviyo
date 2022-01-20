@@ -1,45 +1,6 @@
 services:
     ### Message Handlers and Scheduled Tasks ###
 
-    Klaviyo\Integration\Async\MessageHandler\FullOrderSyncHandler:
-        arguments:
-            - '@Klaviyo\Integration\Model\UseCase\Operation\FullOrderSyncOperation'
-            - '@logger'
-        tags:
-            - { name: 'messenger.message_handler' }
-
-    Klaviyo\Integration\Async\MessageHandler\FullSubscriberSyncHandler:
-        arguments:
-            - '@Klaviyo\Integration\Model\UseCase\Operation\FullSubscriberSyncOperation'
-            - '@logger'
-        tags:
-            - { name: 'messenger.message_handler' }
-
-    Klaviyo\Integration\Async\MessageHandler\OrderEventsSyncHandler:
-        arguments:
-            - '@Klaviyo\Integration\Model\UseCase\Operation\OrderEventsSyncOperation'
-            - '@logger'
-        tags:
-            - { name: 'messenger.message_handler' }
-
-    Klaviyo\Integration\Async\MessageHandler\OrderSyncHandler:
-        arguments:
-            - '@Klaviyo\Integration\Model\UseCase\Operation\OrderSyncOperation'
-            - '@logger'
-        tags:
-            - { name: 'messenger.message_handler' }
-
-    Klaviyo\Integration\Async\MessageHandler\SubscriberSyncHandler:
-        arguments:
-            - '@Klaviyo\Integration\Model\UseCase\Operation\SubscriberSyncOperation'
-            - '@logger'
-        tags:
-            - { name: 'messenger.message_handler' }
-
-    Klaviyo\Integration\Async\ClearOldJobsScheduledTask:
-        tags:
-            - { name: 'shopware.scheduled.task' }
-
     Klaviyo\Integration\Async\Task\ScheduleEventJobsTask:
         tags:
             - { name: 'shopware.scheduled.task' }
@@ -47,35 +8,59 @@ services:
     Klaviyo\Integration\Async\TaskHandler\ScheduleEventJobsHandler:
         arguments:
             - '@scheduled_task.repository'
-            - '@klaviyo_job_event.repository'
             - '@Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob'
         tags:
             - { name: 'messenger.message_handler' }
 
     ### Operations' definitions ###
 
+    Klaviyo\Integration\Model\UseCase\Operation\EventsProcessingOperation:
+        tags:
+            - { name: 'od.job_handler', code: 'od-klaviyo-events-sync-handler' }
+        arguments:
+            - '@klaviyo_job_event.repository'
+            - '@klaviyo_job_cart_request.repository'
+            - '@Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob'
+
+    Klaviyo\Integration\Model\UseCase\Operation\CartEventSyncOperation:
+        tags:
+            - { name: 'od.job_handler', code: 'od-klaviyo-cart-event-sync-handler' }
+        arguments:
+            - '@Klaviyo\Integration\System\Tracking\EventsTracker'
+            - '@klaviyo_job_cart_request.repository'
+
     Klaviyo\Integration\Model\UseCase\Operation\FullOrderSyncOperation:
+        tags:
+            - { name: 'od.job_handler', code: 'od-klaviyo-full-order-sync-handler' }
         arguments:
             - '@Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob'
             - '@order.repository'
 
     Klaviyo\Integration\Model\UseCase\Operation\FullSubscriberSyncOperation:
+        tags:
+            - { name: 'od.job_handler', code: 'od-klaviyo-full-subscriber-sync-handler' }
         arguments:
             - '@Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob'
             - '@newsletter_recipient.repository'
 
     Klaviyo\Integration\Model\UseCase\Operation\OrderEventsSyncOperation:
+        tags:
+            - { name: 'od.job_handler', code: 'od-klaviyo-order-event-sync-handler' }
         arguments:
             - '@klaviyo_job_event.repository'
             - '@order.repository'
-            - '@Klaviyo\Integration\System\Tracking\OrderEventsTracker'
+            - '@Klaviyo\Integration\System\Tracking\EventsTracker'
 
     Klaviyo\Integration\Model\UseCase\Operation\OrderSyncOperation:
+        tags:
+            - { name: 'od.job_handler', code: 'od-klaviyo-order-sync-handler' }
         arguments:
             - '@order.repository'
-            - '@Klaviyo\Integration\System\Tracking\OrderEventsTracker'
+            - '@Klaviyo\Integration\System\Tracking\EventsTracker'
 
     Klaviyo\Integration\Model\UseCase\Operation\SubscriberSyncOperation:
+        tags:
+            - { name: 'od.job_handler', code: 'od-klaviyo-subscriber-sync-handler' }
         arguments:
             - '@Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway'
             - '@Klaviyo\Integration\Configuration\ConfigurationRegistry'

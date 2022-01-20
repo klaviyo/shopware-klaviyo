@@ -5,11 +5,6 @@ class KlaviyoSubscribersSynchronizationApiService {
         this.name = 'klaviyoSubscribersSynchronizationApiService';
     }
 
-    getJobStatus() {
-        const headers = this.getHeaders();
-        return this.httpClient.get('/klaviyo/integration/job/_action/subscribers/synchronization/get_status', {}, { headers });
-    }
-
     scheduleSynchronization() {
         const headers = this.getHeaders();
         return this.httpClient.post('/klaviyo/integration/job/_action/subscribers/synchronization/schedule', {}, { headers });

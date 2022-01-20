@@ -46,7 +46,8 @@ class Client implements ClientInterface
                 }
 
                 $guzzleRequest = $translator->translateRequest($request);
-                $this->guzzleClient->send($guzzleRequest, $guzzleRequestOptions);
+                $response = $this->guzzleClient->send($guzzleRequest, $guzzleRequestOptions);
+                $clientResult->addRequestResponse($request, $translator->translateResponse($response));
             } catch (ClientException $exception) {
                 $exception->addToLoggableContext('requestDTO', $request);
                 $clientResult->addRequestError($request, $exception);

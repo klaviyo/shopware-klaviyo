@@ -2,35 +2,34 @@
 
 namespace Klaviyo\Integration\Async\Message;
 
-class OrderSyncMessage
+use Klaviyo\Integration\Model\UseCase\Operation\OrderSyncOperation;
+use Od\Scheduler\Async\ParentAwareMessageInterface;
+
+class OrderSyncMessage extends AbstractBasicMessage implements ParentAwareMessageInterface
 {
-    private string $jobId;
-    private string $salesChannelId;
-    private array $orderIds = [];
+    protected static string $defaultName = 'Order Sync Operation';
+    private string $parentJobId;
+    private array $orderIds;
 
-    public function setJobId(string $jobId): void
-    {
-        $this->jobId = $jobId;
-    }
-
-    public function getJobId(): string
-    {
-        return $this->jobId;
-    }
-
-    public function setSalesChannelId(string $salesChannelId): void
-    {
-        $this->salesChannelId = $salesChannelId;
-    }
-
-    public function getSalesChannelId(): string
-    {
-        return $this->salesChannelId;
-    }
-
-    public function setOrderIds(array $orderIds): void
-    {
+    public function __construct(
+        string $jobId,
+        string $parentJobId,
+        array $orderIds,
+        ?string $name = null
+    ) {
+        parent::__construct($jobId, $name);
+        $this->parentJobId = $parentJobId;
         $this->orderIds = $orderIds;
+    }
+
+    public function getHandlerCode(): string
+    {
+        return OrderSyncOperation::OPERATION_HANDLER_CODE;
+    }
+
+    public function getParentJobId(): string
+    {
+        return $this->parentJobId;
     }
 
     public function getOrderIds(): array

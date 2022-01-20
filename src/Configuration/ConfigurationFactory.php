@@ -41,15 +41,6 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
             );
         }
 
-        $subscribersSynchronizationTimeRaw = $this->systemConfigService
-            ->get('KlaviyoIntegrationPlugin.config.subscribersSynchronizationTime', $salesChannelId);
-        if (!$subscribersSynchronizationTimeRaw) {
-            throw new InvalidConfigurationException(
-                'Klaviyo Subscribers synchronization time configuration is not defined'
-            );
-        }
-        $subscribersSynchronizationTime = $this->convertTimeStringToDTO($subscribersSynchronizationTimeRaw);
-
         $catalogFeedProductsCount = $this->getIntConfiguration('catalogFeedProductsCount', $salesChannelId);
 
         $trackViewedProduct = $this->getBoolConfiguration('trackViewedProduct', $salesChannelId);
@@ -69,7 +60,6 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
             $privateApiKey,
             $publicApiKey,
             $listName,
-            $subscribersSynchronizationTime,
             $catalogFeedProductsCount,
             $trackViewedProduct,
             $trackRecentlyViewedItems,
@@ -112,19 +102,5 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
         }
 
         return $value;
-    }
-
-    private function convertTimeStringToDTO(string $time): TimeInfo
-    {
-        $timeParts = explode(':', $time);
-
-        $now = new \DateTime('now', new \DateTimeZone('UTC'));
-        // Check if time is valid
-        $result = $now->setTime($timeParts[0], $timeParts[1]);
-        if (!$result instanceof \DateTime) {
-            throw new InvalidConfigurationException(sprintf('Invalid time value "%s"', $time));
-        }
-
-        return new TimeInfo($timeParts[0], $timeParts[1]);
     }
 }

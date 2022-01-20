@@ -2,32 +2,14 @@
 
 namespace Klaviyo\Integration\Async\Message;
 
-class FullOrderSyncMessage
+use Klaviyo\Integration\Model\UseCase\Operation\FullOrderSyncOperation;
+
+class FullOrderSyncMessage extends AbstractBasicMessage
 {
-    private string $jobId;
+    protected static string $defaultName = 'Full Order Sync Operation';
 
-    /**
-     * @var string[]
-     */
-    private array $salesChannelIds;
-
-    public function setJobId(string $jobId): void
+    public function getHandlerCode(): string
     {
-        $this->jobId = $jobId;
-    }
-
-    public function getJobId(): string
-    {
-        return $this->jobId;
-    }
-
-    public function setSalesChannelIds(array $salesChannelIds = []): void
-    {
-        $this->salesChannelIds = $salesChannelIds;
-    }
-
-    public function getSalesChannelIds(): array
-    {
-        return $this->salesChannelIds;
+        return FullOrderSyncOperation::OPERATION_HANDLER_CODE;
     }
 }

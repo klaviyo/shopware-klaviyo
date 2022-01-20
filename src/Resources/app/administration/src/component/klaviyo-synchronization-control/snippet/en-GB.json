@@ -14,7 +14,8 @@
                 "button_label": "Synchronize subscribers",
                 "success": "Subscribers synchronization scheduled",
                 "failed": "Subscribers synchronization failed to schedule",
-                "is_running": "Subscribers synchronization is already running"
+                "is_running": "Subscribers synchronization is already running",
+                "is_scheduled": "Subscribers synchronization is already scheduled"
             }
         },
         "historical_events_tracking": {
@@ -28,9 +29,10 @@
             },
             "schedule_synchronization": {
                 "button_label": "Synchronize historical events",
-                "success": "Historical events tracking synchronization scheduled",
-                "failed": "Historical events tracking synchronization failed to schedule",
-                "is_running": "Historical events tracking synchronization is already running"
+                "success": "Historical events synchronization scheduled",
+                "failed": "Historical events synchronization failed to schedule",
+                "is_running": "Historical events synchronization is already running",
+                "is_scheduled": "Historical events synchronization is already scheduled"
             }
         },
         "promotion": {
