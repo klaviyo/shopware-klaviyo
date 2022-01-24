@@ -1,6 +1,6 @@
 {
     "version": "1.0.2",
-    "name": "klaviyo/integration",
+    "name": "od/sw6-klaviyo-integration",
     "description": "Shopware 6 plugin for Klaviyo integration",
     "type": "shopware-platform-plugin",
     "license": "MIT",
@@ -24,6 +24,7 @@
         "shopware/recovery": "v6.4.*",
         "shopware/storefront": "v6.4.*",
         "od/sw6-job-scheduler": "^1.0.0",
+        "od/sw6-base-plugin": "^1.0.0",
         "ext-json": "*"
     },
     "require-dev": {

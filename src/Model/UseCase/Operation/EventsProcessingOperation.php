@@ -6,6 +6,7 @@ use Klaviyo\Integration\Async\Message\EventsProcessingMessage;
 use Klaviyo\Integration\Entity\Event\EventEntity;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
 use Klaviyo\Integration\System\Tracking\EventsTrackerInterface;
+use Od\Scheduler\Model\Job\GeneratingHandlerInterface;
 use Od\Scheduler\Model\Job\JobHandlerInterface;
 use Od\Scheduler\Model\Job\JobResult;
 use Shopware\Core\Framework\Context;
@@ -15,7 +16,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 
-class EventsProcessingOperation implements JobHandlerInterface
+class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandlerInterface
 {
     public const HANDLER_CODE = 'od-klaviyo-events-sync-handler';
 

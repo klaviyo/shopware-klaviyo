@@ -5,6 +5,7 @@ namespace Klaviyo\Integration\Model\UseCase\Operation;
 use Klaviyo\Integration\Async\Message\FullOrderSyncMessage;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
 use Od\Scheduler\Model\Job\{GeneratingHandlerInterface, JobHandlerInterface, JobResult};
+use Od\Scheduler\Model\MessageManager;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -17,13 +18,16 @@ class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerIn
 
     private ScheduleBackgroundJob $scheduleBackgroundJob;
     private EntityRepositoryInterface $orderRepository;
+    private MessageManager $messageManager;
 
     public function __construct(
         ScheduleBackgroundJob $scheduleBackgroundJob,
-        EntityRepositoryInterface $orderRepository
+        EntityRepositoryInterface $orderRepository,
+        MessageManager $messageManager
     ) {
         $this->scheduleBackgroundJob = $scheduleBackgroundJob;
         $this->orderRepository = $orderRepository;
+        $this->messageManager = $messageManager;
     }
 
     /**
@@ -32,14 +36,22 @@ class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerIn
      */
     public function execute(object $message): JobResult
     {
+        $subOperationCount = 0;
+        $this->messageManager->addInfoMessage($message->getJobId(), 'Starting Full Order Sync Operation...');
         $context = Context::createDefaultContext();
         $criteria = new Criteria();
         $criteria->setLimit(self::ORDER_BATCH_SIZE);
         $iterator = new RepositoryIterator($this->orderRepository, $context, $criteria);
 
         while (($orderIds = $iterator->fetchIds()) !== null) {
+            $subOperationCount++;
             $this->scheduleBackgroundJob->scheduleOrderSyncJob($orderIds, $message->getJobId());
         }
+
+        $this->messageManager->addInfoMessage(
+            $message->getJobId(),
+            \sprintf('Total %s jobs has been scheduled.', $subOperationCount)
+        );
 
         return new JobResult();
     }

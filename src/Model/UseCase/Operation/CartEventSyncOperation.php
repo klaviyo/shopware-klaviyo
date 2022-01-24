@@ -6,7 +6,6 @@ use Klaviyo\Integration\Async\Message\CartEventSyncMessage;
 use Klaviyo\Integration\Entity\CartRequest\CartRequestEntity;
 use Klaviyo\Integration\System\Tracking\Event\Cart\CartEventRequestBag;
 use Klaviyo\Integration\System\Tracking\EventsTrackerInterface;
-use Od\Scheduler\Model\Job\GeneratingHandlerInterface;
 use Od\Scheduler\Model\Job\JobHandlerInterface;
 use Od\Scheduler\Model\Job\JobResult;
 use Shopware\Core\Framework\Context;
@@ -14,7 +13,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 
-class CartEventSyncOperation implements JobHandlerInterface, GeneratingHandlerInterface
+class CartEventSyncOperation implements JobHandlerInterface
 {
     public const OPERATION_HANDLER_CODE = 'od-klaviyo-cart-event-sync-handler';
 

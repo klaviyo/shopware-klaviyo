@@ -9,6 +9,7 @@ use Klaviyo\Integration\System\Tracking\Event\Order\OrderTrackingEventsBag;
 use Klaviyo\Integration\System\Tracking\EventsTrackerInterface as Tracker;
 use Od\Scheduler\Model\Job\JobHandlerInterface;
 use Od\Scheduler\Model\Job\JobResult;
+use Od\Scheduler\Model\MessageManager;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Order\OrderStates;
@@ -23,13 +24,16 @@ class OrderSyncOperation implements JobHandlerInterface
 
     private EntityRepositoryInterface $orderRepository;
     private Tracker $eventsTracker;
+    private MessageManager $messageManager;
 
     public function __construct(
         EntityRepositoryInterface $orderRepository,
-        Tracker $eventsTracker
+        Tracker $eventsTracker,
+        MessageManager $messageManager
     ) {
         $this->orderRepository = $orderRepository;
         $this->eventsTracker = $eventsTracker;
+        $this->messageManager = $messageManager;
     }
 
     /**
@@ -38,6 +42,7 @@ class OrderSyncOperation implements JobHandlerInterface
      */
     public function execute(object $message): JobResult
     {
+        $this->messageManager->addInfoMessage($message->getJobId(), 'Starting Order Sync Operation...');
         $result = new JobResult();
         $context = Context::createDefaultContext();
         $eventsBags = [
@@ -75,6 +80,10 @@ class OrderSyncOperation implements JobHandlerInterface
             }
         }
 
+        if ($orderCollection->count() !== 0) {
+            $this->messageManager->addInfoMessage($message->getJobId(), 'Start sending tracking requests...');
+        }
+
         foreach ($eventsBags as $type => $eventsBag) {
             $trackingResult = $this->trackEventBagByType($context, $eventsBag, $type);
 
@@ -87,6 +96,8 @@ class OrderSyncOperation implements JobHandlerInterface
                 }
             }
         }
+
+        $this->messageManager->addInfoMessage($message->getJobId(), 'Operation finished.');
 
         return $result;
     }
