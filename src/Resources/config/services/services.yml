@@ -18,11 +18,6 @@ services:
             - '@klaviyo_job_event.repository'
             - '@klaviyo_job_cart_request.repository'
 
-    Klaviyo\Integration\Tracking\TrackingCatalogFeedProvider:
-        arguments:
-            - '@Klaviyo\Integration\Klaviyo\CatalogFeed\CatalogFeedConstructor'
-            - '@logger'
-
     Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob:
         arguments:
             - '@od_scheduler_job.repository'
@@ -34,16 +29,10 @@ services:
             - '@Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob'
             - '@logger'
 
-    # TODO: check is this actually needed.
     Klaviyo\Integration\Controller\Backoffice\PromotionsExportController:
         public: true
         arguments:
             - '@Klaviyo\Integration\Klaviyo\Promotion\PromotionsExporter'
-
-    Klaviyo\Integration\Controller\Storefront\CatalogFeedController:
-        public: true
-        arguments:
-            - '@Klaviyo\Integration\Tracking\TrackingCatalogFeedProvider'
 
     Klaviyo\Integration\EventListener\CheckoutOrderPlacedEventListener:
         arguments:
@@ -110,16 +99,6 @@ services:
     Klaviyo\Integration\Klaviyo\FrontendApi\Translator\StartedCheckoutEventTrackingRequestTranslator:
         arguments:
             - '@router.default'
-            - '@Klaviyo\Integration\Entity\Helper\ProductDataHelper'
-
-    Klaviyo\Integration\Klaviyo\CatalogFeed\CatalogFeedConstructor:
-        arguments:
-            - '@product.repository'
-            - '@Klaviyo\Integration\Klaviyo\CatalogFeed\CatalogFeedProductItemTranslator'
-            - '@Klaviyo\Integration\Configuration\ConfigurationRegistry'
-
-    Klaviyo\Integration\Klaviyo\CatalogFeed\CatalogFeedProductItemTranslator:
-        arguments:
             - '@Klaviyo\Integration\Entity\Helper\ProductDataHelper'
 
     Klaviyo\Integration\Klaviyo\Promotion\PromotionsExporter:

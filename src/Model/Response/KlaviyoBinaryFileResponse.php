@@ -1,6 +1,6 @@
 <?php
 
-namespace Klaviyo\Integration\Response;
+namespace Klaviyo\Integration\Model\Response;
 
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 

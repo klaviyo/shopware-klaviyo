@@ -1,7 +1,3 @@
 klaviyo_integration_administration:
     resource: '../../Controller/Backoffice/*Controller.php'
     type: annotation
-
-klaviyo_integration_storefront:
-    resource: '../../Controller/Storefront/*Controller.php'
-    type: annotation
