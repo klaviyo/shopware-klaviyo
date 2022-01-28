@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Klaviyo\Integration\Entity\Event\EventDefinition">
+            <tag name="shopware.entity.definition" entity="klaviyo_job_event" />
+        </service>
+        <service id="Klaviyo\Integration\Entity\CartRequest\CartRequestDefinition">
+            <tag name="shopware.entity.definition" entity="klaviyo_job_cart_request" />
+        </service>
+    </services>
+
+</container>
