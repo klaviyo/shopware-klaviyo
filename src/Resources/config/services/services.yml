@@ -17,6 +17,7 @@ services:
         arguments:
             - '@klaviyo_job_event.repository'
             - '@klaviyo_job_cart_request.repository'
+            - '@Klaviyo\Integration\Model\CartRequestSerializer'
 
     Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob:
         arguments:
@@ -104,3 +105,6 @@ services:
     Klaviyo\Integration\Klaviyo\Promotion\PromotionsExporter:
         arguments:
             - '@promotion.repository'
+
+    Klaviyo\Integration\Model\CartRequestSerializer: ~
+

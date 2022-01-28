@@ -3,6 +3,7 @@
 namespace Klaviyo\Integration\System\Tracking;
 
 use Klaviyo\Integration\Klaviyo\Gateway\Result\OrderTrackingResult;
+use Klaviyo\Integration\Model\CartRequestSerializer;
 use Klaviyo\Integration\System\Tracking\Event\Cart\CartEventRequestBag;
 use Klaviyo\Integration\System\Tracking\Event\Order\OrderTrackingEventsBag;
 use Shopware\Core\Framework\Context;
@@ -13,13 +14,16 @@ class ScheduledEventsTracker implements EventsTrackerInterface
 {
     private EntityRepositoryInterface $eventRepository;
     private EntityRepositoryInterface $cartEventRequestRepository;
+    private CartRequestSerializer $cartRequestSerializer;
 
     public function __construct(
         EntityRepositoryInterface $eventRepository,
-        EntityRepositoryInterface $cartEventRequestRepository
+        EntityRepositoryInterface $cartEventRequestRepository,
+        CartRequestSerializer $cartRequestSerializer
     ) {
         $this->eventRepository = $eventRepository;
         $this->cartEventRequestRepository = $cartEventRequestRepository;
+        $this->cartRequestSerializer = $cartRequestSerializer;
     }
 
     public function trackPlacedOrders(Context $context, OrderTrackingEventsBag $trackingBag): OrderTrackingResult
@@ -51,7 +55,7 @@ class ScheduledEventsTracker implements EventsTrackerInterface
                 $scheduledEventRequests[] = [
                     'id' => Uuid::randomHex(),
                     'salesChannelId' => $channelId,
-                    'serializedRequest' => base64_encode(serialize($request)),
+                    'serializedRequest' => $this->cartRequestSerializer->encode($request),
                 ];
             }
         }

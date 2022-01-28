@@ -28,6 +28,7 @@ services:
         arguments:
             - '@Klaviyo\Integration\System\Tracking\EventsTracker'
             - '@klaviyo_job_cart_request.repository'
+            - '@Klaviyo\Integration\Model\CartRequestSerializer'
 
     Klaviyo\Integration\Model\UseCase\Operation\FullOrderSyncOperation:
         tags:
