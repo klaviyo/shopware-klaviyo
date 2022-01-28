@@ -7,6 +7,7 @@ use Klaviyo\Integration\Configuration\ConfigurationRegistry;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Common\ProfileContactInfo;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Common\ProfileContactInfoCollection;
 use Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway;
+use Klaviyo\Integration\Klaviyo\Gateway\ListIdByListName;
 use Od\Scheduler\Model\Job\JobHandlerInterface;
 use Od\Scheduler\Model\Job\JobResult;
 use Shopware\Core\Content\Newsletter\Aggregate\NewsletterRecipient\NewsletterRecipientCollection;
@@ -26,17 +27,20 @@ class SubscriberSyncOperation implements JobHandlerInterface
     private ConfigurationRegistry $configurationRegistry;
     private EntityRepositoryInterface $subscriberRepository;
     private EntityRepositoryInterface $salesChannelRepository;
+    private ListIdByListName $listIdByListName;
 
     public function __construct(
         KlaviyoGateway $klaviyoGateway,
         ConfigurationRegistry $configurationRegistry,
         EntityRepositoryInterface $subscriberRepository,
-        EntityRepositoryInterface $salesChannelRepository
+        EntityRepositoryInterface $salesChannelRepository,
+        ListIdByListName $listIdByListName
     ) {
         $this->klaviyoGateway = $klaviyoGateway;
         $this->configurationRegistry = $configurationRegistry;
         $this->subscriberRepository = $subscriberRepository;
         $this->salesChannelRepository = $salesChannelRepository;
+        $this->listIdByListName = $listIdByListName;
     }
 
     /**
@@ -88,7 +92,7 @@ class SubscriberSyncOperation implements JobHandlerInterface
         }
 
         if ($subscribersCollection->count() !== 0 || $unsubscribedRecipients->count() !== 0) {
-            $listId = $this->klaviyoGateway->getListIdByListName(
+            $listId = $this->listIdByListName->execute(
                 $channel,
                 $this->configurationRegistry->getConfiguration($channel->getId())->getSubscribersListName()
             );

@@ -88,6 +88,9 @@
             <argument type="service" id="promotion.repository"/>
         </service>
         <service id="Klaviyo\Integration\Model\CartRequestSerializer"/>
+        <service id="Klaviyo\Integration\Klaviyo\Gateway\ListIdByListName">
+            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\ClientRegistry"/>
+        </service>
     </services>
 
 </container>

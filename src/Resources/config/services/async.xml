@@ -58,6 +58,7 @@
             <argument type="service" id="Klaviyo\Integration\Configuration\ConfigurationRegistry"/>
             <argument type="service" id="newsletter_recipient.repository"/>
             <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\ListIdByListName"/>
         </service>
         <!-- /Operations' definitions -->
     </services>
