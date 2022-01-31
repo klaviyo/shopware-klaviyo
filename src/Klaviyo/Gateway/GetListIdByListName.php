@@ -8,7 +8,7 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetLists\Get
 use Klaviyo\Integration\Klaviyo\Gateway\Exception\ProfilesListNotFoundException;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
-class ListIdByListName
+class GetListIdByListName implements GetListIdByListNameInterface
 {
     private ClientRegistry $clientRegistry;
 
