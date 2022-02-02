@@ -1,4 +1,5 @@
 import './page/klaviyo-job-listing';
+import './page/klaviyo-integration-settings';
 
 import enGB from './snippet/en-GB.json';
 
@@ -19,7 +20,21 @@ Module.register('klaviyo-plugin', {
         index: {
             component: 'klaviyo-job-listing',
             path: 'index'
+        },
+        settings: {
+            component: 'klaviyo-integration-settings',
+            path: 'settings',
+            meta: {
+                parentPath: 'sw.settings.index.plugins'
+            }
         }
+    },
+
+    settingsItem: {
+        group: 'plugins',
+        to: 'klaviyo.plugin.settings',
+        icon: 'default-object-rocket',
+        label: 'klaviyo-integration-settings.label'
     },
 
     navigation: [

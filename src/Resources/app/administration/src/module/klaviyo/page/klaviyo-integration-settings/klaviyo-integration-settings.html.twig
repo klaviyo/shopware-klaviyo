@@ -1,0 +1,40 @@
+{% block klaviyo_integration_settings %}
+    <sw-page class="klaviyo-integration-settings">
+        {% block klaviyo_integration_settings_header %}
+            <template #smart-bar-header>
+                <h2>
+                    {{ $tc('sw-settings.index.title') }}
+                    <sw-icon name="small-arrow-medium-right" small></sw-icon>
+                    {{ $tc('klaviyo-integration-settings.title') }}
+                </h2>
+            </template>
+        {% endblock %}
+        {% block klaviyo_integration_settings_actions %}
+            <template #smart-bar-actions>
+                {% block klaviyo_integration_settings_actions_save %}
+                    <sw-button-process v-model="isSaveSuccessful"
+                                       class="klaviyo-integration-settings-save"
+                                       variant="primary"
+                                       :isLoading="isLoading"
+                                       :disabled="isLoading"
+                                       @click="onSave">
+                        {{ $tc('global.default.save') }}
+                    </sw-button-process>
+                {% endblock %}
+            </template>
+        {% endblock %}
+
+        {% block klaviyo_integration_settings_content %}
+            <template #content>
+                {% block klaviyo_integration_settings_content_card %}
+                    {% block klaviyo_integration_settings_content_card_channel_config %}
+                        Custom content
+                    {% endblock %}
+                    {% block klaviyo_integration_settings_content_card_loading %}
+                        <sw-loader v-if="isLoading"></sw-loader>
+                    {% endblock %}
+                {% endblock %}
+            </template>
+        {% endblock %}
+    </sw-page>
+{% endblock %}

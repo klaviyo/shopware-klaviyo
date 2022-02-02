@@ -1,44 +1,48 @@
 {
-    "klaviyo-job-listing": {
-        "general": {
-            "title": "Job Listing Pages",
-            "description": "job-listing"
-        },
-        "menu": {
-            "title": "Klaviyo Job Listing"
-        },
-        "page": {
-            "listing": {
-                "title": "Job Listing",
-                "description": "List of Jobs",
-                "grid": {
-                    "column": {
-                        "type": "Type",
-                        "message": "Message",
-                        "status": "Status",
-                        "name": "Name",
-                        "started-at": "Started at",
-                        "finished-at": "Finished at",
-                        "created-at": "Created at"
-                    }
-                }
-            },
-            "detail": {
-                "textHeadline": "Job",
-                "jobChildrenTitle": "Job Children"
-            }
-        },
-        "actions": {
-            "reschedule-job": {
-                "button": {
-                    "label": "Reschedule job"
-                }
-            },
-            "show-messages": {
-                "button": {
-                    "label": "Show messages"
-                }
-            }
-        }
-    }
+	"klaviyo-job-listing": {
+		"general": {
+			"title": "Job Listing Pages",
+			"description": "job-listing"
+		},
+		"menu": {
+			"title": "Klaviyo Job Listing"
+		},
+		"page": {
+			"listing": {
+				"title": "Job Listing",
+				"description": "List of Jobs",
+				"grid": {
+					"column": {
+						"type": "Type",
+						"message": "Message",
+						"status": "Status",
+						"name": "Name",
+						"started-at": "Started at",
+						"finished-at": "Finished at",
+						"created-at": "Created at"
+					}
+				}
+			},
+			"detail": {
+				"textHeadline": "Job",
+				"jobChildrenTitle": "Job Children"
+			}
+		},
+		"actions": {
+			"reschedule-job": {
+				"button": {
+					"label": "Reschedule job"
+				}
+			},
+			"show-messages": {
+				"button": {
+					"label": "Show messages"
+				}
+			}
+		}
+	},
+	"klaviyo-integration-settings": {
+		"label": "Klaviyo settings",
+		"title": "Klaviyo settings"
+	}
 }
