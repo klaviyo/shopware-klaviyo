@@ -1,6 +1,8 @@
 import './page/klaviyo-job-listing';
 import './page/klaviyo-integration-settings';
+import './components/klaviyo-integration-settings-general';
 
+import deDE from './snippet/de-DE.json';
 import enGB from './snippet/en-GB.json';
 
 const {Module} = Shopware;
@@ -13,7 +15,8 @@ Module.register('klaviyo-plugin', {
     icon: 'default-avatar-multiple',
 
     snippets: {
-        'en-GB': enGB,
+        'de-DE': deDE,
+        'en-GB': enGB
     },
 
     routes: {

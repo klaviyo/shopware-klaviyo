@@ -1,0 +1,22 @@
+{% block klaviyo_integration_settings_general %}
+    <sw-card title="Account settings">
+        {% block klaviyo_integration_settings_general_private_api_key %}
+            <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.privateApiKey']"
+                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.privateApiKey']"
+                                :customInheritationCheckFunction="checkTextFieldInheritance">
+                <template #content="props">
+                    <sw-field
+                            :label="$tc('klaviyo-integration-settings.configs.privateApiKey.label')"
+                            :helpText="$tc('klaviyo-integration-settings.configs.privateApiKey.helpText')"
+                            type="text"
+                            :map-inheritance="props"
+                            :value="props.currentValue"
+                            :disabled="props.isInherited"
+                            required
+                            name="KlaviyoIntegrationPlugin.config.privateApiKey"
+                            @input="props.updateCurrentValue"></sw-field>
+                </template>
+            </sw-inherit-wrapper>
+        {% endblock %}
+    </sw-card>
+{% endblock %}
