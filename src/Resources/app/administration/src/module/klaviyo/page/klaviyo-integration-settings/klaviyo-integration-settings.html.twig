@@ -37,7 +37,7 @@
                                 {% block klaviyo_integration_settings_content_sales_channel_config_channel_card %}
                                     <sw-card class="sw-card--grid"
                                              :title="$tc('global.entities.sales_channel', 2)">
-                                        <div class="card-container">
+                                        <div class="card-container klaviyo-integration-settings-sales-channel">
                                             {% block klaviyo_integration_settings_content_sales_channel_config_channel_card_select %}
                                                 <sw-single-select v-model="selectedSalesChannelId"
                                                                   labelProperty="translated.name"

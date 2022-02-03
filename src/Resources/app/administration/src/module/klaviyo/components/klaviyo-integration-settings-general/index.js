@@ -72,5 +72,10 @@ Component.register('klaviyo-integration-settings-general', {
 
             return value.length <= 0;
         },
+
+        checkBoolFieldInheritance(value) {
+            return typeof value !== 'boolean';
+        }
+
     },
 });

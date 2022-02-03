@@ -42,12 +42,63 @@
 		}
 	},
 	"klaviyo-integration-settings": {
-		"label": "Klaviyo settings",
-		"title": "Klaviyo settings",
+		"label": "Klaviyo",
+		"title": "Klaviyo",
+		"general": {
+			"title": "General"
+		},
 		"configs": {
 			"privateApiKey": {
 				"label": "Klaviyo Private API key",
 				"helpText": "Klaviyo Private API key. You can find it in your klaviyo account"
+			},
+			"publicApiKey": {
+				"label": "Klaviyo Public API key",
+				"helpText": "Klaviyo Public API key. You can find it in your klaviyo account"
+			},
+			"klaviyoListForSubscribersSync": {
+				"label": "Klaviyo List name for subscribers sync",
+				"helpText": "The name of the Subscribers list in klaviyo where all Shopware 6 subscribers will be added.\n In case of duplicate names first found list will be used"
+			},
+			"catalogFeedProductsCount": {
+				"label": "Klaviyo Catalog Feed Maximum items count",
+				"helpText": "Maximum number of items in the catalog feed which Shopware 6 will provide to the Klaviyo, by default it is 25000 which is an amount allowed by Klaviyo by default.\nIf you have more than 25000 products please update this configuration value and contact klaviyo support in order to extend this limit on their side.\nIf this configuration value will be less than products count, then only most recent products will be added to the catalog feed"
+			},
+			"trackViewedProduct": {
+				"label": "Track Viewed Product",
+				"helpText": "Do we need to send \"Viewed Product\" Event to Klaviyo?"
+			},
+			"trackRecentlyViewedItems": {
+				"label": "Track Recently Viewed Items",
+				"helpText": "Do we need to send \"Recently Viewed Items\" Event to Klaviyo?"
+			},
+			"trackAddedToCart": {
+				"label": "Track Added to Cart",
+				"helpText": "Do we need to send \"Added to Cart Event\" to Klaviyo?\nDecision will also affect Synchronization of the historical events"
+			},
+			"trackStartedCheckout": {
+				"label": "Track Started Checkout",
+				"helpText": "Do we need to send \"Started Checkout Event\" to Klaviyo?\nDecision will also affect Synchronization of the historical events"
+			},
+			"trackPlacedOrder": {
+				"label": "Track Placed Order",
+				"helpText": "Do we need to send \"Placed Order Event\" to Klaviyo?\nDecision will also affect Synchronization of the historical events"
+			},
+			"trackOrderedProduct": {
+				"label": "Track Ordered Product",
+				"helpText": "Do we need to send \"Ordered Product Event\" to Klaviyo?\nDecision will also affect Synchronization of the historical events"
+			},
+			"trackFulfilledOrder": {
+				"label": "Track Fulfilled Order",
+				"helpText": "Do we need to send \"Fulfilled Order Event\" to Klaviyo?\nDecision will also affect Synchronization of the historical events"
+			},
+			"trackCancelledOrder": {
+				"label": "Track Cancelled Order",
+				"helpText": "Do we need to send \"Cancelled Order Event\" to Klaviyo?\nDecision will also affect Synchronization of the historical events"
+			},
+			"trackRefundedOrder": {
+				"label": "Track Refunded Order",
+				"helpText": "Do we need to send \"Refunded Order Event\" to Klaviyo?\nDecision will also affect Synchronization of the historical events"
 			}
 		}
 	}
