@@ -33,7 +33,7 @@
             <name>catalogFeedProductsCount</name>
             <label>Klaviyo Catalog Feed Maximum items count</label>
             <required>true</required>
-            <defaultValue>25000</defaultValue>
+<!--            <defaultValue>25000</defaultValue>-->
             <min>1</min>
             <helpText>
                 Maximum number of items in the catalog feed which Shopware 6 will provide to the Klaviyo,
@@ -52,7 +52,7 @@
             <helpText>
                 Do we need to send "Viewed Product" Event to Klaviyo?
             </helpText>
-            <defaultValue>true</defaultValue>
+<!--            <defaultValue>true</defaultValue>-->
         </input-field>
         <input-field type="bool">
             <name>trackRecentlyViewedItems</name>
@@ -60,7 +60,7 @@
             <helpText>
                 Do we need to send "Recently Viewed Items" Event to Klaviyo?
             </helpText>
-            <defaultValue>true</defaultValue>
+<!--            <defaultValue>true</defaultValue>-->
         </input-field>
         <input-field type="bool">
             <name>trackAddedToCart</name>
@@ -69,7 +69,7 @@
                 Do we need to send "Added to Cart Event" to Klaviyo?
                 Decision will also affect Synchronization of the historical events
             </helpText>
-            <defaultValue>true</defaultValue>
+<!--            <defaultValue>true</defaultValue>-->
         </input-field>
         <input-field type="bool">
             <name>trackStartedCheckout</name>
@@ -78,7 +78,7 @@
                 Do we need to send "Started Checkout Event" to Klaviyo?
                 Decision will also affect Synchronization of the historical events
             </helpText>
-            <defaultValue>true</defaultValue>
+<!--            <defaultValue>true</defaultValue>-->
         </input-field>
         <input-field type="bool">
             <name>trackPlacedOrder</name>
@@ -87,7 +87,7 @@
                 Do we need to send "Placed Order Event" to Klaviyo?
                 Decision will also affect Synchronization of the historical events
             </helpText>
-            <defaultValue>true</defaultValue>
+<!--            <defaultValue>true</defaultValue>-->
         </input-field>
         <input-field type="bool">
             <name>trackOrderedProduct</name>
@@ -96,7 +96,7 @@
                 Do we need to send "Ordered Product Event" to Klaviyo?
                 Decision will also affect Synchronization of the historical events
             </helpText>
-            <defaultValue>true</defaultValue>
+<!--            <defaultValue>true</defaultValue>-->
         </input-field>
         <input-field type="bool">
             <name>trackFulfilledOrder</name>
@@ -105,7 +105,7 @@
                 Do we need to send "Fulfilled Order Event" to Klaviyo?
                 Decision will also affect Synchronization of the historical events
             </helpText>
-            <defaultValue>true</defaultValue>
+<!--            <defaultValue>true</defaultValue>-->
         </input-field>
         <input-field type="bool">
             <name>trackCancelledOrder</name>
@@ -114,7 +114,7 @@
                 Do we need to send "Cancelled Order Event" to Klaviyo?
                 Decision will also affect Synchronization of the historical events
             </helpText>
-            <defaultValue>true</defaultValue>
+<!--            <defaultValue>true</defaultValue>-->
         </input-field>
         <input-field type="bool">
             <name>trackRefundedOrder</name>
@@ -123,7 +123,7 @@
                 Do we need to send "Refunded Order Event" to Klaviyo?
                 Decision will also affect Synchronization of the historical events
             </helpText>
-            <defaultValue>true</defaultValue>
+<!--            <defaultValue>true</defaultValue>-->
         </input-field>
     </card>
 </config>
