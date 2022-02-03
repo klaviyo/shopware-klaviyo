@@ -29,7 +29,36 @@ Component.register('klaviyo-integration-settings-general', {
         };
     },
 
+    created() {
+        this.createdComponent();
+    },
+
     methods: {
+
+        createdComponent() {
+            const configPrefix = 'KlaviyoIntegrationPlugin.config.',
+                defaultConfigs = {
+                    catalogFeedProductsCount: 25000,
+                    trackViewedProduct: true,
+                    trackRecentlyViewedItems: true,
+                    trackAddedToCart: true,
+                    trackStartedCheckout: true,
+                    trackPlacedOrder: true,
+                    trackOrderedProduct: true,
+                    trackFulfilledOrder: true,
+                    trackCancelledOrder: true,
+                    trackRefundedOrder: true
+                };
+
+            /**
+             * Initialize config data with default values.
+             */
+            for (const [key, defaultValue] of Object.entries(defaultConfigs)) {
+                if (this.allConfigs['null'][configPrefix + key] === undefined) {
+                    this.$set(this.allConfigs['null'], configPrefix + key, defaultValue);
+                }
+            }
+        },
 
         checkTextFieldInheritance(value) {
             if (typeof value !== 'string') {
