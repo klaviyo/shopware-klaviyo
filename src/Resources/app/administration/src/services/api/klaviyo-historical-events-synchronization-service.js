@@ -7,7 +7,7 @@ class KlaviyoHistoricalEventsSynchronizationApiService {
 
     scheduleSynchronization() {
         const headers = this.getHeaders();
-        return this.httpClient.post('/klaviyo/integration/job/_action/historical-event-tracking/synchronization/schedule', {}, { headers });
+        return this.httpClient.post('_action/klaviyo/historical-event-tracking/synchronization/schedule', {}, {headers});
     }
 
     getHeaders() {

@@ -7,7 +7,7 @@ class KlaviyoSubscribersSynchronizationApiService {
 
     scheduleSynchronization() {
         const headers = this.getHeaders();
-        return this.httpClient.post('/klaviyo/integration/job/_action/subscribers/synchronization/schedule', {}, { headers });
+        return this.httpClient.post('_action/klaviyo/subscribers/synchronization/schedule', {}, {headers});
     }
 
     getHeaders() {
