@@ -2,6 +2,7 @@ import './pages/klaviyo-job-listing';
 import './pages/klaviyo-integration-settings';
 import './components/klaviyo-integration-settings-general';
 import './components/klaviyo-integration-settings-synchronization-control';
+import './components/klaviyo-integration-settings-icon';
 
 import deDE from './snippet/de-DE.json';
 import enGB from './snippet/en-GB.json';
@@ -37,8 +38,9 @@ Module.register('klaviyo-plugin', {
     settingsItem: {
         group: 'plugins',
         to: 'klaviyo.plugin.settings',
-        icon: 'default-object-rocket',
-        label: 'klaviyo-integration-settings.label'
+        label: "klaviyo-integration-settings.label",
+        iconComponent: 'klaviyo-integration-settings-icon',
+        backgroundEnabled: true
     },
 
     navigation: [
