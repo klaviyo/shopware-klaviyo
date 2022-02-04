@@ -1,22 +1,16 @@
-import enGB from './snippet/en-GB.json';
-import template from './template.html.twig';
-import './styles.scss';
+import template from './klaviyo-integration-settings-synchronization-control.html.twig';
 import JobInteractor from './job-interactor';
 
 const {Component, Mixin} = Shopware;
 const {date} = Shopware.Utils.format;
 
-Component.register('klaviyo-historical-events-synchronization-control', {
+Component.register('klaviyo-integration-settings-synchronization-control', {
     template,
 
     inject: [
         'klaviyoHistoricalEventsSynchronizationApiService',
         'klaviyoSubscribersSynchronizationApiService',
     ],
-
-    snippets: {
-        'en-GB': enGB,
-    },
 
     mixins: [
         Mixin.getByName('notification')

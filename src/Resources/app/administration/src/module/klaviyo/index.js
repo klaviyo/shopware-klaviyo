@@ -1,6 +1,7 @@
-import './page/klaviyo-job-listing';
-import './page/klaviyo-integration-settings';
+import './pages/klaviyo-job-listing';
+import './pages/klaviyo-integration-settings';
 import './components/klaviyo-integration-settings-general';
+import './components/klaviyo-integration-settings-synchronization-control';
 
 import deDE from './snippet/de-DE.json';
 import enGB from './snippet/en-GB.json';

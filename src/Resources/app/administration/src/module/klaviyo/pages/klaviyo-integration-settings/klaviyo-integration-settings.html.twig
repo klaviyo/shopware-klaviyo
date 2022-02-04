@@ -11,6 +11,11 @@
         {% endblock %}
         {% block klaviyo_integration_settings_actions %}
             <template #smart-bar-actions>
+
+                {% block klaviyo_integration_settings_actions_historical_events_synchronization_control %}
+                    <klaviyo-integration-settings-synchronization-control></klaviyo-integration-settings-synchronization-control>
+                {% endblock %}
+
                 {% block klaviyo_integration_settings_actions_save %}
                     <sw-button-process v-model="isSaveSuccessful"
                                        class="klaviyo-integration-settings-save"
