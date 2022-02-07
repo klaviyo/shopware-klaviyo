@@ -1,5 +1,10 @@
-import './page/klaviyo-job-listing';
+import './pages/klaviyo-job-listing';
+import './pages/klaviyo-integration-settings';
+import './components/klaviyo-integration-settings-general';
+import './components/klaviyo-integration-settings-synchronization-control';
+import './components/klaviyo-integration-settings-icon';
 
+import deDE from './snippet/de-DE.json';
 import enGB from './snippet/en-GB.json';
 
 const {Module} = Shopware;
@@ -12,14 +17,30 @@ Module.register('klaviyo-plugin', {
     icon: 'default-avatar-multiple',
 
     snippets: {
-        'en-GB': enGB,
+        'de-DE': deDE,
+        'en-GB': enGB
     },
 
     routes: {
         index: {
             component: 'klaviyo-job-listing',
             path: 'index'
+        },
+        settings: {
+            component: 'klaviyo-integration-settings',
+            path: 'settings',
+            meta: {
+                parentPath: 'sw.settings.index.plugins'
+            }
         }
+    },
+
+    settingsItem: {
+        group: 'plugins',
+        to: 'klaviyo.plugin.settings',
+        label: "klaviyo-integration-settings.label",
+        iconComponent: 'klaviyo-integration-settings-icon',
+        backgroundEnabled: true
     },
 
     navigation: [

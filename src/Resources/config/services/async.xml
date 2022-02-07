@@ -1,0 +1,65 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <!-- Message Handlers and Scheduled Tasks -->
+        <service id="Klaviyo\Integration\Async\Task\ScheduleEventJobsTask">
+            <tag name="shopware.scheduled.task"/>
+        </service>
+        <service id="Klaviyo\Integration\Async\TaskHandler\ScheduleEventJobsHandler">
+            <argument type="service" id="scheduled_task.repository"/>
+            <argument type="service" id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob"/>
+            <tag name="messenger.message_handler"/>
+        </service>
+        <!-- /Message Handlers and Scheduled Tasks -->
+        <!-- Operations' definitions -->
+        <service id="Klaviyo\Integration\Model\UseCase\Operation\EventsProcessingOperation">
+            <tag name="od.job_handler" code="od-klaviyo-events-sync-handler"/>
+            <argument type="service" id="klaviyo_job_event.repository"/>
+            <argument type="service" id="klaviyo_job_cart_request.repository"/>
+            <argument type="service" id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob"/>
+        </service>
+        <service id="Klaviyo\Integration\Model\UseCase\Operation\CartEventSyncOperation">
+            <tag name="od.job_handler" code="od-klaviyo-cart-event-sync-handler"/>
+            <argument type="service" id="Klaviyo\Integration\System\Tracking\EventsTracker"/>
+            <argument type="service" id="klaviyo_job_cart_request.repository"/>
+            <argument type="service" id="Klaviyo\Integration\Model\CartRequestSerializer"/>
+        </service>
+        <service id="Klaviyo\Integration\Model\UseCase\Operation\FullOrderSyncOperation">
+            <tag name="od.job_handler" code="od-klaviyo-full-order-sync-handler"/>
+            <argument type="service" id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob"/>
+            <argument type="service" id="order.repository"/>
+            <argument type="service" id="Od\Scheduler\Model\MessageManager"/>
+        </service>
+        <service id="Klaviyo\Integration\Model\UseCase\Operation\FullSubscriberSyncOperation">
+            <tag name="od.job_handler" code="od-klaviyo-full-subscriber-sync-handler"/>
+            <argument type="service" id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob"/>
+            <argument type="service" id="newsletter_recipient.repository"/>
+        </service>
+        <service id="Klaviyo\Integration\Model\UseCase\Operation\OrderEventsSyncOperation">
+            <tag name="od.job_handler" code="od-klaviyo-order-event-sync-handler"/>
+            <argument type="service" id="klaviyo_job_event.repository"/>
+            <argument type="service" id="order.repository"/>
+            <argument type="service" id="Klaviyo\Integration\System\Tracking\EventsTracker"/>
+            <argument type="service" id="Od\Scheduler\Model\MessageManager"/>
+        </service>
+        <service id="Klaviyo\Integration\Model\UseCase\Operation\OrderSyncOperation">
+            <tag name="od.job_handler" code="od-klaviyo-order-sync-handler"/>
+            <argument type="service" id="order.repository"/>
+            <argument type="service" id="Klaviyo\Integration\System\Tracking\EventsTracker"/>
+            <argument type="service" id="Od\Scheduler\Model\MessageManager"/>
+        </service>
+        <service id="Klaviyo\Integration\Model\UseCase\Operation\SubscriberSyncOperation">
+            <tag name="od.job_handler" code="od-klaviyo-subscriber-sync-handler"/>
+            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway"/>
+            <argument type="service" id="Klaviyo\Integration\Configuration\ConfigurationRegistry"/>
+            <argument type="service" id="newsletter_recipient.repository"/>
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\CachedGetListIdByListName"/>
+        </service>
+        <!-- /Operations' definitions -->
+    </services>
+</container>

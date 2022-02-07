@@ -4,13 +4,9 @@ namespace Klaviyo\Integration\Klaviyo\Gateway;
 
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\AddMembersToList\AddProfilesToListResponse;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Common\ProfileContactInfoCollection;
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetLists\DTO\ProfilesListInfo;
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetLists\GetProfilesListsRequest;
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetLists\GetProfilesListsResponse;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfilesFromList\RemoveProfilesFromListRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfilesFromList\RemoveProfilesFromListResponse;
 use Klaviyo\Integration\Klaviyo\Client\ClientResult;
-use Klaviyo\Integration\Klaviyo\Gateway\Exception\ProfilesListNotFoundException;
 use Klaviyo\Integration\Klaviyo\Gateway\Result\OrderTrackingResult;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\IdentifyProfileRequestTranslator;
@@ -251,35 +247,6 @@ class KlaviyoGateway
 
             return false;
         }
-    }
-
-    public function getListIdByListName(
-        SalesChannelEntity $salesChannelEntity,
-        string $profilesListName
-    ): string {
-        $request = new GetProfilesListsRequest();
-        $clientResult = $this->clientRegistry
-            ->getClient($salesChannelEntity->getId())
-            ->sendRequests([$request]);
-
-        /** @var GetProfilesListsResponse $result */
-        $result = $clientResult->getRequestResponse($request);
-        if (!$result->isSuccess()) {
-            throw new ProfilesListNotFoundException(
-                sprintf('Could not get Profiles list from Klaviyo. Reason: %s', $result->getErrorDetails())
-            );
-        }
-
-        /** @var ProfilesListInfo $list */
-        foreach ($result->getLists() as $list) {
-            if ($list->getName() === $profilesListName) {
-                return $list->getId();
-            }
-        }
-
-        throw new ProfilesListNotFoundException(
-            sprintf('Profiles list[name: "%s"] was not found', $profilesListName)
-        );
     }
 
     /**

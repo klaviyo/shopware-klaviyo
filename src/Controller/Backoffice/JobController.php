@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @RouteScope(scopes={"api"})
  * @Route(
- *     "api/klaviyo/integration/job"
+ *     "/api/_action/klaviyo"
  * )
  */
 class JobController
@@ -26,8 +26,8 @@ class JobController
 
     /**
      * @Route(
-     *     "/_action/historical-event-tracking/synchronization/schedule",
-     *     name="api.klaviyo.integration.historical.event.tracking.synchronization.schedule",
+     *     "/historical-event-tracking/synchronization/schedule",
+     *     name="api.action.klaviyo.historical.event.tracking.synchronization.schedule",
      *     methods={"POST"},
      *     requirements={"version"="\d+"}
      * )
@@ -42,8 +42,8 @@ class JobController
 
     /**
      * @Route(
-     *     "/_action/subscribers/synchronization/schedule",
-     *     name="api.klaviyo.integration.subscribers.synchronization.schedule",
+     *     "/subscribers/synchronization/schedule",
+     *     name="api.action.klaviyo.subscribers.synchronization.schedule",
      *     methods={"POST"},
      *     requirements={"version"="\d+"}
      * )

@@ -4,6 +4,7 @@ namespace Klaviyo\Integration\Model\UseCase\Operation;
 
 use Klaviyo\Integration\Async\Message\CartEventSyncMessage;
 use Klaviyo\Integration\Entity\CartRequest\CartRequestEntity;
+use Klaviyo\Integration\Model\CartRequestSerializer;
 use Klaviyo\Integration\System\Tracking\Event\Cart\CartEventRequestBag;
 use Klaviyo\Integration\System\Tracking\EventsTrackerInterface;
 use Od\Scheduler\Model\Job\JobHandlerInterface;
@@ -19,13 +20,16 @@ class CartEventSyncOperation implements JobHandlerInterface
 
     private EventsTrackerInterface $eventsTracker;
     private EntityRepositoryInterface $cartEventRequestRepository;
+    private CartRequestSerializer $cartRequestSerializer;
 
     public function __construct(
         EventsTrackerInterface $eventsTracker,
-        EntityRepositoryInterface $cartEventRequestRepository
+        EntityRepositoryInterface $cartEventRequestRepository,
+        CartRequestSerializer $cartRequestSerializer
     ) {
         $this->eventsTracker = $eventsTracker;
         $this->cartEventRequestRepository = $cartEventRequestRepository;
+        $this->cartRequestSerializer = $cartRequestSerializer;
     }
 
     /**
@@ -45,7 +49,7 @@ class CartEventSyncOperation implements JobHandlerInterface
         foreach ($cartEvents as $cartEvent) {
             try {
                 $requestBag->add(
-                    unserialize(base64_decode($cartEvent->getSerializedRequest())),
+                    $this->cartRequestSerializer->decode($cartEvent->getSerializedRequest()),
                     $cartEvent->getSalesChannelId()
                 );
             } catch (\Throwable $e) {

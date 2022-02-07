@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Klaviyo\Integration\Klaviyo\Gateway\ClientRegistry">
+            <argument type="service" id="Klaviyo\Integration\Klaviyo\Client\ClientFactory"/>
+            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\ClientConfigurationFactory"/>
+        </service>
+        <service id="Klaviyo\Integration\Klaviyo\Gateway\ClientConfigurationFactory">
+            <argument type="service" id="Klaviyo\Integration\Configuration\ConfigurationRegistry"/>
+        </service>
+        <service id="Klaviyo\Integration\Klaviyo\Client\ClientFactory">
+            <argument type="service" id="Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator\TranslatorsRegistryFactory"/>
+            <argument type="service" id="klaviyo.tracking_integration.guzzle_client"/>
+        </service>
+        <service id="Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator\TranslatorsRegistryFactory">
+            <argument type="service" id="Klaviyo\Integration\Klaviyo\Client\Serializer\SerializerFactory"/>
+        </service>
+        <service id="klaviyo.tracking_integration.guzzle_client" class="GuzzleHttp\Client"/>
+        <service id="Klaviyo\Integration\Klaviyo\Client\Serializer\SerializerFactory"/>
+    </services>
+</container>

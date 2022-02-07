@@ -3,7 +3,7 @@
 namespace Klaviyo\Integration\Controller\Backoffice;
 
 use Klaviyo\Integration\Klaviyo\Promotion\PromotionsExporter;
-use Klaviyo\Integration\Response\KlaviyoBinaryFileResponse;
+use Klaviyo\Integration\Model\Response\KlaviyoBinaryFileResponse;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;

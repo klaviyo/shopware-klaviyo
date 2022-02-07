@@ -1,0 +1,87 @@
+{% block klaviyo_integration_settings %}
+    <sw-page class="klaviyo-integration-settings">
+        {% block klaviyo_integration_settings_header %}
+            <template #smart-bar-header>
+                <h2>
+                    {{ $tc('sw-settings.index.title') }}
+                    <sw-icon name="small-arrow-medium-right" small></sw-icon>
+                    {{ $tc('klaviyo-integration-settings.title') }}
+                </h2>
+            </template>
+        {% endblock %}
+        {% block klaviyo_integration_settings_actions %}
+            <template #smart-bar-actions>
+
+                {% block klaviyo_integration_settings_actions_historical_events_synchronization_control %}
+                    <klaviyo-integration-settings-synchronization-control></klaviyo-integration-settings-synchronization-control>
+                {% endblock %}
+
+                {% block klaviyo_integration_settings_actions_save %}
+                    <sw-button-process v-model="isSaveSuccessful"
+                                       class="klaviyo-integration-settings-save"
+                                       variant="primary"
+                                       :isLoading="isLoading"
+                                       :disabled="isLoading"
+                                       @click="onSave">
+                        {{ $tc('global.default.save') }}
+                    </sw-button-process>
+                {% endblock %}
+            </template>
+        {% endblock %}
+
+        {% block klaviyo_integration_settings_content %}
+            <template #content>
+
+
+                {% block klaviyo_integration_settings_content_sales_channel_config %}
+                    <sw-sales-channel-config v-model="config"
+                                             ref="configComponent"
+                                             domain="KlaviyoIntegrationPlugin.config">
+                        {% block klaviyo_integration_settings_content_sales_channel_config_channel %}
+                            <template #select="{ onInput, selectedSalesChannelId }">
+                                {% block klaviyo_integration_settings_content_sales_channel_config_channel_card %}
+                                    <sw-card class="sw-card--grid"
+                                             :title="$tc('global.entities.sales_channel', 2)">
+                                        <div class="card-container klaviyo-integration-settings-sales-channel">
+                                            {% block klaviyo_integration_settings_content_sales_channel_config_channel_card_select %}
+                                                <sw-single-select v-model="selectedSalesChannelId"
+                                                                  labelProperty="translated.name"
+                                                                  valueProperty="id"
+                                                                  :isLoading="isLoading"
+                                                                  :options="salesChannels"
+                                                                  @change="onInput">
+                                                </sw-single-select>
+                                            {% endblock %}
+                                        </div>
+                                    </sw-card>
+                                {% endblock %}
+                            </template>
+                        {% endblock %}
+
+                        {% block klaviyo_integration_settings_content_sales_channel_configs %}
+                            <template #content="{ actualConfigData, allConfigs, selectedSalesChannelId }">
+                                <div v-if="actualConfigData">
+
+                                    {% block klaviyo_integration_settings_content_sales_channel_general %}
+                                        <klaviyo-integration-settings-general
+                                                :actualConfigData="actualConfigData"
+                                                :allConfigs="allConfigs"
+                                                :selectedSalesChannelId="selectedSalesChannelId">
+                                        </klaviyo-integration-settings-general>
+                                    {% endblock %}
+
+                                </div>
+                            </template>
+                        {% endblock %}
+
+                    </sw-sales-channel-config>
+                {% endblock %}
+
+                {% block klaviyo_integration_settings_content_loading %}
+                    <sw-loader v-if="isLoading"></sw-loader>
+                {% endblock %}
+            </template>
+        {% endblock %}
+
+    </sw-page>
+{% endblock %}

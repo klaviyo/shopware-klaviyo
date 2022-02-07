@@ -4,13 +4,12 @@ namespace Klaviyo\Integration;
 
 use Composer\Autoload\ClassLoader;
 use Doctrine\DBAL\Connection;
-use Klaviyo\Integration\Utils\MigrationHelper;
+use Klaviyo\Integration\Utils\{Lifecycle, MigrationHelper};
 use Od\Scheduler\OdScheduler;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Parameter\AdditionalBundleParameters;
 use Shopware\Core\Framework\Plugin;
-use Shopware\Core\Framework\Plugin\Context\ActivateContext;
-use Shopware\Core\Framework\Plugin\Context\InstallContext;
-use Shopware\Core\Framework\Plugin\Context\UninstallContext;
+use Shopware\Core\Framework\Plugin\Context\{ActivateContext, UninstallContext};
 use Shopware\Core\Framework\Plugin\Util\AssetService;
 
 class KlaviyoIntegrationPlugin extends Plugin
@@ -35,10 +34,12 @@ class KlaviyoIntegrationPlugin extends Plugin
             return;
         }
 
+        /** @var EntityRepositoryInterface $systemConfigRepository */
+        $systemConfigRepository = $this->container->get('system_config.repository');
         /** @var Connection $connection */
         $connection = $this->container->get(Connection::class);
-        $connection->executeStatement('DROP TABLE IF EXISTS `klaviyo_job_event`');
-        $connection->executeStatement('DROP TABLE IF EXISTS `klaviyo_job_cart_request`');
+
+        (new Lifecycle($systemConfigRepository, $connection))->uninstall($uninstallContext);
     }
 
     public function getAdditionalBundles(AdditionalBundleParameters $parameters): array
@@ -69,7 +70,6 @@ class KlaviyoIntegrationPlugin extends Plugin
     private function getDependencyBundles(): array
     {
         return [
-//            new OdScheduler(true, $this->getBasePath() . '/vendor/od/sw6-job-scheduler')
             new OdScheduler()
         ];
     }
