@@ -1,10 +1,10 @@
 {% block job_listing_page %}
     <sw-page class="swag-example-list">
         <template slot="content">
-            <job-listing-index ref="jobListing"
+            <od-job-listing-index ref="jobListing"
                                :autoReloadInterval="60000"
                                :jobTypes="klaviyoJobTypes">
-            </job-listing-index>
+            </od-job-listing-index>
         </template>
         <template #sidebar>
             <sw-sidebar>

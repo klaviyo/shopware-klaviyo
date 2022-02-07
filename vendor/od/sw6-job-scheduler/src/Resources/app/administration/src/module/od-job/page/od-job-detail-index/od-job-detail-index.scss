@@ -1,0 +1,35 @@
+.sw-modal__body .sw-data-grid.is--compact .sw-data-grid__body .sw-data-grid__cell-content {
+  padding: 0;
+  height: 100%;
+}
+
+.od-job-detail-card {
+    margin-top: 30px;
+
+    .sw-card__content {
+        padding: 0;
+    }
+}
+
+.od-job-messages-grid{
+    .sw-data-grid__body {
+        .sw-data-grid__row {
+            &:nth-child(even) .sw-data-grid__cell {
+                background-color: white;
+            }
+
+            &:hover .sw-data-grid__cell {
+                background-color: unset;
+            }
+
+            &.is--inline-edit .sw-data-grid__cell,
+            &.is--selected .sw-data-grid__cell {
+                background-color: unset;
+            }
+        }
+    }
+
+    .sw-alert {
+        white-space: normal;
+    }
+}

@@ -60,6 +60,9 @@ class TranslatorsRegistryFactory
         $registry->addTranslator(
             new GetListProfilesRequestApiTransferTranslator($serializer, $configuration)
         );
+        $registry->addTranslator(
+            new IdentifyProfileRequestApiTransferTranslator($serializer, $configuration)
+        );
 
         return $registry;
     }

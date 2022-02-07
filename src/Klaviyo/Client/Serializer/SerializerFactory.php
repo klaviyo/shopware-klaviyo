@@ -16,6 +16,7 @@ use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\AddProfilesToListRe
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\AddressNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\CanceledOrderEventTrackingRequestNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\CustomerPropertiesNormalizer;
+use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\IdentifyProfileRequestNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\OrderedProductEventTrackingRequestNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\ConfigurableOrderEventTrackingRequestNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\RefundedOrderEventTrackingRequestNormalizer;
@@ -45,7 +46,8 @@ class SerializerFactory
                 new ProfileInfoDenormalizer(),
                 new GetListProfilesResponseDenormalizer(),
                 new CollectionDenormalizer(),
-                new RemoveProfilesFromListResponseDenormalizer()
+                new RemoveProfilesFromListResponseDenormalizer(),
+                new IdentifyProfileRequestNormalizer($configuration)
             ],
             [
                 new JsonEncoder()

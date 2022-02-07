@@ -6,6 +6,7 @@ services:
             - '@Klaviyo\Integration\Klaviyo\Gateway\Translator\ProductEventRequestTranslator'
             - '@Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator'
             - '@Klaviyo\Integration\Klaviyo\Gateway\Translator\SubscribersToKlaviyoRequestsTranslator'
+            - '@Klaviyo\Integration\Klaviyo\Gateway\Translator\IdentifyProfileRequestTranslator'
             - '@logger'
 
     Klaviyo\Integration\Klaviyo\Gateway\Translator\OrderEventRequestTranslator:
@@ -16,6 +17,10 @@ services:
             - '@order_line_item.repository'
             - '@Klaviyo\Integration\Entity\Helper\AddressDataHelper'
             - '@Klaviyo\Integration\Entity\Helper\ProductDataHelper'
+            - '@Klaviyo\Integration\Klaviyo\Gateway\Translator\CustomerPropertiesTranslator'
+
+    Klaviyo\Integration\Klaviyo\Gateway\Translator\IdentifyProfileRequestTranslator:
+        arguments:
             - '@Klaviyo\Integration\Klaviyo\Gateway\Translator\CustomerPropertiesTranslator'
 
     Klaviyo\Integration\Klaviyo\Gateway\Translator\ProductEventRequestTranslator:

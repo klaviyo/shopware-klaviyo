@@ -1,0 +1,35 @@
+{
+    "packages": [
+        {
+            "name": "od/sw6-job-scheduler",
+            "version": "1.0.0",
+            "version_normalized": "1.0.0.0",
+            "dist": {
+                "type": "path",
+                "url": "../OdJobScheduler",
+                "reference": "228f01b520fb4a96ec9074dcaecdcd92fddf0c88"
+            },
+            "require": {
+                "php": "^7.4 || ^8.0"
+            },
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "Od\\Scheduler\\": "src/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "System library for async job scheduling for Shopware 6",
+            "transport-options": {
+                "symlink": false,
+                "relative": true
+            },
+            "install-path": "../od/sw6-job-scheduler"
+        }
+    ],
+    "dev": false,
+    "dev-package-names": []
+}

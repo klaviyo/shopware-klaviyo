@@ -6,7 +6,11 @@ interface ConfigurationInterface
 {
     public function getApiKey(): string;
 
+    public function getPublicApiKey(): string;
+
     public function getTrackApiEndpointUrl(): string;
+
+    public function getIdentifyApiEndpointUrl(): string;
 
     public function getListAndSegmentsApiEndpointUrl(): string;
 

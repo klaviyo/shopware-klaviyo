@@ -125,3 +125,12 @@ services:
     Klaviyo\Integration\Klaviyo\Promotion\PromotionsExporter:
         arguments:
             - '@promotion.repository'
+
+    Klaviyo\Integration\Utils\MigrationHelper:
+        arguments:
+            - '@Shopware\Core\Framework\Migration\MigrationCollectionLoader'
+        public: true
+
+    klaviyo.plugin.assetservice.public:
+        alias: Shopware\Core\Framework\Plugin\Util\AssetService
+        public: true

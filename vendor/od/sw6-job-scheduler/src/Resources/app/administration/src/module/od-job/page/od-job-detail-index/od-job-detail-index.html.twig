@@ -1,0 +1,219 @@
+{% block od_job_detail_page %}
+    <sw-page v-if="jobId && jobItem" class="od-job-detail">
+        {% block job_detail_header %}
+            <template #smart-bar-header>
+                {% block job_detail_header_title %}
+                    <h2>
+                        {{ jobItem.name }}
+                    </h2>
+                {% endblock %}
+            </template>
+        {% endblock %}
+
+        <template slot="smart-bar-back">
+            <router-link v-if="backPath"
+                         class="smart-bar__back-btn"
+                         :to="backPath"
+                         :style="{ 'color': moduleData.color }">
+                <sw-icon name="default-arrow-head-left" small></sw-icon>
+            </router-link>
+        </template>
+
+        {% block job_detail_actions %}
+            <template #smart-bar-actions>
+                <sw-button
+                        :disabled="!canReschedule(jobItem)"
+                        @click="rescheduleJob(jobId)"
+                        class="od-job-detail__smart-bar-edit-button"
+                        variant="primary"
+                >
+                    {{ $tc('job-listing.actions.reschedule-job.button.label') }}
+                </sw-button>
+                <sw-button
+                        v-if="jobMessages !== null"
+                        :disabled="!canShowJobMessages(jobItem.id)"
+                        @click="showMessageModal(jobId)"
+                        class="od-job-detail__smart-bar-edit-button"
+                        variant="primary"
+                >
+                    {{ $tc('job-listing.actions.show-messages.button.label') }}
+                </sw-button>
+            </template>
+        {% endblock %}
+        {% block job_detail_content %}
+            <template #content>
+                <sw-card class="od-job-detail-card">
+                    {% block job_row_primary %}
+                        <sw-card-section divider="bottom">
+                            {% block job_detail_base_overview_columns %}
+                                <sw-container
+                                        columns="repeat(auto-fit, minmax(250px, 1fr))"
+                                        gap="30px 30px">
+                                    {% block job_detail_base_overview_left_column %}
+                                        <sw-description-list
+                                                columns="1fr"
+                                                grid="1fr">
+                                            {% block job_detail_base_overview_name %}
+                                                <dt>{{ $tc('job-listing.page.listing.grid.column.name') }}</dt>
+                                                <dd>
+                                                    <od-job-inline-field v-if="jobItem.name"
+                                                                           :display-value="jobItem.name"
+                                                                           :value="jobItem.name"
+                                                                           :editable="false"
+                                                    />
+                                                </dd>
+                                            {% endblock %}
+                                            {% block job_detail_base_overview_status %}
+                                                <dt>{{ $tc('job-listing.page.listing.grid.column.status') }}</dt>
+                                                <dd>
+                                                    <template>
+                                                        <od-job-status-badge :status="jobItem.status">
+                                                        </od-job-status-badge>
+                                                        {{ $tc('job-listing.page.listing.grid.job-status.' + jobItem.status) }}
+                                                    </template>
+                                                </dd>
+                                            {% endblock %}
+                                            {% block job_detail_base_overview_startedAt %}
+                                                <dt>{{ $tc('job-listing.page.listing.grid.column.started-at') }}</dt>
+                                                <dd>
+                                                    <od-job-inline-field v-if="jobItem.startedAt"
+                                                                           :display-value="jobItem.startedAt"
+                                                                           :value="jobItem.startedAt"
+                                                                           :editable="false"
+                                                    />
+                                                </dd>
+                                            {% endblock %}
+                                        </sw-description-list>
+                                    {% endblock %}
+                                    {% block od_job_detail_base_job_overview_right_column %}
+                                        <sw-description-list
+                                                columns="1fr"
+                                                grid="1fr" class="od-job-user-card__summary-vertical">
+                                            {% block job_detail_base_overview_type %}
+                                                <dt>{{ $tc('job-listing.page.listing.grid.column.type') }}</dt>
+                                                <dd>
+                                                    <od-job-inline-field v-if="jobItem.type"
+                                                                           :display-value="jobItem.type"
+                                                                           :value="jobItem.type"
+                                                                           :editable="false"
+                                                    />
+                                                </dd>
+                                            {% endblock %}
+                                            {% block job_detail_base_overview_createdAt %}
+                                                <dt>{{ $tc('job-listing.page.listing.grid.column.created-at') }}</dt>
+                                                <dd>
+                                                    <od-job-inline-field v-if="jobItem.createdAt"
+                                                                           :display-value="jobItem.createdAt"
+                                                                           :value="jobItem.startedAt"
+                                                                           :editable="false"/>
+                                                </dd>
+                                            {% endblock %}
+                                            {% block job_detail_base_overview_finishedAt %}
+                                                <dt>{{ $tc('job-listing.page.listing.grid.column.finished-at') }}</dt>
+                                                <dd>
+                                                    <od-job-inline-field v-if="jobItem.finishedAt"
+                                                                           :display-value="jobItem.finishedAt"
+                                                                           :value="jobItem.finishedAt"
+                                                                           :editable="false"/>
+                                                </dd>
+                                            {% endblock %}
+                                        </sw-description-list>
+                                    {% endblock %}
+                                </sw-container>
+                            {% endblock %}
+                        </sw-card-section>
+                    {% endblock %}
+                </sw-card>
+                <div v-if="(jobChildren && jobChildren.total > 0)">
+                    {% block job_children_listing %}
+                        <sw-data-grid
+                                v-if="jobChildren"
+                                :items="jobChildren"
+                                :data-source="jobChildren"
+                                :repository="jobRepository"
+                                :showSelection="false"
+                                :allowColumnEdit="false"
+                                :allowDelete="false"
+                                :allowEdit="false"
+                                :columns="jobChildrenColumns">
+                            <template #column-name="{ item }">
+                                {% block job_list_grid_job_name_link %}
+                                    {{ item.name }}
+                                {% endblock %}
+                            </template>
+                            <template #column-status="{ item }">
+                                {% block job_list_grid_job_status_link %}
+                                    <template>
+                                        <od-job-status-badge :status="item.status"></od-job-status-badge>
+                                        {{ $tc('job-listing.page.listing.grid.job-status.' + item.status) }}
+                                    </template>
+                                {% endblock %}
+                            </template>
+                            <template #actions="{ item }">
+                                <sw-context-menu-item :disabled="!canReschedule(item)"
+                                                      @click="rescheduleJob(item.id)">
+                                    {{ $tc('job-listing.actions.reschedule-job.button.label') }}
+                                </sw-context-menu-item>
+                                <sw-context-menu-item v-if="jobMessages !== null"
+                                                      :disabled="!canShowJobMessages(item.id)"
+                                                      @click="showMessageModal(item.id)">
+                                    {{ $tc('job-listing.actions.show-messages.button.label') }}
+                                </sw-context-menu-item>
+                            </template>
+                        </sw-data-grid>
+                    {% endblock %}
+                </div>
+                <sw-modal v-if="displayedLog"
+                          :title="$tc('job-listing.page.listing.grid.message-modal.label')"
+                          @modal-close="closeModal"
+                          class="job_list_grid_job_messages-modal">
+                    {% block job_messages_listing %}
+                        <sw-data-grid
+                                v-if="currentJobMessages"
+                                :items="currentJobMessages"
+                                :data-source="currentJobMessages"
+                                :showSelection="false"
+                                :allowColumnEdit="false"
+                                :allowDelete="false"
+                                :allowEdit="false"
+                                :showActions="false"
+                                :showHeader="false"
+                                class="od-job-messages-grid"
+                                :columns="jobMessagesColumns">
+                            <template #column-message="{ item }">
+                                {% block job_list_grid_job_messages %}
+                                    <div class="job_list_grid_job_messages-information" style="width:100%;">
+                                        <sw-alert
+                                                v-if="item.type == 'info-message'"
+                                                variant="info"
+                                                appearance="default"
+                                                :showIcon="true"
+                                                :closable="false">
+                                            {{ item.message }}
+                                        </sw-alert>
+                                        <sw-alert
+                                                v-if="item.type == 'error-message'"
+                                                variant="error"
+                                                appearance="default"
+                                                :showIcon="true"
+                                                :closable="false">
+                                            {{ item.message }}
+                                        </sw-alert>
+                                        <sw-alert
+                                                v-if="item.type == 'warning-message'"
+                                                variant="warning"
+                                                appearance="default"
+                                                :showIcon="true"
+                                                :closable="false">
+                                            {{ item.message }}
+                                        </sw-alert>
+                                    </div>
+                                {% endblock %}
+                            </template>
+                        </sw-data-grid>
+                    {% endblock %}
+                </sw-modal>
+            </template>
+        {% endblock %}
+    </sw-page>
+{% endblock %}
