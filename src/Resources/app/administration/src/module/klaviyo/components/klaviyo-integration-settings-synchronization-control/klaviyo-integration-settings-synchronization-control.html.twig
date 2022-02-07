@@ -1,0 +1,25 @@
+{% block klaviyo_integration_settings_synchronization_control %}
+    <div class="klaviyo-integration-settings-synchronization-control">
+
+        {% block klaviyo_integration_settings_synchronization_control_historical_events_tracking %}
+            <sw-button-process variant="ghost"
+                               :isLoading="historicalEventsJobInteractor.isSynchronizationInProgress"
+                               :processSuccess="historicalEventsJobInteractor.isSynchronizationSuccess"
+                               @click="scheduleHistoricalEventsSynchronization"
+                               @process-finish="resetHistoricalEventsSynchronizationState">
+                {{ $tc('klaviyo_integration_plugin.historical_events_tracking.schedule_synchronization.button_label') }}
+            </sw-button-process>
+        {% endblock %}
+
+        {% block klaviyo_integration_settings_synchronization_control_subscribers %}
+            <sw-button-process variant="ghost"
+                               :isLoading="subscribersSynchronizationJobInteractor.isSynchronizationInProgress"
+                               :processSuccess="subscribersSynchronizationJobInteractor.isSynchronizationSuccess"
+                               @click="scheduleSubscribersSynchronization"
+                               @process-finish="resetSubscribersSynchronizationState">
+                {{ $tc('klaviyo_integration_plugin.subscribers.schedule_synchronization.button_label') }}
+            </sw-button-process>
+        {% endblock %}
+
+    </div>
+{% endblock %}
