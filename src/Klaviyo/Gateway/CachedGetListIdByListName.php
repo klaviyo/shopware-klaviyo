@@ -3,15 +3,15 @@
 namespace Klaviyo\Integration\Klaviyo\Gateway;
 
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-use Symfony\Component\Cache\Adapter\AdapterInterface;
+use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
 
 class CachedGetListIdByListName implements GetListIdByListNameInterface
 {
-    private AdapterInterface $cache;
+    private TagAwareAdapterInterface $cache;
     private GetListIdByListName $getListIdByListName;
 
     public function __construct(
-        AdapterInterface $cache,
+        TagAwareAdapterInterface $cache,
         GetListIdByListName $getListIdByListName
     ) {
         $this->cache = $cache;

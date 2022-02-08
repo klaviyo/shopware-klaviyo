@@ -91,10 +91,8 @@
         <service id="Klaviyo\Integration\Klaviyo\Gateway\GetListIdByListName" lazy="true">
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\ClientRegistry"/>
         </service>
-
-        <service id="od.klaviyo.listid.cache" parent="cache.adapter.filesystem"/>
         <service id="Klaviyo\Integration\Klaviyo\Gateway\CachedGetListIdByListName">
-            <argument type="service" id="od.klaviyo.listid.cache"/>
+            <argument type="service" id="cache.object"/>
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\GetListIdByListName"/>
         </service>
     </services>
