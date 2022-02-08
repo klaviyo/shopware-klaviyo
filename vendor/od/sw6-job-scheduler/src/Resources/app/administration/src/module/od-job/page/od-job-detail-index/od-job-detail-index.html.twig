@@ -56,7 +56,7 @@
                                             {% block job_detail_base_overview_name %}
                                                 <dt>{{ $tc('job-listing.page.listing.grid.column.name') }}</dt>
                                                 <dd>
-                                                    <od-job-inline-field v-if="jobItem.name"
+                                                    <sw-order-inline-field v-if="jobItem.name"
                                                                            :display-value="jobItem.name"
                                                                            :value="jobItem.name"
                                                                            :editable="false"
@@ -76,7 +76,7 @@
                                             {% block job_detail_base_overview_startedAt %}
                                                 <dt>{{ $tc('job-listing.page.listing.grid.column.started-at') }}</dt>
                                                 <dd>
-                                                    <od-job-inline-field v-if="jobItem.startedAt"
+                                                    <sw-order-inline-field v-if="jobItem.startedAt"
                                                                            :display-value="jobItem.startedAt"
                                                                            :value="jobItem.startedAt"
                                                                            :editable="false"
@@ -92,7 +92,7 @@
                                             {% block job_detail_base_overview_type %}
                                                 <dt>{{ $tc('job-listing.page.listing.grid.column.type') }}</dt>
                                                 <dd>
-                                                    <od-job-inline-field v-if="jobItem.type"
+                                                    <sw-order-inline-field v-if="jobItem.type"
                                                                            :display-value="jobItem.type"
                                                                            :value="jobItem.type"
                                                                            :editable="false"
@@ -102,7 +102,7 @@
                                             {% block job_detail_base_overview_createdAt %}
                                                 <dt>{{ $tc('job-listing.page.listing.grid.column.created-at') }}</dt>
                                                 <dd>
-                                                    <od-job-inline-field v-if="jobItem.createdAt"
+                                                    <sw-order-inline-field v-if="jobItem.createdAt"
                                                                            :display-value="jobItem.createdAt"
                                                                            :value="jobItem.startedAt"
                                                                            :editable="false"/>
@@ -111,7 +111,7 @@
                                             {% block job_detail_base_overview_finishedAt %}
                                                 <dt>{{ $tc('job-listing.page.listing.grid.column.finished-at') }}</dt>
                                                 <dd>
-                                                    <od-job-inline-field v-if="jobItem.finishedAt"
+                                                    <sw-order-inline-field v-if="jobItem.finishedAt"
                                                                            :display-value="jobItem.finishedAt"
                                                                            :value="jobItem.finishedAt"
                                                                            :editable="false"/>
