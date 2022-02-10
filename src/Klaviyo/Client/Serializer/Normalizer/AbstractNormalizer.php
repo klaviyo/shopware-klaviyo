@@ -22,6 +22,11 @@ abstract class AbstractNormalizer implements NormalizerInterface, NormalizerAwar
         return $this->configuration->getApiKey();
     }
 
+    protected function getPublicToken(): string
+    {
+        return $this->configuration->getPublicApiKey();
+    }
+
     protected function normalizeObject(?object $object): ?array
     {
         if (!$object) {

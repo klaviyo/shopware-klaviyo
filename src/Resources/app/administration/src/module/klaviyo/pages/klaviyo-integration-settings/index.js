@@ -32,16 +32,6 @@ Component.register('klaviyo-integration-settings', {
         this.createdComponent();
     },
 
-    watch: {
-        config: {
-            handler() {
-                const defaultConfig = this.$refs.configComponent.allConfigs.null;
-                const salesChannelId = this.$refs.configComponent.selectedSalesChannelId;
-            },
-            deep: true,
-        },
-    },
-
     computed: {
         salesChannelRepository() {
             return this.repositoryFactory.create('sales_channel');
@@ -91,5 +81,4 @@ Component.register('klaviyo-integration-settings', {
             });
         }
     }
-
 });

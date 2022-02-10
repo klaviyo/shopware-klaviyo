@@ -6,8 +6,5 @@ use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 interface GetListIdByListNameInterface
 {
-    public function execute(
-        SalesChannelEntity $salesChannelEntity,
-        string $listName
-    ): string;
+    public function execute(SalesChannelEntity $salesChannelEntity, string $listName): string;
 }

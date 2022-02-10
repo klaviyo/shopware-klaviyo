@@ -2,6 +2,7 @@
 
 namespace Klaviyo\Integration\Klaviyo\Gateway\Translator;
 
+use Klaviyo\Integration\Configuration\ConfigurationRegistry;
 use Klaviyo\Integration\Entity\Helper\AddressDataHelper;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\Common\CustomerProperties;
 use Klaviyo\Integration\Klaviyo\Gateway\Exception\TranslationException;
@@ -13,10 +14,14 @@ use Shopware\Core\Framework\Context;
 class CustomerPropertiesTranslator
 {
     private AddressDataHelper $addressHelper;
+    private ConfigurationRegistry $configurationRegistry;
 
-    public function __construct(AddressDataHelper $addressHelper)
-    {
+    public function __construct(
+        AddressDataHelper $addressHelper,
+        ConfigurationRegistry $configurationRegistry
+    ) {
         $this->addressHelper = $addressHelper;
+        $this->configurationRegistry = $configurationRegistry;
     }
 
     public function translateOrder(Context $context, OrderEntity $orderEntity): CustomerProperties
@@ -29,12 +34,12 @@ class CustomerPropertiesTranslator
         }
 
         $customer = $orderCustomer->getCustomer();
-
         $customerAddress = $this->guessRelevantCustomerAddress($customer);
 
         $state = $this->addressHelper->getAddressRegion($context, $customerAddress);
         $country = $this->addressHelper->getAddressCountry($context, $customerAddress);
 
+        $customFields = $this->prepareCustomFields($customer);
         $customerProperties = new CustomerProperties(
             $orderCustomer->getEmail(),
             $orderCustomer->getFirstName(),
@@ -44,7 +49,8 @@ class CustomerPropertiesTranslator
             $customerAddress ? $customerAddress->getCity() : null,
             $customerAddress ? $customerAddress->getZipcode() : null,
             $state ? $state->getShortCode() : null,
-            $country ? $country->getIso() : null
+            $country ? $country->getIso() : null,
+            $customFields
         );
 
         return $customerProperties;
@@ -57,6 +63,7 @@ class CustomerPropertiesTranslator
         $state = $this->addressHelper->getAddressRegion($context, $customerAddress);
         $country = $this->addressHelper->getAddressCountry($context, $customerAddress);
 
+        $customFields = $this->prepareCustomFields($customerEntity);
         $customerProperties = new CustomerProperties(
             $customerEntity->getEmail(),
             $customerEntity->getFirstName(),
@@ -66,10 +73,26 @@ class CustomerPropertiesTranslator
             $customerAddress ? $customerAddress->getCity() : null,
             $customerAddress ? $customerAddress->getZipcode() : null,
             $state ? $state->getShortCode() : null,
-            $country ? $country->getIso() : null
+            $country ? $country->getIso() : null,
+            $customFields
         );
 
         return $customerProperties;
+    }
+
+    private function prepareCustomFields(CustomerEntity $customer): array
+    {
+        $configuration = $this->configurationRegistry->getConfiguration($customer->getSalesChannelId());
+        $fieldMapping = $configuration->getCustomerCustomFieldMapping();
+        $customFields = [];
+
+        foreach ($customer->getCustomFields() ?? [] as $fieldName => $fieldValue) {
+            if (isset($fieldMapping[$fieldName]) && $fieldValue) {
+                $customFields[$fieldMapping[$fieldName]] = $fieldValue;
+            }
+        }
+
+        return $customFields;
     }
 
     private function guessRelevantCustomerPhone(?CustomerEntity $customerEntity): ?string

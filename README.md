@@ -15,8 +15,10 @@ The plugin offers the following features:
 Requirements
 ---
 * Shopware >= 6.4.0.0
-* od/sw6-job-scheduler >= 1.0.0
-* od/sw6-base-plugin >= 1.0.0
+
+Embedded Dependencies:
+---
+* OD Scheduler ^1.0.0
 
 Documentation
 ---

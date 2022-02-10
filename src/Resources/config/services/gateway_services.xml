@@ -10,8 +10,8 @@
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\OrderEventRequestTranslator"/>
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\ProductEventRequestTranslator"/>
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator"/>
-            <argument type="service"
-                      id="Klaviyo\Integration\Klaviyo\Gateway\Translator\SubscribersToKlaviyoRequestsTranslator"/>
+            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\SubscribersToKlaviyoRequestsTranslator"/>
+            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\IdentifyProfileRequestTranslator"/>
             <argument type="service" id="logger"/>
         </service>
         <service id="Klaviyo\Integration\Klaviyo\Gateway\Translator\OrderEventRequestTranslator">
@@ -29,11 +29,15 @@
         </service>
         <service id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CustomerPropertiesTranslator">
             <argument type="service" id="Klaviyo\Integration\Entity\Helper\AddressDataHelper"/>
+            <argument type="service" id="Klaviyo\Integration\Configuration\ConfigurationRegistry"/>
         </service>
         <service id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator">
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CustomerPropertiesTranslator"/>
             <argument type="service" id="Klaviyo\Integration\Entity\Helper\ProductDataHelper"/>
             <argument type="service" id="router.default"/>
+        </service>
+        <service id="Klaviyo\Integration\Klaviyo\Gateway\Translator\IdentifyProfileRequestTranslator">
+            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CustomerPropertiesTranslator"/>
         </service>
         <service id="Klaviyo\Integration\Klaviyo\Gateway\Translator\SubscribersToKlaviyoRequestsTranslator"/>
     </services>

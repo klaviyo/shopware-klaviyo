@@ -28,6 +28,11 @@
             <argument type="service" id="klaviyo_job_cart_request.repository"/>
             <argument type="service" id="Klaviyo\Integration\Model\CartRequestSerializer"/>
         </service>
+        <service id="Klaviyo\Integration\Model\UseCase\Operation\CustomerProfileSyncOperation">
+            <tag name="od.job_handler" code="od-klaviyo-customer-profile-sync-handler"/>
+            <argument type="service" id="Klaviyo\Integration\System\Tracking\EventsTracker"/>
+            <argument type="service" id="customer.repository"/>
+        </service>
         <service id="Klaviyo\Integration\Model\UseCase\Operation\FullOrderSyncOperation">
             <tag name="od.job_handler" code="od-klaviyo-full-order-sync-handler"/>
             <argument type="service" id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob"/>
@@ -58,7 +63,7 @@
             <argument type="service" id="Klaviyo\Integration\Configuration\ConfigurationRegistry"/>
             <argument type="service" id="newsletter_recipient.repository"/>
             <argument type="service" id="sales_channel.repository"/>
-            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\GetListIdByListName"/>
+            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\CachedGetListIdByListName"/>
         </service>
         <!-- /Operations' definitions -->
     </services>

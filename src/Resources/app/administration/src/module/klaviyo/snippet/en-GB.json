@@ -100,7 +100,18 @@
 				"label": "Track Refunded Order",
 				"helpText": "Do we need to send \"Refunded Order Event\" to Klaviyo?\nDecision will also affect Synchronization of the historical events"
 			}
-		}
+		},
+        "customer": {
+            "title": "Customer Field Mapping",
+            "fieldMapping": {
+                "addFieldButtonLabel": "Add",
+                "nameFieldLabel": "Custom Field Label",
+                "item": {
+                    "fieldName": "Field Name",
+                    "customFieldName": "Custom Field"
+                }
+            }
+        }
 	},
 	"klaviyo_integration_plugin": {
 		"not_available": "N/A",

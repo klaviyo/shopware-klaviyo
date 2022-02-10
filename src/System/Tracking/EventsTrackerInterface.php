@@ -4,14 +4,16 @@ namespace Klaviyo\Integration\System\Tracking;
 
 use Klaviyo\Integration\Klaviyo\Gateway\Result\OrderTrackingResult;
 use Klaviyo\Integration\System\Tracking\Event\Cart\CartEventRequestBag;
+use Klaviyo\Integration\System\Tracking\Event\Customer\ProfileEventsBag;
 use Klaviyo\Integration\System\Tracking\Event\Order\OrderTrackingEventsBag;
 use Shopware\Core\Framework\Context;
 
 interface EventsTrackerInterface
 {
+    public const CUSTOMER_WRITTEN_EVENT = 'od-klaviyo-customer-written';
+
     public const SUBSCRIBER_EVENT_SUB = 'od-klaviyo-subscriber-subscribed';
     public const SUBSCRIBER_EVENT_UNSUB = 'od-klaviyo-subscriber-unsubscribed';
-
     public const SUBSCRIBER_EVENTS = [
         self::SUBSCRIBER_EVENT_SUB,
         self::SUBSCRIBER_EVENT_UNSUB,
@@ -21,7 +23,6 @@ interface EventsTrackerInterface
     public const ORDER_EVENT_CANCELED = 'od-klaviyo-order-canceled';
     public const ORDER_EVENT_REFUNDED = 'od-klaviyo-order-refunded';
     public const ORDER_EVENT_FULFILLED = 'od-klaviyo-order-fulfilled';
-
     public const ORDER_EVENTS = [
         self::ORDER_EVENT_PLACED,
         self::ORDER_EVENT_CANCELED,
@@ -38,4 +39,6 @@ interface EventsTrackerInterface
     public function trackRefundOrders(Context $context, OrderTrackingEventsBag $trackingBag): OrderTrackingResult;
 
     public function trackAddedToCart(Context $context, CartEventRequestBag $requestBag);
+
+    public function trackCustomerWritten(Context $context, ProfileEventsBag $trackingBag);
 }

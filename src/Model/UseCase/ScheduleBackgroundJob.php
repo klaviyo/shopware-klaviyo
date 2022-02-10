@@ -79,6 +79,12 @@ class ScheduleBackgroundJob
         $this->scheduler->schedule($jobMessage);
     }
 
+    public function scheduleCustomerProfilesSyncJob(array $customerIds, string $parentJobId)
+    {
+        $jobMessage = new Message\CustomerProfileSyncMessage(Uuid::randomHex(), $parentJobId, $customerIds);
+        $this->scheduler->schedule($jobMessage);
+    }
+
     private function checkJobStatus(string $type)
     {
         $criteria = new Criteria();

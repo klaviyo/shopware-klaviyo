@@ -10,6 +10,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 class ClientConfigurationFactory
 {
     private const TRACKING_ENDPOINT_URL = 'https://a.klaviyo.com/api/track';
+    private const IDENTIFY_ENDPOINT_URL = 'https://a.klaviyo.com/api/identify';
     private const LIST_AND_SEGMENTS_API_ROOT_ENDPOINT_URL = 'https://a.klaviyo.com/api/v2';
     private const REQUEST_TIMEOUT = 30;
     private const CONNECTION_TIMEOUT = 15;
@@ -27,7 +28,9 @@ class ClientConfigurationFactory
 
         return new Configuration(
             $pluginConfiguration->getPrivateApiKey(),
+            $pluginConfiguration->getPublicApiKey(),
             self::TRACKING_ENDPOINT_URL,
+            self::IDENTIFY_ENDPOINT_URL,
             self::LIST_AND_SEGMENTS_API_ROOT_ENDPOINT_URL,
             self::REQUEST_TIMEOUT,
             self::CONNECTION_TIMEOUT

@@ -1,0 +1,48 @@
+{% block klaviyo_integration_settings_customer %}
+    <sw-card :title="$tc('klaviyo-integration-settings.customer.title')">
+
+        {% block klaviyo_integration_settings_customer_custom_field_mapping %}
+
+            <template v-for="mappedField, key in customFieldMapping">
+
+                <sw-container columns="5fr 5fr 1fr" gap="16px">
+
+                    <sw-text-field v-model="mappedField.customLabel"
+                                   :label="$tc('klaviyo-integration-settings.customer.fieldMapping.item.fieldName')">
+                    </sw-text-field>
+
+
+                    <sw-select-field v-model="mappedField.customFieldName"
+                                     :label="$tc('klaviyo-integration-settings.customer.fieldMapping.item.customFieldName')">
+                        <option v-for="customField in systemCustomFields"
+                                :value="customField.name">
+                            {{ customField.name }}
+                        </option>
+                    </sw-select-field>
+
+                    <sw-icon name="small-default-x-line-medium"
+                             class="klaviyo-fieldmapping-delete-action"
+                             @click="onDeleteFieldMapping(key)">
+                    </sw-icon>
+
+                </sw-container>
+
+                {# <klaviyo-integration-fieldmapping-field #}
+                {# :mappingOptions="[{name: 'hui-opt-name-1', id:1}]" #}
+                {# :fieldMap="mappedField" #}
+                {# > #}
+                {# </klaviyo-integration-fieldmapping-field> #}
+
+            </template>
+
+            {% block klaviyo_integration_settings_customer_custom_field_mapping_add_button %}
+                <sw-button @click="onAddNewFieldMapping">
+                    {{ $tc('klaviyo-integration-settings.customer.fieldMapping.addFieldButtonLabel') }}
+                </sw-button>
+            {% endblock %}
+
+        {% endblock %}
+        <sw-loader v-if="isLoading"/>
+
+    </sw-card>
+{% endblock %}

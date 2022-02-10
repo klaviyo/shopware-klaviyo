@@ -9,12 +9,14 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfil
 use Klaviyo\Integration\Klaviyo\Client\ClientResult;
 use Klaviyo\Integration\Klaviyo\Gateway\Result\OrderTrackingResult;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator;
+use Klaviyo\Integration\Klaviyo\Gateway\Translator\IdentifyProfileRequestTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\OrderEventRequestTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\ProductEventRequestTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\SubscribersToKlaviyoRequestsTranslator;
 use Klaviyo\Integration\System\Tracking\Event\Order\OrderEventInterface;
 use Klaviyo\Integration\Utils\Logger\ContextHelper;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Checkout\Customer\CustomerCollection;
 use Shopware\Core\Content\Newsletter\Aggregate\NewsletterRecipient\NewsletterRecipientCollection;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
@@ -26,6 +28,7 @@ class KlaviyoGateway
     private ProductEventRequestTranslator $productEventTranslator;
     private CartEventRequestTranslator $cartEventRequestTranslator;
     private SubscribersToKlaviyoRequestsTranslator $subscribersTranslator;
+    private IdentifyProfileRequestTranslator $identifyProfileRequestTranslator;
     private LoggerInterface $logger;
 
     public function __construct(
@@ -34,6 +37,7 @@ class KlaviyoGateway
         ProductEventRequestTranslator $productEventTranslator,
         CartEventRequestTranslator $cartEventRequestTranslator,
         SubscribersToKlaviyoRequestsTranslator $subscribersTranslator,
+        IdentifyProfileRequestTranslator $identifyProfileRequestTranslator,
         LoggerInterface $logger
     ) {
         $this->clientRegistry = $clientRegistry;
@@ -41,6 +45,7 @@ class KlaviyoGateway
         $this->productEventTranslator = $productEventTranslator;
         $this->cartEventRequestTranslator = $cartEventRequestTranslator;
         $this->subscribersTranslator = $subscribersTranslator;
+        $this->identifyProfileRequestTranslator = $identifyProfileRequestTranslator;
         $this->logger = $logger;
     }
 
@@ -154,6 +159,16 @@ class KlaviyoGateway
         $clientResult = $this->trackEvents($channelId, $requests);
 
         return $this->handleClientTrackingResult($clientResult, $requestOrderIdMap, 'RefundedOrder');
+    }
+
+    public function upsertCustomerProfiles(Context $context, string $channelId, CustomerCollection $customers)
+    {
+        $requests = [];
+        foreach ($customers as $customer) {
+            $requests[] = $this->identifyProfileRequestTranslator->translateToProfileRequest($context, $customer);
+        }
+
+        return $this->trackEvents($channelId, $requests);
     }
 
     public function trackAddedToCartRequests(string $channelId, array $cartRequests): ClientResult

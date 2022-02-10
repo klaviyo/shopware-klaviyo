@@ -37,6 +37,11 @@
             <argument type="service" id="sales_channel.repository"/>
             <tag name="kernel.event_subscriber"/>
         </service>
+        <service id="Klaviyo\Integration\EventListener\CustomerWrittenEventListener">
+            <argument type="service" id="Klaviyo\Integration\System\Tracking\ScheduledEventsTracker"/>
+            <argument type="service" id="customer.repository"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
         <service id="Klaviyo\Integration\EventListener\OrderStateChangedEventListener">
             <argument type="service" id="Klaviyo\Integration\System\Tracking\ScheduledEventsTracker"/>
             <argument type="service" id="order.repository"/>
@@ -88,8 +93,12 @@
             <argument type="service" id="promotion.repository"/>
         </service>
         <service id="Klaviyo\Integration\Model\CartRequestSerializer"/>
-        <service id="Klaviyo\Integration\Klaviyo\Gateway\GetListIdByListName">
+        <service id="Klaviyo\Integration\Klaviyo\Gateway\GetListIdByListName" lazy="true">
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\ClientRegistry"/>
+        </service>
+        <service id="Klaviyo\Integration\Klaviyo\Gateway\CachedGetListIdByListName">
+            <argument type="service" id="cache.object"/>
+            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\GetListIdByListName"/>
         </service>
     </services>
 

@@ -17,10 +17,8 @@ class GetListIdByListName implements GetListIdByListNameInterface
         $this->clientRegistry = $clientRegistry;
     }
 
-    public function execute(
-        SalesChannelEntity $salesChannelEntity,
-        string $listName
-    ): string {
+    public function execute(SalesChannelEntity $salesChannelEntity, string $listName): string
+    {
         $request = new GetProfilesListsRequest();
         $clientResult = $this->clientRegistry
             ->getClient($salesChannelEntity->getId())
@@ -28,7 +26,7 @@ class GetListIdByListName implements GetListIdByListNameInterface
 
         /** @var GetProfilesListsResponse $result */
         $result = $clientResult->getRequestResponse($request);
-        if ( ! $result->isSuccess()) {
+        if (!$result->isSuccess()) {
             throw new ProfilesListNotFoundException(
                 sprintf('Could not get Profiles list from Klaviyo. Reason: %s', $result->getErrorDetails())
             );
@@ -45,5 +43,4 @@ class GetListIdByListName implements GetListIdByListNameInterface
             sprintf('Profiles list[name: "%s"] was not found', $listName)
         );
     }
-
 }
