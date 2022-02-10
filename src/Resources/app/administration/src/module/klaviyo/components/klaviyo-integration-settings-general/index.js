@@ -23,9 +23,7 @@ Component.register('klaviyo-integration-settings-general', {
 
     data() {
         return {
-            configPath: 'KlaviyoIntegrationPlugin.config',
             isLoading: false,
-            systemLanguages: [],
         };
     },
 
@@ -34,7 +32,6 @@ Component.register('klaviyo-integration-settings-general', {
     },
 
     methods: {
-
         createdComponent() {
             const configPrefix = 'KlaviyoIntegrationPlugin.config.',
                 defaultConfigs = {
@@ -71,6 +68,5 @@ Component.register('klaviyo-integration-settings-general', {
         checkBoolFieldInheritance(value) {
             return typeof value !== 'boolean';
         }
-
     },
 });

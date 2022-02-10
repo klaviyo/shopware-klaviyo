@@ -33,6 +33,9 @@ class Lifecycle
         $criteria = new Criteria();
         $criteria->addFilter(new ContainsFilter('configurationKey', 'KlaviyoIntegrationPlugin'));
         $configIds = $this->systemConfigRepository->searchIds($criteria, $context)->getIds();
+        $configIds = \array_map(static function ($id) {
+            return ['id' => $id];
+        }, $configIds);
 
         if (!empty($configIds)) {
             $this->systemConfigRepository->delete(array_values($configIds), $context);

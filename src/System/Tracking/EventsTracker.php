@@ -6,9 +6,14 @@ use Klaviyo\Integration\Configuration\ConfigurationRegistry;
 use Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway;
 use Klaviyo\Integration\Klaviyo\Gateway\Result\OrderTrackingResult;
 use Klaviyo\Integration\System\Tracking\Event\Cart\CartEventRequestBag;
+use Klaviyo\Integration\System\Tracking\Event\Customer\ProfileEventsBag;
 use Klaviyo\Integration\System\Tracking\Event\Order\OrderTrackingEventsBag;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Checkout\Customer\CustomerCollection;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 
 class EventsTracker implements EventsTrackerInterface
 {
@@ -105,8 +110,21 @@ class EventsTracker implements EventsTrackerInterface
             if (!$configuration->isTrackAddedToCart()) {
                 return;
             }
-//TODO: add result
+
             $this->gateway->trackAddedToCartRequests($channelId, $events);
+        }
+    }
+
+    public function trackCustomerWritten(Context $context, ProfileEventsBag $trackingBag)
+    {
+        foreach ($trackingBag->all() as $channelId => $customerEntities) {
+            //TODO: maybe add enable/disable setting in future?
+            $customerCollection = new CustomerCollection();
+            foreach ($customerEntities as $customer) {
+                $customerCollection->add($customer);
+            }
+
+            $this->gateway->upsertCustomerProfiles($context, $channelId, $customerCollection);
         }
     }
 }

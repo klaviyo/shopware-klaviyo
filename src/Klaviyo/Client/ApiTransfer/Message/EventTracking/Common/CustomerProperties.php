@@ -13,6 +13,7 @@ class CustomerProperties implements \JsonSerializable
     private ?string $zip;
     private ?string $region;
     private ?string $country;
+    private array $customFields;
 
     public function __construct(
         string $email,
@@ -23,7 +24,8 @@ class CustomerProperties implements \JsonSerializable
         ?string $city = null,
         ?string $zip = null,
         ?string $region = null,
-        ?string $country = null
+        ?string $country = null,
+        array $customFields = []
     ) {
         $this->email = $email;
         $this->firstName = $firstName;
@@ -34,6 +36,7 @@ class CustomerProperties implements \JsonSerializable
         $this->zip = $zip;
         $this->region = $region;
         $this->country = $country;
+        $this->customFields = $customFields;
     }
 
     public function getEmail(): string
@@ -81,9 +84,14 @@ class CustomerProperties implements \JsonSerializable
         return $this->country;
     }
 
+    public function getCustomFields(): array
+    {
+        return $this->customFields;
+    }
+
     public function jsonSerialize()
     {
-        return [
+        $basicData = [
             'email' => $this->getEmail(),
             'firstName' => $this->getFirstName(),
             'lastName' => $this->getLastName(),
@@ -94,5 +102,11 @@ class CustomerProperties implements \JsonSerializable
             'region' => $this->getRegion(),
             'country' => $this->getCountry(),
         ];
+
+        foreach ($this->getCustomFields() as $fieldKey => $fieldValue) {
+            $basicData[$fieldKey] = $fieldValue;
+        }
+
+        return $basicData;
     }
 }

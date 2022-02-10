@@ -29,6 +29,7 @@
         </service>
         <service id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CustomerPropertiesTranslator">
             <argument type="service" id="Klaviyo\Integration\Entity\Helper\AddressDataHelper"/>
+            <argument type="service" id="Klaviyo\Integration\Configuration\ConfigurationRegistry"/>
         </service>
         <service id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator">
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CustomerPropertiesTranslator"/>

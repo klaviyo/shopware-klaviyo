@@ -70,6 +70,14 @@
                                         </klaviyo-integration-settings-general>
                                     {% endblock %}
 
+                                    {% block klaviyo_integration_settings_content_sales_channel_customer %}
+                                        <klaviyo-integration-settings-customer
+                                            :actualConfigData="actualConfigData"
+                                            :allConfigs="allConfigs"
+                                            :selectedSalesChannelId="selectedSalesChannelId">
+                                        </klaviyo-integration-settings-customer>
+                                    {% endblock %}
+
                                 </div>
                             </template>
                         {% endblock %}

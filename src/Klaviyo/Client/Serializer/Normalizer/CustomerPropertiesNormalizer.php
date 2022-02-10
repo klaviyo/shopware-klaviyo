@@ -16,18 +16,20 @@ class CustomerPropertiesNormalizer implements NormalizerInterface
      */
     public function normalize($object, string $format = null, array $context = [])
     {
-        return [
-            '$email' => $object->getEmail(),
-            '$first_name' => $object->getFirstName(),
-            '$last_name' => $object->getLastName(),
-            '$address1' => $object->getAddress(),
-            '$phone_number' => $object->getPhoneNumber(),
-            '$city' => $object->getCity(),
-            '$region' => $object->getRegion(),
-            '$country' => $object->getCountry(),
-            '$zip' => $object->getZip(),
-            'my_prop' => 'test_test_test'
-        ];
+        return array_merge(
+            [
+                '$email' => $object->getEmail(),
+                '$first_name' => $object->getFirstName(),
+                '$last_name' => $object->getLastName(),
+                '$address1' => $object->getAddress(),
+                '$phone_number' => $object->getPhoneNumber(),
+                '$city' => $object->getCity(),
+                '$region' => $object->getRegion(),
+                '$country' => $object->getCountry(),
+                '$zip' => $object->getZip(),
+            ],
+            $object->getCustomFields()
+        );
     }
 
     public function supportsNormalization($data, string $format = null)

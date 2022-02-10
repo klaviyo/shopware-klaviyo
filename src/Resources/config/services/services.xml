@@ -37,6 +37,11 @@
             <argument type="service" id="sales_channel.repository"/>
             <tag name="kernel.event_subscriber"/>
         </service>
+        <service id="Klaviyo\Integration\EventListener\CustomerWrittenEventListener">
+            <argument type="service" id="Klaviyo\Integration\System\Tracking\ScheduledEventsTracker"/>
+            <argument type="service" id="customer.repository"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
         <service id="Klaviyo\Integration\EventListener\OrderStateChangedEventListener">
             <argument type="service" id="Klaviyo\Integration\System\Tracking\ScheduledEventsTracker"/>
             <argument type="service" id="order.repository"/>

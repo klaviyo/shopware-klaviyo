@@ -119,6 +119,16 @@ Component.register('od-job-listing-index', {
             return item.status === 'error';
         },
 
+        canDelete(item) {
+            return ['error', 'succeed'].indexOf(item.status) !== -1;
+        },
+
+        onDeleteJob(jobId) {
+            this.jobRepository.delete(jobId, Shopware.Context.api).then(() => {
+                this.updateList();
+            });
+        },
+
         rescheduleJob(jobId) {
             this.OdRescheduleService.rescheduleJob(jobId).then(() => {
                 this.createNotificationSuccess({

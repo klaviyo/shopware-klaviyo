@@ -39,12 +39,22 @@
         "actions": {
             "reschedule-job": {
                 "button": {
-                    "label": "Reschedule job"
+                    "label": "Reschedule Job"
+                }
+            },
+            "delete-job": {
+                "button": {
+                    "label": "Delete Job"
+                }
+            },
+            "view-job": {
+                "button": {
+                    "label": "View Job"
                 }
             },
             "show-messages": {
                 "button": {
-                    "label": "Show messages"
+                    "label": "Show Messages"
                 }
             }
         }

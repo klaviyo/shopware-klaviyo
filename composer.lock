@@ -4,15 +4,15 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f1cfa19ee0ecbeef1b3102324578a235",
+    "content-hash": "e69a9144e13257fd208a14b8450efffc",
     "packages": [
         {
             "name": "od/sw6-job-scheduler",
             "version": "1.0.0",
             "dist": {
                 "type": "path",
-                "url": "../OdJobScheduler",
-                "reference": "228f01b520fb4a96ec9074dcaecdcd92fddf0c88"
+                "url": "packages/shopware-job-scheduler",
+                "reference": "8a5140591dbae8734ef997f48f16f228c3b5e628"
             },
             "require": {
                 "php": "^7.4 || ^8.0"

@@ -26,7 +26,11 @@ class Migration1641974495 extends MigrationStep
             `finished_at`   DATETIME(3)     NULL,
             `created_at`    DATETIME(3)     NOT NULL,
             `updated_at`    DATETIME(3)     NULL,
-            PRIMARY KEY (`id`)
+            PRIMARY KEY (`id`),
+            CONSTRAINT `fk.od_scheduler_job.parent_id.job_id`
+                FOREIGN KEY (`parent_id`)
+                REFERENCES `od_scheduler_job` (`id`)
+                ON DELETE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 SQL;
         $connection->executeStatement($sql);

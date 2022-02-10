@@ -24,8 +24,17 @@
         {% endblock %}
     </template>
     <template #actions="{ item }">
-        <sw-context-menu-item :disabled="!canReschedule(item)" @click="rescheduleJob(item.id)">
+        <sw-context-menu-item :router-link="{ name: 'od.job.listing.detail', params: getLinkParams(item) }">
+            {{ $tc('job-listing.actions.view-job.button.label') }}
+        </sw-context-menu-item>
+        <sw-context-menu-item :disabled="!canReschedule(item)"
+                              @click="rescheduleJob(item.id)">
             {{ $tc('job-listing.actions.reschedule-job.button.label') }}
+        </sw-context-menu-item>
+        <sw-context-menu-item class="sw-context-menu-item--danger"
+                              :disabled="!canDelete(item)"
+                              @click="onDeleteJob(item.id)">
+            {{ $tc('job-listing.actions.delete-job.button.label') }}
         </sw-context-menu-item>
     </template>
 </od-entity-listing>

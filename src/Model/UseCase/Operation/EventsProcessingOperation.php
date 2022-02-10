@@ -11,6 +11,7 @@ use Od\Scheduler\Model\Job\JobHandlerInterface;
 use Od\Scheduler\Model\Job\JobResult;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
@@ -44,8 +45,21 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
         $this->processOrderEvents($context, $message->getJobId());
         $this->processCartEvents($context, $message->getJobId());
         $this->processSubscriberEvents($context, $message->getJobId());
+        $this->processCustomerProfileEvents($context, $message->getJobId());
 
         return new JobResult();
+    }
+
+    private function processCustomerProfileEvents(Context $context, string $parentJobId)
+    {
+        $iterator = $this->getEventRepoIterator($context, [EventsTrackerInterface::CUSTOMER_WRITTEN_EVENT]);
+
+        while (($events = $iterator->fetch()) !== null) {
+            $customerIds = $events->map(fn(EventEntity $event) => $event->getEntityId());
+            $customerIds = array_values(array_unique($customerIds));
+            $this->scheduleBackgroundJob->scheduleCustomerProfilesSyncJob($customerIds, $parentJobId);
+            $this->deleteProcessedEvents($context, $events->getEntities());
+        }
     }
 
     private function processCartEvents(Context $context, string $parentJobId)
@@ -62,11 +76,7 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
 
     private function processOrderEvents(Context $context, string $parentJobId)
     {
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsAnyFilter('type', EventsTrackerInterface::ORDER_EVENTS));
-        $criteria->addSorting(new FieldSorting('createdAt', FieldSorting::DESCENDING));
-        $criteria->setLimit(100);
-        $iterator = new RepositoryIterator($this->eventRepository, $context, $criteria);
+        $iterator = $this->getEventRepoIterator($context, EventsTrackerInterface::ORDER_EVENTS);
 
         while (($eventIds = $iterator->fetchIds()) !== null) {
             $this->scheduleBackgroundJob->scheduleOrderEventsSyncJob($eventIds, $parentJobId);
@@ -75,19 +85,30 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
 
     private function processSubscriberEvents(Context $context, string $parentJobId)
     {
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsAnyFilter('type', EventsTrackerInterface::SUBSCRIBER_EVENTS));
-        $criteria->addSorting(new FieldSorting('createdAt', FieldSorting::DESCENDING));
-        $criteria->setLimit(100);
-        $iterator = new RepositoryIterator($this->eventRepository, $context, $criteria);
+        $iterator = $this->getEventRepoIterator($context, EventsTrackerInterface::SUBSCRIBER_EVENTS);
 
         while (($events = $iterator->fetch()) !== null) {
             $subscriberIds = $events->map(fn(EventEntity $event) => $event->getEntityId());
             $this->scheduleBackgroundJob->scheduleSubscriberSyncJob(array_values($subscriberIds), $parentJobId);
-            $deleteDataSet = array_map(function ($id) {
-                return ['id' => $id];
-            }, array_values($events->getIds()));
-            $this->eventRepository->delete($deleteDataSet, $context);
+            $this->deleteProcessedEvents($context, $events->getEntities());
         }
+    }
+
+    private function deleteProcessedEvents(Context $context, EntityCollection $events)
+    {
+        $deleteDataSet = array_map(function ($id) {
+            return ['id' => $id];
+        }, array_values($events->getIds()));
+        $this->eventRepository->delete($deleteDataSet, $context);
+    }
+
+    private function getEventRepoIterator(Context $context, array $eventTypes)
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsAnyFilter('type', $eventTypes));
+        $criteria->addSorting(new FieldSorting('createdAt', FieldSorting::DESCENDING));
+        $criteria->setLimit(100);
+
+        return new RepositoryIterator($this->eventRepository, $context, $criteria);
     }
 }
