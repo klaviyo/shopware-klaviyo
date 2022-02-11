@@ -32,6 +32,7 @@
         "shopware/core": "v6.4.*",
         "shopware/recovery": "v6.4.*",
         "shopware/storefront": "v6.4.*",
+        "od/sw6-job-scheduler": "^1.0.0",
         "ext-json": "*"
     },
     "require-dev": {
