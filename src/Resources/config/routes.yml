@@ -1,3 +1,0 @@
-klaviyo_integration_administration:
-    resource: '../../Controller/Backoffice/*Controller.php'
-    type: annotation
