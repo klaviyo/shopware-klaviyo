@@ -20,7 +20,7 @@ class PromotionsExportController
     /**
      * @RouteScope(scopes={"administration"})
      * @Route(
-     *     "/admin/klaviyo/integration/promotion/export", defaults={"auth_required"=false}
+     *     "/api/klaviyo/integration/promotion/export", defaults={"auth_required"=false}
      * )
      */
     public function export()
@@ -31,6 +31,7 @@ class PromotionsExportController
         $response->deleteFileAfterSend(true);
 
         $response->headers->set('Content-Type', 'text/csv');
+        $response->headers->set('Cache-Control','private');
 
         // Set content disposition inline of the file
         $response->setContentDisposition(
