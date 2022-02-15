@@ -78,9 +78,8 @@ class JobRunner
                  * Nothing was scheduled by job handler - delete job
                  */
                 $this->jobHelper->deleteJob($message->getJobId());
+                return $result;
             }
-
-            return $result;
         }
 
         $this->jobHelper->markJob($message->getJobId(), $status);
