@@ -8,4 +8,5 @@ $baseDir = dirname($vendorDir);
 return array(
     'Od\\Scheduler\\' => array($vendorDir . '/od/sw6-job-scheduler/src'),
     'Klaviyo\\Integration\\' => array($baseDir . '/src'),
+    'Faker\\' => array($vendorDir . '/fzaninotto/faker/src/Faker'),
 );

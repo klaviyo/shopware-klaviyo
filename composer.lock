@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e69a9144e13257fd208a14b8450efffc",
+    "content-hash": "d4fd5bd6ba873bcbcdf51893c1a83cf1",
     "packages": [
         {
             "name": "od/sw6-job-scheduler",
@@ -28,7 +28,7 @@
             ],
             "description": "System library for async job scheduling for Shopware 6",
             "transport-options": {
-                "symlink": false,
+                "symlink": true,
                 "relative": true
             }
         }
@@ -100,5 +100,5 @@
         "ext-json": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.2.0"
 }
