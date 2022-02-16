@@ -1,17 +1,13 @@
 import template from './klaviyo-integration-settings-customer.html.twig';
 import './klaviyo-integration-settings-customer.scss';
 
-const {Component, Context} = Shopware;
-const {Criteria} = Shopware.Data;
+const { Component, Context } = Shopware;
+const { Criteria } = Shopware.Data;
 
 Component.register('klaviyo-integration-settings-customer', {
     template,
 
     props: {
-        actualConfigData: {
-            type: Object,
-            required: true,
-        },
         allConfigs: {
             type: Object,
             required: true,
@@ -29,7 +25,10 @@ Component.register('klaviyo-integration-settings-customer', {
     data() {
         return {
             isLoading: false,
+            isAddingNewMappingState: false,
+            isSomeMappingsNotFilled: false,
             systemCustomFields: null,
+            mappingErrorStates: {},
             configPath: 'KlaviyoIntegrationPlugin.config.customerFieldMapping'
         }
     },
@@ -38,6 +37,7 @@ Component.register('klaviyo-integration-settings-customer', {
         customFieldRepository() {
             return this.repositoryFactory.create('custom_field');
         },
+
         customFieldCriteria() {
             const criteria = new Criteria();
             criteria.addSorting(Criteria.sort('name', 'ASC', true));
@@ -47,6 +47,23 @@ Component.register('klaviyo-integration-settings-customer', {
 
             return criteria;
         },
+
+        addMappingBtn() {
+            return document.getElementById("od-klaviyo-add-mapping-btn");
+        },
+
+        noCustomFieldsError() {
+            if (this.systemCustomFields.total === 0) {
+                return this.$tc('klaviyo-integration-settings.customer.fieldMapping.noMappingFieldsError');
+            }
+
+            return null;
+        },
+
+        addMappingBtnAvailability() {
+            return Object.keys(this.mappingErrorStates).length !== 0 || this.noCustomFieldsError !== null;
+        },
+
         customFieldMapping: {
             get: function () {
                 return this.allConfigs['null'][this.configPath];
@@ -54,9 +71,50 @@ Component.register('klaviyo-integration-settings-customer', {
         }
     },
 
+    updated: function () {
+        this.$nextTick(function () {
+            if (this.isAddingNewMappingState) {
+                this.addMappingBtn.scrollIntoView({ block: "center", behavior: "smooth" });
+                this.isAddingNewMappingState = false;
+            }
+        })
+    },
+
+    watch: {
+        customFieldMapping: {
+            handler() {
+                const mappingConfig = this.allConfigs['null'][this.configPath];
+
+                Object.keys(mappingConfig).every((mappingName) => {
+                    if (!mappingConfig[mappingName].customLabel) {
+                        this.$set(this.mappingErrorStates, mappingName + '.label', {
+                            code: 1,
+                            detail: this.$tc('klaviyo-integration-settings.customer.fieldMapping.labelNotFilledError'),
+                        });
+                    } else {
+                        this.$delete(this.mappingErrorStates, mappingName + '.label');
+                    }
+
+                    if (!mappingConfig[mappingName].customFieldName) {
+                        this.$set(this.mappingErrorStates, mappingName + '.fieldCode', {
+                            code: 1,
+                            detail: this.$tc('klaviyo-integration-settings.customer.fieldMapping.mappingNotFilledError'),
+                        });
+                    } else {
+                        this.$delete(this.mappingErrorStates, mappingName + '.fieldCode');
+                    }
+
+                    return true;
+                });
+                console.log(this.mappingErrorStates);
+            },
+            deep: true,
+        },
+    },
+
     methods: {
         createdComponent() {
-            if (this.allConfigs['null'][this.configPath] === undefined) {
+            if (this.customFieldMapping === undefined || Array.isArray(this.customFieldMapping)) {
                 /**
                  * Initialize configuration.
                  */
@@ -84,12 +142,22 @@ Component.register('klaviyo-integration-settings-customer', {
         },
 
         onAddNewFieldMapping() {
-            const key = 'mapping_' + (Object.keys(this.customFieldMapping).length + 1);
+            const key = 'mapping_' + this.generateGuid();
+            this.isAddingNewMappingState = true;
             this.$set(this.customFieldMapping, key, {
                 customLabel: '',
                 customFieldName: '',
             });
-            console.log(this.allConfigs['null'][this.configPath]);
+        },
+
+        generateGuid() {
+            let s4 = () => {
+                return Math.floor((1 + Math.random()) * 0x10000)
+                    .toString(16)
+                    .substring(1);
+            }
+
+            return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
         }
     },
 });

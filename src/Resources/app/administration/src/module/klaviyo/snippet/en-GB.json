@@ -106,6 +106,9 @@
             "fieldMapping": {
                 "addFieldButtonLabel": "Add",
                 "nameFieldLabel": "Custom Field Label",
+                "labelNotFilledError": "Field label must be filled.",
+                "mappingNotFilledError": "Mapping field must be filled.",
+                "noMappingFieldsError": "There are no any customer custom fields for mapping.",
                 "item": {
                     "fieldName": "Field Name",
                     "customFieldName": "Custom Field"

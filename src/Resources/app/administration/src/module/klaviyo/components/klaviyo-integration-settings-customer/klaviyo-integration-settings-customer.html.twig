@@ -4,15 +4,17 @@
         {% block klaviyo_integration_settings_customer_custom_field_mapping %}
 
             <template v-for="mappedField, key in customFieldMapping">
-
                 <sw-container columns="5fr 5fr 1fr" gap="16px">
 
-                    <sw-text-field v-model="mappedField.customLabel"
+                    <sw-text-field placeholder="Type mapping custom label"
+                                   v-model="mappedField.customLabel"
+                                   :error="mappingErrorStates[key + '.label'] ?? null"
                                    :label="$tc('klaviyo-integration-settings.customer.fieldMapping.item.fieldName')">
                     </sw-text-field>
 
 
                     <sw-select-field v-model="mappedField.customFieldName"
+                                     :error="mappingErrorStates[key + '.fieldCode'] ?? null"
                                      :label="$tc('klaviyo-integration-settings.customer.fieldMapping.item.customFieldName')">
                         <option v-for="customField in systemCustomFields"
                                 :value="customField.name">
@@ -26,20 +28,20 @@
                     </sw-icon>
 
                 </sw-container>
-
-                {# <klaviyo-integration-fieldmapping-field #}
-                {# :mappingOptions="[{name: 'hui-opt-name-1', id:1}]" #}
-                {# :fieldMap="mappedField" #}
-                {# > #}
-                {# </klaviyo-integration-fieldmapping-field> #}
-
             </template>
 
             {% block klaviyo_integration_settings_customer_custom_field_mapping_add_button %}
-                <sw-button @click="onAddNewFieldMapping">
+                <sw-button id="od-klaviyo-add-mapping-btn"
+                           variant="primary"
+                           :disabled="isLoading || addMappingBtnAvailability"
+                           @click="onAddNewFieldMapping">
                     {{ $tc('klaviyo-integration-settings.customer.fieldMapping.addFieldButtonLabel') }}
                 </sw-button>
             {% endblock %}
+
+            <div v-if="!isLoading && noCustomFieldsError">
+                {{ $tc(noCustomFieldsError) }}
+            </div>
 
         {% endblock %}
         <sw-loader v-if="isLoading"/>
