@@ -3,18 +3,19 @@
 
         {% block klaviyo_integration_settings_customer_custom_field_mapping %}
 
-            <template v-for="mappedField, key in customFieldMapping">
+            <template v-if="!isLoading" v-for="mappedField, mappedKey in customFieldMapping">
                 <sw-container columns="5fr 5fr 1fr" gap="16px">
 
-                    <sw-text-field placeholder="Type mapping custom label"
-                                   v-model="mappedField.customLabel"
-                                   :error="mappingErrorStates[key + '.label'] ?? null"
+                    <sw-text-field v-model="mappedField.customLabel"
+                                   :placeholder="$tc('klaviyo-integration-settings.customer.fieldMapping.item.fieldNamePlaceholder')"
+                                   :error="mappingErrorStates[mappedKey]['label'] ?? null"
                                    :label="$tc('klaviyo-integration-settings.customer.fieldMapping.item.fieldName')">
                     </sw-text-field>
 
 
                     <sw-select-field v-model="mappedField.customFieldName"
-                                     :error="mappingErrorStates[key + '.fieldCode'] ?? null"
+                                     :placeholder="$tc('klaviyo-integration-settings.customer.fieldMapping.item.customFieldNamePlaceholder')"
+                                     :error="mappingErrorStates[mappedKey]['fieldCode'] ?? null"
                                      :label="$tc('klaviyo-integration-settings.customer.fieldMapping.item.customFieldName')">
                         <option v-for="customField in systemCustomFields"
                                 :value="customField.name">
@@ -24,7 +25,7 @@
 
                     <sw-icon name="small-default-x-line-medium"
                              class="klaviyo-fieldmapping-delete-action"
-                             @click="onDeleteFieldMapping(key)">
+                             @click="onDeleteFieldMapping(mappedKey)">
                     </sw-icon>
 
                 </sw-container>
@@ -39,7 +40,7 @@
                 </sw-button>
             {% endblock %}
 
-            <div v-if="!isLoading && noCustomFieldsError">
+            <div v-if="!isLoading && noCustomFieldsError" class="klaviyo-fieldmapping-notice-block">
                 {{ $tc(noCustomFieldsError) }}
             </div>
 
