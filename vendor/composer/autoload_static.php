@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit11a4c0bfec15a203e52dfea0f74c52c6
+class ComposerStaticInitecc8f00ba6c5b7fa47fdbba8ee325257
 {
     public static $prefixLengthsPsr4 = array (
         'O' => 
@@ -14,10 +14,6 @@ class ComposerStaticInit11a4c0bfec15a203e52dfea0f74c52c6
         'K' => 
         array (
             'Klaviyo\\Integration\\' => 20,
-        ),
-        'F' => 
-        array (
-            'Faker\\' => 6,
         ),
     );
 
@@ -30,10 +26,6 @@ class ComposerStaticInit11a4c0bfec15a203e52dfea0f74c52c6
         array (
             0 => __DIR__ . '/../..' . '/src',
         ),
-        'Faker\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/fzaninotto/faker/src/Faker',
-        ),
     );
 
     public static $classMap = array (
@@ -43,9 +35,9 @@ class ComposerStaticInit11a4c0bfec15a203e52dfea0f74c52c6
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit11a4c0bfec15a203e52dfea0f74c52c6::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit11a4c0bfec15a203e52dfea0f74c52c6::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit11a4c0bfec15a203e52dfea0f74c52c6::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitecc8f00ba6c5b7fa47fdbba8ee325257::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitecc8f00ba6c5b7fa47fdbba8ee325257::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitecc8f00ba6c5b7fa47fdbba8ee325257::$classMap;
 
         }, null, ClassLoader::class);
     }
