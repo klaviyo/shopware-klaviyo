@@ -29,4 +29,6 @@ interface ConfigurationInterface
     public function getCatalogFeedProductsCount(): int;
 
     public function getCustomerCustomFieldMapping(): array;
+
+    public function isAfterInteraction(): bool;
 }

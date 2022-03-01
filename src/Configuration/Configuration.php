@@ -18,6 +18,7 @@ class Configuration implements ConfigurationInterface
     private bool $trackCanceledOrder;
     private bool $trackRefundedOrder;
     private array $customFieldMapping;
+    private bool $afterInteraction;
 
     public function __construct(
         string $privateApiKey,
@@ -33,8 +34,10 @@ class Configuration implements ConfigurationInterface
         bool $trackFulfilledOrder,
         bool $trackCanceledOrder,
         bool $trackRefundedOrder,
-        array $customFieldMapping
-    ) {
+        array $customFieldMapping,
+        bool $afterInteraction
+    )
+    {
         $this->privateApiKey = $privateApiKey;
         $this->publicApiKey = $publicApiKey;
         $this->subscribersListName = $subscribersListName;
@@ -49,6 +52,7 @@ class Configuration implements ConfigurationInterface
         $this->trackCanceledOrder = $trackCanceledOrder;
         $this->trackRefundedOrder = $trackRefundedOrder;
         $this->customFieldMapping = $customFieldMapping;
+        $this->afterInteraction = $afterInteraction;
     }
 
     public function getPrivateApiKey(): string
@@ -119,5 +123,10 @@ class Configuration implements ConfigurationInterface
     public function getCustomerCustomFieldMapping(): array
     {
         return $this->customFieldMapping;
+    }
+
+    public function isAfterInteraction(): bool
+    {
+        return $this->afterInteraction;
     }
 }
