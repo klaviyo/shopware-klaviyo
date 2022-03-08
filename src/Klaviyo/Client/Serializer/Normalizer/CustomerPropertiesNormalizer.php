@@ -21,6 +21,7 @@ class CustomerPropertiesNormalizer implements NormalizerInterface
                 '$email' => $object->getEmail(),
                 '$first_name' => $object->getFirstName(),
                 '$last_name' => $object->getLastName(),
+                'Birthday' => $object->getBirthday(),
                 '$address1' => $object->getAddress(),
                 '$phone_number' => $object->getPhoneNumber(),
                 '$city' => $object->getCity(),
