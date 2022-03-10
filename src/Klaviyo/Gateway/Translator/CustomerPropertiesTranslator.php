@@ -70,14 +70,14 @@ class CustomerPropertiesTranslator
             $customerEntity->getEmail(),
             $customerEntity->getFirstName(),
             $customerEntity->getLastName(),
-            $birthday ? $birthday->format(Defaults::STORAGE_DATE_FORMAT) : null,
             $this->guessRelevantCustomerPhone($customerEntity),
             $customerAddress ? $customerAddress->getStreet() : null,
             $customerAddress ? $customerAddress->getCity() : null,
             $customerAddress ? $customerAddress->getZipcode() : null,
             $state ? $state->getShortCode() : null,
             $country ? $country->getIso() : null,
-            $customFields
+            $customFields,
+            $birthday ? $birthday->format(Defaults::STORAGE_DATE_FORMAT) : null
         );
 
         return $customerProperties;

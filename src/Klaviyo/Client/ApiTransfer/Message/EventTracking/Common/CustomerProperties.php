@@ -7,7 +7,6 @@ class CustomerProperties implements \JsonSerializable
     private string $email;
     private ?string $firstName;
     private ?string $lastName;
-    private ?string $birthday;
     private ?string $phone_number;
     private ?string $address;
     private ?string $city;
@@ -15,24 +14,24 @@ class CustomerProperties implements \JsonSerializable
     private ?string $region;
     private ?string $country;
     private array $customFields;
+    private ?string $birthday;
 
     public function __construct(
         string $email,
         ?string $firstName = null,
         ?string $lastName = null,
-        ?string $birthday = null,
         ?string $phone_number = null,
         ?string $address = null,
         ?string $city = null,
         ?string $zip = null,
         ?string $region = null,
         ?string $country = null,
-        array $customFields = []
+        array $customFields = [],
+        ?string $birthday = null
     ) {
         $this->email = $email;
         $this->firstName = $firstName;
         $this->lastName = $lastName;
-        $this->birthday = $birthday;
         $this->phone_number = $phone_number;
         $this->address = $address;
         $this->city = $city;
@@ -40,6 +39,7 @@ class CustomerProperties implements \JsonSerializable
         $this->region = $region;
         $this->country = $country;
         $this->customFields = $customFields;
+        $this->birthday = $birthday;
     }
 
     public function getEmail(): string
@@ -55,11 +55,6 @@ class CustomerProperties implements \JsonSerializable
     public function getLastName(): ?string
     {
         return $this->lastName;
-    }
-
-    public function getBirthday(): ?string
-    {
-        return $this->birthday;
     }
 
     public function getPhoneNumber(): ?string
@@ -103,13 +98,13 @@ class CustomerProperties implements \JsonSerializable
             'email' => $this->getEmail(),
             'firstName' => $this->getFirstName(),
             'lastName' => $this->getLastName(),
-            'birthday' => $this->getBirthday(),
             'phoneNumber' => $this->getPhoneNumber(),
             'city' => $this->getCity(),
             'zip' => $this->getZip(),
             'address' => $this->getAddress(),
             'region' => $this->getRegion(),
             'country' => $this->getCountry(),
+            'birthday' => $this->getBirthday()
         ];
 
         foreach ($this->getCustomFields() as $fieldKey => $fieldValue) {
@@ -118,4 +113,10 @@ class CustomerProperties implements \JsonSerializable
 
         return $basicData;
     }
+
+    public function getBirthday(): ?string
+    {
+        return $this->birthday;
+    }
+
 }
