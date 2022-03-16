@@ -27,6 +27,7 @@ class CustomerPropertiesNormalizer implements NormalizerInterface
                 '$region' => $object->getRegion(),
                 '$country' => $object->getCountry(),
                 '$zip' => $object->getZip(),
+                'Birthday' => $object->getBirthday()
             ],
             $object->getCustomFields()
         );

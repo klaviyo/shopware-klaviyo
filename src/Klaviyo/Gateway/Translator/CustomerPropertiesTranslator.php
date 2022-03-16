@@ -9,6 +9,7 @@ use Klaviyo\Integration\Klaviyo\Gateway\Exception\TranslationException;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 
 class CustomerPropertiesTranslator
@@ -62,6 +63,7 @@ class CustomerPropertiesTranslator
 
         $state = $this->addressHelper->getAddressRegion($context, $customerAddress);
         $country = $this->addressHelper->getAddressCountry($context, $customerAddress);
+        $birthday = $customerEntity->getBirthday();
 
         $customFields = $this->prepareCustomFields($customerEntity);
         $customerProperties = new CustomerProperties(
@@ -74,7 +76,8 @@ class CustomerPropertiesTranslator
             $customerAddress ? $customerAddress->getZipcode() : null,
             $state ? $state->getShortCode() : null,
             $country ? $country->getIso() : null,
-            $customFields
+            $customFields,
+            $birthday ? $birthday->format(Defaults::STORAGE_DATE_FORMAT) : null
         );
 
         return $customerProperties;
