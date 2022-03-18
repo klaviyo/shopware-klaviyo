@@ -91,7 +91,7 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
             }
 
             $extensionData['productInfo'] = $this->productTranslator
-                ->translateToProductInfo($event->getContext(), $page->getProduct());
+                ->translateToProductInfo($event->getContext(), $event->getSalesChannelContext(), $page->getProduct());
         } catch (\Throwable $throwable) {
             $this->logger->error(
                 sprintf(
