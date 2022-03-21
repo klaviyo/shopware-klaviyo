@@ -17,11 +17,12 @@ class OrderedProductEventTrackingRequestNormalizer extends AbstractNormalizer
     public function normalize($object, string $format = null, array $context = [])
     {
         $customerProperties = $this->normalizeObject($object->getCustomerProperties());
+        $now = new \DateTime('now', new \DateTimeZone('UTC'));
 
         $properties = [
             'ProductName' => $object->getProductName(),
             '$value' => $object->getValue(),
-            '$event_id' => $object->getProductId(),
+            '$event_id' => $object->getProductId() . '_' . $now->getTimestamp(),
             'OrderId' => $object->getOrderId(),
             'ProductID' => $object->getProductId(),
             'SKU' => $object->getSku(),
