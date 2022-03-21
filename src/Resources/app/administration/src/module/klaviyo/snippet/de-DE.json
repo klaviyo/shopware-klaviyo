@@ -102,7 +102,7 @@
             }
         },
         "customer": {
-            "title": "Customer Field Mapping",
+            "title": "Custom Field Mapping",
             "fieldMapping": {
                 "addFieldButtonLabel": "Add",
                 "nameFieldLabel": "Custom Field Label",

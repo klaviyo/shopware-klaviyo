@@ -9,40 +9,16 @@
         {% if page.hasExtension('klaviyoIntegrationPluginExtension') %}
             {% set extensionData = page.getExtension('klaviyoIntegrationPluginExtension') %}
             {% set options = {'customerIdentityInfo': extensionData.customerIdentity } %}
+            {% set configurationOptions = {
+                'afterInteraction': extensionData.configuration.afterInteraction,
+                'privateApiKey':  extensionData.configuration.privateApiKey,
+                'publicApiKey':  extensionData.configuration.publicApiKey
+            } %}
             {% set afterInit = extensionData.configuration.afterInteraction %}
             <div style="display: none;" data-klaviyo-identity-tracking-component=""
+                 data-klaviyo-tracking="true"
+                 data-klaviyo-tracking-options="{{ configurationOptions|json_encode }}"
                  data-klaviyo-identity-tracking-component-options="{{ options|json_encode }}"></div>
-
-            {% if afterInit %}
-                <script type="text/javascript">
-                    var localStorage = window.localStorage;
-
-                    function initKlaviyo() {
-                        let script = document.createElement('script');
-                        script.setAttribute('src', 'https://static.klaviyo.com/onsite/js/klaviyo.js?company_id={{ extensionData.configuration.publicApiKey }}');
-                        document.body.appendChild(script);
-                    }
-
-                    function prepareForInteraction() {
-                        if (localStorage && (!localStorage.klaviyoFirstInteraction || localStorage.klaviyoFirstInteraction !== 'done')) {
-                            localStorage.setItem('klaviyoFirstInteraction', 'done');
-                        }
-                        initKlaviyo()
-                    }
-
-                    (function () {
-                        if (localStorage && (localStorage.klaviyoFirstInteraction && localStorage.klaviyoFirstInteraction === 'done')) {
-                            initKlaviyo();
-                        } else {
-                            window.addEventListener('scroll', prepareForInteraction, {once: true});
-                        }
-                    })();
-
-                </script>
-            {% else %}
-                <script type="application/javascript" async
-                        src="https://static.klaviyo.com/onsite/js/klaviyo.js?company_id={{ extensionData.configuration.publicApiKey }}"></script>
-            {% endif %}
         {% endif %}
     {% endblock %}
 
