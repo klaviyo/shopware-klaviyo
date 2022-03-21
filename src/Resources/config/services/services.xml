@@ -84,6 +84,7 @@
         </service>
         <service id="Klaviyo\Integration\Klaviyo\FrontendApi\Translator\ProductTranslator">
             <argument type="service" id="Klaviyo\Integration\Entity\Helper\ProductDataHelper"/>
+            <argument type="service" id="Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface"/>
         </service>
         <service id="Klaviyo\Integration\Klaviyo\FrontendApi\Translator\StartedCheckoutEventTrackingRequestTranslator">
             <argument type="service" id="router.default"/>
