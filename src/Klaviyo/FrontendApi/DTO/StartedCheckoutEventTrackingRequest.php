@@ -51,9 +51,10 @@ class StartedCheckoutEventTrackingRequest implements \JsonSerializable
             $itemNames[] = $lineItem->getName();
         }
         $categories = array_unique($categories);
+        $now = new \DateTime('now', new \DateTimeZone('UTC'));
 
         return [
-            '$event_id' => $this->getEventId(),
+            '$event_id' => $this->getEventId() . '_' . $now->getTimestamp(),
             '$value' => $this->getCheckoutTotal(),
             'CheckoutURL' => $this->getCheckoutUrl(),
             'ItemNames' => $itemNames,
