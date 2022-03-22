@@ -1,0 +1,11 @@
+{
+    "back-in-stock": {
+        "productDetail": {
+            "buttonLabel": "Benachrichtige mich",
+            "emailLabel": "Deine E-Mail",
+            "successMessage": "Sie werden benachrichtigt, wenn die angegebene Menge wieder verfügbar ist!",
+            "failedMessage": "Etwas lief nicht wie geplant, bitte versuchen Sie es zu einem späteren Zeitpunkt erneut.",
+            "exceptionMessage": "Es ist etwas Unerwartetes passiert. Bitte versuchen Sie es später erneut."
+        }
+    }
+}

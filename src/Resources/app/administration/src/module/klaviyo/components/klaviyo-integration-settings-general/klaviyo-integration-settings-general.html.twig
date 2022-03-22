@@ -247,6 +247,23 @@
                     </template>
                 </sw-inherit-wrapper>
             {% endblock %}
+
+            {% block klaviyo_integration_settings_general_track_back_in_stock %}
+                <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackSubscribedToBackInStock']"
+                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackSubscribedToBackInStock']"
+                                    :customInheritationCheckFunction="checkBoolFieldInheritance">
+                    <template #content="props">
+                        <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackSubscribedToBackInStock"
+                                         :mapInheritance="props"
+                                         :label="$tc('klaviyo-integration-settings.configs.trackSubscribedToBackInStock.label')"
+                                         :helpText="$tc('klaviyo-integration-settings.configs.trackSubscribedToBackInStock.helpText')"
+                                         :disabled="props.isInherited"
+                                         :value="props.currentValue"
+                                         @change="props.updateCurrentValue">
+                        </sw-switch-field>
+                    </template>
+                </sw-inherit-wrapper>
+            {% endblock %}
         </sw-card>
     </div>
 {% endblock %}

@@ -1,0 +1,11 @@
+{
+    "zeo-get-notified": {
+        "productDetail": {
+            "buttonLabel": "Notify me of new stock",
+            "emailLabel": "Your E-mail",
+            "successMessage": "Done. You will be notified when the specified quantity is back in stock!",
+            "failedMessage": "Something didn't go as planned, please try again at a later time.",
+            "exceptionMessage": "Something unexpected happened, please try again later."
+        }
+    }
+}
