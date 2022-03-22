@@ -20,6 +20,7 @@ export default class KlaviyoIdentityTrackingComponent extends Plugin {
                         '$region': this.options.customerIdentityInfo.region,
                         '$country': this.options.customerIdentityInfo.country,
                         '$zip': this.options.customerIdentityInfo.zip,
+                        'Birthday': this.options.customerIdentityInfo.birthday
                     }
                 ]
             );

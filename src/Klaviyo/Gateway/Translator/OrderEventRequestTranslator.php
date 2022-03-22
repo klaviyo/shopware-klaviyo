@@ -331,7 +331,7 @@ class OrderEventRequestTranslator
 
                 $categories = $this->productDataHelper->getCategoryNames($context, $product);
 
-                $manufacturerName = $this->productDataHelper->getManufacturerName($context, $product);
+                $manufacturerName = $this->productDataHelper->getManufacturerName($context, $product) ?? '';
 
                 $products->add(
                     new OrderProductItemInfo(
