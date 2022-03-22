@@ -3,7 +3,7 @@ import Storage from 'src/helper/storage/storage.helper';
 
 export default class KlaviyoTracking extends Plugin {
     static options = {
-        klaviyoInitializedStorageKey: ''
+        klaviyoInitializedStorageKey: 'klaviyoInitializedStorageKey'
     };
 
     init() {

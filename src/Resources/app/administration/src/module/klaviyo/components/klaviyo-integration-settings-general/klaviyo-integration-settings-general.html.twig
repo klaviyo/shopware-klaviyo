@@ -1,8 +1,8 @@
 {% block klaviyo_integration_settings_general %}
     <div>
         <sw-card title="Interaction settings">
-            <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.afterInteraction']"
-                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.afterInteraction']"
+            <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.isInitializeKlaviyoAfterInteraction']"
+                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.isInitializeKlaviyoAfterInteraction']"
                                 :customInheritationCheckFunction="checkBoolFieldInheritance">
                 <template #content="props">
                     <sw-switch-field name="KlaviyoIntegrationPlugin.config.isInitializeKlaviyoAfterInteraction"
