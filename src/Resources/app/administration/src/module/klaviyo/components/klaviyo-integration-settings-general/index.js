@@ -45,7 +45,7 @@ Component.register('klaviyo-integration-settings-general', {
                     trackFulfilledOrder: true,
                     trackCancelledOrder: true,
                     trackRefundedOrder: true,
-                    afterInteraction: false
+                    isInitializeKlaviyoAfterInteraction: false
                 };
 
             /**

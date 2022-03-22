@@ -34,7 +34,7 @@ class ProductEventRequestTranslator
         $productUrl = $this->productDataHelper->getProductViewPageUrl($product);
         $imageUrl = $this->productDataHelper->getCoverImageUrl($context, $product);
         $categories = $this->productDataHelper->getCategoryNames($context, $product);
-        $manufacturerName = $this->productDataHelper->getManufacturerName($context, $product);
+        $manufacturerName = $this->productDataHelper->getManufacturerName($context, $product) ?? '';
 
         return new OrderedProductEventTrackingRequest(
             $lineItem->getId(),

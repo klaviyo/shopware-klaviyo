@@ -1,8 +1,8 @@
 import template from './klaviyo-integration-settings-customer.html.twig';
 import './klaviyo-integration-settings-customer.scss';
 
-const { Component, Context } = Shopware;
-const { Criteria } = Shopware.Data;
+const {Component, Context} = Shopware;
+const {Criteria} = Shopware.Data;
 
 Component.register('klaviyo-integration-settings-customer', {
     template,
@@ -79,7 +79,7 @@ Component.register('klaviyo-integration-settings-customer', {
     updated: function () {
         this.$nextTick(function () {
             if (this.isAddingNewMappingState) {
-                this.addMappingBtn.scrollIntoView({ block: "center", behavior: "smooth" });
+                this.addMappingBtn.scrollIntoView({block: "center", behavior: "smooth"});
                 this.isAddingNewMappingState = false;
             }
         })
@@ -91,7 +91,7 @@ Component.register('klaviyo-integration-settings-customer', {
                 const mappingConfig = this.allConfigs['null'][this.configPath];
 
                 Object.keys(mappingConfig).every((mappingKey) => {
-                    if (!mappingConfig[mappingKey].customLabel) {
+                    if (mappingConfig[mappingKey].active && !mappingConfig[mappingKey].customLabel) {
                         this.$set(this.mappingErrorStates[mappingKey], 'label', {
                             code: 1,
                             detail: this.$tc('klaviyo-integration-settings.customer.fieldMapping.labelNotFilledError'),
@@ -99,16 +99,6 @@ Component.register('klaviyo-integration-settings-customer', {
                     } else {
                         this.$delete(this.mappingErrorStates[mappingKey], 'label');
                     }
-
-                    if (!mappingConfig[mappingKey].customFieldName) {
-                        this.$set(this.mappingErrorStates[mappingKey], 'fieldCode', {
-                            code: 1,
-                            detail: this.$tc('klaviyo-integration-settings.customer.fieldMapping.mappingNotFilledError'),
-                        });
-                    } else {
-                        this.$delete(this.mappingErrorStates[mappingKey], 'fieldCode');
-                    }
-
                     return true;
                 });
             },
@@ -118,6 +108,9 @@ Component.register('klaviyo-integration-settings-customer', {
 
     methods: {
         createdComponent() {
+
+            this.localeIso = Shopware.Context.app.fallbackLocale;
+
             if (this.customFieldMapping === undefined || Array.isArray(this.customFieldMapping)) {
                 /**
                  * Initialize configuration.
@@ -150,7 +143,26 @@ Component.register('klaviyo-integration-settings-customer', {
                 })
                 .finally(() => {
                     this.isLoading = false;
+
+                    if (this.systemCustomFields.length > 0) {
+                        this.createEmptyMappings(this.systemCustomFields);
+                    }
                 });
+        },
+
+        createEmptyMappings(customFields) {
+            let existingFields = [];
+            const fieldsConfig = this.allConfigs['null']['KlaviyoIntegrationPlugin.config.customerFieldMapping'];
+            if (fieldsConfig) {
+                Object.keys(fieldsConfig).forEach(key => {
+                    existingFields.push(fieldsConfig[key].customFieldName);
+                })
+            }
+            customFields.forEach((field) => {
+                if (!existingFields.includes(field.name)) {
+                    this.addNewEmptyFieldMapping(field);
+                }
+            })
         },
 
         onDeleteFieldMapping(mappingKey) {
@@ -158,19 +170,16 @@ Component.register('klaviyo-integration-settings-customer', {
             this.$delete(this.customFieldMapping, mappingKey);
         },
 
-        onAddNewFieldMapping() {
+        addNewEmptyFieldMapping(field) {
             const mappingKey = 'mapping_' + this.generateGuid();
             this.isAddingNewMappingState = true;
-            this.$set(this.customFieldMapping, mappingKey, { customLabel: '', customFieldName: '' });
+            this.$set(this.customFieldMapping, mappingKey, {
+                customLabel: '',
+                customFieldName: field.name,
+                customFieldLabel: field.config.label[this.localeIso],
+                active: false
+            });
             this.$set(this.mappingErrorStates, mappingKey, {});
-        },
-
-        getMappingErrorState(mappingKey, type) {
-            if (!this.mappingErrorStates[mappingKey] || this.mappingErrorStates[mappingKey][type]) {
-                return null;
-            }
-
-            return this.mappingErrorStates[mappingKey][type];
         },
 
         generateGuid() {
