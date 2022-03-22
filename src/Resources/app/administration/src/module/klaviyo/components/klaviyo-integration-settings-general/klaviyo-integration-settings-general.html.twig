@@ -5,7 +5,7 @@
                                 :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.afterInteraction']"
                                 :customInheritationCheckFunction="checkBoolFieldInheritance">
                 <template #content="props">
-                    <sw-switch-field name="KlaviyoIntegrationPlugin.config.afterInteraction"
+                    <sw-switch-field name="KlaviyoIntegrationPlugin.config.isInitializeKlaviyoAfterInteraction"
                                      :mapInheritance="props"
                                      label="Initialization after first interaction."
                                      :disabled="props.isInherited"

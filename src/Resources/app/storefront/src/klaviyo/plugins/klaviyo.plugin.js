@@ -3,19 +3,19 @@ import Storage from 'src/helper/storage/storage.helper';
 
 export default class KlaviyoTracking extends Plugin {
     static options = {
-        klaviyoAfterFirstInteraction: 'afterFirstInteraction'
+        klaviyoInitializedStorageKey: ''
     };
 
     init() {
         this.storage = Storage;
         if (this.options.afterInteraction) {
-            if (this.storage.getItem(this.options.klaviyoAfterFirstInteraction) !== null) {
+            if (this.storage.getItem(this.options.klaviyoInitializedStorageKey) !== null) {
                 return this._initKlaviyo();
             } else {
                 return this.registerEvents();
             }
         }
-        
+
         this._initKlaviyo();
     }
 
@@ -24,7 +24,7 @@ export default class KlaviyoTracking extends Plugin {
     }
 
     _prepareForInitialization() {
-        this.storage.setItem(this.options.klaviyoAfterFirstInteraction, '')
+        this.storage.setItem(this.options.klaviyoInitializedStorageKey, '')
         this._initKlaviyo();
     }
 

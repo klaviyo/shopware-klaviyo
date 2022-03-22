@@ -10,11 +10,10 @@
             {% set extensionData = page.getExtension('klaviyoIntegrationPluginExtension') %}
             {% set options = {'customerIdentityInfo': extensionData.customerIdentity } %}
             {% set configurationOptions = {
-                'afterInteraction': extensionData.configuration.afterInteraction,
+                'afterInteraction': extensionData.configuration.isInitializeKlaviyoAfterInteraction,
                 'privateApiKey':  extensionData.configuration.privateApiKey,
                 'publicApiKey':  extensionData.configuration.publicApiKey
             } %}
-            {% set afterInit = extensionData.configuration.afterInteraction %}
             <div style="display: none;" data-klaviyo-identity-tracking-component=""
                  data-klaviyo-tracking="true"
                  data-klaviyo-tracking-options="{{ configurationOptions|json_encode }}"
