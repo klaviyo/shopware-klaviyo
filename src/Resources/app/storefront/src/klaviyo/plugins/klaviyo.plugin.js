@@ -8,10 +8,15 @@ export default class KlaviyoTracking extends Plugin {
 
     init() {
         this.storage = Storage;
-        if (this.storage.getItem(this.options.klaviyoAfterFirstInteraction) !== null) {
-            return this._initKlaviyo();
+        if (this.options.afterInteraction) {
+            if (this.storage.getItem(this.options.klaviyoAfterFirstInteraction) !== null) {
+                return this._initKlaviyo();
+            } else {
+                return this.registerEvents();
+            }
         }
-        this.registerEvents();
+        
+        this._initKlaviyo();
     }
 
     registerEvents() {
