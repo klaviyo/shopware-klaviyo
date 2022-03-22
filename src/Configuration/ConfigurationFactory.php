@@ -56,6 +56,7 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
         $trackCancelledOrder = $this->getBoolConfiguration('trackCancelledOrder', $salesChannelId);
         $trackRefundedOrder = $this->getBoolConfiguration('trackRefundedOrder', $salesChannelId);
         $afterInteraction = $this->getBoolConfiguration('afterInteraction', $salesChannelId);
+        $trackSubscribedToBackInStock = $this->getBoolConfiguration('trackSubscribedToBackInStock', $salesChannelId);
 
         $mapping = $this->systemConfigService
             ->get('KlaviyoIntegrationPlugin.config.customerFieldMapping', $salesChannelId) ?? [];
@@ -85,7 +86,8 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
             $trackCancelledOrder,
             $trackRefundedOrder,
             $mapping,
-            $afterInteraction
+            $afterInteraction,
+            $trackSubscribedToBackInStock
         );
     }
 

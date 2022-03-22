@@ -2,5 +2,8 @@
 
 {% block page_product_detail_buy_form %}
     {{ parent() }}
-    {% sw_include '@Storefront/storefront/page/product-detail/back-in-stock-form.html.twig' %}
+    {% if page.getExtension('klaviyoIntegrationPluginExtension').configuration.trackSubscribedToBackInStock %}
+        {% set publicApiKey = page.getExtension('klaviyoIntegrationPluginExtension').configuration.publicApiKey %}
+        {% sw_include '@Storefront/storefront/page/product-detail/back-in-stock-form.html.twig' with {publicApiKey: publicApiKey} %}
+    {% endif %}
 {% endblock %}

@@ -23,7 +23,7 @@ class BackInStockController extends StorefrontController
         Request $request,
         SalesChannelContext $salesChannelContext
     ): Response {
-        $productId = $request->get('productId');
+        $productId = $request->get('variant');
         $email = $request->get('email');
         $email = is_null($email) && !empty($customer) ? $customer->getEmail() : $email;
 
@@ -40,15 +40,12 @@ class BackInStockController extends StorefrontController
             ]);
         }
 
+        $data = \json_decode($request->getContent());
+
         return $this->json([
             "success" => true,
-            "data" => [
-                'key' => null,
-                'success' => true,
-                'result' => [
-                    'error' => null,
-                ],
-            ],
+            "data" =>
+                $data
         ]);
     }
 }

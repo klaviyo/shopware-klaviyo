@@ -31,4 +31,6 @@ interface ConfigurationInterface
     public function getCustomerCustomFieldMapping(): array;
 
     public function isAfterInteraction(): bool;
+
+    public function isTrackSubscribedToBackInStock(): bool;
 }

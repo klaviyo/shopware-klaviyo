@@ -17,13 +17,19 @@
             class="back-in-stock">
         {% block page_product_detail_back_in_stock_container %}
             <div class="form-row back-in-stock-container">
-                {% block page_product_detail_back_in_stock_id_input %}
-                    <input type="hidden" name="productId" value="{{ page.product.id }}"/>
+                {% block page_product_detail_back_in_stock_apiKey_input %}
+                    <input type="hidden" name="a" value="{{ publicApiKey }}"/>
                 {% endblock %}
                 {% block page_product_detail_back_in_stock_email_container %}
                     <label>
                         <input class="form-control" type="email" name="email" required placeholder="email">
                     </label>
+                {% endblock %}
+                {% block page_product_detail_back_in_stock_variant_input %}
+                    <input type="hidden" name="variant" value="{{ page.product.id }}"/>
+                {% endblock %}
+                {% block page_product_detail_back_in_stock_platform_input %}
+                    <input type="hidden" name="platform" value="shopware-6"/>
                 {% endblock %}
                 {% block page_product_detail_back_in_stock_button %}
                     <button class="btn btn-outline-primary btn-block btn-notify">Subscribe</button>

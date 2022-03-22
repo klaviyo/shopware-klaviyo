@@ -99,6 +99,10 @@
 			"trackRefundedOrder": {
 				"label": "Track Refunded Order",
 				"helpText": "Do we need to send \"Refunded Order Event\" to Klaviyo?\nDecision will also affect Synchronization of the historical events"
+			},
+			"trackSubscribedToBackInStock": {
+				"label": "Track Back In Stock",
+				"helpText": "Do we need to send \"Back In Stock Event\" to Klaviyo?\n"
 			}
 		},
         "customer": {

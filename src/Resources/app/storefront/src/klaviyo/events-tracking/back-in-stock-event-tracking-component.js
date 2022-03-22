@@ -28,7 +28,7 @@ export default class KlaviyoBackInStockEventTrackingComponent extends Plugin {
         event.preventDefault();
 
         const rawFormData = new FormData(event.target);
-        console.log(event.target);
+
         this.formData = this._parseFormData(rawFormData);
         this.url = event.target.dataset.action;
         this._subscribe();
