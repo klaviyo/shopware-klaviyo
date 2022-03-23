@@ -11,7 +11,6 @@
             }'
             data-action=
             "{% block page_product_detail_back_in_stock_form_action %}
-                {{ path('frontend.klaviyo.back-in-stock.subscribe') }}
             {% endblock %}"
             method="post"
             class="back-in-stock">
@@ -30,6 +29,17 @@
                 {% endblock %}
                 {% block page_product_detail_back_in_stock_platform_input %}
                     <input type="hidden" name="platform" value="shopware-6"/>
+                {% endblock %}
+                {% block page_product_detail_back_in_stock_variant_subscribe_input %}
+                    <input
+                            id="subscribeToNewsletter"
+                            class="custom-control-input"
+                            type="checkbox"
+                            name="subscribe"
+                    >
+                    <label class="custom-control-label" for="subscribeToNewsletter">
+                        Subscribe to newsletter
+                    </label>
                 {% endblock %}
                 {% block page_product_detail_back_in_stock_button %}
                     <button class="btn btn-outline-primary btn-block btn-notify">Subscribe</button>
