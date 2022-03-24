@@ -11,6 +11,9 @@
         <service id="Klaviyo\Integration\Entity\CartRequest\CartRequestDefinition">
             <tag name="shopware.entity.definition" entity="klaviyo_job_cart_request" />
         </service>
+        <service id="Klaviyo\Integration\Entity\NewsletterSubscriber\NewsletterSubscriberDefinition">
+            <tag name="shopware.entity.definition" entity="klaviyo_newsletter_subscriber" />
+        </service>
     </services>
 
 </container>

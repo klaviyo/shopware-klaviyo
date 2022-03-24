@@ -71,6 +71,10 @@
             <argument type="service" id="logger"/>
             <tag name="kernel.event_subscriber"/>
         </service>
+        <service id="Klaviyo\Integration\EventListener\NewsletterEventListener">
+            <argument type="service" id="klaviyo_newsletter_subscriber.repository"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
         <service id="Klaviyo\Integration\Entity\Helper\AddressDataHelper">
             <argument type="service" id="country_state.repository"/>
             <argument type="service" id="country.repository"/>
