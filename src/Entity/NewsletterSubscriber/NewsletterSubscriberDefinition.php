@@ -2,14 +2,10 @@
 
 namespace Klaviyo\Integration\Entity\NewsletterSubscriber;
 
-use Shopware\Core\Content\Newsletter\Aggregate\NewsletterRecipient\NewsletterRecipientDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\{PrimaryKey, Required};
+use Shopware\Core\Framework\DataAbstractionLayer\Field\{IdField, StringField};
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 
 
 class NewsletterSubscriberDefinition extends EntityDefinition

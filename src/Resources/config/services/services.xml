@@ -64,6 +64,7 @@
                       id="Klaviyo\Integration\Klaviyo\FrontendApi\Translator\StartedCheckoutEventTrackingRequestTranslator"/>
             <argument type="service" id="logger"/>
             <tag name="kernel.event_subscriber"/>
+            <argument type="service" id="Klaviyo\Integration\Entity\Helper\NewsletterSubscriberHelper"/>
         </service>
         <service id="Klaviyo\Integration\EventListener\AddedToCartEventListener">
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator"/>
@@ -78,6 +79,10 @@
         <service id="Klaviyo\Integration\Entity\Helper\AddressDataHelper">
             <argument type="service" id="country_state.repository"/>
             <argument type="service" id="country.repository"/>
+        </service>
+        <service id="Klaviyo\Integration\Entity\Helper\NewsletterSubscriberHelper">
+            <argument type="service" id="klaviyo_newsletter_subscriber.repository"/>
+            <argument type="service" id="newsletter_recipient.repository"/>
         </service>
         <service id="Klaviyo\Integration\Entity\Helper\ProductDataHelper">
             <argument type="service" id="router.default"/>

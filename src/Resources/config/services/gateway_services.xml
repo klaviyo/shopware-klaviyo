@@ -35,6 +35,7 @@
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CustomerPropertiesTranslator"/>
             <argument type="service" id="Klaviyo\Integration\Entity\Helper\ProductDataHelper"/>
             <argument type="service" id="router.default"/>
+            <argument type="service" id="Klaviyo\Integration\Entity\Helper\NewsletterSubscriberHelper"/>
         </service>
         <service id="Klaviyo\Integration\Klaviyo\Gateway\Translator\IdentifyProfileRequestTranslator">
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CustomerPropertiesTranslator"/>

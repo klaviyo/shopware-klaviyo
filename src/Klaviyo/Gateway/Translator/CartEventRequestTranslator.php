@@ -2,10 +2,10 @@
 
 namespace Klaviyo\Integration\Klaviyo\Gateway\Translator;
 
-use Klaviyo\Integration\Entity\Helper\ProductDataHelper;
+use Klaviyo\Integration\Entity\Helper\{NewsletterSubscriberHelper, ProductDataHelper};
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\CartEvent\AddedToCartEventTrackingRequest;
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\CartEvent\DTO\CartProductInfo;
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\CartEvent\DTO\CartProductInfoCollection;
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\CartEvent\DTO\{CartProductInfo,
+    CartProductInfoCollection};
 use Klaviyo\Integration\Klaviyo\Gateway\Exception\TranslationException;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
@@ -17,15 +17,18 @@ class CartEventRequestTranslator
     private CustomerPropertiesTranslator $customerPropertiesTranslator;
     private ProductDataHelper $productDataHelper;
     private UrlGeneratorInterface $urlGenerator;
+    private NewsletterSubscriberHelper $newsletterSubscriberHelper;
 
     public function __construct(
         CustomerPropertiesTranslator $customerPropertiesTranslator,
         ProductDataHelper $productDataHelper,
-        UrlGeneratorInterface $urlGenerator
+        UrlGeneratorInterface $urlGenerator,
+        NewsletterSubscriberHelper $newsletterSubscriberHelper
     ) {
         $this->customerPropertiesTranslator = $customerPropertiesTranslator;
         $this->productDataHelper = $productDataHelper;
         $this->urlGenerator = $urlGenerator;
+        $this->newsletterSubscriberHelper = $newsletterSubscriberHelper;
     }
 
     public function translateToAddedToCartEventRequest(
@@ -34,15 +37,17 @@ class CartEventRequestTranslator
         LineItem $lineItem,
         \DateTimeInterface $time
     ): AddedToCartEventTrackingRequest {
-        if (!$context->getCustomer()) {
-            throw new TranslationException('Cart Customer is not defined');
+        if (!$context->getCustomer() && isset($_COOKIE["klaviyo_subscriber"])) {
+            $customer = $this->newsletterSubscriberHelper->getSubscriber($_COOKIE["klaviyo_subscriber"],
+                $context->getContext());
+            $customerProperties = $this->customerPropertiesTranslator
+                ->translateCustomer($context->getContext(), $customer);
+        } else {
+            $customerProperties = $this->customerPropertiesTranslator
+                ->translateCustomer($context->getContext(), $context->getCustomer());
         }
 
-        $customerProperties = $this->customerPropertiesTranslator
-            ->translateCustomer($context->getContext(), $context->getCustomer());
-
         $addedProductInfo = $this->translateToCartProductInfo($context, $lineItem);
-
         $checkoutUrl = $this->urlGenerator
             ->generate(
                 'frontend.checkout.confirm.page',
@@ -98,7 +103,7 @@ class CartEventRequestTranslator
             $lineItem->getLabel(),
             $lineItem->getQuantity(),
             $price ? $price->getUnitPrice() : 0.0,
-            $price ? $lineItem->getPrice()->getTotalPrice(): 0.0,
+            $price ? $lineItem->getPrice()->getTotalPrice() : 0.0,
             $imageUrl,
             $viewPageUrl,
             $categories

@@ -2,8 +2,7 @@
 
 namespace Klaviyo\Integration\Entity\NewsletterSubscriber;
 
-use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
-use Shopware\Core\Framework\Routing\Annotation\Entity;
+use Shopware\Core\Framework\DataAbstractionLayer\{EntityIdTrait, Entity};
 
 class NewsletterSubscriberEntity extends Entity
 {
@@ -11,9 +10,9 @@ class NewsletterSubscriberEntity extends Entity
 
     protected string $email;
 
-    protected \DateTimeInterface $createdAt;
+    protected $createdAt;
 
-    protected \DateTimeInterface $updatedAt;
+    protected $updatedAt;
 
     public function getEmail(): string
     {
