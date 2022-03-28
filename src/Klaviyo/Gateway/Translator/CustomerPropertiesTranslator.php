@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Klaviyo\Integration\Klaviyo\Gateway\Translator;
 
@@ -9,7 +9,6 @@ use Klaviyo\Integration\Klaviyo\Gateway\Exception\TranslationException;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Content\Newsletter\Aggregate\NewsletterRecipient\NewsletterRecipientEntity;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 
@@ -104,17 +103,8 @@ class CustomerPropertiesTranslator
         return null;
     }
 
-    public function translateCustomer(Context $context, object $customerEntity): CustomerProperties
+    public function translateCustomer(Context $context, CustomerEntity $customerEntity): CustomerProperties
     {
-        if (\get_class($customerEntity) == NewsletterRecipientEntity::class) {
-            return new CustomerProperties(
-                $customerEntity->getEmail(),
-                $customerEntity->getFirstName() ?? '',
-                $customerEntity->getLastName() ?? ''
-            );
-        }
-
-        /** @var CustomerEntity $customerEntity */
         $customerAddress = $this->guessRelevantCustomerAddress($customerEntity);
         $state = $this->addressHelper->getAddressRegion($context, $customerAddress);
         $country = $this->addressHelper->getAddressCountry($context, $customerAddress);

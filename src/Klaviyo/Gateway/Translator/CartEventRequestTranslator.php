@@ -1,15 +1,18 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Klaviyo\Integration\Klaviyo\Gateway\Translator;
 
 use Klaviyo\Integration\Entity\Helper\{NewsletterSubscriberHelper, ProductDataHelper};
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\CartEvent\AddedToCartEventTrackingRequest;
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\CartEvent\DTO\{CartProductInfo,
-    CartProductInfoCollection};
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\CartEvent\DTO\{
+    CartProductInfo,
+    CartProductInfoCollection
+};
 use Klaviyo\Integration\Klaviyo\Gateway\Exception\TranslationException;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class CartEventRequestTranslator
@@ -18,17 +21,23 @@ class CartEventRequestTranslator
     private ProductDataHelper $productDataHelper;
     private UrlGeneratorInterface $urlGenerator;
     private NewsletterSubscriberHelper $newsletterSubscriberHelper;
+    private RequestStack $requestStack;
+    private NewsletterSubscriberPropertiesTranslator $newsletterSubscriberPropertiesTranslator;
 
     public function __construct(
         CustomerPropertiesTranslator $customerPropertiesTranslator,
         ProductDataHelper $productDataHelper,
         UrlGeneratorInterface $urlGenerator,
-        NewsletterSubscriberHelper $newsletterSubscriberHelper
+        NewsletterSubscriberHelper $newsletterSubscriberHelper,
+        RequestStack $requestStack,
+        NewsletterSubscriberPropertiesTranslator $newsletterSubscriberPropertiesTranslator
     ) {
         $this->customerPropertiesTranslator = $customerPropertiesTranslator;
         $this->productDataHelper = $productDataHelper;
         $this->urlGenerator = $urlGenerator;
         $this->newsletterSubscriberHelper = $newsletterSubscriberHelper;
+        $this->requestStack = $requestStack;
+        $this->newsletterSubscriberPropertiesTranslator = $newsletterSubscriberPropertiesTranslator;
     }
 
     public function translateToAddedToCartEventRequest(
@@ -37,12 +46,16 @@ class CartEventRequestTranslator
         LineItem $lineItem,
         \DateTimeInterface $time
     ): AddedToCartEventTrackingRequest {
-        if (!$context->getCustomer() && isset($_COOKIE["klaviyo_subscriber"])) {
-            $customer = $this->newsletterSubscriberHelper->getSubscriber($_COOKIE["klaviyo_subscriber"],
-                $context->getContext());
-            $customerProperties = $this->customerPropertiesTranslator
-                ->translateCustomer($context->getContext(), $customer);
-        } else {
+        $request = $this->requestStack->getCurrentRequest();
+        $klaviyoNewsletterSubscriberId = $request->cookies->get('klaviyo_subscriber') ?? null;
+        if (!$context->getCustomer() && $klaviyoNewsletterSubscriberId) {
+            $customer = $this->newsletterSubscriberHelper->getSubscriber(
+                $klaviyoNewsletterSubscriberId,
+                $context->getContext()
+            );
+            $customerProperties = $this->newsletterSubscriberPropertiesTranslator
+                ->translateSubscriber($customer);
+        } elseif ($context->getCustomer()) {
             $customerProperties = $this->customerPropertiesTranslator
                 ->translateCustomer($context->getContext(), $context->getCustomer());
         }

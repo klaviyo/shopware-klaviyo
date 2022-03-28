@@ -10,10 +10,6 @@ class NewsletterSubscriberEntity extends Entity
 
     protected string $email;
 
-    protected $createdAt;
-
-    protected $updatedAt;
-
     public function getEmail(): string
     {
         return $this->email;

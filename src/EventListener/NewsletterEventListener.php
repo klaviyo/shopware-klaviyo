@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Klaviyo\Integration\EventListener;
 
@@ -6,6 +6,7 @@ use Shopware\Core\Content\Newsletter\Event\NewsletterConfirmEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\{Cookie, Response};
 
 class NewsletterEventListener implements EventSubscriberInterface
 {
@@ -35,6 +36,8 @@ class NewsletterEventListener implements EventSubscriberInterface
 
         ], $event->getContext());
 
-        setcookie('klaviyo_subscriber', $id);
+        $response = new Response();
+        $response->headers->setCookie(Cookie::create('klaviyo_subscriber', $id));
+        $response->send();
     }
 }

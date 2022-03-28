@@ -63,13 +63,17 @@
             <argument type="service"
                       id="Klaviyo\Integration\Klaviyo\FrontendApi\Translator\StartedCheckoutEventTrackingRequestTranslator"/>
             <argument type="service" id="logger"/>
-            <tag name="kernel.event_subscriber"/>
             <argument type="service" id="Klaviyo\Integration\Entity\Helper\NewsletterSubscriberHelper"/>
+            <argument type="service" id="request_stack"/>
+            <tag name="kernel.event_subscriber"/>
+            <argument type="service"
+                      id="Klaviyo\Integration\Klaviyo\Gateway\Translator\NewsletterSubscriberPropertiesTranslator"/>
         </service>
         <service id="Klaviyo\Integration\EventListener\AddedToCartEventListener">
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator"/>
             <argument type="service" id="Klaviyo\Integration\System\Tracking\ScheduledEventsTracker"/>
             <argument type="service" id="logger"/>
+            <argument type="service" id="request_stack"/>
             <tag name="kernel.event_subscriber"/>
         </service>
         <service id="Klaviyo\Integration\EventListener\NewsletterEventListener">

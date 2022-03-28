@@ -4,8 +4,11 @@ namespace Klaviyo\Integration\EventListener;
 
 use Klaviyo\Integration\Configuration\{Configuration, ConfigurationRegistry};
 use Klaviyo\Integration\Entity\Helper\NewsletterSubscriberHelper;
-use Klaviyo\Integration\Klaviyo\FrontendApi\Translator\{ProductTranslator,
-    StartedCheckoutEventTrackingRequestTranslator};
+use Klaviyo\Integration\Klaviyo\Gateway\Translator\NewsletterSubscriberPropertiesTranslator;
+use Klaviyo\Integration\Klaviyo\FrontendApi\Translator\{
+    ProductTranslator,
+    StartedCheckoutEventTrackingRequestTranslator
+};
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\CustomerPropertiesTranslator;
 use Klaviyo\Integration\Utils\Logger\ContextHelper;
 use Psr\Log\LoggerInterface;
@@ -14,6 +17,7 @@ use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Page\GenericPageLoadedEvent;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterface
 {
@@ -25,6 +29,8 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
     private StartedCheckoutEventTrackingRequestTranslator $startedCheckoutEventTrackingRequestTranslator;
     private LoggerInterface $logger;
     private NewsletterSubscriberHelper $newsletterSubscriberHelper;
+    private RequestStack $requestStack;
+    private NewsletterSubscriberPropertiesTranslator $newsletterSubscriberPropertiesTranslator;
 
     public function __construct(
         ConfigurationRegistry $configurationRegistry,
@@ -32,7 +38,9 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
         ProductTranslator $productTranslator,
         StartedCheckoutEventTrackingRequestTranslator $startedCheckoutEventTrackingRequestTranslator,
         LoggerInterface $logger,
-        NewsletterSubscriberHelper $newsletterSubscriberHelper
+        NewsletterSubscriberHelper $newsletterSubscriberHelper,
+        RequestStack $requestStack,
+        NewsletterSubscriberPropertiesTranslator $newsletterSubscriberPropertiesTranslator
     ) {
         $this->configurationRegistry = $configurationRegistry;
         $this->customerPropertiesTranslator = $customerPropertiesTranslator;
@@ -40,6 +48,8 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
         $this->startedCheckoutEventTrackingRequestTranslator = $startedCheckoutEventTrackingRequestTranslator;
         $this->logger = $logger;
         $this->newsletterSubscriberHelper = $newsletterSubscriberHelper;
+        $this->requestStack = $requestStack;
+        $this->newsletterSubscriberPropertiesTranslator = $newsletterSubscriberPropertiesTranslator;
     }
 
     public static function getSubscribedEvents(): array
@@ -61,16 +71,14 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
                 ->getConfiguration($salesChannelContext->getSalesChannel()->getId());
 
             $page = $event->getPage();
-            $klaviyoSubscriberCookie = $_COOKIE["klaviyo_subscriber"] ?? null;
-            if ($klaviyoSubscriberCookie && !($event->getSalesChannelContext()->getCustomer())) {
-                $customer = $this->newsletterSubscriberHelper->getSubscriber($klaviyoSubscriberCookie,
-                    $event->getContext());
-            } else {
-                $customer = $event->getSalesChannelContext()->getCustomer();
-            }
-
+            $request = $this->requestStack->getCurrentRequest();
             $customerIdentity = null;
-            if ($customer) {
+            $klaviyoNewsletterSubscriberId = $request->cookies->get('klaviyo_subscriber') ?? null;
+            if ($klaviyoNewsletterSubscriberId && !($event->getSalesChannelContext()->getCustomer())) {
+                $customer = $this->newsletterSubscriberHelper->getSubscriber($klaviyoNewsletterSubscriberId,
+                    $event->getContext());
+                $customerIdentity = $this->newsletterSubscriberPropertiesTranslator->translateSubscriber($customer);
+            } elseif ($customer = $event->getSalesChannelContext()->getCustomer()) {
                 $customerIdentity = $this->customerPropertiesTranslator
                     ->translateCustomer($event->getContext(), $customer);
             }
