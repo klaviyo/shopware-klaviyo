@@ -113,16 +113,6 @@
             <argument type="service" id="cache.object"/>
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\GetListIdByListName"/>
         </service>
-
-        <!-- Snippets -->
-        <service id="Klaviyo\Integration\Resources\snippet\en_GB\SnippetFile_en_GB" public="true">
-            <tag name="shopware.snippet.file"/>
-        </service>
-
-        <service id="Klaviyo\Integration\Resources\snippet\de_DE\SnippetFile_de_DE" public="true">
-            <tag name="shopware.snippet.file"/>
-        </service>
-        <!-- /Snippets -->
     </services>
 
 </container>

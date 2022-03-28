@@ -1,71 +1,96 @@
 {% block page_product_detail_back_in_stock_form %}
-    <form
-            id="productDetailPageBackInStockForm"
-            data-klaviyo-back-in-stock-subscriber-event-tracking-component
-            data-klaviyo-back-in-stock-subscriber-event-tracking-component-options='{
-                "snippets": {
-                    "successMessage": "{{ "back-in-stock.productDetail.successMessage"|trans }}",
-                    "failedMessage": "{{ "back-in-stock.productDetail.failedMessage"|trans }}",
-                    "exceptionMessage": "{{ "back-in-stock.productDetail.exceptionMessage"|trans }}"
-                }
-            }'
-            data-action=
-            "{% block page_product_detail_back_in_stock_form_action %}
-            {% endblock %}"
-            method="post"
-            class="back-in-stock">
-        {% block page_product_detail_back_in_stock_container %}
-            <div class="form-row back-in-stock-container">
-                {% block page_product_detail_back_in_stock_apiKey_input %}
-                    <input type="hidden" name="a" value="{{ publicApiKey }}"/>
-                {% endblock %}
-                {% block page_product_detail_back_in_stock_email_container %}
-                    <label>
-                        <input class="form-control" type="email" name="email" required placeholder="email">
-                    </label>
-                {% endblock %}
-                {% block page_product_detail_back_in_stock_variant_input %}
-                    <input type="hidden" name="variant" value="{{ page.product.id }}"/>
-                {% endblock %}
-                {% block page_product_detail_back_in_stock_platform_input %}
-                    <input type="hidden" name="platform" value="shopware-6"/>
-                {% endblock %}
-                {% block page_product_detail_back_in_stock_variant_subscribe_input %}
-                    <input
-                            id="subscribeToNewsletter"
-                            class="custom-control-input"
-                            type="checkbox"
-                            name="subscribe"
-                    >
-                    <label class="custom-control-label" for="subscribeToNewsletter">
-                        Subscribe to newsletter
-                    </label>
-                {% endblock %}
-                {% block page_product_detail_back_in_stock_button %}
-                    <button class="btn btn-outline-primary btn-block btn-notify">Subscribe</button>
-                {% endblock %}
-            </div>
-        {% endblock %}
-        {% block product_detail_get_notified_message %}
-            <div id="message-container" role="alert" class="alert d-none alert-has-icon">
-                <span class="icon icon-checkmark-circle">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                        <path fill="#758CA3" fill-rule="evenodd"
-                              d="M24,12 C24,18.627417 18.627417,24 12,24 C5.372583,24 -7.65539184e-17,18.627417 -8.8817842e-16,12 C5.40562444e-15,5.372583 5.372583,1.21743707e-15 12,0 C18.627417,5.58919772e-16 24,5.372583 24,12 Z M12,2 C6.4771525,2 2,6.4771525 2,12 C2,17.5228475 6.4771525,22 12,22 C17.5228475,22 22,17.5228475 22,12 C22,6.4771525 17.5228475,2 12,2 Z M7.70710678,12.2928932 L10,14.5857864 L16.2928932,8.29289322 C16.6834175,7.90236893 17.3165825,7.90236893 17.7071068,8.29289322 C18.0976311,8.68341751 18.0976311,9.31658249 17.7071068,9.70710678 L10.7071068,16.7071068 C10.3165825,17.0976311 9.68341751,17.0976311 9.29289322,16.7071068 L6.29289322,13.7071068 C5.90236893,13.3165825 5.90236893,12.6834175 6.29289322,12.2928932 C6.68341751,11.9023689 7.31658249,11.9023689 7.70710678,12.2928932 Z"></path>
-                    </svg>
-                </span>
+    <div class="klaviyo-stock-notification-container">
+        {% set notificationConfigurationOptions = {
+            publicApiKey:  extensionData.configuration.publicApiKey,
+            listName: extensionData.configuration.subscribersListName,
+            variantID: page.product.id,
+            productID: page.product.parentId,
+        } %}
 
-                <span class="icon icon-blocked">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                        <path fill="#758CA3" fill-rule="evenodd"
-                              d="M12,24 C5.372583,24 -8.8817842e-16,18.627417 -8.8817842e-16,12 C-8.8817842e-16,5.372583 5.372583,-8.8817842e-16 12,-8.8817842e-16 C18.627417,-8.8817842e-16 24,5.372583 24,12 C24,18.627417 18.627417,24 12,24 Z M12,22 C17.5228475,22 22,17.5228475 22,12 C22,6.4771525 17.5228475,2 12,2 C6.4771525,2 2,6.4771525 2,12 C2,17.5228475 6.4771525,22 12,22 Z M16.2928932,6.29289322 C16.6834175,5.90236893 17.3165825,5.90236893 17.7071068,6.29289322 C18.0976311,6.68341751 18.0976311,7.31658249 17.7071068,7.70710678 L7.70710678,17.7071068 C7.31658249,18.0976311 6.68341751,18.0976311 6.29289322,17.7071068 C5.90236893,17.3165825 5.90236893,16.6834175 6.29289322,16.2928932 L16.2928932,6.29289322 Z"></path>
-                    </svg>
-                </span>
-
-                <div class="alert-content-container">
-                    <div id="message-label" class="alert-content"></div>
+        <button class="btn btn-primary" data-toggle="modal" data-target="#back-in-stock-modal">Notify me when available!
+        </button>
+        <div class="klaviyo-back-in-stock-form-modal modal fade" id="back-in-stock-modal" tabindex="-1" role="dialog"
+             aria-labelledby="back-in-stock-modal"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"
+                            id="exampleModalLabel">{{ "klaviyo.back-in-stock.modal.title"|trans }}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="productDetailPageBackInStockForm"
+                              data-klaviyo-back-in-stock-notification
+                              data-klaviyo-back-in-stock-notification-options="{{ notificationConfigurationOptions|json_encode }}"
+                              method="post"
+                              class="back-in-stock">
+                            {% block page_product_detail_back_in_stock_container %}
+                                <div class="form-row back-in-stock-container">
+                                    {% block page_product_detail_back_in_stock_email_container %}
+                                        <div class="col-12 mb-4">
+                                            <label class="form-label"
+                                                   for="email">{{ "klaviyo.back-in-stock.modal.email"|trans }}</label>
+                                            <input class="form-control" id="email" type="email" name="email" required
+                                                   placeholder="{{ "klaviyo.back-in-stock.modal.email-placeholder"|trans }}">
+                                        </div>
+                                    {% endblock %}
+                                    {% block page_product_detail_back_in_stock_variant_input %}
+                                        <input type="hidden" name="variant" value="{{ page.product.id }}"/>
+                                    {% endblock %}
+                                    {% block page_product_detail_back_in_stock_platform_input %}
+                                        <input type="hidden" name="platform" value="shopware-6"/>
+                                    {% endblock %}
+                                    {% block page_product_detail_back_in_stock_variant_subscribe_input %}
+                                        <div class="col-12 mb-4">
+                                            <input id="subscribeToNewsletter"
+                                                   type="checkbox"
+                                                   name="subscribeToNewsletter"
+                                            >
+                                            <label class="form-label" for="subscribeToNewsletter">
+                                                {{ "klaviyo.back-in-stock.modal.subscribe-to-newsletter"|trans }}
+                                            </label>
+                                        </div>
+                                    {% endblock %}
+                                    {% block klaviyo_back_in_stock_messages_container %}
+                                        <div class="klaviyo-message-container col-12">
+                                            <div class="klaviyo-success klaviyo-message d-none mb-4">
+                                                {% sw_include '@Storefront/storefront/utilities/alert.html.twig' with {
+                                                    type: 'success',
+                                                    content: 'klaviyo.back-in-stock.messages.response-success-message'|trans|sw_sanitize
+                                                } %}
+                                            </div>
+                                            <div class="klaviyo-error klaviyo-message d-none mb-4">
+                                                {% sw_include '@Storefront/storefront/utilities/alert.html.twig' with {
+                                                    type: 'danger',
+                                                    content: 'klaviyo.back-in-stock.messages.response-error-message'|trans|sw_sanitize
+                                                } %}
+                                            </div>
+                                            <div class="klaviyo-email-not-valid klaviyo-message d-none mb-4">
+                                                {% sw_include '@Storefront/storefront/utilities/alert.html.twig' with {
+                                                    type: 'danger',
+                                                    content: "klaviyo.back-in-stock.messages.not-valid-email"|trans|sw_sanitize
+                                                } %}
+                                            </div>
+                                        </div>
+                                    {% endblock %}
+                                    {% block page_product_detail_back_in_stock_button %}
+                                        <div class="col-12">
+                                            <button class="btn btn-outline-primary btn-submit-stock-notification">{{ "klaviyo.back-in-stock.modal.subscribe"|trans }}</button>
+                                        </div>
+                                    {% endblock %}
+                                </div>
+                            {% endblock %}
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"
+                                data-dismiss="modal">{{ "klaviyo.back-in-stock.modal.close-modal"|trans }}</button>
+                    </div>
                 </div>
             </div>
-        {% endblock %}
-    </form>
+        </div>
+    </div>
 {% endblock %}
