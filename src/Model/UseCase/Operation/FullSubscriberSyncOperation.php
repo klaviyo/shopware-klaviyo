@@ -3,6 +3,7 @@
 namespace Klaviyo\Integration\Model\UseCase\Operation;
 
 use Klaviyo\Integration\Async\Message\FullSubscriberSyncMessage;
+use Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
 use Od\Scheduler\Model\Job\{GeneratingHandlerInterface, JobHandlerInterface, JobResult};
 use Shopware\Core\Content\Newsletter\SalesChannel\NewsletterSubscribeRoute;
@@ -11,6 +12,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHandlerInterface
 {
@@ -19,13 +21,19 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
 
     private ScheduleBackgroundJob $scheduleBackgroundJob;
     private EntityRepositoryInterface $subscriberRepository;
+    private KlaviyoGateway $klaviyoGateway;
+    private EntityRepositoryInterface $salesChannelRepository;
 
     public function __construct(
         ScheduleBackgroundJob $scheduleBackgroundJob,
-        EntityRepositoryInterface $subscriberRepository
+        EntityRepositoryInterface $subscriberRepository,
+        KlaviyoGateway $klaviyoGateway,
+        EntityRepositoryInterface $salesChannelRepository
     ) {
         $this->scheduleBackgroundJob = $scheduleBackgroundJob;
         $this->subscriberRepository = $subscriberRepository;
+        $this->klaviyoGateway = $klaviyoGateway;
+        $this->salesChannelRepository = $salesChannelRepository;
     }
 
     /**
@@ -49,6 +57,19 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
         );
         $iterator = new RepositoryIterator($this->subscriberRepository, $context, $criteria);
 
+        // request +set page + hash of the last page -> json -> md5 ->new table
+        $context = Context::createDefaultContext();
+        /** @var SalesChannelEntity $channel */
+        $channels = $this->salesChannelRepository->search(new Criteria(), $context);
+        $result = new JobResult();
+        foreach ($channels as $channel) {
+            try {
+                $this->getExcludedSubscribers($channel);
+            } catch (\Throwable $e) {
+                $result->addError($e);
+            }
+        }
+
         while (($subscriberIds = $iterator->fetchIds()) !== null) {
             $this->scheduleBackgroundJob->scheduleSubscriberSyncJob(
                 $subscriberIds,
@@ -57,5 +78,10 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
         }
 
         return new JobResult();
+    }
+
+    public function getExcludedSubscribers($channel)
+    {
+        $this->klaviyoGateway->getExcludedSubscribersFromList($channel);
     }
 }

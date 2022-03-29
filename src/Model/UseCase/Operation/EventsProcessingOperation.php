@@ -46,6 +46,7 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
         $this->processCartEvents($context, $message->getJobId());
         $this->processSubscriberEvents($context, $message->getJobId());
         $this->processCustomerProfileEvents($context, $message->getJobId());
+        // processunsubscribers (llast page -> klaviyo -> messages)
 
         return new JobResult();
     }

@@ -43,6 +43,11 @@
             <tag name="od.job_handler" code="od-klaviyo-full-subscriber-sync-handler"/>
             <argument type="service" id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob"/>
             <argument type="service" id="newsletter_recipient.repository"/>
+            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway"/>
+            <argument type="service" id="sales_channel.repository"/>
+        </service>
+        <service id="Klaviyo\Integration\Model\UseCase\Operation\ExcludedSubscriberSyncOperation">
+            <tag name="od.job_handler" code="od-klaviyo-excluded-subscriber-sync-handler"/>
         </service>
         <service id="Klaviyo\Integration\Model\UseCase\Operation\OrderEventsSyncOperation">
             <tag name="od.job_handler" code="od-klaviyo-order-event-sync-handler"/>

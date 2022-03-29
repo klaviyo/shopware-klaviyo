@@ -2,11 +2,16 @@
 
 namespace Klaviyo\Integration\Klaviyo\Gateway;
 
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribersRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\AddMembersToList\AddProfilesToListResponse;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Common\ProfileContactInfoCollection;
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetLists\DTO\ProfilesListInfo;
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetLists\GetProfilesListsRequest;
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetLists\GetProfilesListsResponse;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfilesFromList\RemoveProfilesFromListRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfilesFromList\RemoveProfilesFromListResponse;
 use Klaviyo\Integration\Klaviyo\Client\ClientResult;
+use Klaviyo\Integration\Klaviyo\Gateway\Exception\ProfilesListNotFoundException;
 use Klaviyo\Integration\Klaviyo\Gateway\Result\OrderTrackingResult;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\IdentifyProfileRequestTranslator;
@@ -287,5 +292,21 @@ class KlaviyoGateway
         }
 
         return $trackingResult;
+    }
+
+    public function getExcludedSubscribersFromList(SalesChannelEntity $salesChannelEntity)
+    {
+        $request = new GetExcludedSubscribersRequest();
+        $clientResult = $this->clientRegistry
+            ->getClient($salesChannelEntity->getId())
+            ->sendRequests([$request]);
+
+        /** @var GetProfilesListsResponse $result */
+        $result = $clientResult->getRequestResponse($request);
+        if (!$result->isSuccess()) {
+            throw new ProfilesListNotFoundException(
+                sprintf('Could not get excluded subscribers from Klaviyo. Reason: %s', $result->getErrorDetails())
+            );
+        }
     }
 }
