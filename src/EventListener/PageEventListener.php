@@ -51,7 +51,7 @@ class PageEventListener implements EventSubscriberInterface
             $listId = false;
         }
 
-        if ($product->getAvailableStock() < 1 && $product->getStock() < 1 && $product->getAvailable()) {
+        if ($product->getAvailableStock() < 1 && $product->getStock() < 1 && $product->getIsCloseout()) {
             $extensionData['backInStockData'] = [
                 'listId' => $listId
             ];

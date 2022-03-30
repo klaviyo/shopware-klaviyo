@@ -47,6 +47,23 @@
 		"general": {
 			"title": "General"
 		},
+        "pop-up": {
+            "title": "Pop-Up styles",
+            "open-button-fieldset-label": "Pop-Up opening button",
+            "close-button-fieldset-label": "Pop-Up close button",
+            "subscribe-button-fieldset-label": "Subscribe button",
+            "snippet-button-fieldset-label": "Snippet names",
+            "additional-classes-fieldset-label": "Additional classes",
+            "colorLabel": "Color",
+            "backgroundLabel": "Background",
+            "openBtnLabel": "Open Button",
+            "closeBtnLabel": "Close Button",
+            "contentMessageLabel": "Content message",
+            "subscribeBtnLabel": "Subscribe Button",
+            "subscribeCheckboxLabel": "Subscribe checkbox text",
+            "emailFieldLabel": "Email field label",
+            "emailFieldPlaceholder": "Email field placeholder"
+        },
 		"configs": {
 			"privateApiKey": {
 				"label": "Klaviyo Private API key",

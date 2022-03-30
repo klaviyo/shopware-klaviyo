@@ -1,4 +1,5 @@
 import template from './klaviyo-integration-settings-general.html.twig';
+import './klaviyo-integration-settings-general.scss';
 
 const {Component} = Shopware;
 
@@ -46,7 +47,14 @@ Component.register('klaviyo-integration-settings-general', {
                     trackCancelledOrder: true,
                     trackRefundedOrder: true,
                     trackSubscribedToBackInStock: true,
-                    isInitializeKlaviyoAfterInteraction: true
+                    isInitializeKlaviyoAfterInteraction: true,
+                    popUpOpenBtnColor: '',
+                    popUpOpenBtnBgColor: '',
+                    popUpCloseBtnColor: '',
+                    popUpCloseBtnBgColor: '',
+                    subscribeBtnColor: '',
+                    subscribeBtnBgColor: '',
+                    popUpAdditionalClasses: '',
                 };
 
             /**

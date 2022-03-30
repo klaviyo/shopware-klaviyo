@@ -61,6 +61,14 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
         $mapping = $this->systemConfigService
             ->get('KlaviyoIntegrationPlugin.config.customerFieldMapping', $salesChannelId) ?? [];
 
+        $popUpOpenBtnColor = $this->systemConfigService->get('KlaviyoIntegrationPlugin.config.popUpOpenBtnColor', $salesChannelId);
+        $popUpOpenBtnBgColor = $this->systemConfigService->get('KlaviyoIntegrationPlugin.config.popUpOpenBtnBgColor', $salesChannelId);
+        $popUpCloseBtnColor = $this->systemConfigService->get('KlaviyoIntegrationPlugin.config.popUpCloseBtnColor', $salesChannelId);
+        $popUpCloseBtnBgColor = $this->systemConfigService->get('KlaviyoIntegrationPlugin.config.popUpCloseBtnBgColor', $salesChannelId);
+        $subscribeBtnColor = $this->systemConfigService->get('KlaviyoIntegrationPlugin.config.subscribeBtnColor', $salesChannelId);
+        $subscribeBtnBgColor = $this->systemConfigService->get('KlaviyoIntegrationPlugin.config.subscribeBtnBgColor', $salesChannelId);
+        $popUpAdditionalClasses = $this->systemConfigService->get('KlaviyoIntegrationPlugin.config.popUpAdditionalClasses', $salesChannelId);
+
         if (is_array($mapping)) {
             foreach ($mapping as $mappingId => $mappingAssociation) {
                 unset($mapping[$mappingId]);
@@ -87,7 +95,14 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
             $trackRefundedOrder,
             $mapping,
             $afterInteraction,
-            $trackSubscribedToBackInStock
+            $trackSubscribedToBackInStock,
+            $popUpOpenBtnColor,
+            $popUpOpenBtnBgColor,
+            $popUpCloseBtnColor,
+            $popUpCloseBtnBgColor,
+            $subscribeBtnColor,
+            $subscribeBtnBgColor,
+            $popUpAdditionalClasses
         );
     }
 
