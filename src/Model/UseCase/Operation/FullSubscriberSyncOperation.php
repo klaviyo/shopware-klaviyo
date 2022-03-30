@@ -3,6 +3,7 @@
 namespace Klaviyo\Integration\Model\UseCase\Operation;
 
 use Klaviyo\Integration\Async\Message\FullSubscriberSyncMessage;
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribersResponse;
 use Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
 use Od\Scheduler\Model\Job\{GeneratingHandlerInterface, JobHandlerInterface, JobResult};
@@ -57,17 +58,21 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
         );
         $iterator = new RepositoryIterator($this->subscriberRepository, $context, $criteria);
 
-        // request +set page + hash of the last page -> json -> md5 ->new table
+        //TODO set page + hash of the last page -> json -> md5 ->new table
         $context = Context::createDefaultContext();
         /** @var SalesChannelEntity $channel */
         $channels = $this->salesChannelRepository->search(new Criteria(), $context);
         $result = new JobResult();
         foreach ($channels as $channel) {
             try {
-                $this->getExcludedSubscribers($channel);
+                $result = $this->getExcludedSubscribers($channel);
             } catch (\Throwable $e) {
                 $result->addError($e);
             }
+        }
+
+        foreach ($result->getLists() as $email) {
+            $this->scheduleBackgroundJob->scheduleExcludedSubscribersSyncJob($email->getEmail(), $message->getJobId());
         }
 
         while (($subscriberIds = $iterator->fetchIds()) !== null) {
@@ -80,8 +85,8 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
         return new JobResult();
     }
 
-    public function getExcludedSubscribers($channel)
+    public function getExcludedSubscribers($channel): GetExcludedSubscribersResponse
     {
-        $this->klaviyoGateway->getExcludedSubscribersFromList($channel);
+        return $this->klaviyoGateway->getExcludedSubscribersFromList($channel);
     }
 }

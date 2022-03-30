@@ -3,18 +3,14 @@
 namespace Klaviyo\Integration\Model\UseCase;
 
 use Klaviyo\Integration\Async\Message;
-use Klaviyo\Integration\Exception\JobAlreadyRunningException;
-use Klaviyo\Integration\Exception\JobAlreadyScheduledException;
-use Klaviyo\Integration\Model\UseCase\Operation\FullOrderSyncOperation;
-use Klaviyo\Integration\Model\UseCase\Operation\FullSubscriberSyncOperation;
+use Klaviyo\Integration\Exception\{JobAlreadyRunningException, JobAlreadyScheduledException};
+use Klaviyo\Integration\Model\UseCase\Operation\{FullOrderSyncOperation, FullSubscriberSyncOperation};
 use Od\Scheduler\Entity\Job\JobEntity;
 use Od\Scheduler\Model\JobScheduler;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\AndFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\{AndFilter, EqualsAnyFilter, EqualsFilter};
 use Shopware\Core\Framework\Uuid\Uuid;
 
 class ScheduleBackgroundJob
@@ -100,5 +96,14 @@ class ScheduleBackgroundJob
                 throw new JobAlreadyRunningException('Job is already running.');
             }
         }
+    }
+
+    public function scheduleExcludedSubscribersSyncJob(string $email, string $parentJobId): void
+    {
+        $jobMessage = new Message\ExcludedSubscriberSyncMessage(
+            Uuid::randomHex(),
+            $parentJobId,
+            $email);
+        $this->scheduler->schedule($jobMessage);
     }
 }

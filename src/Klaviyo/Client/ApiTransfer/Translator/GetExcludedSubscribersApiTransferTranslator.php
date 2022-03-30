@@ -4,8 +4,7 @@ namespace Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator;
 
 use GuzzleHttp\Psr7\Request;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribersRequest;
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetLists\GetProfilesListsRequest;
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetLists\GetProfilesListsResponse;
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribersResponse;
 use Psr\Http\Message\ResponseInterface;
 use Klaviyo\Integration\Klaviyo\Client\Exception\TranslationException;
 
@@ -14,8 +13,10 @@ class GetExcludedSubscribersApiTransferTranslator extends AbstractApiTransferMes
     public function translateRequest(object $request): Request
     {
         $url = sprintf(
-            '%s/people/exclusions?api_key=%s',
-            $this->configuration->getListAndSegmentsApiEndpointUrl(),
+            '%s/people/exclusions?page=%s&api_key=%s',
+            'https://a.klaviyo.com/api/v1',
+            //TODO take page`s value from variable
+            '0',
             $this->configuration->getApiKey()
         );
 
@@ -24,15 +25,13 @@ class GetExcludedSubscribersApiTransferTranslator extends AbstractApiTransferMes
 
     private function constructGuzzleRequestToKlaviyoAPI(string $endpoint): Request
     {
-        $guzzleRequest = new Request(
+        return new Request(
             'GET',
             $endpoint,
             [
                 'Accept' => 'application/json'
             ]
         );
-
-        return $guzzleRequest;
     }
 
     public function translateResponse(ResponseInterface $response): object
@@ -40,21 +39,15 @@ class GetExcludedSubscribersApiTransferTranslator extends AbstractApiTransferMes
         $isJsonResponse = $this->isResponseJson($response);
         if ($isJsonResponse) {
             $content = $response->getBody()->getContents();
-            $result = $this->deserialize($content, GetProfilesListsResponse::class);
 
-            return $result;
+            return $this->deserialize($content, GetExcludedSubscribersResponse::class);
         }
 
         $this->assertStatusCode($response);
         // Throw different exception in case if response is 200 but not a json
-        throw new TranslationException($response, 'Get profiles lists api response expected to be a JSON');
+        throw new TranslationException($response, 'Get excluded subscribers api response expected to be a JSON');
     }
 
-    /**
-     * @param ResponseInterface $response
-     *
-     * @throws TranslationException
-     */
     private function assertStatusCode(ResponseInterface $response)
     {
         if ($response->getStatusCode() < 200 || $response->getStatusCode() >= 300) {

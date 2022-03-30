@@ -48,6 +48,7 @@
         </service>
         <service id="Klaviyo\Integration\Model\UseCase\Operation\ExcludedSubscriberSyncOperation">
             <tag name="od.job_handler" code="od-klaviyo-excluded-subscriber-sync-handler"/>
+            <argument type="service" id="newsletter_recipient.repository"/>
         </service>
         <service id="Klaviyo\Integration\Model\UseCase\Operation\OrderEventsSyncOperation">
             <tag name="od.job_handler" code="od-klaviyo-order-event-sync-handler"/>

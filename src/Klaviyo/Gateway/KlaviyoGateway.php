@@ -3,10 +3,9 @@
 namespace Klaviyo\Integration\Klaviyo\Gateway;
 
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribersRequest;
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribersResponse;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\AddMembersToList\AddProfilesToListResponse;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Common\ProfileContactInfoCollection;
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetLists\DTO\ProfilesListInfo;
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetLists\GetProfilesListsRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetLists\GetProfilesListsResponse;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfilesFromList\RemoveProfilesFromListRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfilesFromList\RemoveProfilesFromListResponse;
@@ -294,19 +293,20 @@ class KlaviyoGateway
         return $trackingResult;
     }
 
-    public function getExcludedSubscribersFromList(SalesChannelEntity $salesChannelEntity)
-    {
+    public function getExcludedSubscribersFromList(
+        SalesChannelEntity $salesChannelEntity
+    ): GetExcludedSubscribersResponse {
         $request = new GetExcludedSubscribersRequest();
         $clientResult = $this->clientRegistry
             ->getClient($salesChannelEntity->getId())
             ->sendRequests([$request]);
 
-        /** @var GetProfilesListsResponse $result */
+        /** @var GetExcludedSubscribersResponse $result */
         $result = $clientResult->getRequestResponse($request);
-        if (!$result->isSuccess()) {
-            throw new ProfilesListNotFoundException(
-                sprintf('Could not get excluded subscribers from Klaviyo. Reason: %s', $result->getErrorDetails())
-            );
+        if (!$result) {
+            throw new ProfilesListNotFoundException('Could not get excluded subscribers from Klaviyo.');
         }
+
+        return $result;
     }
 }
