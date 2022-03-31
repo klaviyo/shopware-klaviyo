@@ -3,6 +3,7 @@
 namespace Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer;
 
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\{
+    //TODO move to different folders
     ExcludedSubscribers,
     ExcludedSubscribersCollection,
     GetExcludedSubscribersResponse
@@ -11,6 +12,9 @@ use Klaviyo\Integration\Klaviyo\Client\Exception\DeserializationException;
 
 class GetExcludedSubscribersResponseDenormalizer extends AbstractDenormalizer
 {
+    /**
+     * @throws DeserializationException
+     */
     public function denormalize(
         $data,
         string $type,
@@ -23,7 +27,7 @@ class GetExcludedSubscribersResponseDenormalizer extends AbstractDenormalizer
             $excludedSubscribersCollection->add(new ExcludedSubscribers($row['email']));
         }
 
-        return new GetExcludedSubscribersResponse($excludedSubscribersCollection, $data['page']);
+        return new GetExcludedSubscribersResponse($excludedSubscribersCollection, (string) $data['page']);
     }
 
     /**

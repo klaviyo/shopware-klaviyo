@@ -45,6 +45,7 @@
             <argument type="service" id="newsletter_recipient.repository"/>
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway"/>
             <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="klaviyo_flag_storage.repository"/>
         </service>
         <service id="Klaviyo\Integration\Model\UseCase\Operation\ExcludedSubscriberSyncOperation">
             <tag name="od.job_handler" code="od-klaviyo-excluded-subscriber-sync-handler"/>

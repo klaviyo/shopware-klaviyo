@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Klaviyo\Integration\Klaviyo\Gateway;
 
@@ -6,7 +6,6 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\G
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribersResponse;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\AddMembersToList\AddProfilesToListResponse;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Common\ProfileContactInfoCollection;
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetLists\GetProfilesListsResponse;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfilesFromList\RemoveProfilesFromListRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfilesFromList\RemoveProfilesFromListResponse;
 use Klaviyo\Integration\Klaviyo\Client\ClientResult;
@@ -293,10 +292,14 @@ class KlaviyoGateway
         return $trackingResult;
     }
 
+    /**
+     * @throws \Exception
+     */
     public function getExcludedSubscribersFromList(
-        SalesChannelEntity $salesChannelEntity
+        SalesChannelEntity $salesChannelEntity,
+        string $page
     ): GetExcludedSubscribersResponse {
-        $request = new GetExcludedSubscribersRequest();
+        $request = new GetExcludedSubscribersRequest($page);
         $clientResult = $this->clientRegistry
             ->getClient($salesChannelEntity->getId())
             ->sendRequests([$request]);

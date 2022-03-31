@@ -8,17 +8,17 @@ class ExcludedSubscriberSyncMessage extends AbstractBasicMessage
 {
     protected static string $defaultName = 'Excluded Subscriber Sync Operation';
     private string $parentJobId;
-    private string $email;
+    private array $emails;
 
     public function __construct(
         string $jobId,
         string $parentJobId,
-        string $email,
+        array $emails,
         ?string $name = null
     ) {
         parent::__construct($jobId, $name);
         $this->parentJobId = $parentJobId;
-        $this->email = $email;
+        $this->emails = $emails;
     }
 
     public function getHandlerCode(): string
@@ -31,8 +31,8 @@ class ExcludedSubscriberSyncMessage extends AbstractBasicMessage
         return $this->parentJobId;
     }
 
-    public function getEmail(): string
+    public function getEmails(): array
     {
-        return $this->email;
+        return $this->emails;
     }
 }

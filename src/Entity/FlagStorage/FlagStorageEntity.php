@@ -2,8 +2,7 @@
 
 namespace Klaviyo\Integration\Entity\FlagStorage;
 
-use Shopware\Core\Framework\DataAbstractionLayer\Entity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
+use Shopware\Core\Framework\DataAbstractionLayer\{Entity, EntityIdTrait};
 
 class FlagStorageEntity extends Entity
 {

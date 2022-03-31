@@ -46,7 +46,8 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
         $this->processCartEvents($context, $message->getJobId());
         $this->processSubscriberEvents($context, $message->getJobId());
         $this->processCustomerProfileEvents($context, $message->getJobId());
-        // processunsubscribers (llast page -> klaviyo -> messages)
+        //TODO processunsubscribers (last page -> klaviyo -> messages)
+//        $this->processUnsubscribers($context, $message->getJobId());
 
         return new JobResult();
     }
@@ -111,5 +112,9 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
         $criteria->setLimit(100);
 
         return new RepositoryIterator($this->eventRepository, $context, $criteria);
+    }
+
+    private function processUnsubscribers(Context $context, string $getJobId)
+    {
     }
 }

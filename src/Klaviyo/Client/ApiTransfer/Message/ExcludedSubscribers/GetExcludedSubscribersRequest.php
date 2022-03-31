@@ -1,10 +1,18 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers;
 
-/**
- * Class is empty because no extra data needed(filters are not implemented by Klaviyo API for now)
- */
 class GetExcludedSubscribersRequest
 {
+    private ?string $page;
+
+    public function __construct(string $page)
+    {
+        $this->page = $page;
+    }
+
+    public function getPage(): string
+    {
+        return $this->page;
+    }
 }

@@ -5,9 +5,9 @@ namespace Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscri
 class GetExcludedSubscribersResponse
 {
     private ExcludedSubscribersCollection $lists;
-    private int $page;
+    private string $page;
 
-    public function __construct(ExcludedSubscribersCollection $lists, int $page)
+    public function __construct(ExcludedSubscribersCollection $lists, string $page)
     {
         $this->lists = $lists;
         $this->page = $page;
@@ -18,7 +18,7 @@ class GetExcludedSubscribersResponse
         return $this->lists;
     }
 
-    public function getPage(): int
+    public function getPage(): string
     {
         return $this->page;
     }

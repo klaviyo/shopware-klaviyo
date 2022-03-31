@@ -8,7 +8,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\{IdField, StringField};
 
 class FlagStorageDefinition extends EntityDefinition
 {
-    public const ENTITY_NAME = 'klaviyo_job_flag_storage';
+    public const ENTITY_NAME = 'klaviyo_flag_storage';
 
     public function getEntityName(): string
     {
@@ -28,9 +28,9 @@ class FlagStorageDefinition extends EntityDefinition
     protected function defineFields(): FieldCollection
     {
         $idField = (new IdField('id', 'id'))->addFlags(new Required(), new PrimaryKey());
-        $key = (new StringField('type', 'type'))->addFlags(new Required());
-        $value = (new StringField('type', 'type'))->addFlags(new Required());
-        $hash = (new StringField('type', 'type'))->addFlags(new Required());
+        $key = (new StringField('key', 'key'))->addFlags(new Required());
+        $value = (new StringField('value', 'value'))->addFlags(new Required());
+        $hash = (new StringField('hash', 'hash'))->addFlags(new Required());
 
         return new FieldCollection([
             $idField,

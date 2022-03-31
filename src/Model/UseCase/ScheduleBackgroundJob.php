@@ -98,12 +98,12 @@ class ScheduleBackgroundJob
         }
     }
 
-    public function scheduleExcludedSubscribersSyncJob(string $email, string $parentJobId): void
+    public function scheduleExcludedSubscribersSyncJob(array $emails, string $parentJobId): void
     {
         $jobMessage = new Message\ExcludedSubscriberSyncMessage(
             Uuid::randomHex(),
             $parentJobId,
-            $email);
+            $emails);
         $this->scheduler->schedule($jobMessage);
     }
 }
