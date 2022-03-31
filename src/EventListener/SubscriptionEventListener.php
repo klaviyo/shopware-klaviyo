@@ -8,6 +8,7 @@ use Shopware\Core\Content\Newsletter\Event\NewsletterConfirmEvent;
 use Shopware\Core\Content\Newsletter\Event\NewsletterUnsubscribeEvent;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -23,6 +24,8 @@ class SubscriptionEventListener implements EventSubscriberInterface
     public function onUserSubscription(NewsletterConfirmEvent $event)
     {
         try {
+            $recipient = $event->getNewsletterRecipient();
+            $event->getContext()->addExtension('klaviyo_subscriber_id', new ArrayStruct([$recipient->getId()]));
             $this->writeRecipientEvent(
                 $event->getContext(),
                 $event->getNewsletterRecipient(),

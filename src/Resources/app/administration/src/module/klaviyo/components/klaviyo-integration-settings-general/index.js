@@ -1,4 +1,5 @@
 import template from './klaviyo-integration-settings-general.html.twig';
+import './klaviyo-integration-settings-general.scss';
 
 const {Component} = Shopware;
 
@@ -18,7 +19,22 @@ Component.register('klaviyo-integration-settings-general', {
             type: String,
             required: false,
             default: null,
-        }
+        },
+        privateKeyErrorState: {
+            type: Object,
+            required: false,
+            default: null,
+        },
+        publicKeyErrorState: {
+            type: Object,
+            required: false,
+            default: null,
+        },
+        listNameErrorState: {
+            type: Object,
+            required: false,
+            default: null,
+        },
     },
 
     data() {
@@ -35,7 +51,6 @@ Component.register('klaviyo-integration-settings-general', {
         createdComponent() {
             const configPrefix = 'KlaviyoIntegrationPlugin.config.',
                 defaultConfigs = {
-                    catalogFeedProductsCount: 25000,
                     trackViewedProduct: true,
                     trackRecentlyViewedItems: true,
                     trackAddedToCart: true,

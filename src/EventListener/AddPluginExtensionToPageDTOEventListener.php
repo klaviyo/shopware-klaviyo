@@ -65,35 +65,27 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
     {
         try {
             $salesChannelContext = $event->getSalesChannelContext();
-
-            /** @var Configuration $configuration */
-            $configuration = $this->configurationRegistry
-                ->getConfiguration($salesChannelContext->getSalesChannel()->getId());
-
-            $page = $event->getPage();
-            $request = $this->requestStack->getCurrentRequest();
+            $configuration = $this->configurationRegistry->getConfiguration($salesChannelContext->getSalesChannel()->getId());
+            $subscriberId = $this->requestStack->getCurrentRequest()->cookies->get('klaviyo_subscriber') ?? null;
             $customerIdentity = null;
-            $klaviyoNewsletterSubscriberId = $request->cookies->get('klaviyo_subscriber') ?? null;
-            if ($klaviyoNewsletterSubscriberId && !($event->getSalesChannelContext()->getCustomer())) {
-                $customer = $this->newsletterSubscriberHelper->getSubscriber($klaviyoNewsletterSubscriberId,
-                    $event->getContext());
-                $customerIdentity = $this->newsletterSubscriberPropertiesTranslator->translateSubscriber($customer);
-            } elseif ($customer = $event->getSalesChannelContext()->getCustomer()) {
-                $customerIdentity = $this->customerPropertiesTranslator
-                    ->translateCustomer($event->getContext(), $customer);
+
+            if ($customer = $event->getSalesChannelContext()->getCustomer()) {
+                $customerIdentity = $this->customerPropertiesTranslator->translateCustomer(
+                    $event->getContext(),
+                    $customer
+                );
+            } elseif ($subscriberId) {
+                $subscriber = $this->newsletterSubscriberHelper->getSubscriber($subscriberId, $event->getContext());
+
+                if ($subscriber !== null) {
+                    $customerIdentity = $this->newsletterSubscriberPropertiesTranslator->translateSubscriber($subscriber);
+                }
             }
 
-            $extensionData = new ArrayStruct(
-                [
-                    'configuration' => $configuration,
-                    'customerIdentity' => $customerIdentity
-                ]
-            );
-
-            $page->addExtension(
-                self::KLAVIYO_INTEGRATION_PLUGIN_EXTENSION,
-                $extensionData
-            );
+            $event->getPage()->addExtension(self::KLAVIYO_INTEGRATION_PLUGIN_EXTENSION, new ArrayStruct([
+                'configuration' => $configuration,
+                'customerIdentity' => $customerIdentity
+            ]));
         } catch (\Throwable $throwable) {
             $this->logger->error(
                 sprintf(
@@ -133,8 +125,8 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
         try {
             $context = $confirmPageLoadedEvent->getSalesChannelContext();
             $cart = $confirmPageLoadedEvent->getPage()->getCart();
-
             $page = $confirmPageLoadedEvent->getPage();
+
             if ($page->hasExtension(self::KLAVIYO_INTEGRATION_PLUGIN_EXTENSION)) {
                 $extensionData = $page->getExtension(self::KLAVIYO_INTEGRATION_PLUGIN_EXTENSION);
             } else {

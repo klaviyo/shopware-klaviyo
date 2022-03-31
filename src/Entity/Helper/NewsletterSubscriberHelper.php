@@ -2,6 +2,8 @@
 
 namespace Klaviyo\Integration\Entity\Helper;
 
+use Shopware\Core\Content\Newsletter\Aggregate\NewsletterRecipient\NewsletterRecipientEntity;
+use Shopware\Core\Content\Newsletter\SalesChannel\NewsletterSubscribeRoute;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -9,32 +11,25 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 
 class NewsletterSubscriberHelper
 {
-    private EntityRepositoryInterface $klaviyoSubscriberRepository;
     private EntityRepositoryInterface $subscriberRepository;
 
-    public function __construct(
-        EntityRepositoryInterface $klaviyoSubscriberRepository,
-        EntityRepositoryInterface $subscriberRepository
-    ) {
-        $this->klaviyoSubscriberRepository = $klaviyoSubscriberRepository;
+    public function __construct(EntityRepositoryInterface $subscriberRepository)
+    {
         $this->subscriberRepository = $subscriberRepository;
     }
 
-    public function getSubscriber(string $id, Context $context)
-    {
-        $klaviyoSubscriber = $this->getSubscriberFromKlaviyoSubscriberRepository($id, $context);
-        $email = $klaviyoSubscriber->getEmail();
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('email', $email));
-
-        return $this->subscriberRepository->search($criteria, $context)->first();
-    }
-
-    private function getSubscriberFromKlaviyoSubscriberRepository(string $id, Context $context)
+    public function getSubscriber(string $id, Context $context): ?NewsletterRecipientEntity
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('id', $id));
+        $allowedStatuses = [NewsletterSubscribeRoute::STATUS_OPT_IN, NewsletterSubscribeRoute::STATUS_DIRECT];
+        /** @var NewsletterRecipientEntity $recipient */
+        $recipient = $this->subscriberRepository->search($criteria, $context)->first();
 
-        return $this->klaviyoSubscriberRepository->search($criteria, $context)->getEntities()->first();
+        if ($recipient && in_array($recipient->getStatus(), $allowedStatuses)) {
+            return $recipient;
+        }
+
+        return null;
     }
 }

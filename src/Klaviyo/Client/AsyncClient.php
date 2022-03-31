@@ -3,12 +3,10 @@
 namespace Klaviyo\Integration\Klaviyo\Client;
 
 use GuzzleHttp\ClientInterface as GuzzleClient;
-use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Pool;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\RequestOptions;
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator\ApiTransferMessageTranslatorInterface;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator\TranslatorsRegistry;
 use Klaviyo\Integration\Klaviyo\Client\Configuration\ConfigurationInterface;
 use Klaviyo\Integration\Klaviyo\Client\Exception\TranslationException;
