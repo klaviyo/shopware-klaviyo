@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers;
+namespace Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\Common;
 
 class ExcludedSubscribers
 {

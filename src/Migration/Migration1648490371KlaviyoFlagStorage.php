@@ -19,10 +19,16 @@ class Migration1648490371KlaviyoFlagStorage extends MigrationStep
             `id`                BINARY(16)     NOT NULL,
             `key`               VARCHAR(255)   NOT NULL,
             `value`             VARCHAR(255)   NOT NULL,
-            `hash`              VARCHAR(255)   NOT NULL,
+            `sales_channel_id`  BINARY(16)     NOT NULL,
             `created_at`        DATETIME(3)    NOT NULL,
             `updated_at`        DATETIME(3)    NULL,
-            PRIMARY KEY (`id`)
+            PRIMARY KEY (`id`),
+            KEY `fk.klaviyo_flag_storage.sales_channel_id` (`sales_channel_id`),
+                CONSTRAINT `fk.klaviyo_flag_storage.sales_channel_id` 
+                FOREIGN KEY (`sales_channel_id`) 
+                REFERENCES `sales_channel` (`id`) 
+                ON DELETE CASCADE 
+                ON UPDATE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 SQL;
         $connection->executeStatement($sql);

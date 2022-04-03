@@ -10,7 +10,7 @@ class FlagStorageEntity extends Entity
 
     protected string $key;
     protected string $value;
-    protected string $hash;
+    protected string $salesChannelId;
 
     public function getKey(): string
     {
@@ -32,13 +32,13 @@ class FlagStorageEntity extends Entity
         $this->value = $value;
     }
 
-    public function getHash(): string
+    public function getSalesChannelId(): string
     {
-        return $this->hash;
+        return $this->salesChannelId;
     }
 
-    public function setHash(string $hash): void
+    public function setSalesChannelId(string $salesChannelId): void
     {
-        $this->hash = $hash;
+        $this->salesChannelId = $salesChannelId;
     }
 }

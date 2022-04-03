@@ -2,8 +2,10 @@
 
 namespace Klaviyo\Integration\Klaviyo\Gateway;
 
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribersRequest;
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribersResponse;
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribers\{
+    GetExcludedSubscribersRequest,
+    GetExcludedSubscribersResponse
+};
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\AddMembersToList\AddProfilesToListResponse;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Common\ProfileContactInfoCollection;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfilesFromList\RemoveProfilesFromListRequest;
@@ -297,9 +299,10 @@ class KlaviyoGateway
      */
     public function getExcludedSubscribersFromList(
         SalesChannelEntity $salesChannelEntity,
-        string $page
+        string $count,
+        $page
     ): GetExcludedSubscribersResponse {
-        $request = new GetExcludedSubscribersRequest($page);
+        $request = new GetExcludedSubscribersRequest($count, (string)$page);
         $clientResult = $this->clientRegistry
             ->getClient($salesChannelEntity->getId())
             ->sendRequests([$request]);

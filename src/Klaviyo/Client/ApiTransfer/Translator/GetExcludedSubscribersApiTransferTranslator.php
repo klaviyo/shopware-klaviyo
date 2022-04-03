@@ -13,9 +13,9 @@ class GetExcludedSubscribersApiTransferTranslator extends AbstractApiTransferMes
     public function translateRequest(object $request): Request
     {
         $url = sprintf(
-            //TODO get values from variable
-            '%s/people/exclusions?page=%s&api_key=%s',
-            'https://a.klaviyo.com/api/v1',
+            '%s/people/exclusions?count=%s&page=%s&api_key=%s',
+            $this->configuration->getGlobalExclusionsAndUnsubscribes(),
+            $request->getCount(),
             $request->getPage(),
             $this->configuration->getApiKey()
         );
