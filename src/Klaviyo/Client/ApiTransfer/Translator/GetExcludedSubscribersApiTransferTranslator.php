@@ -3,8 +3,10 @@
 namespace Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator;
 
 use GuzzleHttp\Psr7\Request;
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribersRequest;
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribersResponse;
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribers\{
+    GetExcludedSubscribersRequest,
+    GetExcludedSubscribersResponse
+};
 use Psr\Http\Message\ResponseInterface;
 use Klaviyo\Integration\Klaviyo\Client\Exception\TranslationException;
 
