@@ -10,8 +10,11 @@ class GetExcludedSubscribersResponse
     private string $page;
     private string $totalEmailsValue;
 
-    public function __construct(ExcludedSubscribersCollection $lists, string $page, string $totalEmailsValue)
-    {
+    public function __construct(
+        ExcludedSubscribersCollection $lists,
+        string $page,
+        string $totalEmailsValue
+    ) {
         $this->lists = $lists;
         $this->page = $page;
         $this->totalEmailsValue = $totalEmailsValue;

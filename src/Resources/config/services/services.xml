@@ -24,6 +24,9 @@
         <service id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob">
             <argument type="service" id="od_scheduler_job.repository"/>
             <argument type="service" id="Od\Scheduler\Model\JobScheduler"/>
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="klaviyo_flag_storage.repository"/>
+            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway"/>
         </service>
         <service id="Klaviyo\Integration\Controller\Backoffice\JobController" public="true">
             <argument type="service" id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob"/>

@@ -16,20 +16,16 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
 {
     public const OPERATION_HANDLER_CODE = 'od-klaviyo-full-subscriber-sync-handler';
     private const SUBSCRIBER_BATCH_SIZE = 100;
-    public const DEFAULT_COUNT_PER_PAGE = '500';
 
     private ScheduleBackgroundJob $scheduleBackgroundJob;
     private EntityRepositoryInterface $subscriberRepository;
-    private ExcludedSubscriberSyncOperation $excludedSubscriberSyncOperation;
 
     public function __construct(
         ScheduleBackgroundJob $scheduleBackgroundJob,
-        EntityRepositoryInterface $subscriberRepository,
-        ExcludedSubscriberSyncOperation $excludedSubscriberSyncOperation
+        EntityRepositoryInterface $subscriberRepository
     ) {
         $this->scheduleBackgroundJob = $scheduleBackgroundJob;
         $this->subscriberRepository = $subscriberRepository;
-        $this->excludedSubscriberSyncOperation = $excludedSubscriberSyncOperation;
     }
 
     /**
@@ -52,7 +48,7 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
                 ]
             )
         );
-        $this->excludedSubscriberSyncOperation->sendExcludedSubscribers($context, $message);
+        $this->scheduleBackgroundJob->sendExcludedSubscribers($context, $message);
         $iterator = new RepositoryIterator($this->subscriberRepository, $context, $criteria);
         while (($subscriberIds = $iterator->fetchIds()) !== null) {
             $this->scheduleBackgroundJob->scheduleSubscriberSyncJob(

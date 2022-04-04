@@ -31,8 +31,13 @@ class FlagStorageDefinition extends EntityDefinition
         $idField = (new IdField('id', 'id'))->addFlags(new Required(), new PrimaryKey());
         $key = (new StringField('key', 'key'))->addFlags(new Required());
         $value = (new StringField('value', 'value'))->addFlags(new Required());
-        $salesChannelId = (new FkField('sales_channel_id', 'salesChannelId',
-            SalesChannelDefinition::class))->addFlags(new Required());
+        $salesChannelId = (
+            new FkField(
+            'sales_channel_id',
+            'salesChannelId',
+            SalesChannelDefinition::class
+            )
+        )->addFlags(new Required());
 
         return new FieldCollection([
             $idField,

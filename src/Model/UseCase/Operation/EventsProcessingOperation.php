@@ -22,18 +22,15 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
     private EntityRepositoryInterface $eventRepository;
     private EntityRepositoryInterface $cartEventRequestRepository;
     private ScheduleBackgroundJob $scheduleBackgroundJob;
-    private ExcludedSubscriberSyncOperation $excludedSubscriberSyncOperation;
 
     public function __construct(
         EntityRepositoryInterface $eventRepository,
         EntityRepositoryInterface $cartEventRequestRepository,
-        ScheduleBackgroundJob $scheduleBackgroundJob,
-        ExcludedSubscriberSyncOperation $excludedSubscriberSyncOperation
+        ScheduleBackgroundJob $scheduleBackgroundJob
     ) {
         $this->eventRepository = $eventRepository;
         $this->cartEventRequestRepository = $cartEventRequestRepository;
         $this->scheduleBackgroundJob = $scheduleBackgroundJob;
-        $this->excludedSubscriberSyncOperation = $excludedSubscriberSyncOperation;
     }
 
     /**
@@ -121,6 +118,6 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
      */
     private function processExcludedSubscribers(Context $context, $message)
     {
-        $this->excludedSubscriberSyncOperation->sendExcludedSubscribers($context, $message);
+        $this->scheduleBackgroundJob->sendExcludedSubscribers($context, $message);
     }
 }

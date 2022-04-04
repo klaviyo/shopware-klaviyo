@@ -21,7 +21,6 @@
             <argument type="service" id="klaviyo_job_event.repository"/>
             <argument type="service" id="klaviyo_job_cart_request.repository"/>
             <argument type="service" id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob"/>
-            <argument type="service" id="Klaviyo\Integration\Model\UseCase\Operation\ExcludedSubscriberSyncOperation"/>
         </service>
         <service id="Klaviyo\Integration\Model\UseCase\Operation\CartEventSyncOperation">
             <tag name="od.job_handler" code="od-klaviyo-cart-event-sync-handler"/>
@@ -44,15 +43,11 @@
             <tag name="od.job_handler" code="od-klaviyo-full-subscriber-sync-handler"/>
             <argument type="service" id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob"/>
             <argument type="service" id="newsletter_recipient.repository"/>
-            <argument type="service" id="Klaviyo\Integration\Model\UseCase\Operation\ExcludedSubscriberSyncOperation"/>
         </service>
         <service id="Klaviyo\Integration\Model\UseCase\Operation\ExcludedSubscriberSyncOperation">
             <tag name="od.job_handler" code="od-klaviyo-excluded-subscriber-sync-handler"/>
             <argument type="service" id="newsletter_recipient.repository"/>
-            <argument type="service" id="sales_channel.repository"/>
-            <argument type="service" id="klaviyo_flag_storage.repository"/>
             <argument type="service" id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob"/>
-            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway"/>
         </service>
         <service id="Klaviyo\Integration\Model\UseCase\Operation\OrderEventsSyncOperation">
             <tag name="od.job_handler" code="od-klaviyo-order-event-sync-handler"/>
