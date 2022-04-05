@@ -2,11 +2,16 @@
 
 namespace Klaviyo\Integration\Decorator\Storefront\Controller;
 
+use Shopware\Core\Content\Newsletter\SalesChannel\AbstractNewsletterConfirmRoute;
+use Shopware\Core\Content\Newsletter\SalesChannel\AbstractNewsletterSubscribeRoute;
+use Shopware\Core\Content\Newsletter\SalesChannel\AbstractNewsletterUnsubscribeRoute;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Validation\DataBag\QueryDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\NewsletterController;
-use Shopware\Storefront\Controller\StorefrontController;
+use Shopware\Storefront\Page\Newsletter\Subscribe\NewsletterSubscribePageLoader;
+use Shopware\Storefront\Pagelet\Newsletter\Account\NewsletterAccountPageletLoader;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,18 +19,24 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * @RouteScope(scopes={"storefront"})
  */
-class NewsletterControllerDecorator extends StorefrontController
+class NewsletterControllerDecorator extends NewsletterController
 {
-    private NewsletterController $inner;
 
-    public function __construct(NewsletterController $inner)
-    {
-        $this->inner = $inner;
-    }
+   public function __construct(
+       NewsletterSubscribePageLoader $newsletterConfirmRegisterPageLoader,
+       EntityRepositoryInterface $customerRepository,
+       AbstractNewsletterSubscribeRoute $newsletterSubscribeRoute,
+       AbstractNewsletterConfirmRoute $newsletterConfirmRoute,
+       AbstractNewsletterUnsubscribeRoute $newsletterUnsubscribeRoute,
+       NewsletterAccountPageletLoader $newsletterAccountPageletLoader
+   ) {
+       parent::__construct($newsletterConfirmRegisterPageLoader, $customerRepository, $newsletterSubscribeRoute,
+           $newsletterConfirmRoute, $newsletterUnsubscribeRoute, $newsletterAccountPageletLoader);
+   }
 
     public function subscribeMail(SalesChannelContext $context, Request $request, QueryDataBag $queryDataBag): Response
     {
-        $response = $this->inner->subscribeMail($context, $request, $queryDataBag);
+        $response = parent::subscribeMail($context, $request, $queryDataBag);
 
         if ($context->getContext()->hasExtension('klaviyo_subscriber_id')) {
             $subscriberExtension = $context->getContext()->getExtension('klaviyo_subscriber_id');
