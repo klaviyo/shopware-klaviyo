@@ -2,6 +2,8 @@
 
 namespace Klaviyo\Integration\Configuration;
 
+use Klaviyo\Integration\Struct\PopUpConfigurationStruct;
+
 class Configuration implements ConfigurationInterface
 {
     private string $privateApiKey;
@@ -20,13 +22,7 @@ class Configuration implements ConfigurationInterface
     private array $customFieldMapping;
     private bool $afterInteraction;
     private bool $trackSubscribedToBackInStock;
-    private string $popUpOpenBtnColor;
-    private string $popUpOpenBtnBgColor;
-    private string $popUpCloseBtnColor;
-    private string $popUpCloseBtnBgColor;
-    private string $subscribeBtnColor;
-    private string $subscribeBtnBgColor;
-    private string $popUpAdditionalClasses;
+    private PopUpConfigurationStruct $popUpConfigurations;
 
     public function __construct(
         string $privateApiKey,
@@ -45,13 +41,7 @@ class Configuration implements ConfigurationInterface
         array $customFieldMapping,
         bool $afterInteraction,
         bool $trackSubscribedToBackInStock,
-        string $popUpOpenBtnColor,
-        string $popUpOpenBtnBgColor,
-        string $popUpCloseBtnColor,
-        string $popUpCloseBtnBgColor,
-        string $subscribeBtnColor,
-        string $subscribeBtnBgColor,
-        string $popUpAdditionalClasses
+        PopUpConfigurationStruct $popUpConfigurations
     )
     {
         $this->privateApiKey = $privateApiKey;
@@ -70,13 +60,7 @@ class Configuration implements ConfigurationInterface
         $this->customFieldMapping = $customFieldMapping;
         $this->afterInteraction = $afterInteraction;
         $this->trackSubscribedToBackInStock = $trackSubscribedToBackInStock;
-        $this->popUpOpenBtnColor = $popUpOpenBtnColor;
-        $this->popUpOpenBtnBgColor = $popUpOpenBtnBgColor;
-        $this->popUpCloseBtnColor = $popUpCloseBtnColor;
-        $this->popUpCloseBtnBgColor = $popUpCloseBtnBgColor;
-        $this->subscribeBtnColor = $subscribeBtnColor;
-        $this->subscribeBtnBgColor = $subscribeBtnBgColor;
-        $this->popUpAdditionalClasses = $popUpAdditionalClasses;
+        $this->popUpConfigurations = $popUpConfigurations;
     }
 
     public function getPrivateApiKey(): string
@@ -160,58 +144,10 @@ class Configuration implements ConfigurationInterface
     }
 
     /**
-     * @return string
+     * @return PopUpConfigurationStruct
      */
-    public function getPopUpOpenBtnColor(): string
+    public function getPopUpConfigurations(): PopUpConfigurationStruct
     {
-        return $this->popUpOpenBtnColor;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPopUpOpenBtnBgColor(): string
-    {
-        return $this->popUpOpenBtnBgColor;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPopUpCloseBtnColor(): string
-    {
-        return $this->popUpCloseBtnColor;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPopUpCloseBtnBgColor(): string
-    {
-        return $this->popUpCloseBtnBgColor;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSubscribeBtnColor(): string
-    {
-        return $this->subscribeBtnColor;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSubscribeBtnBgColor(): string
-    {
-        return $this->subscribeBtnBgColor;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPopUpAdditionalClasses(): string
-    {
-        return $this->popUpAdditionalClasses;
+        return $this->popUpConfigurations;
     }
 }

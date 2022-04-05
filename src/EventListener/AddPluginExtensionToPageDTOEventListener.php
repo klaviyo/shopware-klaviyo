@@ -2,10 +2,13 @@
 
 namespace Klaviyo\Integration\EventListener;
 
-use Klaviyo\Integration\Configuration\Configuration;
-use Klaviyo\Integration\Configuration\ConfigurationRegistry;
-use Klaviyo\Integration\Klaviyo\FrontendApi\Translator\ProductTranslator;
-use Klaviyo\Integration\Klaviyo\FrontendApi\Translator\StartedCheckoutEventTrackingRequestTranslator;
+use Klaviyo\Integration\Configuration\{Configuration, ConfigurationRegistry};
+use Klaviyo\Integration\Entity\Helper\NewsletterSubscriberHelper;
+use Klaviyo\Integration\Klaviyo\Gateway\Translator\NewsletterSubscriberPropertiesTranslator;
+use Klaviyo\Integration\Klaviyo\FrontendApi\Translator\{
+    ProductTranslator,
+    StartedCheckoutEventTrackingRequestTranslator
+};
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\CustomerPropertiesTranslator;
 use Klaviyo\Integration\Utils\Logger\ContextHelper;
 use Psr\Log\LoggerInterface;
@@ -14,6 +17,7 @@ use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Page\GenericPageLoadedEvent;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterface
 {
@@ -24,51 +28,64 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
     private ProductTranslator $productTranslator;
     private StartedCheckoutEventTrackingRequestTranslator $startedCheckoutEventTrackingRequestTranslator;
     private LoggerInterface $logger;
+    private NewsletterSubscriberHelper $newsletterSubscriberHelper;
+    private RequestStack $requestStack;
+    private NewsletterSubscriberPropertiesTranslator $newsletterSubscriberPropertiesTranslator;
 
     public function __construct(
         ConfigurationRegistry $configurationRegistry,
         CustomerPropertiesTranslator $customerPropertiesTranslator,
         ProductTranslator $productTranslator,
         StartedCheckoutEventTrackingRequestTranslator $startedCheckoutEventTrackingRequestTranslator,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        NewsletterSubscriberHelper $newsletterSubscriberHelper,
+        RequestStack $requestStack,
+        NewsletterSubscriberPropertiesTranslator $newsletterSubscriberPropertiesTranslator
     ) {
         $this->configurationRegistry = $configurationRegistry;
         $this->customerPropertiesTranslator = $customerPropertiesTranslator;
         $this->productTranslator = $productTranslator;
         $this->startedCheckoutEventTrackingRequestTranslator = $startedCheckoutEventTrackingRequestTranslator;
         $this->logger = $logger;
+        $this->newsletterSubscriberHelper = $newsletterSubscriberHelper;
+        $this->requestStack = $requestStack;
+        $this->newsletterSubscriberPropertiesTranslator = $newsletterSubscriberPropertiesTranslator;
+    }
+
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            GenericPageLoadedEvent::class => 'onPageLoaded',
+            ProductPageLoadedEvent::class => 'onProductPageLoaded',
+            CheckoutConfirmPageLoadedEvent::class => 'onCheckoutPageLoaded'
+        ];
     }
 
     public function onPageLoaded(GenericPageLoadedEvent $event)
     {
         try {
             $salesChannelContext = $event->getSalesChannelContext();
-
-            /** @var Configuration $configuration */
-            $configuration = $this->configurationRegistry
-                ->getConfiguration($salesChannelContext->getSalesChannel()->getId());
-
-            $page = $event->getPage();
-
-            $customer = $event->getSalesChannelContext()->getCustomer();
-
+            $configuration = $this->configurationRegistry->getConfiguration($salesChannelContext->getSalesChannel()->getId());
+            $subscriberId = $this->requestStack->getCurrentRequest()->cookies->get('klaviyo_subscriber') ?? null;
             $customerIdentity = null;
-            if ($customer) {
-                $customerIdentity = $this->customerPropertiesTranslator
-                    ->translateCustomer($event->getContext(), $customer);
+
+            if ($customer = $event->getSalesChannelContext()->getCustomer()) {
+                $customerIdentity = $this->customerPropertiesTranslator->translateCustomer(
+                    $event->getContext(),
+                    $customer
+                );
+            } elseif ($subscriberId) {
+                $subscriber = $this->newsletterSubscriberHelper->getSubscriber($subscriberId, $event->getContext());
+
+                if ($subscriber !== null) {
+                    $customerIdentity = $this->newsletterSubscriberPropertiesTranslator->translateSubscriber($subscriber);
+                }
             }
 
-            $extensionData = new ArrayStruct(
-                [
-                    'configuration' => $configuration,
-                    'customerIdentity' => $customerIdentity
-                ]
-            );
-
-            $page->addExtension(
-                self::KLAVIYO_INTEGRATION_PLUGIN_EXTENSION,
-                $extensionData
-            );
+            $event->getPage()->addExtension(self::KLAVIYO_INTEGRATION_PLUGIN_EXTENSION, new ArrayStruct([
+                'configuration' => $configuration,
+                'customerIdentity' => $customerIdentity
+            ]));
         } catch (\Throwable $throwable) {
             $this->logger->error(
                 sprintf(
@@ -108,8 +125,8 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
         try {
             $context = $confirmPageLoadedEvent->getSalesChannelContext();
             $cart = $confirmPageLoadedEvent->getPage()->getCart();
-
             $page = $confirmPageLoadedEvent->getPage();
+
             if ($page->hasExtension(self::KLAVIYO_INTEGRATION_PLUGIN_EXTENSION)) {
                 $extensionData = $page->getExtension(self::KLAVIYO_INTEGRATION_PLUGIN_EXTENSION);
             } else {
@@ -125,14 +142,5 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
                     ContextHelper::createContextFromException($throwable)
                 );
         }
-    }
-
-    public static function getSubscribedEvents()
-    {
-        return [
-            GenericPageLoadedEvent::class => 'onPageLoaded',
-            ProductPageLoadedEvent::class => 'onProductPageLoaded',
-            CheckoutConfirmPageLoadedEvent::class => 'onCheckoutPageLoaded'
-        ];
     }
 }

@@ -16,11 +16,11 @@
                     <sw-text-field v-model="mappedField.customLabel"
                                    :disabled="!mappedField.active"
                                    :placeholder="$tc('klaviyo-integration-settings.customer.fieldMapping.item.fieldNamePlaceholder')"
-                                   :error="mappingErrorStates[mappedKey]['label'] ?? null"
+                                   :error="mappingErrorStates[mappedKey]?.code !== undefined ? mappingErrorStates[mappedKey] : null"
                                    :label="$tc('klaviyo-integration-settings.customer.fieldMapping.item.fieldName')">
                     </sw-text-field>
-                    <div style="display: flex; align-items: center; padding-bottom: 10px;">
-                        <span style="border-radius: 20px; padding: 4px 20px; background: #ccc; line-height: 1.2;">{{ mappedField.customFieldLabel }}</span>
+                    <div class="custom-field-hint-container">
+                        <span>{{ getCustomFieldHint(mappedKey) }}</span>
                     </div>
                 </sw-container>
             </template>

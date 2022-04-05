@@ -1,16 +1,16 @@
 {% block klaviyo_integration_settings_general %}
     <div>
-        <sw-card title="Interaction settings">
-            <sw-inherit-wrapper
-                    v-model="actualConfigData['KlaviyoIntegrationPlugin.config.isInitializeKlaviyoAfterInteraction']"
-                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.isInitializeKlaviyoAfterInteraction']"
-                    :customInheritationCheckFunction="checkBoolFieldInheritance">
+        <sw-card title="Interaction settings" class="klaviyo-interaction-settings">
+            <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.isInitializeKlaviyoAfterInteraction']"
+                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.isInitializeKlaviyoAfterInteraction']"
+                                :customInheritationCheckFunction="checkBoolFieldInheritance">
                 <template #content="props">
                     <sw-switch-field name="KlaviyoIntegrationPlugin.config.isInitializeKlaviyoAfterInteraction"
                                      :mapInheritance="props"
-                                     label="Initialization after first interaction."
+                                     label="Initialize Klaviyo After First Interaction With Page."
                                      :disabled="props.isInherited"
                                      :value="props.currentValue"
+                                     :helpText="$tc('klaviyo-integration-settings.general.initialization.helpText')"
                                      @change="props.updateCurrentValue">
                     </sw-switch-field>
                 </template>
@@ -29,6 +29,7 @@
                                 :map-inheritance="props"
                                 :value="props.currentValue"
                                 :disabled="props.isInherited"
+                                :error="privateKeyErrorState"
                                 required
                                 name="KlaviyoIntegrationPlugin.config.privateApiKey"
                                 @input="props.updateCurrentValue"></sw-field>
@@ -48,6 +49,7 @@
                                 :map-inheritance="props"
                                 :value="props.currentValue"
                                 :disabled="props.isInherited"
+                                :error="publicKeyErrorState"
                                 required
                                 name="KlaviyoIntegrationPlugin.config.publicApiKey"
                                 @input="props.updateCurrentValue"></sw-field>
@@ -68,6 +70,7 @@
                                 :map-inheritance="props"
                                 :value="props.currentValue"
                                 :disabled="props.isInherited"
+                                :error="listNameErrorState"
                                 required
                                 name="KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync"
                                 @input="props.updateCurrentValue"></sw-field>

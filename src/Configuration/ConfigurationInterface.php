@@ -34,17 +34,5 @@ interface ConfigurationInterface
 
     public function isTrackSubscribedToBackInStock(): bool;
 
-    public function getPopUpOpenBtnColor(): string;
-
-    public function getPopUpOpenBtnBgColor(): string;
-
-    public function getPopUpCloseBtnColor(): string;
-
-    public function getPopUpCloseBtnBgColor(): string;
-
-    public function getSubscribeBtnColor(): string;
-
-    public function getSubscribeBtnBgColor(): string;
-
-    public function getPopUpAdditionalClasses(): string;
+    public function getPopUpConfigurations(): object;
 }

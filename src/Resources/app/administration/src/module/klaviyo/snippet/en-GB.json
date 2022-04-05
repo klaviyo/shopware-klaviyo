@@ -44,9 +44,6 @@
 	"klaviyo-integration-settings": {
 		"label": "Klaviyo",
 		"title": "Klaviyo",
-		"general": {
-			"title": "General"
-		},
         "pop-up": {
             "title": "Pop-Up styles",
             "open-button-fieldset-label": "Pop-Up opening button",
@@ -64,6 +61,13 @@
             "emailFieldLabel": "Email field label",
             "emailFieldPlaceholder": "Email field placeholder"
         },
+        "general": {
+            "title": "General",
+            "messageNotBlank": "This value should not be blank.",
+            "initialization": {
+                "helpText": "After the client starts interacting with the page, the Klaviyo scripts will be initialized. On subsequent page transitions, the scripts will be initialized immediately."
+            }
+        },
 		"configs": {
 			"privateApiKey": {
 				"label": "Klaviyo Private API key",
@@ -76,10 +80,6 @@
 			"klaviyoListForSubscribersSync": {
 				"label": "Klaviyo List name for subscribers sync",
 				"helpText": "The name of the Subscribers list in klaviyo where all Shopware 6 subscribers will be added.\n In case of duplicate names first found list will be used"
-			},
-			"catalogFeedProductsCount": {
-				"label": "Klaviyo Catalog Feed Maximum items count",
-				"helpText": "Maximum number of items in the catalog feed which Shopware 6 will provide to the Klaviyo, by default it is 25000 which is an amount allowed by Klaviyo by default.\nIf you have more than 25000 products please update this configuration value and contact klaviyo support in order to extend this limit on their side.\nIf this configuration value will be less than products count, then only most recent products will be added to the catalog feed"
 			},
 			"trackViewedProduct": {
 				"label": "Track Viewed Product",
@@ -125,16 +125,11 @@
         "customer": {
             "title": "Custom Field Mapping",
             "fieldMapping": {
-                "addFieldButtonLabel": "Add",
-                "nameFieldLabel": "Custom Field Label",
-                "labelNotFilledError": "Field label must be filled.",
-                "mappingNotFilledError": "Mapping field must be filled.",
+                "labelNotFilledError": "Field Name must be filled.",
                 "noMappingFieldsError": "There are no customer custom fields for mapping.",
                 "item": {
                     "fieldName": "Field Name",
-                    "fieldNamePlaceholder": "Type mapping custom label",
-                    "customFieldName": "Custom Field",
-                    "customFieldNamePlaceholder": "Select custom field"
+                    "fieldNamePlaceholder": "Type mapping custom label"
                 }
             }
         }

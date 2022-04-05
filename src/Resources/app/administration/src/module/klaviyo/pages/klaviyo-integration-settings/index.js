@@ -15,8 +15,11 @@ Component.register('klaviyo-integration-settings', {
         return {
             isLoading: false,
             isSaveSuccessful: false,
-            defaultAccountNameFilled: false,
-            messageAccountBlankErrorState: null,
+            privateKeyFilled: false,
+            publicKeyFilled: false,
+            listNameFilled: false,
+            messageBlankErrorState: null,
+            mappingErrorStates: {},
             config: null,
             salesChannels: []
         };
@@ -35,13 +38,75 @@ Component.register('klaviyo-integration-settings', {
     computed: {
         salesChannelRepository() {
             return this.repositoryFactory.create('sales_channel');
+        },
+
+        privateKeyErrorState() {
+            if (this.privateKeyFilled) {
+                return null;
+            }
+
+            return this.messageBlankErrorState;
+        },
+
+        publicKeyErrorState() {
+            if (this.publicKeyFilled) {
+                return null;
+            }
+
+            return this.messageBlankErrorState;
+        },
+
+        listNameErrorState() {
+            if (this.listNameFilled) {
+                return null;
+            }
+
+            return this.messageBlankErrorState;
+        },
+
+        hasError() {
+            const hasMappingErrors = Object.values(this.mappingErrorStates)
+                .filter((state) => state.code !== undefined)
+                .length !== 0;
+
+            return !this.privateKeyFilled
+                || !this.publicKeyFilled
+                || !this.listNameFilled
+                || hasMappingErrors;
         }
     },
 
-    methods: {
+    watch: {
+        config: {
+            handler() {
+                const defaultConfig = this.$refs.configComponent.allConfigs.null;
+                const salesChannelId = this.$refs.configComponent.selectedSalesChannelId;
 
+                if (salesChannelId === null) {
+                    this.privateKeyFilled = !!this.config['KlaviyoIntegrationPlugin.config.privateApiKey'];
+                    this.publicKeyFilled = !!this.config['KlaviyoIntegrationPlugin.config.publicApiKey'];
+                    this.listNameFilled = !!this.config['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync'];
+                } else {
+                    this.privateKeyFilled = !!this.config['KlaviyoIntegrationPlugin.config.privateApiKey']
+                        || !!defaultConfig['KlaviyoIntegrationPlugin.config.privateApiKey'];
+                    this.publicKeyFilled = !!this.config['KlaviyoIntegrationPlugin.config.publicApiKey']
+                        || !!defaultConfig['KlaviyoIntegrationPlugin.config.publicApiKey'];
+                    this.listNameFilled = !!this.config['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync']
+                        || !!defaultConfig['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync'];
+                }
+            },
+            deep: true,
+        },
+    },
+
+    methods: {
         createdComponent() {
             this.getSalesChannels();
+
+            this.messageBlankErrorState = {
+                code: 1,
+                detail: this.$tc('klaviyo-integration-settings.general.messageNotBlank'),
+            };
         },
 
         onChangeLanguage() {
@@ -72,6 +137,10 @@ Component.register('klaviyo-integration-settings', {
         },
 
         onSave() {
+            if (this.hasError) {
+                return;
+            }
+
             this.isLoading = true;
 
             this.$refs.configComponent.save().then(() => {

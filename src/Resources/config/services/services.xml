@@ -68,16 +68,21 @@
             <argument type="service"
                       id="Klaviyo\Integration\Klaviyo\FrontendApi\Translator\StartedCheckoutEventTrackingRequestTranslator"/>
             <argument type="service" id="logger"/>
+            <argument type="service" id="Klaviyo\Integration\Entity\Helper\NewsletterSubscriberHelper"/>
+            <argument type="service" id="request_stack"/>
             <tag name="kernel.event_subscriber"/>
+            <argument type="service"
+                      id="Klaviyo\Integration\Klaviyo\Gateway\Translator\NewsletterSubscriberPropertiesTranslator"/>
         </service>
         <service id="Klaviyo\Integration\EventListener\AddedToCartEventListener">
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator"/>
             <argument type="service" id="Klaviyo\Integration\System\Tracking\ScheduledEventsTracker"/>
             <argument type="service" id="logger"/>
+            <argument type="service" id="request_stack"/>
             <tag name="kernel.event_subscriber"/>
         </service>
         <service id="Klaviyo\Integration\EventListener\PageEventListener">
-            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\GetListIdByListName"/>
+            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\CachedGetListIdByListName"/>
             <argument type="service" id="Klaviyo\Integration\Configuration\ConfigurationRegistry"/>
             <tag name="kernel.event_subscriber"/>
         </service>
@@ -86,6 +91,9 @@
         <service id="Klaviyo\Integration\Entity\Helper\AddressDataHelper">
             <argument type="service" id="country_state.repository"/>
             <argument type="service" id="country.repository"/>
+        </service>
+        <service id="Klaviyo\Integration\Entity\Helper\NewsletterSubscriberHelper">
+            <argument type="service" id="newsletter_recipient.repository"/>
         </service>
         <service id="Klaviyo\Integration\Entity\Helper\ProductDataHelper">
             <argument type="service" id="router.default"/>
@@ -113,6 +121,18 @@
             <argument type="service" id="cache.object"/>
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\GetListIdByListName"/>
         </service>
+
+        <!-- Decorators -->
+        <service id="klaviyo.newsletter_controller_decorator"
+                 public="true"
+                 class="Klaviyo\Integration\Decorator\Storefront\Controller\NewsletterControllerDecorator"
+                 decorates="Shopware\Storefront\Controller\NewsletterController">
+            <argument type="service" id="klaviyo.newsletter_controller_decorator.inner"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+        <!-- /Decorators -->
     </services>
 
 </container>

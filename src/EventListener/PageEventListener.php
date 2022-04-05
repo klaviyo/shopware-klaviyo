@@ -45,7 +45,8 @@ class PageEventListener implements EventSubscriberInterface
 
         try {
             $listId = $this->listIdByListName->execute(
-                $channel, $this->configurationRegistry->getConfiguration($channel->getId())->getSubscribersListName()
+                $channel,
+                $this->configurationRegistry->getConfiguration($event->getSalesChannelContext()->getSalesChannelId())->getSubscribersListName()
             );
         } catch (\Exception $exception) {
             $listId = false;
