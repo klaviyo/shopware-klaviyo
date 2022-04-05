@@ -1,9 +1,13 @@
-.klaviyo-fieldmapping-delete-action {
-    margin-top: 34px;
+.custom-field-hint-container {
+    display: flex;
+    align-items: center;
+    padding-bottom: 10px;
 
-    &:hover {
-        cursor: pointer;
-        color: #ed143d;
+    & > span {
+        border-radius: 20px;
+        padding: 4px 20px;
+        background: #e3e3e3;
+        line-height: 1.2;
     }
 }
 

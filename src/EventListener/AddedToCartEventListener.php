@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Klaviyo\Integration\EventListener;
 
@@ -7,33 +7,45 @@ use Klaviyo\Integration\System\Tracking\Event\Cart\CartEventRequestBag;
 use Klaviyo\Integration\System\Tracking\EventsTrackerInterface;
 use Klaviyo\Integration\Utils\Logger\ContextHelper;
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Checkout\Cart\Event\AfterLineItemAddedEvent;
-use Shopware\Core\Checkout\Cart\Event\AfterLineItemQuantityChangedEvent;
+use Shopware\Core\Checkout\Cart\Event\{AfterLineItemAddedEvent, AfterLineItemQuantityChangedEvent};
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Framework\Context;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class AddedToCartEventListener implements EventSubscriberInterface
 {
     private CartEventRequestTranslator $cartEventRequestTranslator;
     private EventsTrackerInterface $eventsTracker;
     private LoggerInterface $logger;
+    private RequestStack $requestStack;
 
     public function __construct(
         CartEventRequestTranslator $cartEventRequestTranslator,
         EventsTrackerInterface $eventsTracker,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        RequestStack $requestStack
     ) {
         $this->cartEventRequestTranslator = $cartEventRequestTranslator;
         $this->eventsTracker = $eventsTracker;
         $this->logger = $logger;
+        $this->requestStack = $requestStack;
+    }
+
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            AfterLineItemAddedEvent::class => 'onAfterLineItemAdded',
+            AfterLineItemQuantityChangedEvent::class => 'onLineItemQuantityChanged',
+        ];
     }
 
     public function onAfterLineItemAdded(AfterLineItemAddedEvent $event)
     {
         try {
             $salesChannelContext = $event->getSalesChannelContext();
-            if (!$salesChannelContext->getCustomer()) {
+            $request = $this->requestStack->getCurrentRequest();
+            if (!$salesChannelContext->getCustomer() && !$request->cookies->get('klaviyo_subscriber')) {
                 return;
             }
 
@@ -69,7 +81,8 @@ class AddedToCartEventListener implements EventSubscriberInterface
             $now = new \DateTime('now', new \DateTimeZone('UTC'));
             $cart = $event->getCart();
             $salesChannelContext = $event->getSalesChannelContext();
-            if (!$salesChannelContext->getCustomer()) {
+            $request = $this->requestStack->getCurrentRequest();
+            if (!$salesChannelContext->getCustomer() && !$request->cookies->get('klaviyo_subscriber')) {
                 return;
             }
 
@@ -96,13 +109,5 @@ class AddedToCartEventListener implements EventSubscriberInterface
                     ContextHelper::createContextFromException($throwable)
                 );
         }
-    }
-
-    public static function getSubscribedEvents()
-    {
-        return [
-            AfterLineItemAddedEvent::class => 'onAfterLineItemAdded',
-            AfterLineItemQuantityChangedEvent::class => 'onLineItemQuantityChanged',
-        ];
     }
 }

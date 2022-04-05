@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Klaviyo\Integration\Klaviyo\Gateway\Translator;
 
@@ -41,7 +41,8 @@ class CustomerPropertiesTranslator
         $country = $this->addressHelper->getAddressCountry($context, $customerAddress);
 
         $customFields = $this->prepareCustomFields($customer);
-        $customerProperties = new CustomerProperties(
+
+        return new CustomerProperties(
             $orderCustomer->getEmail(),
             $orderCustomer->getFirstName(),
             $orderCustomer->getLastName(),
@@ -53,34 +54,19 @@ class CustomerPropertiesTranslator
             $country ? $country->getIso() : null,
             $customFields
         );
-
-        return $customerProperties;
     }
 
-    public function translateCustomer(Context $context, CustomerEntity $customerEntity): CustomerProperties
+    private function guessRelevantCustomerAddress(?CustomerEntity $customerEntity): ?CustomerAddressEntity
     {
-        $customerAddress = $this->guessRelevantCustomerAddress($customerEntity);
+        if (!$customerEntity) {
+            return null;
+        }
 
-        $state = $this->addressHelper->getAddressRegion($context, $customerAddress);
-        $country = $this->addressHelper->getAddressCountry($context, $customerAddress);
-        $birthday = $customerEntity->getBirthday();
+        if ($customerEntity->getActiveBillingAddress()) {
+            return $customerEntity->getActiveBillingAddress();
+        }
 
-        $customFields = $this->prepareCustomFields($customerEntity);
-        $customerProperties = new CustomerProperties(
-            $customerEntity->getEmail(),
-            $customerEntity->getFirstName(),
-            $customerEntity->getLastName(),
-            $this->guessRelevantCustomerPhone($customerEntity),
-            $customerAddress ? $customerAddress->getStreet() : null,
-            $customerAddress ? $customerAddress->getCity() : null,
-            $customerAddress ? $customerAddress->getZipcode() : null,
-            $state ? $state->getShortCode() : null,
-            $country ? $country->getIso() : null,
-            $customFields,
-            $birthday ? $birthday->format(Defaults::STORAGE_DATE_FORMAT) : null
-        );
-
-        return $customerProperties;
+        return $customerEntity->getActiveShippingAddress();
     }
 
     private function prepareCustomFields(CustomerEntity $customer): array
@@ -117,16 +103,26 @@ class CustomerPropertiesTranslator
         return null;
     }
 
-    private function guessRelevantCustomerAddress(?CustomerEntity $customerEntity): ?CustomerAddressEntity
+    public function translateCustomer(Context $context, CustomerEntity $customerEntity): CustomerProperties
     {
-        if (!$customerEntity) {
-            return null;
-        }
+        $customerAddress = $this->guessRelevantCustomerAddress($customerEntity);
+        $state = $this->addressHelper->getAddressRegion($context, $customerAddress);
+        $country = $this->addressHelper->getAddressCountry($context, $customerAddress);
+        $birthday = $customerEntity->getBirthday();
+        $customFields = $this->prepareCustomFields($customerEntity);
 
-        if ($customerEntity->getActiveBillingAddress()) {
-            return $customerEntity->getActiveBillingAddress();
-        }
-
-        return $customerEntity->getActiveShippingAddress();
+        return new CustomerProperties(
+            $customerEntity->getEmail(),
+            $customerEntity->getFirstName(),
+            $customerEntity->getLastName(),
+            $this->guessRelevantCustomerPhone($customerEntity),
+            $customerAddress ? $customerAddress->getStreet() : null,
+            $customerAddress ? $customerAddress->getCity() : null,
+            $customerAddress ? $customerAddress->getZipcode() : null,
+            $state ? $state->getShortCode() : null,
+            $country ? $country->getIso() : null,
+            $customFields,
+            $birthday ? $birthday->format(Defaults::STORAGE_DATE_FORMAT) : null
+        );
     }
 }
