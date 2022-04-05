@@ -16,7 +16,7 @@ class GetExcludedSubscribersApiTransferTranslator extends AbstractApiTransferMes
     {
         $url = sprintf(
             '%s/people/exclusions?count=%s&page=%s&api_key=%s',
-            $this->configuration->getGlobalExclusionsAndUnsubscribes(),
+            $this->configuration->getGlobalExclusionsEndpointUrl(),
             $request->getCount(),
             $request->getPage(),
             $this->configuration->getApiKey()

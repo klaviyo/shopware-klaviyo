@@ -30,14 +30,14 @@ class ExcludedSubscriberSyncOperation implements JobHandlerInterface, Generating
         }, $message->getEmails());
         $criteria->addFilter(new EqualsAnyFilter('email', $emails));
         $subscribers = $this->newsletterRepository->search($criteria, $context);
-        $subscriberData = [];
-        foreach ($subscribers as $subscriber) {
-            $subscriberData[] = [
+        $subscriberData = array_values(array_map(function ($subscriber) {
+            return [
                 'id' => $subscriber->getId(),
                 'email' => $subscriber->getEmail(),
                 'status' => NewsletterSubscribeRoute::STATUS_OPT_OUT
             ];
-        }
+        }, $subscribers->getElements()));
+
         $this->newsletterRepository->update($subscriberData, $context);
 
         return new JobResult();

@@ -18,5 +18,5 @@ interface ConfigurationInterface
 
     public function getConnectionTimeout(): int;
 
-    public function getGlobalExclusionsAndUnsubscribes(): string;
+    public function getGlobalExclusionsEndpointUrl(): string;
 }

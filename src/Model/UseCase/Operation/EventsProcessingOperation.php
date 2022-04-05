@@ -116,8 +116,8 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
     /**
      * @throws \Exception
      */
-    private function processExcludedSubscribers(Context $context, $message)
+    private function processExcludedSubscribers(Context $context, EventsProcessingMessage $message)
     {
-        $this->scheduleBackgroundJob->sendExcludedSubscribers($context, $message);
+        $this->scheduleBackgroundJob->sendExcludedSubscribers($context, $message->getJobId());
     }
 }

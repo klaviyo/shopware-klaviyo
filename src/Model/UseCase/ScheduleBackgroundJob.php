@@ -5,8 +5,8 @@ namespace Klaviyo\Integration\Model\UseCase;
 use Klaviyo\Integration\Async\Message;
 use Klaviyo\Integration\Exception\{JobAlreadyRunningException, JobAlreadyScheduledException};
 use Klaviyo\Integration\Model\UseCase\Operation\{FullOrderSyncOperation, FullSubscriberSyncOperation};
+use Klaviyo\Integration\Entity\Helper\ExcludedSubscribersHelper;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribers\GetExcludedSubscribersResponse;
-use Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway;
 use Od\Scheduler\Entity\Job\JobEntity;
 use Od\Scheduler\Model\JobScheduler;
 use Shopware\Core\Framework\Context;
@@ -21,26 +21,25 @@ class ScheduleBackgroundJob
 {
     public const LAST_SYNCHRONIZED_UNSUBSCRIBERS_PAGE = 'last_synchronized_unsubscribers_page';
     public const LAST_SYNCHRONIZED_UNSUBSCRIBERS_PAGE_HASH = 'last_synchronized_unsubscribers_page_hash';
-    public const DEFAULT_COUNT_PER_PAGE = '500';
 
     private EntityRepositoryInterface $jobRepository;
     private JobScheduler $scheduler;
     private EntityRepositoryInterface $salesChannelRepository;
     private EntityRepositoryInterface $klaviyoFlagStorageRepository;
-    private KlaviyoGateway $klaviyoGateway;
+    private ExcludedSubscribersHelper $excludedSubscribersHelper;
 
     public function __construct(
         EntityRepositoryInterface $jobRepository,
         JobScheduler $scheduler,
         EntityRepositoryInterface $salesChannelRepository,
         EntityRepositoryInterface $klaviyoFlagStorageRepository,
-        KlaviyoGateway $klaviyoGateway
+        ExcludedSubscribersHelper $excludedSubscribersHelper
     ) {
         $this->jobRepository = $jobRepository;
         $this->scheduler = $scheduler;
         $this->salesChannelRepository = $salesChannelRepository;
         $this->klaviyoFlagStorageRepository = $klaviyoFlagStorageRepository;
-        $this->klaviyoGateway = $klaviyoGateway;
+        $this->excludedSubscribersHelper = $excludedSubscribersHelper;
     }
 
     public function scheduleFullSubscriberSyncJob()
@@ -118,66 +117,56 @@ class ScheduleBackgroundJob
     /**
      * @throws \Exception
      */
-    public function sendExcludedSubscribers(Context $context, $message)
+    public function sendExcludedSubscribers(Context $context, string $jobId)
     {
         /** @var SalesChannelEntity $channel */
         $channels = $this->salesChannelRepository->search(new Criteria(), $context);
         foreach ($channels as $channel) {
-            $page = $this->getLastSynchronizedPage($context, $channel);
-            foreach ($this->generateExcludedSubscribers($channel, $page) as $result) {
-                $this->scheduleExcludedSubscribersSyncJob(
-                    $result->getLists()->getElements(),
-                    $message->getJobId()
-                );
+            $pageAndHash = $this->getLastSynchronizedPageAndHash($context, $channel);
+            $page = $pageAndHash ? (int)$pageAndHash[self::LAST_SYNCHRONIZED_UNSUBSCRIBERS_PAGE] : 0;
+            $hash = $pageAndHash ? $pageAndHash[self::LAST_SYNCHRONIZED_UNSUBSCRIBERS_PAGE_HASH] : '';
+
+            foreach ($this->excludedSubscribersHelper->generateExcludedSubscribers($channel, $page) as $result) {
+                $hashEmails = $this->emailsToHash($result);
+                if ($hash != $hashEmails) {
+                    $this->scheduleExcludedSubscribersSyncJob(
+                        $result->getLists()->getElements(),
+                        $jobId
+                    );
+                    if (
+                        count($result->getLists()->getElements()) <
+                        $this->excludedSubscribersHelper::DEFAULT_COUNT_PER_PAGE
+                    ) {
+                        $this->writeLastSynchronizedPage($context, $result, $channel);
+                    }
+                }
             }
-            $this->writeLastSynchronizedPage($context, $result, $channel);
         }
     }
 
-    private function getLastSynchronizedPage(Context $context, SalesChannelEntity $channel): int
+    private function getLastSynchronizedPageAndHash(Context $context, SalesChannelEntity $channel): ?array
     {
         $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('key', self::LAST_SYNCHRONIZED_UNSUBSCRIBERS_PAGE));
         $criteria->addFilter(new EqualsFilter('salesChannelId', $channel->getId()));
         $criteria->addSorting(new FieldSorting('createdAt', FieldSorting::DESCENDING));
+        $criteria->setLimit(2);
 
-        $page = $this->klaviyoFlagStorageRepository->search($criteria, $context)->getEntities()->first();
-
-        return $page ? (int)$page->getValue() : 0;
-    }
-
-    /**
-     * @throws \Exception
-     */
-    private function generateExcludedSubscribers(
-        SalesChannelEntity $channel,
-        int $page
-    ): \Generator {
-        $currentPage = $page;
-        $result = $this->getExcludedSubscribers($channel, self::DEFAULT_COUNT_PER_PAGE, $page);
-        $totalEmailsValue = $result->getTotalEmailsValue();
-        $quantityOfPages = $totalEmailsValue == self::DEFAULT_COUNT_PER_PAGE ?
-            0 :
-            floor($totalEmailsValue / self::DEFAULT_COUNT_PER_PAGE);
-        yield $result;
-
-        while ($quantityOfPages > $currentPage) {
-            $currentPage++;
-            yield $this->getExcludedSubscribers($channel, self::DEFAULT_COUNT_PER_PAGE, $currentPage);
+        $klaviyoFlags = $this->klaviyoFlagStorageRepository->search($criteria, $context)->getEntities();
+        $lastPageAndHash = [];
+        foreach ($klaviyoFlags ?? [] as $flag) {
+            $lastPageAndHash[$flag->getKey()] = $flag->getValue();
         }
 
-        return $result;
+        return $lastPageAndHash;
     }
 
-    /**
-     * @throws \Exception
-     */
-    public function getExcludedSubscribers(
-        SalesChannelEntity $channel,
-        string $count,
-        $page
-    ): GetExcludedSubscribersResponse {
-        return $this->klaviyoGateway->getExcludedSubscribersFromList($channel, $count, $page);
+    private function emailsToHash($result): string
+    {
+        $emails = array_map(function ($email) {
+            return $email->getEmail();
+        }, $result->getLists()->getElements());
+
+        return md5(serialize($emails));
     }
 
     public function scheduleExcludedSubscribersSyncJob(array $emails, string $parentJobId): void
@@ -194,30 +183,24 @@ class ScheduleBackgroundJob
         GetExcludedSubscribersResponse $result,
         SalesChannelEntity $channel
     ) {
-        $emails = array_map(function ($email) {
-            return $email->getEmail();
-        }, $result->getLists()->getElements());
-        $hashEmails = md5(serialize($emails));
+        $hashEmails = $this->emailsToHash($result);
         $page = $result->getPage();
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('value', $hashEmails));
         $criteria->addFilter(new EqualsFilter('salesChannelId', $channel->getId()));
-        $isHashValueExists = $this->klaviyoFlagStorageRepository->search($criteria, $context)->getEntities()->first();
-        if ($isHashValueExists === null) {
-            $this->klaviyoFlagStorageRepository->create([
-                [
-                    'id' => Uuid::randomHex(),
-                    'key' => self::LAST_SYNCHRONIZED_UNSUBSCRIBERS_PAGE,
-                    'value' => $page,
-                    'salesChannelId' => $channel->getId()
-                ],
-                [
-                    'id' => Uuid::randomHex(),
-                    'key' => self::LAST_SYNCHRONIZED_UNSUBSCRIBERS_PAGE_HASH,
-                    'value' => $hashEmails,
-                    'salesChannelId' => $channel->getId()
-                ]
-            ], $context);
-        }
+        $this->klaviyoFlagStorageRepository->create([
+            [
+                'id' => Uuid::randomHex(),
+                'key' => self::LAST_SYNCHRONIZED_UNSUBSCRIBERS_PAGE,
+                'value' => $page,
+                'salesChannelId' => $channel->getId()
+            ],
+            [
+                'id' => Uuid::randomHex(),
+                'key' => self::LAST_SYNCHRONIZED_UNSUBSCRIBERS_PAGE_HASH,
+                'value' => $hashEmails,
+                'salesChannelId' => $channel->getId()
+            ]
+        ], $context);
     }
 }
