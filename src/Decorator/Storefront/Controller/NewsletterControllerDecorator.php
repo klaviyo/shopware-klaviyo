@@ -30,8 +30,14 @@ class NewsletterControllerDecorator extends NewsletterController
        AbstractNewsletterUnsubscribeRoute $newsletterUnsubscribeRoute,
        NewsletterAccountPageletLoader $newsletterAccountPageletLoader
    ) {
-       parent::__construct($newsletterConfirmRegisterPageLoader, $customerRepository, $newsletterSubscribeRoute,
-           $newsletterConfirmRoute, $newsletterUnsubscribeRoute, $newsletterAccountPageletLoader);
+       parent::__construct(
+           $newsletterConfirmRegisterPageLoader,
+           $customerRepository,
+           $newsletterSubscribeRoute,
+           $newsletterConfirmRoute,
+           $newsletterUnsubscribeRoute,
+           $newsletterAccountPageletLoader
+       );
    }
 
     public function subscribeMail(SalesChannelContext $context, Request $request, QueryDataBag $queryDataBag): Response
