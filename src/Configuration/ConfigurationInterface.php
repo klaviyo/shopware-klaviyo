@@ -34,5 +34,5 @@ interface ConfigurationInterface
 
     public function isTrackSubscribedToBackInStock(): bool;
 
-    public function getPopUpConfigurations(): object;
+    public function getPopUpConfiguration(): object;
 }

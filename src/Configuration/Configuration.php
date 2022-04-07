@@ -2,7 +2,7 @@
 
 namespace Klaviyo\Integration\Configuration;
 
-use Klaviyo\Integration\Struct\PopUpConfigurationStruct;
+use Klaviyo\Integration\Struct\PopUpConfiguration;
 
 class Configuration implements ConfigurationInterface
 {
@@ -22,7 +22,7 @@ class Configuration implements ConfigurationInterface
     private array $customFieldMapping;
     private bool $afterInteraction;
     private bool $trackSubscribedToBackInStock;
-    private PopUpConfigurationStruct $popUpConfigurations;
+    private PopUpConfiguration $popUpConfiguration;
 
     public function __construct(
         string $privateApiKey,
@@ -41,7 +41,7 @@ class Configuration implements ConfigurationInterface
         array $customFieldMapping,
         bool $afterInteraction,
         bool $trackSubscribedToBackInStock,
-        PopUpConfigurationStruct $popUpConfigurations
+        PopUpConfiguration $popUpConfiguration
     )
     {
         $this->privateApiKey = $privateApiKey;
@@ -60,7 +60,7 @@ class Configuration implements ConfigurationInterface
         $this->customFieldMapping = $customFieldMapping;
         $this->afterInteraction = $afterInteraction;
         $this->trackSubscribedToBackInStock = $trackSubscribedToBackInStock;
-        $this->popUpConfigurations = $popUpConfigurations;
+        $this->popUpConfiguration = $popUpConfiguration;
     }
 
     public function getPrivateApiKey(): string
@@ -143,11 +143,8 @@ class Configuration implements ConfigurationInterface
         return $this->trackSubscribedToBackInStock;
     }
 
-    /**
-     * @return PopUpConfigurationStruct
-     */
-    public function getPopUpConfigurations(): PopUpConfigurationStruct
+    public function getPopUpConfiguration(): PopUpConfiguration
     {
-        return $this->popUpConfigurations;
+        return $this->popUpConfiguration;
     }
 }

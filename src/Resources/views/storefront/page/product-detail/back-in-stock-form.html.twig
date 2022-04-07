@@ -14,7 +14,7 @@
             </button>
         {% endblock %}
         {% block klaviyo_back_in_stock_modal_base %}
-            <div class="klaviyo-back-in-stock-form-modal modal fade {% if extensionData.configuration.popUpConfigurations.popUpAdditionalClasses %}{{ extensionData.configuration.popUpConfigurations.popUpAdditionalClasses }}{% endif %} {% block klaviyo_back_in_stock_modal_additional_classes %}{% endblock %}"
+            <div class="klaviyo-back-in-stock-form-modal modal fade {% if extensionData.configuration.popUpConfiguration.popUpAdditionalClasses %}{{ extensionData.configuration.popUpConfiguration.popUpAdditionalClasses }}{% endif %} {% block klaviyo_back_in_stock_modal_additional_classes %}{% endblock %}"
                  id="back-in-stock-modal" tabindex="-1"
                  role="dialog"
                  aria-labelledby="back-in-stock-modal"
@@ -119,7 +119,7 @@
 
                                                         {% block klaviyo_back_in_stock_button %}
                                                             <div class="col-12">
-                                                                <button class="btn btn-primary btn-submit-stock-notification" style="{% if extensionData.configuration.popUpConfigurations.subscribeBtnColor %}color:{{ extensionData.configuration.popUpConfigurations.subscribeBtnColor }};{% endif %}{% if extensionData.configuration.popUpConfigurations.subscribeBtnBgColor %}background-color:{{ extensionData.configuration.popUpConfigurations.subscribeBtnBgColor }}; border-color:{{ extensionData.configuration.popUpConfigurations.subscribeBtnBgColor }};{% endif %}">{{ "klaviyo.back-in-stock.modal.subscribeBtnLabel"|trans }}</button>
+                                                                <button class="btn btn-primary btn-submit-stock-notification" style="{% if extensionData.configuration.popUpConfiguration.subscribeBtnColor %}color:{{ extensionData.configuration.popUpConfiguration.subscribeBtnColor }};{% endif %}{% if extensionData.configuration.popUpConfiguration.subscribeBtnBgColor %}background-color:{{ extensionData.configuration.popUpConfiguration.subscribeBtnBgColor }}; border-color:{{ extensionData.configuration.popUpConfiguration.subscribeBtnBgColor }};{% endif %}">{{ "klaviyo.back-in-stock.modal.subscribeBtnLabel"|trans }}</button>
                                                             </div>
                                                         {% endblock %}
                                                     </div>
@@ -132,7 +132,7 @@
                                     <div class="modal-footer">
                                         {% block klaviyo_back_in_stock_modal_footer_close_button %}
                                             <button type="button" class="btn btn-secondary"
-                                                    style="{% if extensionData.configuration.popUpConfigurations.popUpCloseBtnColor %}color:{{ extensionData.configuration.popUpConfigurations.popUpCloseBtnColor }};{% endif %}{% if extensionData.configuration.popUpConfigurations.popUpCloseBtnBgColor %}background-color:{{ extensionData.configuration.popUpConfigurations.popUpCloseBtnBgColor }};{% endif %}"
+                                                    style="{% if extensionData.configuration.popUpConfiguration.popUpCloseBtnColor %}color:{{ extensionData.configuration.popUpConfiguration.popUpCloseBtnColor }};{% endif %}{% if extensionData.configuration.popUpConfiguration.popUpCloseBtnBgColor %}background-color:{{ extensionData.configuration.popUpConfiguration.popUpCloseBtnBgColor }};{% endif %}"
                                                     data-dismiss="modal">{{ "klaviyo.back-in-stock.modal.closeBtnLabel"|trans }}</button>
                                         {% endblock %}
                                     </div>
