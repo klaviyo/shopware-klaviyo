@@ -4,16 +4,16 @@ namespace Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscri
 
 class GetExcludedSubscribersRequest
 {
-    private ?string $count;
+    private ?int $count;
     private string $page;
 
-    public function __construct(string $count, string $page)
+    public function __construct(int $count, string $page)
     {
         $this->count = $count;
         $this->page = $page;
     }
 
-    public function getCount(): ?string
+    public function getCount(): ?int
     {
         return $this->count;
     }

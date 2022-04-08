@@ -299,7 +299,7 @@ class KlaviyoGateway
      */
     public function getExcludedSubscribersFromList(
         SalesChannelEntity $salesChannelEntity,
-        string $count,
+        int $count,
         $page
     ): GetExcludedSubscribersResponse {
         $request = new GetExcludedSubscribersRequest($count, (string)$page);

@@ -26,7 +26,7 @@
             <argument type="service" id="Od\Scheduler\Model\JobScheduler"/>
             <argument type="service" id="sales_channel.repository"/>
             <argument type="service" id="klaviyo_flag_storage.repository"/>
-            <argument type="service" id="Klaviyo\Integration\Entity\Helper\ExcludedSubscribersHelper"/>
+            <argument type="service" id="Klaviyo\Integration\Entity\Helper\ExcludedSubscribersProvider"/>
         </service>
         <service id="Klaviyo\Integration\Controller\Backoffice\JobController" public="true">
             <argument type="service" id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob"/>
@@ -89,6 +89,12 @@
             <argument type="service" id="product_media.repository"/>
             <argument type="service" id="category.repository"/>
             <argument type="service" id="product_manufacturer.repository"/>
+        </service>
+        <service id="Klaviyo\Integration\Entity\Helper\NewsletterSubscriberHelper">
+            <argument type="service" id="newsletter_recipient.repository"/>
+        </service>
+        <service id="Klaviyo\Integration\Entity\Helper\ExcludedSubscribersProvider">
+            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway"/>
         </service>
         <service id="Klaviyo\Integration\Klaviyo\FrontendApi\Translator\ProductTranslator">
             <argument type="service" id="Klaviyo\Integration\Entity\Helper\ProductDataHelper"/>

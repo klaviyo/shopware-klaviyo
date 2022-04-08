@@ -2,10 +2,6 @@
 
 namespace Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer;
 
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\Common\{
-    ExcludedSubscribers,
-    ExcludedSubscribersCollection
-};
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribers\GetExcludedSubscribersResponse;
 use Klaviyo\Integration\Klaviyo\Client\Exception\DeserializationException;
 
@@ -20,14 +16,14 @@ class GetExcludedSubscribersResponseDenormalizer extends AbstractDenormalizer
         string $format = null,
         array $context = []
     ): GetExcludedSubscribersResponse {
-        $excludedSubscribersCollection = new ExcludedSubscribersCollection();
+        $emails = [];
         foreach ($data['data'] as $row) {
             $this->assertResultRow($row);
-            $excludedSubscribersCollection->add(new ExcludedSubscribers($row['email']));
+            $emails[] = $row['email'];
         }
 
         return new GetExcludedSubscribersResponse(
-            $excludedSubscribersCollection,
+            $emails,
             (string)$data['page'],
             (string)$data['total']
         );

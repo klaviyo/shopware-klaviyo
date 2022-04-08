@@ -5,7 +5,7 @@ namespace Klaviyo\Integration\Model\UseCase;
 use Klaviyo\Integration\Async\Message;
 use Klaviyo\Integration\Exception\{JobAlreadyRunningException, JobAlreadyScheduledException};
 use Klaviyo\Integration\Model\UseCase\Operation\{FullOrderSyncOperation, FullSubscriberSyncOperation};
-use Klaviyo\Integration\Entity\Helper\ExcludedSubscribersHelper;
+use Klaviyo\Integration\Entity\Helper\ExcludedSubscribersProvider;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribers\GetExcludedSubscribersResponse;
 use Od\Scheduler\Entity\Job\JobEntity;
 use Od\Scheduler\Model\JobScheduler;
@@ -26,20 +26,20 @@ class ScheduleBackgroundJob
     private JobScheduler $scheduler;
     private EntityRepositoryInterface $salesChannelRepository;
     private EntityRepositoryInterface $klaviyoFlagStorageRepository;
-    private ExcludedSubscribersHelper $excludedSubscribersHelper;
+    private ExcludedSubscribersProvider $excludedSubscribersProvider;
 
     public function __construct(
         EntityRepositoryInterface $jobRepository,
         JobScheduler $scheduler,
         EntityRepositoryInterface $salesChannelRepository,
         EntityRepositoryInterface $klaviyoFlagStorageRepository,
-        ExcludedSubscribersHelper $excludedSubscribersHelper
+        ExcludedSubscribersProvider $excludedSubscribersProvider
     ) {
         $this->jobRepository = $jobRepository;
         $this->scheduler = $scheduler;
         $this->salesChannelRepository = $salesChannelRepository;
         $this->klaviyoFlagStorageRepository = $klaviyoFlagStorageRepository;
-        $this->excludedSubscribersHelper = $excludedSubscribersHelper;
+        $this->excludedSubscribersProvider = $excludedSubscribersProvider;
     }
 
     public function scheduleFullSubscriberSyncJob()
@@ -126,16 +126,16 @@ class ScheduleBackgroundJob
             $page = $pageAndHash ? (int)$pageAndHash[self::LAST_SYNCHRONIZED_UNSUBSCRIBERS_PAGE] : 0;
             $hash = $pageAndHash ? $pageAndHash[self::LAST_SYNCHRONIZED_UNSUBSCRIBERS_PAGE_HASH] : '';
 
-            foreach ($this->excludedSubscribersHelper->generateExcludedSubscribers($channel, $page) as $result) {
-                $hashEmails = $this->emailsToHash($result);
+            foreach ($this->excludedSubscribersProvider->getExcludedSubscribers($channel, $page) as $result) {
+                $hashEmails = md5(serialize($result->getEmails()));
                 if ($hash != $hashEmails) {
                     $this->scheduleExcludedSubscribersSyncJob(
-                        $result->getLists()->getElements(),
+                        $result->getEmails(),
                         $jobId
                     );
                     if (
-                        count($result->getLists()->getElements()) <
-                        $this->excludedSubscribersHelper::DEFAULT_COUNT_PER_PAGE
+                        count($result->getEmails()) <
+                        $this->excludedSubscribersProvider::DEFAULT_COUNT_PER_PAGE
                     ) {
                         $this->writeLastSynchronizedPage($context, $result, $channel);
                     }
@@ -160,21 +160,13 @@ class ScheduleBackgroundJob
         return $lastPageAndHash;
     }
 
-    private function emailsToHash($result): string
-    {
-        $emails = array_map(function ($email) {
-            return $email->getEmail();
-        }, $result->getLists()->getElements());
-
-        return md5(serialize($emails));
-    }
-
     public function scheduleExcludedSubscribersSyncJob(array $emails, string $parentJobId): void
     {
         $jobMessage = new Message\ExcludedSubscriberSyncMessage(
             Uuid::randomHex(),
             $parentJobId,
-            $emails);
+            $emails
+        );
         $this->scheduler->schedule($jobMessage);
     }
 
@@ -183,7 +175,7 @@ class ScheduleBackgroundJob
         GetExcludedSubscribersResponse $result,
         SalesChannelEntity $channel
     ) {
-        $hashEmails = $this->emailsToHash($result);
+        $hashEmails = md5(serialize($result->getEmails()));
         $page = $result->getPage();
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('value', $hashEmails));

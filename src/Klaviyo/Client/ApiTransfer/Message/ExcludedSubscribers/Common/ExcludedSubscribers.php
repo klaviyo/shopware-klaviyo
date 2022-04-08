@@ -4,15 +4,15 @@ namespace Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscri
 
 class ExcludedSubscribers
 {
-    private string $email;
+    private array $emails;
 
-    public function __construct(string $email)
+    public function __construct(array $emails)
     {
-        $this->email = $email;
+        $this->emails = $emails;
     }
 
-    public function getEmail(): string
+    public function getEmails(): array
     {
-        return $this->email;
+        return $this->emails;
     }
 }

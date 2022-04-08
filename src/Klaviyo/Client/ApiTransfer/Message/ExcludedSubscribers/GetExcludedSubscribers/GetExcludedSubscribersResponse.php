@@ -2,27 +2,25 @@
 
 namespace Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribers;
 
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\Common\ExcludedSubscribersCollection;
-
 class GetExcludedSubscribersResponse
 {
-    private ExcludedSubscribersCollection $lists;
+    private array $emails;
     private string $page;
-    private string $totalEmailsValue;
+    private string $totalEmailsCount;
 
     public function __construct(
-        ExcludedSubscribersCollection $lists,
+        array $emails,
         string $page,
-        string $totalEmailsValue
+        string $totalEmailsCount
     ) {
-        $this->lists = $lists;
+        $this->emails = $emails;
         $this->page = $page;
-        $this->totalEmailsValue = $totalEmailsValue;
+        $this->totalEmailsCount = $totalEmailsCount;
     }
 
-    public function getLists(): ExcludedSubscribersCollection
+    public function getEmails(): array
     {
-        return $this->lists;
+        return $this->emails;
     }
 
     public function getPage(): string
@@ -30,8 +28,8 @@ class GetExcludedSubscribersResponse
         return $this->page;
     }
 
-    public function getTotalEmailsValue(): string
+    public function getTotalEmailsCount(): string
     {
-        return $this->totalEmailsValue;
+        return $this->totalEmailsCount;
     }
 }
