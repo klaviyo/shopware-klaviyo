@@ -9,7 +9,7 @@ use Shopware\Core\Content\Newsletter\SalesChannel\NewsletterSubscribeRoute;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\{EqualsAnyFilter, EqualsFilter};
 
 class ExcludedSubscriberSyncOperation implements JobHandlerInterface, GeneratingHandlerInterface
 {
@@ -33,6 +33,7 @@ class ExcludedSubscriberSyncOperation implements JobHandlerInterface, Generating
         $criteria = new Criteria();
         $emails = $message->getEmails();
         $criteria->addFilter(new EqualsAnyFilter('email', $emails));
+        $criteria->addFilter(new EqualsFilter('salesChannelId', $message->getSalesChannelId()));
         $subscribers = $this->newsletterRepository->search($criteria, $context);
         $subscriberData = array_values(array_map(function ($subscriber) {
             return [

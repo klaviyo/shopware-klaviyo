@@ -25,8 +25,9 @@
             <argument type="service" id="od_scheduler_job.repository"/>
             <argument type="service" id="Od\Scheduler\Model\JobScheduler"/>
             <argument type="service" id="sales_channel.repository"/>
-            <argument type="service" id="klaviyo_flag_storage.repository"/>
             <argument type="service" id="Klaviyo\Integration\Entity\Helper\ExcludedSubscribersProvider"/>
+            <argument type="service"
+                      id="Klaviyo\Integration\Klaviyo\FrontendApi\ExcludedSubscribers\SyncProgressService"/>
         </service>
         <service id="Klaviyo\Integration\Controller\Backoffice\JobController" public="true">
             <argument type="service" id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob"/>
@@ -114,6 +115,9 @@
         <service id="Klaviyo\Integration\Klaviyo\Gateway\CachedGetListIdByListName">
             <argument type="service" id="cache.object"/>
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\GetListIdByListName"/>
+        </service>
+        <service id="Klaviyo\Integration\Klaviyo\FrontendApi\ExcludedSubscribers\SyncProgressService">
+            <argument type="service" id="klaviyo_flag_storage.repository"/>
         </service>
 
         <!-- Decorators -->
