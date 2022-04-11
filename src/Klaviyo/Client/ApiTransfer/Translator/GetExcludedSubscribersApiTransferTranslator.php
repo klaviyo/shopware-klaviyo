@@ -3,10 +3,7 @@
 namespace Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator;
 
 use GuzzleHttp\Psr7\Request;
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribers\{
-    GetExcludedSubscribersRequest,
-    GetExcludedSubscribersResponse
-};
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribers;
 use Psr\Http\Message\ResponseInterface;
 use Klaviyo\Integration\Klaviyo\Client\Exception\TranslationException;
 
@@ -42,7 +39,7 @@ class GetExcludedSubscribersApiTransferTranslator extends AbstractApiTransferMes
         if ($isJsonResponse) {
             $content = $response->getBody()->getContents();
 
-            return $this->deserialize($content, GetExcludedSubscribersResponse::class);
+            return $this->deserialize($content, GetExcludedSubscribers\Response::class);
         }
 
         $this->assertStatusCode($response);
@@ -62,6 +59,6 @@ class GetExcludedSubscribersApiTransferTranslator extends AbstractApiTransferMes
 
     public function isSupport(object $request): bool
     {
-        return $request instanceof GetExcludedSubscribersRequest;
+        return $request instanceof GetExcludedSubscribers\Request;
     }
 }

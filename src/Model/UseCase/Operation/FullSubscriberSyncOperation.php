@@ -30,6 +30,7 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
 
     /**
      * @param FullSubscriberSyncMessage $message
+     * @return JobResult
      *
      * @throws \Exception
      */

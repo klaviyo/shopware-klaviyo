@@ -2,7 +2,7 @@
 
 namespace Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer;
 
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribers\GetExcludedSubscribersResponse;
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribers\Response;
 use Klaviyo\Integration\Klaviyo\Client\Exception\DeserializationException;
 
 class GetExcludedSubscribersResponseDenormalizer extends AbstractDenormalizer
@@ -15,14 +15,14 @@ class GetExcludedSubscribersResponseDenormalizer extends AbstractDenormalizer
         string $type,
         string $format = null,
         array $context = []
-    ): GetExcludedSubscribersResponse {
+    ): Response {
         $emails = [];
         foreach ($data['data'] as $row) {
             $this->assertResultRow($row);
             $emails[] = $row['email'];
         }
 
-        return new GetExcludedSubscribersResponse(
+        return new Response(
             $emails,
             (string)$data['page'],
             (string)$data['total']
@@ -49,6 +49,6 @@ class GetExcludedSubscribersResponseDenormalizer extends AbstractDenormalizer
 
     public function supportsDenormalization($data, string $type, string $format = null): bool
     {
-        return $type === GetExcludedSubscribersResponse::class;
+        return $type === Response::class;
     }
 }

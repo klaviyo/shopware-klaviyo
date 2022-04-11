@@ -2,7 +2,7 @@
 
 namespace Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribers;
 
-class GetExcludedSubscribersResponse
+class Response
 {
     private array $emails;
     private string $page;

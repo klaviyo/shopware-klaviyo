@@ -46,7 +46,7 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
         $this->processCartEvents($context, $message->getJobId());
         $this->processSubscriberEvents($context, $message->getJobId());
         $this->processCustomerProfileEvents($context, $message->getJobId());
-        $this->processExcludedSubscribers($context, $message);
+        $this->scheduleBackgroundJob->sendExcludedSubscribers($context, $message->getJobId());
 
         return new JobResult();
     }
@@ -111,13 +111,5 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
         $criteria->setLimit(100);
 
         return new RepositoryIterator($this->eventRepository, $context, $criteria);
-    }
-
-    /**
-     * @throws \Exception
-     */
-    private function processExcludedSubscribers(Context $context, EventsProcessingMessage $message)
-    {
-        $this->scheduleBackgroundJob->sendExcludedSubscribers($context, $message->getJobId());
     }
 }

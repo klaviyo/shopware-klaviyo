@@ -6,7 +6,7 @@ use Klaviyo\Integration\Async\Message;
 use Klaviyo\Integration\Exception\{JobAlreadyRunningException, JobAlreadyScheduledException};
 use Klaviyo\Integration\Model\UseCase\Operation\{FullOrderSyncOperation, FullSubscriberSyncOperation};
 use Klaviyo\Integration\Entity\Helper\ExcludedSubscribersProvider;
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribers\GetExcludedSubscribersResponse;
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribers\Response;
 use Od\Scheduler\Entity\Job\JobEntity;
 use Od\Scheduler\Model\JobScheduler;
 use Shopware\Core\Framework\Context;
@@ -122,23 +122,28 @@ class ScheduleBackgroundJob
         /** @var SalesChannelEntity $channel */
         $channels = $this->salesChannelRepository->search(new Criteria(), $context);
         foreach ($channels as $channel) {
+            $isFirstLoadedPage = true;
             $pageAndHash = $this->getLastSynchronizedPageAndHash($context, $channel);
             $page = $pageAndHash ? (int)$pageAndHash[self::LAST_SYNCHRONIZED_UNSUBSCRIBERS_PAGE] : 0;
             $hash = $pageAndHash ? $pageAndHash[self::LAST_SYNCHRONIZED_UNSUBSCRIBERS_PAGE_HASH] : '';
 
             foreach ($this->excludedSubscribersProvider->getExcludedSubscribers($channel, $page) as $result) {
-                $hashEmails = md5(serialize($result->getEmails()));
-                if ($hash != $hashEmails) {
-                    $this->scheduleExcludedSubscribersSyncJob(
-                        $result->getEmails(),
-                        $jobId
-                    );
-                    if (
-                        count($result->getEmails()) <
-                        $this->excludedSubscribersProvider::DEFAULT_COUNT_PER_PAGE
-                    ) {
-                        $this->writeLastSynchronizedPage($context, $result, $channel);
+                if ($isFirstLoadedPage) {
+                    $hashEmails = md5(serialize($result->getEmails()));
+                    $isFirstLoadedPage = false;
+                    if ($hash === $hashEmails) {
+                        continue 2;
                     }
+                }
+                $this->scheduleExcludedSubscribersSyncJob(
+                    $result->getEmails(),
+                    $jobId
+                );
+                if (
+                    count($result->getEmails()) <
+                    $this->excludedSubscribersProvider::DEFAULT_COUNT_PER_PAGE
+                ) {
+                    $this->writeLastSynchronizedPage($context, $result, $channel);
                 }
             }
         }
@@ -172,7 +177,7 @@ class ScheduleBackgroundJob
 
     private function writeLastSynchronizedPage(
         Context $context,
-        GetExcludedSubscribersResponse $result,
+        Response $result,
         SalesChannelEntity $channel
     ) {
         $hashEmails = md5(serialize($result->getEmails()));

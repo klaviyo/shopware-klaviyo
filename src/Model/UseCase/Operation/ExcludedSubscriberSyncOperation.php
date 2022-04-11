@@ -2,6 +2,7 @@
 
 namespace Klaviyo\Integration\Model\UseCase\Operation;
 
+use Klaviyo\Integration\Async\Message\ExcludedSubscriberSyncMessage;
 use Od\Scheduler\Model\Job\GeneratingHandlerInterface;
 use Od\Scheduler\Model\Job\{JobHandlerInterface, JobResult};
 use Shopware\Core\Content\Newsletter\SalesChannel\NewsletterSubscribeRoute;
@@ -21,6 +22,11 @@ class ExcludedSubscriberSyncOperation implements JobHandlerInterface, Generating
         $this->newsletterRepository = $newsletterRepository;
     }
 
+    /**
+     * @param ExcludedSubscriberSyncMessage $message
+     *
+     * @return JobResult
+     */
     public function execute(object $message): JobResult
     {
         $context = Context::createDefaultContext();
