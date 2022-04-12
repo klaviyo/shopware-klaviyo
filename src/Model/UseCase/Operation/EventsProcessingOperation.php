@@ -46,7 +46,7 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
         $this->processCartEvents($context, $message->getJobId());
         $this->processSubscriberEvents($context, $message->getJobId());
         $this->processCustomerProfileEvents($context, $message->getJobId());
-        $this->scheduleBackgroundJob->sendExcludedSubscribers($context, $message->getJobId());
+        $this->scheduleBackgroundJob->scheduleExcludedSubscribersSyncJobs($context, $message->getJobId());
 
         return new JobResult();
     }

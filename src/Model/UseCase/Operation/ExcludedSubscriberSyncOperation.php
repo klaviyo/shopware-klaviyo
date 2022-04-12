@@ -31,8 +31,7 @@ class ExcludedSubscriberSyncOperation implements JobHandlerInterface, Generating
     {
         $context = Context::createDefaultContext();
         $criteria = new Criteria();
-        $emails = $message->getEmails();
-        $criteria->addFilter(new EqualsAnyFilter('email', $emails));
+        $criteria->addFilter(new EqualsAnyFilter('email', $message->getEmails()));
         $criteria->addFilter(new EqualsFilter('salesChannelId', $message->getSalesChannelId()));
         $subscribers = $this->newsletterRepository->search($criteria, $context);
         $subscriberData = array_values(array_map(function ($subscriber) {

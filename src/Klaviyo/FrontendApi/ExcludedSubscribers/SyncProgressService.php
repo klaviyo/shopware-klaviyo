@@ -2,19 +2,21 @@
 
 namespace Klaviyo\Integration\Klaviyo\FrontendApi\ExcludedSubscribers;
 
+use Klaviyo\Integration\Entity\FlagStorage\FlagStorageEntity;
 use Klaviyo\Integration\Klaviyo\FrontendApi\DTO\SyncProgressInfo;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\{EqualsFilter, OrFilter};
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\{EqualsAnyFilter, EqualsFilter};
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Grouping\FieldGrouping;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 class SyncProgressService
 {
-    public const LAST_SYNCHRONIZED_UNSUBSCRIBERS_PAGE = 'last_synchronized_unsubscribers_page';
-    public const LAST_SYNCHRONIZED_UNSUBSCRIBERS_PAGE_HASH = 'last_synchronized_unsubscribers_page_hash';
+    public const UNSUB_PAGE = 'sync_unsub_page';
+    public const UNSUB_PAGE_HASH = 'sync_unsub_page_hash';
 
     private EntityRepositoryInterface $klaviyoFlagStorageRepository;
 
@@ -27,44 +29,43 @@ class SyncProgressService
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('salesChannelId', $channel->getId()));
+        $criteria->addFilter(new EqualsAnyFilter('key', [self::UNSUB_PAGE_HASH, self::UNSUB_PAGE]));
         $criteria->addSorting(new FieldSorting('createdAt', FieldSorting::DESCENDING));
-        $criteria->addFilter(new OrFilter([
-            new EqualsFilter('key', self::LAST_SYNCHRONIZED_UNSUBSCRIBERS_PAGE_HASH),
-            new EqualsFilter('key', self::LAST_SYNCHRONIZED_UNSUBSCRIBERS_PAGE)
-        ]));
-        $criteria->setLimit(2);
+        $criteria->addGroupField(new FieldGrouping('key'));
+        $unsubInfoFlags = $this->klaviyoFlagStorageRepository->search($criteria, $context)->getEntities();
 
-        $klaviyoFlags = $this->klaviyoFlagStorageRepository->search($criteria, $context)->getEntities();
-        $lastPageAndHash = [];
-        foreach ($klaviyoFlags ?? [] as $flag) {
-            $lastPageAndHash[$flag->getKey()] = $flag->getValue();
-        }
+        $hashFlag = $unsubInfoFlags->filter(fn(FlagStorageEntity $flag) => $flag->getKey() === self::UNSUB_PAGE_HASH)
+            ->first() ?? $this->createFlagEntity(self::UNSUB_PAGE_HASH);
+        $pageFlag = $unsubInfoFlags->filter(fn(FlagStorageEntity $flag) => $flag->getKey() === self::UNSUB_PAGE)
+            ->first() ?? $this->createFlagEntity(self::UNSUB_PAGE);
 
-        $page = $lastPageAndHash ? (int)$lastPageAndHash[self::LAST_SYNCHRONIZED_UNSUBSCRIBERS_PAGE] : 0;
-        $hash = $lastPageAndHash ? $lastPageAndHash[self::LAST_SYNCHRONIZED_UNSUBSCRIBERS_PAGE_HASH] : '';
-
-        return new SyncProgressInfo($page, $hash, $channel->getId());
+        return new SyncProgressInfo($pageFlag, $hashFlag, $channel->getId());
     }
 
-    public function save(SyncProgressInfo $progressInfo)
+    public function save(Context $context, SyncProgressInfo $progressInfo)
     {
-        $context = Context::createDefaultContext();
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('value', $progressInfo->getHash()));
-        $criteria->addFilter(new EqualsFilter('salesChannelId', $progressInfo->getSalesChannelId()));
-        $this->klaviyoFlagStorageRepository->create([
+        $this->klaviyoFlagStorageRepository->upsert([
             [
-                'id' => Uuid::randomHex(),
-                'key' => self::LAST_SYNCHRONIZED_UNSUBSCRIBERS_PAGE,
+                'id' => $progressInfo->getPageFlagEntity()->getId() ?: Uuid::randomHex(),
+                'key' => self::UNSUB_PAGE,
                 'value' => (string)$progressInfo->getPage(),
                 'salesChannelId' => $progressInfo->getSalesChannelId()
             ],
             [
-                'id' => Uuid::randomHex(),
-                'key' => self::LAST_SYNCHRONIZED_UNSUBSCRIBERS_PAGE_HASH,
+                'id' =>  $progressInfo->getHashFlagEntity()->getId() ?: Uuid::randomHex(),
+                'key' => self::UNSUB_PAGE_HASH,
                 'value' => $progressInfo->getHash(),
                 'salesChannelId' => $progressInfo->getSalesChannelId()
             ]
         ], $context);
+    }
+
+    private function createFlagEntity(string $key): FlagStorageEntity
+    {
+        $flagEntity = new FlagStorageEntity();
+        $flagEntity->setValue('');
+        $flagEntity->setKey($key);
+
+        return $flagEntity;
     }
 }

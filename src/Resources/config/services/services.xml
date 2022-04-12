@@ -38,7 +38,6 @@
         </service>
         <service id="Klaviyo\Integration\EventListener\CheckoutOrderPlacedEventListener">
             <argument type="service" id="Klaviyo\Integration\System\Tracking\ScheduledEventsTracker"/>
-            <argument type="service" id="sales_channel.repository"/>
             <tag name="kernel.event_subscriber"/>
         </service>
         <service id="Klaviyo\Integration\EventListener\CustomerWrittenEventListener">
@@ -118,6 +117,10 @@
         </service>
         <service id="Klaviyo\Integration\Klaviyo\FrontendApi\ExcludedSubscribers\SyncProgressService">
             <argument type="service" id="klaviyo_flag_storage.repository"/>
+        </service>
+        <service id="Klaviyo\Integration\Model\Channel\ChannelRepositoryWithUniqueLists">
+            <argument type="service" id="Klaviyo\Integration\Configuration\ConfigurationRegistry"/>
+            <argument type="service" id="sales_channel.repository"/>
         </service>
 
         <!-- Decorators -->

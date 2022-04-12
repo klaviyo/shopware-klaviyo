@@ -7,6 +7,7 @@ use Klaviyo\Integration\Exception\{JobAlreadyRunningException, JobAlreadySchedul
 use Klaviyo\Integration\Model\UseCase\Operation\{FullOrderSyncOperation, FullSubscriberSyncOperation};
 use Klaviyo\Integration\Entity\Helper\ExcludedSubscribersProvider;
 use Klaviyo\Integration\Klaviyo\FrontendApi\DTO\SyncProgressInfo;
+use Klaviyo\Integration\Klaviyo\FrontendApi\ExcludedSubscribers\CreateArrayHash;
 use Klaviyo\Integration\Klaviyo\FrontendApi\ExcludedSubscribers\SyncProgressService;
 use Od\Scheduler\Entity\Job\JobEntity;
 use Od\Scheduler\Model\JobScheduler;
@@ -114,55 +115,36 @@ class ScheduleBackgroundJob
     /**
      * @throws \Exception
      */
-    public function sendExcludedSubscribers(Context $context, string $jobId)
+    public function scheduleExcludedSubscribersSyncJobs(Context $context, string $parentJobId)
     {
         /** @var SalesChannelEntity $channel */
         $channels = $this->salesChannelRepository->search(new Criteria(), $context);
         foreach ($channels as $channel) {
             $isFirstLoadedPage = true;
-            $page = $this->progressService->get($context, $channel)->getPage();
-            $hash = $this->progressService->get($context, $channel)->getHash();
+            $syncInfo = $this->progressService->get($context, $channel);
 
-            foreach ($this->excludedSubscribersProvider->getExcludedSubscribers($channel, $page) as $result) {
+            foreach ($this->excludedSubscribersProvider->getExcludedSubscribers($channel, $syncInfo->getPage()) as $result) {
                 if ($isFirstLoadedPage) {
-                    $hashEmails = md5(serialize($result->getEmails()));
                     $isFirstLoadedPage = false;
-                    if ($hash === $hashEmails) {
+                    if ($syncInfo->getHash() === CreateArrayHash::execute($result->getEmails())) {
                         continue 2;
                     }
                 }
-                $this->scheduleExcludedSubscribersSyncJob(
+
+                $jobMessage = new Message\ExcludedSubscriberSyncMessage(
+                    Uuid::randomHex(),
+                    $parentJobId,
                     $result->getEmails(),
-                    $jobId,
                     $channel->getId()
                 );
-                if (
-                    count($result->getEmails()) <
-                    $this->excludedSubscribersProvider::DEFAULT_COUNT_PER_PAGE
-                ) {
-                    $this->progressService->save(
-                        new SyncProgressInfo(
-                            (int)$result->getPage(),
-                            md5(serialize($result->getEmails())),
-                            $channel->getId()
-                        )
-                    );
-                }
+                $this->scheduler->schedule($jobMessage);
+            }
+
+            if (isset($result)) {
+                $syncInfo->setPage($result->getPage());
+                $syncInfo->setHash(CreateArrayHash::execute($result->getEmails()));
+                $this->progressService->save($context, $syncInfo);
             }
         }
-    }
-
-    public function scheduleExcludedSubscribersSyncJob(
-        array $emails,
-        string $parentJobId,
-        string $salesChannelId
-    ): void {
-        $jobMessage = new Message\ExcludedSubscriberSyncMessage(
-            Uuid::randomHex(),
-            $parentJobId,
-            $emails,
-            $salesChannelId
-        );
-        $this->scheduler->schedule($jobMessage);
     }
 }

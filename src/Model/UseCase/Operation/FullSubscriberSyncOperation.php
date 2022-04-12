@@ -49,7 +49,7 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
                 ]
             )
         );
-        $this->scheduleBackgroundJob->sendExcludedSubscribers($context, $message->getJobId());
+        $this->scheduleBackgroundJob->scheduleExcludedSubscribersSyncJobs($context, $message->getJobId());
         $iterator = new RepositoryIterator($this->subscriberRepository, $context, $criteria);
         while (($subscriberIds = $iterator->fetchIds()) !== null) {
             $this->scheduleBackgroundJob->scheduleSubscriberSyncJob(

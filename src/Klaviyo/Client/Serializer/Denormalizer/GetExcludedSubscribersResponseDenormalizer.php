@@ -24,8 +24,8 @@ class GetExcludedSubscribersResponseDenormalizer extends AbstractDenormalizer
 
         return new Response(
             $emails,
-            (string)$data['page'],
-            (string)$data['total']
+            (int)$data['page'],
+            (int)$data['total']
         );
     }
 

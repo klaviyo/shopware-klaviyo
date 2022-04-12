@@ -5,13 +5,13 @@ namespace Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscri
 class Response
 {
     private array $emails;
-    private string $page;
-    private string $totalEmailsCount;
+    private int $page;
+    private int $totalEmailsCount;
 
     public function __construct(
         array $emails,
-        string $page,
-        string $totalEmailsCount
+        int $page,
+        int $totalEmailsCount
     ) {
         $this->emails = $emails;
         $this->page = $page;
@@ -23,12 +23,12 @@ class Response
         return $this->emails;
     }
 
-    public function getPage(): string
+    public function getPage(): int
     {
         return $this->page;
     }
 
-    public function getTotalEmailsCount(): string
+    public function getTotalEmailsCount(): int
     {
         return $this->totalEmailsCount;
     }

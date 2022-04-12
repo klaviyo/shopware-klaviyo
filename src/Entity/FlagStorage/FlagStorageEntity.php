@@ -12,6 +12,11 @@ class FlagStorageEntity extends Entity
     protected string $value;
     protected string $salesChannelId;
 
+    public function getId(): ?string
+    {
+        return $this->id;
+    }
+
     public function getKey(): string
     {
         return $this->key;
