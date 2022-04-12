@@ -45,8 +45,5 @@ class ExcludedSubscribersProvider
                 $currentPage
             );
         }
-
-        /** @var JobResult */
-        return $result;
     }
 }
