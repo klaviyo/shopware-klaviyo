@@ -10,6 +10,7 @@ use Klaviyo\Integration\Klaviyo\Gateway\GetListIdByListNameInterface;
 use Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway;
 use Od\Scheduler\Model\Job\JobHandlerInterface;
 use Od\Scheduler\Model\Job\JobResult;
+use Od\Scheduler\Model\Job\Message\WarningMessage;
 use Shopware\Core\Content\Newsletter\Aggregate\NewsletterRecipient\NewsletterRecipientCollection;
 use Shopware\Core\Content\Newsletter\SalesChannel\NewsletterSubscribeRoute;
 use Shopware\Core\Framework\Context;
@@ -56,7 +57,10 @@ class SubscriberSyncOperation implements JobHandlerInterface
 
         foreach ($channels as $channel) {
             try {
-                $this->doOperation($message, $context, $channel);
+                $errors = $this->doOperation($message, $context, $channel);
+                foreach ($errors as $error) {
+                    $result->addMessage(new WarningMessage($error->getMessage()));
+                }
             } catch (\Throwable $e) {
                 $result->addError($e);
             }
@@ -65,7 +69,7 @@ class SubscriberSyncOperation implements JobHandlerInterface
         return $result;
     }
 
-    protected function doOperation(SubscriberSyncMessage $message, Context $context, SalesChannelEntity $channel)
+    protected function doOperation(SubscriberSyncMessage $message, Context $context, SalesChannelEntity $channel): ?array
     {
         $unsubscribedRecipients = new ProfileContactInfoCollection();
         $criteria = new Criteria();
@@ -98,12 +102,14 @@ class SubscriberSyncOperation implements JobHandlerInterface
             );
 
             if ($subscribersCollection->count() !== 0) {
-                $this->klaviyoGateway->addToKlaviyoProfilesList($channel, $subscribersCollection, $listId);
+                $result = $this->klaviyoGateway->addToKlaviyoProfilesList($channel, $subscribersCollection, $listId);
             }
 
             if ($unsubscribedRecipients->count() !== 0) {
                 $this->klaviyoGateway->removeKlaviyoSubscribersFromList($channel, $unsubscribedRecipients, $listId);
             }
         }
+
+        return $result ?? [];
     }
 }

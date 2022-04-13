@@ -18,6 +18,7 @@ use Klaviyo\Integration\Utils\Logger\ContextHelper;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Customer\CustomerCollection;
 use Shopware\Core\Content\Newsletter\Aggregate\NewsletterRecipient\NewsletterRecipientCollection;
+use Shopware\Core\Content\Newsletter\Aggregate\NewsletterRecipient\NewsletterRecipientEntity as Recipient;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
@@ -178,12 +179,13 @@ class KlaviyoGateway
 
     public function addToKlaviyoProfilesList(
         SalesChannelEntity $salesChannelEntity,
-        NewsletterRecipientCollection $newsletterRecipientCollection,
+        NewsletterRecipientCollection $recipientCollection,
         string $profilesListId
-    ): bool {
+    ): array {
         try {
+            $errors = [];
             $request = $this->subscribersTranslator
-                ->translateToAddProfilesRequest($newsletterRecipientCollection, $profilesListId);
+                ->translateToAddProfilesRequest($recipientCollection, $profilesListId);
             $clientResult = $this->clientRegistry
                 ->getClient($salesChannelEntity->getId())
                 ->sendRequests([$request]);
@@ -191,15 +193,23 @@ class KlaviyoGateway
             /** @var AddProfilesToListResponse $result */
             $result = $clientResult->getRequestResponse($request);
             if (!$result->isSuccess()) {
-                $this->logger->error(
-                    sprintf(
-                        'Could not add Shopware subscribers to Klaviyo profiles list, reason: %s',
-                        $result->getErrorDetails()
-                    )
-                );
+                $error = new \Exception(sprintf(
+                    'Could not add Shopware subscribers to Klaviyo profiles list, reason: %s',
+                    $result->getErrorDetails()
+                ));
+                $errors[] = $error;
+                $this->logger->error($error->getMessage());
+                $failedEmail = str_replace( ' is not a valid email.', '', $result->getErrorDetails());
+                $newCollection = $recipientCollection->filter(fn(Recipient $recipient) => $recipient->getEmail() !== $failedEmail);
+                if ($newCollection->count()) {
+                    $errors = array_merge(
+                        $errors,
+                        $this->addToKlaviyoProfilesList($salesChannelEntity, $newCollection, $profilesListId)
+                    );
+                }
             }
 
-            return $result->isSuccess();
+            return $errors;
         } catch (\Throwable $exception) {
             $this->logger->error(
                 sprintf(
@@ -209,7 +219,7 @@ class KlaviyoGateway
                 ContextHelper::createContextFromException($exception)
             );
 
-            return false;
+            return $errors;
         }
     }
 
