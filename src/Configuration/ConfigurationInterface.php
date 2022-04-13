@@ -26,8 +26,6 @@ interface ConfigurationInterface
 
     public function getSubscribersListName(): string;
 
-    public function getCatalogFeedProductsCount(): int;
-
     public function getCustomerCustomFieldMapping(): array;
 
     public function isAfterInteraction(): bool;
