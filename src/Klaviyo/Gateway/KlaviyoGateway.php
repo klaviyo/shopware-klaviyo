@@ -1,14 +1,12 @@
-<?php declare(strict_types=1);
+<?php
 
 namespace Klaviyo\Integration\Klaviyo\Gateway;
 
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribers;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\AddMembersToList\AddProfilesToListResponse;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Common\ProfileContactInfoCollection;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfilesFromList\RemoveProfilesFromListRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfilesFromList\RemoveProfilesFromListResponse;
 use Klaviyo\Integration\Klaviyo\Client\ClientResult;
-use Klaviyo\Integration\Klaviyo\Gateway\Exception\ProfilesListNotFoundException;
 use Klaviyo\Integration\Klaviyo\Gateway\Result\OrderTrackingResult;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\IdentifyProfileRequestTranslator;
@@ -299,27 +297,5 @@ class KlaviyoGateway
         }
 
         return $trackingResult;
-    }
-
-    /**
-     * @throws \Exception
-     */
-    public function getExcludedSubscribersFromList(
-        SalesChannelEntity $salesChannelEntity,
-        int $count,
-        $page
-    ): GetExcludedSubscribers\Response {
-        $request = new GetExcludedSubscribers\Request($count, (string)$page);
-        $clientResult = $this->clientRegistry
-            ->getClient($salesChannelEntity->getId())
-            ->sendRequests([$request]);
-
-        /** @var GetExcludedSubscribers\Response $result */
-        $result = $clientResult->getRequestResponse($request);
-        if (!$result) {
-            throw new ProfilesListNotFoundException('Could not get excluded subscribers from Klaviyo.');
-        }
-
-        return $result;
     }
 }

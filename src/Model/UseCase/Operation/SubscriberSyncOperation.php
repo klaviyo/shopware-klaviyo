@@ -8,7 +8,6 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Common\Profi
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Common\ProfileContactInfoCollection;
 use Klaviyo\Integration\Klaviyo\Gateway\GetListIdByListNameInterface;
 use Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway;
-use Klaviyo\Integration\Model\Channel\ChannelRepositoryWithUniqueLists;
 use Od\Scheduler\Model\Job\JobHandlerInterface;
 use Od\Scheduler\Model\Job\JobResult;
 use Od\Scheduler\Model\Job\Message\WarningMessage;

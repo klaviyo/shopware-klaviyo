@@ -7,7 +7,6 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEv
 use Klaviyo\Integration\Klaviyo\Client\Configuration\ConfigurationInterface;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer\AddProfilesToListResponseDenormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer\CollectionDenormalizer;
-use Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer\GetExcludedSubscribersResponseDenormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer\GetListProfilesResponseDenormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer\GetProfilesListsResponseDenormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer\ProfileInfoDenormalizer;
@@ -48,8 +47,7 @@ class SerializerFactory
                 new GetListProfilesResponseDenormalizer(),
                 new CollectionDenormalizer(),
                 new RemoveProfilesFromListResponseDenormalizer(),
-                new IdentifyProfileRequestNormalizer($configuration),
-                new GetExcludedSubscribersResponseDenormalizer()
+                new IdentifyProfileRequestNormalizer($configuration)
             ],
             [
                 new JsonEncoder()
