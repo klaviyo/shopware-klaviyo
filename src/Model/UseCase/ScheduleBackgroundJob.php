@@ -113,38 +113,47 @@ class ScheduleBackgroundJob
     }
 
     /**
-     * @throws \Exception
+     * @param Context $context
+     * @param string $parentJobId
+     * @return \Exception[]
      */
-    public function scheduleExcludedSubscribersSyncJobs(Context $context, string $parentJobId)
+    public function scheduleExcludedSubscribersSyncJobs(Context $context, string $parentJobId): array
     {
+        $errors = [];
         /** @var SalesChannelEntity $channel */
         $channels = $this->salesChannelRepository->search(new Criteria(), $context);
         foreach ($channels as $channel) {
             $isFirstLoadedPage = true;
             $syncInfo = $this->progressService->get($context, $channel);
 
-            foreach ($this->excludedSubscribersProvider->getExcludedSubscribers($channel, $syncInfo->getPage()) as $result) {
-                if ($isFirstLoadedPage) {
-                    $isFirstLoadedPage = false;
-                    if ($syncInfo->getHash() === CreateArrayHash::execute($result->getEmails())) {
-                        continue 2;
+            try {
+                foreach ($this->excludedSubscribersProvider->getExcludedSubscribers($channel, $syncInfo->getPage()) as $result) {
+                    if ($isFirstLoadedPage) {
+                        $isFirstLoadedPage = false;
+                        if ($syncInfo->getHash() === CreateArrayHash::execute($result->getEmails())) {
+                            continue 2;
+                        }
                     }
+
+                    $jobMessage = new Message\ExcludedSubscriberSyncMessage(
+                        Uuid::randomHex(),
+                        $parentJobId,
+                        $result->getEmails(),
+                        $channel->getId()
+                    );
+                    $this->scheduler->schedule($jobMessage);
                 }
 
-                $jobMessage = new Message\ExcludedSubscriberSyncMessage(
-                    Uuid::randomHex(),
-                    $parentJobId,
-                    $result->getEmails(),
-                    $channel->getId()
-                );
-                $this->scheduler->schedule($jobMessage);
-            }
-
-            if (isset($result)) {
-                $syncInfo->setPage($result->getPage());
-                $syncInfo->setHash(CreateArrayHash::execute($result->getEmails()));
-                $this->progressService->save($context, $syncInfo);
+                if (isset($result)) {
+                    $syncInfo->setPage($result->getPage());
+                    $syncInfo->setHash(CreateArrayHash::execute($result->getEmails()));
+                    $this->progressService->save($context, $syncInfo);
+                }
+            } catch (\Exception $e) {
+                $errors[] = $e;
             }
         }
+
+        return $errors;
     }
 }
