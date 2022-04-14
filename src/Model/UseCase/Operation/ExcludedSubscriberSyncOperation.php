@@ -3,7 +3,6 @@
 namespace Klaviyo\Integration\Model\UseCase\Operation;
 
 use Klaviyo\Integration\Async\Message\ExcludedSubscriberSyncMessage;
-use Od\Scheduler\Model\Job\GeneratingHandlerInterface;
 use Od\Scheduler\Model\Job\{JobHandlerInterface, JobResult};
 use Shopware\Core\Content\Newsletter\SalesChannel\NewsletterSubscribeRoute;
 use Shopware\Core\Framework\Context;
@@ -11,7 +10,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\{EqualsAnyFilter, EqualsFilter};
 
-class ExcludedSubscriberSyncOperation implements JobHandlerInterface, GeneratingHandlerInterface
+class ExcludedSubscriberSyncOperation implements JobHandlerInterface
 {
     public const OPERATION_HANDLER_CODE = 'od-klaviyo-excluded-subscriber-sync-handler';
 

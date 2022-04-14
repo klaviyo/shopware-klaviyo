@@ -3,8 +3,9 @@
 namespace Klaviyo\Integration\Async\Message;
 
 use Klaviyo\Integration\Model\UseCase\Operation\ExcludedSubscriberSyncOperation;
+use Od\Scheduler\Async\ParentAwareMessageInterface;
 
-class ExcludedSubscriberSyncMessage extends AbstractBasicMessage
+class ExcludedSubscriberSyncMessage extends AbstractBasicMessage implements ParentAwareMessageInterface
 {
     protected static string $defaultName = 'Excluded Subscriber Sync Operation';
     private string $parentJobId;
