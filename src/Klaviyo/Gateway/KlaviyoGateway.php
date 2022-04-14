@@ -1,12 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Klaviyo\Integration\Klaviyo\Gateway;
 
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribers;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\AddMembersToList\AddProfilesToListResponse;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Common\ProfileContactInfoCollection;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfilesFromList\RemoveProfilesFromListRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfilesFromList\RemoveProfilesFromListResponse;
 use Klaviyo\Integration\Klaviyo\Client\ClientResult;
+use Klaviyo\Integration\Klaviyo\Gateway\Exception\ProfilesListNotFoundException;
 use Klaviyo\Integration\Klaviyo\Gateway\Result\OrderTrackingResult;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\IdentifyProfileRequestTranslator;
@@ -18,6 +20,7 @@ use Klaviyo\Integration\Utils\Logger\ContextHelper;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Customer\CustomerCollection;
 use Shopware\Core\Content\Newsletter\Aggregate\NewsletterRecipient\NewsletterRecipientCollection;
+use Shopware\Core\Content\Newsletter\Aggregate\NewsletterRecipient\NewsletterRecipientEntity as Recipient;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
@@ -178,12 +181,13 @@ class KlaviyoGateway
 
     public function addToKlaviyoProfilesList(
         SalesChannelEntity $salesChannelEntity,
-        NewsletterRecipientCollection $newsletterRecipientCollection,
+        NewsletterRecipientCollection $recipientCollection,
         string $profilesListId
-    ): bool {
+    ): array {
         try {
+            $errors = [];
             $request = $this->subscribersTranslator
-                ->translateToAddProfilesRequest($newsletterRecipientCollection, $profilesListId);
+                ->translateToAddProfilesRequest($recipientCollection, $profilesListId);
             $clientResult = $this->clientRegistry
                 ->getClient($salesChannelEntity->getId())
                 ->sendRequests([$request]);
@@ -191,15 +195,23 @@ class KlaviyoGateway
             /** @var AddProfilesToListResponse $result */
             $result = $clientResult->getRequestResponse($request);
             if (!$result->isSuccess()) {
-                $this->logger->error(
-                    sprintf(
-                        'Could not add Shopware subscribers to Klaviyo profiles list, reason: %s',
-                        $result->getErrorDetails()
-                    )
-                );
+                $error = new \Exception(sprintf(
+                    'Could not add Shopware subscribers to Klaviyo profiles list, reason: %s',
+                    $result->getErrorDetails()
+                ));
+                $errors[] = $error;
+                $this->logger->error($error->getMessage());
+                $failedEmail = str_replace( ' is not a valid email.', '', $result->getErrorDetails());
+                $newCollection = $recipientCollection->filter(fn(Recipient $recipient) => $recipient->getEmail() !== $failedEmail);
+                if ($newCollection->count()) {
+                    $errors = array_merge(
+                        $errors,
+                        $this->addToKlaviyoProfilesList($salesChannelEntity, $newCollection, $profilesListId)
+                    );
+                }
             }
 
-            return $result->isSuccess();
+            return $errors;
         } catch (\Throwable $exception) {
             $this->logger->error(
                 sprintf(
@@ -209,7 +221,7 @@ class KlaviyoGateway
                 ContextHelper::createContextFromException($exception)
             );
 
-            return false;
+            return $errors;
         }
     }
 
@@ -287,5 +299,27 @@ class KlaviyoGateway
         }
 
         return $trackingResult;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function getExcludedSubscribersFromList(
+        SalesChannelEntity $salesChannelEntity,
+        int $count,
+        $page
+    ): GetExcludedSubscribers\Response {
+        $request = new GetExcludedSubscribers\Request($count, (string)$page);
+        $clientResult = $this->clientRegistry
+            ->getClient($salesChannelEntity->getId())
+            ->sendRequests([$request]);
+
+        /** @var GetExcludedSubscribers\Response $result */
+        $result = $clientResult->getRequestResponse($request);
+        if (!$result) {
+            throw new ProfilesListNotFoundException('Could not get excluded subscribers from Klaviyo.');
+        }
+
+        return $result;
     }
 }

@@ -41,8 +41,6 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
             );
         }
 
-        $catalogFeedProductsCount = $this->getIntConfiguration('catalogFeedProductsCount', $salesChannelId);
-
         $trackViewedProduct = $this->getBoolConfiguration('trackViewedProduct', $salesChannelId);
         $trackRecentlyViewedItems = $this->getBoolConfiguration(
             'trackRecentlyViewedItems',
@@ -87,7 +85,6 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
             $privateApiKey,
             $publicApiKey,
             $listName,
-            $catalogFeedProductsCount,
             $trackViewedProduct,
             $trackRecentlyViewedItems,
             $trackAddedToCart,

@@ -24,6 +24,10 @@
         <service id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob">
             <argument type="service" id="od_scheduler_job.repository"/>
             <argument type="service" id="Od\Scheduler\Model\JobScheduler"/>
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Klaviyo\Integration\Entity\Helper\ExcludedSubscribersProvider"/>
+            <argument type="service"
+                      id="Klaviyo\Integration\Klaviyo\FrontendApi\ExcludedSubscribers\SyncProgressService"/>
         </service>
 
         <!-- Controllers -->
@@ -39,7 +43,6 @@
         <!-- Listeners -->
         <service id="Klaviyo\Integration\EventListener\CheckoutOrderPlacedEventListener">
             <argument type="service" id="Klaviyo\Integration\System\Tracking\ScheduledEventsTracker"/>
-            <argument type="service" id="sales_channel.repository"/>
             <tag name="kernel.event_subscriber"/>
         </service>
         <service id="Klaviyo\Integration\EventListener\CustomerWrittenEventListener">
@@ -92,15 +95,18 @@
             <argument type="service" id="country_state.repository"/>
             <argument type="service" id="country.repository"/>
         </service>
-        <service id="Klaviyo\Integration\Entity\Helper\NewsletterSubscriberHelper">
-            <argument type="service" id="newsletter_recipient.repository"/>
-        </service>
         <service id="Klaviyo\Integration\Entity\Helper\ProductDataHelper">
             <argument type="service" id="router.default"/>
             <argument type="service" id="product.repository"/>
             <argument type="service" id="product_media.repository"/>
             <argument type="service" id="category.repository"/>
             <argument type="service" id="product_manufacturer.repository"/>
+        </service>
+        <service id="Klaviyo\Integration\Entity\Helper\NewsletterSubscriberHelper">
+            <argument type="service" id="newsletter_recipient.repository"/>
+        </service>
+        <service id="Klaviyo\Integration\Entity\Helper\ExcludedSubscribersProvider">
+            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway"/>
         </service>
         <service id="Klaviyo\Integration\Klaviyo\FrontendApi\Translator\ProductTranslator">
             <argument type="service" id="Klaviyo\Integration\Entity\Helper\ProductDataHelper"/>
@@ -121,13 +127,25 @@
             <argument type="service" id="cache.object"/>
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\GetListIdByListName"/>
         </service>
+        <service id="Klaviyo\Integration\Klaviyo\FrontendApi\ExcludedSubscribers\SyncProgressService">
+            <argument type="service" id="klaviyo_flag_storage.repository"/>
+        </service>
+        <service id="Klaviyo\Integration\Model\Channel\ChannelRepositoryWithUniqueLists">
+            <argument type="service" id="Klaviyo\Integration\Configuration\ConfigurationRegistry"/>
+            <argument type="service" id="sales_channel.repository"/>
+        </service>
 
         <!-- Decorators -->
         <service id="klaviyo.newsletter_controller_decorator"
                  public="true"
                  class="Klaviyo\Integration\Decorator\Storefront\Controller\NewsletterControllerDecorator"
                  decorates="Shopware\Storefront\Controller\NewsletterController">
-            <argument type="service" id="klaviyo.newsletter_controller_decorator.inner"/>
+            <argument type="service" id="Shopware\Storefront\Page\Newsletter\Subscribe\NewsletterSubscribePageLoader"/>
+            <argument type="service" id="customer.repository"/>
+            <argument type="service" id="Shopware\Core\Content\Newsletter\SalesChannel\NewsletterSubscribeRoute"/>
+            <argument type="service" id="Shopware\Core\Content\Newsletter\SalesChannel\NewsletterConfirmRoute"/>
+            <argument type="service" id="Shopware\Core\Content\Newsletter\SalesChannel\NewsletterUnsubscribeRoute"/>
+            <argument type="service" id="Shopware\Storefront\Pagelet\Newsletter\Account\NewsletterAccountPageletLoader"/>
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
