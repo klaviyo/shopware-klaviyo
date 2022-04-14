@@ -3,6 +3,3 @@ import './init/klaviyo-synchronization-service-init';
 import './init/svg-icons.init';
 import './product-export-templates';
 import './module/klaviyo';
-
-// Product extension
-import './extension/sw-product-deliverability-form';

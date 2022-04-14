@@ -1,9 +1,0 @@
-{% block sw_product_deliverability_form_max_purchase_field %}
-    {% parent() %}
-    {% block od_klaviyo_back_in_stock_email_notification %}
-        <sw-field v-model="product.customFields.klaviyo_back_in_stock_disabled"
-                  type="switch"
-                  label="Disable back in stock email notifications"
-        />
-    {% endblock %}
-{% endblock %}

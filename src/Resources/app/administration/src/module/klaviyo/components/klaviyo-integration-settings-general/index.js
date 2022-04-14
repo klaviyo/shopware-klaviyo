@@ -60,15 +60,7 @@ Component.register('klaviyo-integration-settings-general', {
                     trackFulfilledOrder: true,
                     trackCancelledOrder: true,
                     trackRefundedOrder: true,
-                    trackSubscribedToBackInStock: true,
-                    isInitializeKlaviyoAfterInteraction: true,
-                    popUpOpenBtnColor: '',
-                    popUpOpenBtnBgColor: '',
-                    popUpCloseBtnColor: '',
-                    popUpCloseBtnBgColor: '',
-                    subscribeBtnColor: '',
-                    subscribeBtnBgColor: '',
-                    popUpAdditionalClasses: '',
+                    isInitializeKlaviyoAfterInteraction: false
                 };
 
             /**

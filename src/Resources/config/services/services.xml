@@ -29,8 +29,6 @@
             <argument type="service"
                       id="Klaviyo\Integration\Klaviyo\FrontendApi\ExcludedSubscribers\SyncProgressService"/>
         </service>
-
-        <!-- Controllers -->
         <service id="Klaviyo\Integration\Controller\Backoffice\JobController" public="true">
             <argument type="service" id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob"/>
             <argument type="service" id="logger"/>
@@ -38,9 +36,6 @@
         <service id="Klaviyo\Integration\Controller\Backoffice\PromotionsExportController" public="true">
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Promotion\PromotionsExporter"/>
         </service>
-        <!-- /Controllers -->
-
-        <!-- Listeners -->
         <service id="Klaviyo\Integration\EventListener\CheckoutOrderPlacedEventListener">
             <argument type="service" id="Klaviyo\Integration\System\Tracking\ScheduledEventsTracker"/>
             <tag name="kernel.event_subscriber"/>
@@ -84,13 +79,6 @@
             <argument type="service" id="request_stack"/>
             <tag name="kernel.event_subscriber"/>
         </service>
-        <service id="Klaviyo\Integration\EventListener\PageEventListener">
-            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\CachedGetListIdByListName"/>
-            <argument type="service" id="Klaviyo\Integration\Configuration\ConfigurationRegistry"/>
-            <tag name="kernel.event_subscriber"/>
-        </service>
-        <!-- /Listeners -->
-
         <service id="Klaviyo\Integration\Entity\Helper\AddressDataHelper">
             <argument type="service" id="country_state.repository"/>
             <argument type="service" id="country.repository"/>
