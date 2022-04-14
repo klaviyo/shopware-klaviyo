@@ -69,10 +69,12 @@ Component.register('klaviyo-integration-settings', {
                 .filter((state) => state.code !== undefined)
                 .length !== 0;
 
-            return !this.privateKeyFilled
-                || !this.publicKeyFilled
-                || !this.listNameFilled
-                || hasMappingErrors;
+            return hasMappingErrors;
+            //TODO: we will use this in future
+            // return !this.privateKeyFilled
+            //     || !this.publicKeyFilled
+            //     || !this.listNameFilled
+            //     || hasMappingErrors;
         }
     },
 
