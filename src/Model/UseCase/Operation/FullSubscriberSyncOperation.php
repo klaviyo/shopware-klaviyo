@@ -31,6 +31,8 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
     /**
      * @param FullSubscriberSyncMessage $message
      * @return JobResult
+     *
+     * @throws \Exception
      */
     public function execute(object $message): JobResult
     {
@@ -47,8 +49,8 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
                 ]
             )
         );
+        $this->scheduleBackgroundJob->scheduleExcludedSubscribersSyncJobs($context, $message->getJobId());
         $iterator = new RepositoryIterator($this->subscriberRepository, $context, $criteria);
-
         while (($subscriberIds = $iterator->fetchIds()) !== null) {
             $this->scheduleBackgroundJob->scheduleSubscriberSyncJob(
                 $subscriberIds,
