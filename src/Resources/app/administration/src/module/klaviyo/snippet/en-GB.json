@@ -44,6 +44,23 @@
 	"klaviyo-integration-settings": {
 		"label": "Klaviyo",
 		"title": "Klaviyo",
+        "pop-up": {
+            "title": "Pop-Up styles",
+            "open-button-fieldset-label": "Pop-Up opening button",
+            "close-button-fieldset-label": "Pop-Up close button",
+            "subscribe-button-fieldset-label": "Subscribe button",
+            "snippet-button-fieldset-label": "Snippet names",
+            "additional-classes-fieldset-label": "Additional classes",
+            "colorLabel": "Color",
+            "backgroundLabel": "Background",
+            "openBtnLabel": "Open Button",
+            "closeBtnLabel": "Close Button",
+            "contentMessageLabel": "Content message",
+            "subscribeBtnLabel": "Subscribe Button",
+            "subscribeCheckboxLabel": "Subscribe checkbox text",
+            "emailFieldLabel": "Email field label",
+            "emailFieldPlaceholder": "Email field placeholder"
+        },
         "general": {
             "title": "General",
             "messageNotBlank": "This value should not be blank.",
@@ -99,6 +116,10 @@
 			"trackRefundedOrder": {
 				"label": "Track Refunded Order",
 				"helpText": "Do we need to send \"Refunded Order Event\" to Klaviyo?\nDecision will also affect Synchronization of the historical events"
+			},
+			"trackSubscribedToBackInStock": {
+				"label": "Track Back In Stock",
+				"helpText": "Do we need to send \"Back In Stock Event\" to Klaviyo?\n"
 			}
 		},
         "customer": {
