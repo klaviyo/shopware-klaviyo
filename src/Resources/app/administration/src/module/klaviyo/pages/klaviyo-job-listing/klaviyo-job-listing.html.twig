@@ -17,7 +17,7 @@
         <template slot="content">
             <od-job-listing-index ref="jobListing"
                                   @stop-auto-loading="stopAutoLoading"
-                                  :autoReloadInterval="3000"
+                                  :autoReloadInterval="60000"
                                   :autoLoadIsActive="autoLoad"
                                   :isGroupedView="isGrouped"
                                   :jobTypes="klaviyoJobTypes">
