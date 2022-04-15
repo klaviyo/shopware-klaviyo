@@ -56,6 +56,11 @@
             <argument type="service" id="cache.messenger.restart_workers_signal"/>
             <tag name="kernel.event_subscriber"/>
         </service>
+
+        <service id="Klaviyo\Integration\Entity\Helper\NewsletterSubscriberHelper">
+            <argument type="service" id="newsletter_recipient.repository"/>
+        </service>
+
         <service id="Klaviyo\Integration\EventListener\AddPluginExtensionToPageDTOEventListener">
             <argument type="service" id="Klaviyo\Integration\Configuration\ConfigurationRegistry"/>
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CustomerPropertiesTranslator"/>
@@ -79,9 +84,6 @@
         <service id="Klaviyo\Integration\Entity\Helper\AddressDataHelper">
             <argument type="service" id="country_state.repository"/>
             <argument type="service" id="country.repository"/>
-        </service>
-        <service id="Klaviyo\Integration\Entity\Helper\NewsletterSubscriberHelper">
-            <argument type="service" id="newsletter_recipient.repository"/>
         </service>
         <service id="Klaviyo\Integration\Entity\Helper\ProductDataHelper">
             <argument type="service" id="router.default"/>
