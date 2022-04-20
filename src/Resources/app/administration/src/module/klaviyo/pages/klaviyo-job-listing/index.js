@@ -6,13 +6,6 @@ const {Component} = Shopware;
 Component.register('klaviyo-job-listing', {
     template,
 
-    data() {
-        return {
-            autoLoad: false,
-            isGrouped: false,
-        }
-    },
-
     computed: {
         klaviyoJobTypes() {
             return [
@@ -28,16 +21,8 @@ Component.register('klaviyo-job-listing', {
     },
 
     methods: {
-        onRefresh: function () {
+        onRefresh() {
             this.$refs.jobListing.onRefresh();
-        },
-
-        stopAutoLoading() {
-            this.autoLoad = false;
-        },
-
-        showGrouped() {
-            this.isGrouped = !this.isGrouped;
         }
     }
 });

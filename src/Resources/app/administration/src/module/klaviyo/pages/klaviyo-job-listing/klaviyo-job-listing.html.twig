@@ -1,29 +1,11 @@
 {% block job_listing_page %}
     <sw-page class="klaviyo-job-list">
-        {% block klaviyo_smart_bar_actions %}
-            <template #smart-bar-actions>
-                {% block klaviyo_auto_reload_switch %}
-                    <sw-switch-field class="klaviyo-auto-loading-switch" v-model="autoLoad" label="Auto load"></sw-switch-field>
-                {% endblock %}
-
-                {% block klaviyo_show_grouped %}
-                    <sw-button @click="showGrouped" size="small" variant="primary">
-                        <span v-if="!isGrouped">Grouped view</span>
-                        <span v-else>Table view</span>
-                    </sw-button>
-                {% endblock %}
-            </template>
-        {% endblock %}
         <template slot="content">
             <od-job-listing-index ref="jobListing"
-                                  @stop-auto-loading="stopAutoLoading"
-                                  :autoReloadInterval="60000"
-                                  :autoLoadIsActive="autoLoad"
-                                  :isGroupedView="isGrouped"
                                   :jobTypes="klaviyoJobTypes">
             </od-job-listing-index>
         </template>
-        <template v-if="!isGrouped" #sidebar>
+        <template #sidebar>
             <sw-sidebar>
                 {% block sw_jobs_list_sidebar_refresh %}
                     <sw-sidebar-item
