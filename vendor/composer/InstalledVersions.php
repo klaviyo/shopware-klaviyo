@@ -35,6 +35,15 @@ private static $installed = array (
   ),
   'versions' => 
   array (
+    'fzaninotto/faker' => 
+    array (
+      'pretty_version' => 'v1.9.2',
+      'version' => '1.9.2.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '848d8125239d7dbf8ab25cb7f054f1a630e68c2e',
+    ),
     'od/sw6-job-scheduler' => 
     array (
       'pretty_version' => '1.0.0',
