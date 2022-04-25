@@ -7,12 +7,10 @@ use Klaviyo\Integration\Entity\Event\EventEntity;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
 use Klaviyo\Integration\System\Tracking\EventsTrackerInterface;
 use Od\Scheduler\Model\Job\GeneratingHandlerInterface;
-use Od\Scheduler\Model\Job\JobHandlerInterface;
-use Od\Scheduler\Model\Job\JobResult;
+use Od\Scheduler\Model\Job\{JobResult, JobHandlerInterface};
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\{EntityCollection, EntityRepositoryInterface};
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
@@ -37,7 +35,9 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
 
     /**
      * @param EventsProcessingMessage $message
+     *
      * @return JobResult
+     * @throws \Exception
      */
     public function execute(object $message): JobResult
     {
@@ -46,6 +46,7 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
         $this->processCartEvents($context, $message->getJobId());
         $this->processSubscriberEvents($context, $message->getJobId());
         $this->processCustomerProfileEvents($context, $message->getJobId());
+        $this->scheduleBackgroundJob->scheduleExcludedSubscribersSyncJobs($context, $message->getJobId());
 
         return new JobResult();
     }
