@@ -2,6 +2,7 @@ import KlaviyoIdentityTrackingComponent from './klaviyo/events-tracking/identity
 import KlaviyoProductViewedEventTrackingComponent from './klaviyo/events-tracking/product-viewed-event-tracking-component';
 import KlaviyoCheckoutStartedEventTrackingComponent from './klaviyo/events-tracking/checkout-started-event-tracking-component';
 import KlaviyoTracking from "./klaviyo/plugins/klaviyo.plugin";
+import KlaviyoBackInStockNotification from "./klaviyo/plugins/kaviyo-back-in-stock-notification.plugin";
 
 const PluginManager = window.PluginManager;
 PluginManager.register(
@@ -24,3 +25,8 @@ PluginManager.register(
     KlaviyoTracking,
     '[data-klaviyo-tracking]'
 );
+PluginManager.register(
+    'KlaviyoBackInStockNotification',
+    KlaviyoBackInStockNotification,
+    '[data-klaviyo-back-in-stock-notification]'
+)
