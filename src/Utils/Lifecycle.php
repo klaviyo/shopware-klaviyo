@@ -46,5 +46,6 @@ class Lifecycle
     {
         $this->connection->executeStatement('DROP TABLE IF EXISTS `klaviyo_job_event`');
         $this->connection->executeStatement('DROP TABLE IF EXISTS `klaviyo_job_cart_request`');
+        $this->connection->executeStatement('DROP TABLE IF EXISTS `klaviyo_flag_storage`');
     }
 }

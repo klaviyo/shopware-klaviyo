@@ -63,6 +63,9 @@ class TranslatorsRegistryFactory
         $registry->addTranslator(
             new IdentifyProfileRequestApiTransferTranslator($serializer, $configuration)
         );
+        $registry->addTranslator(
+            new GetExcludedSubscribersApiTransferTranslator($serializer, $configuration)
+        );
 
         return $registry;
     }
