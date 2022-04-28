@@ -57,14 +57,11 @@ export default class KlaviyoBackInStockNotification extends Plugin {
             },
             "body": data,
             "method": "POST",
-        })
-            .then(response => {
-                this._handleResponse(response)
-            })
-            .catch(err => {
-                console.error(err);
-            });
-
+        }).then(response => {
+            this._handleResponse(response)
+        }).catch(err => {
+            console.error(err);
+        });
     }
 
     _handleResponse(response) {
