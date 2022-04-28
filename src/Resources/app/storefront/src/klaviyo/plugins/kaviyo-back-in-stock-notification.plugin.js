@@ -10,11 +10,12 @@ export default class KlaviyoBackInStockNotification extends Plugin {
         emailFieldSelector: '#email',
         subscribeToNewsletterSelector: '#subscribeToNewsletter',
         apiURL: 'https://a.klaviyo.com/onsite/components/back-in-stock/subscribe',
-        contentType: 'application/x-www-form-urlencoded',
+        contentType: 'application/x-www-form-urlencoded;charset=UTF-8',
         hiddenCls: 'd-none',
         successMessageSelector: '.klaviyo-success',
         errorMessageSelector: '.klaviyo-error',
         notValidEmailMessageSelector: '.klaviyo-email-not-valid',
+        fetchHeaderAccept: "application/json, text/plain, */*"
     };
 
     init() {
@@ -49,13 +50,22 @@ export default class KlaviyoBackInStockNotification extends Plugin {
     _proceedSubscription() {
         const data = this._createFormData();
 
-        this._client.post(this.options.apiURL, data, this._handleResponse.bind(this), this.options.contentType);
+        fetch(this.options.apiURL, {
+            "headers": {
+                "accept": this.options.fetchHeaderAccept,
+                "content-type": this.options.contentType,
+            },
+            "body": data,
+            "method": "POST",
+        }).then(response => {
+            this._handleResponse(response)
+        }).catch(err => {
+            console.error(err);
+        });
     }
 
     _handleResponse(response) {
-        response = JSON.parse(response);
-
-        if (response.success) {
+        if (response.ok) {
             return this._showSuccessMessage();
         }
 
@@ -82,7 +92,7 @@ export default class KlaviyoBackInStockNotification extends Plugin {
     }
 
     _createFormData() {
-        let data = new FormData();
+        let data = new URLSearchParams();
         data.append('a', this.options.publicApiKey);
         data.append('email', this._email.value);
         data.append('platform', 'api');
