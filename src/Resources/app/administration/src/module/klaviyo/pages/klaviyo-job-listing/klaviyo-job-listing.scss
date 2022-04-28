@@ -4,4 +4,11 @@
             margin: 0;
         }
     }
+
+    #job-date-filter {
+        .sw-container {
+            display: flex;
+            flex-direction: column;
+        }
+    }
 }
