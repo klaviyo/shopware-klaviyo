@@ -31,7 +31,12 @@ class ProductEventRequestTranslator
 
         $customerProperties = $this->translator->translateOrder($context, $orderEntity);
 
-        $productUrl = $this->productDataHelper->getProductViewPageUrl($product);
+        $productUrl = $this->productDataHelper->getProductViewPageUrl(
+            $product,
+            null,
+            $context,
+            $orderEntity->getSalesChannelId()
+        );
         $imageUrl = $this->productDataHelper->getCoverImageUrl($context, $product);
         $categories = $this->productDataHelper->getCategoryNames($context, $product);
         $manufacturerName = $this->productDataHelper->getManufacturerName($context, $product) ?? '';

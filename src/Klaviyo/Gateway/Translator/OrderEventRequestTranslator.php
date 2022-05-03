@@ -325,7 +325,12 @@ class OrderEventRequestTranslator
             if ($lineItem->getType() === 'product') {
                 $product = $this->getLineItemProduct($context, $lineItem);
 
-                $productUrl = $this->productDataHelper->getProductViewPageUrl($product);
+                $productUrl = $this->productDataHelper->getProductViewPageUrl(
+                    $product,
+                    null,
+                    $context,
+                    $orderEntity->getSalesChannelId()
+                );
 
                 $imageUrl = $this->productDataHelper->getCoverImageUrl($context, $product);
 
