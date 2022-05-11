@@ -1,0 +1,15 @@
+{% sw_extends '@Storefront/storefront/page/content/product-detail.html.twig' %}
+
+{% block base_main_inner %}
+    {{ parent() }}
+    {% if page.hasExtension('klaviyoIntegrationPluginExtension') %}
+        {% set extensionData =  page.getExtension('klaviyoIntegrationPluginExtension') %}
+        {% set klaviyoComponentOptions = {
+            'productInfo': extensionData.productInfo
+        }
+        %}
+
+        <div style="display: none;" data-klaviyo-product-viewed-event-tracking-component=""
+             data-klaviyo-product-viewed-event-tracking-component-options="{{ klaviyoComponentOptions|json_encode }}"></div>
+    {% endif %}
+{% endblock %}
