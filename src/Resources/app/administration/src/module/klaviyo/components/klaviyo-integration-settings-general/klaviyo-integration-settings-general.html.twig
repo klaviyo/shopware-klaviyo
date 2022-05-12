@@ -78,28 +78,6 @@
                 </sw-inherit-wrapper>
             {% endblock %}
 
-            {% block klaviyo_integration_settings_general_catalog_feed_products_count %}
-                <sw-inherit-wrapper
-                        v-model="actualConfigData['KlaviyoIntegrationPlugin.config.catalogFeedProductsCount']"
-                        :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.catalogFeedProductsCount']"
-                        :customInheritationCheckFunction="checkTextFieldInheritance">
-                    <template #content="props">
-                        <sw-field
-                                :label="$tc('klaviyo-integration-settings.configs.catalogFeedProductsCount.label')"
-                                :helpText="$tc('klaviyo-integration-settings.configs.catalogFeedProductsCount.helpText')"
-                                type="number"
-                                number-type="int"
-                                :min="1"
-                                :map-inheritance="props"
-                                :value="props.currentValue"
-                                :disabled="props.isInherited"
-                                required
-                                name="KlaviyoIntegrationPlugin.config.catalogFeedProductsCount"
-                                @input="props.updateCurrentValue"></sw-field>
-                    </template>
-                </sw-inherit-wrapper>
-            {% endblock %}
-
             {% block klaviyo_integration_settings_general_track_viewed_product %}
                 <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackViewedProduct']"
                                     :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackViewedProduct']"
