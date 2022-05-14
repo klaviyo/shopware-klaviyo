@@ -22,7 +22,7 @@ class ProductTranslator
         SalesChannelContext $salesChannelContext,
         ProductEntity $product
     ): ProductInfo {
-        $productViewPageUrl = $this->productDataHelper->getProductViewPageUrl($product, $salesChannelContext);
+        $productViewPageUrl = $this->productDataHelper->getProductViewPageUrlByContext($product, $salesChannelContext);
         $imageUrl = $this->productDataHelper->getCoverImageUrl($context, $product);
         $categories = $this->productDataHelper->getCategoryNames($context, $product);
         $manufacturerName = $this->productDataHelper->getManufacturerName($context, $product);

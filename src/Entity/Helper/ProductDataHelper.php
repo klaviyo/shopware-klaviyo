@@ -13,7 +13,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
-use Shopware\Core\System\SalesChannel\{SalesChannelContext, SalesChannelEntity};
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class ProductDataHelper
@@ -26,6 +26,7 @@ class ProductDataHelper
     private SeoUrlPlaceholderHandlerInterface $seoUrlReplacer;
     private EntityRepositoryInterface $salesChannelRepository;
     private AbstractSalesChannelContextFactory $salesChannelContextFactory;
+    private array $contexts = [];
 
     public function __construct(
         UrlGeneratorInterface $urlGenerator,
@@ -47,20 +48,8 @@ class ProductDataHelper
         $this->salesChannelContextFactory = $salesChannelContextFactory;
     }
 
-    public function getProductViewPageUrl(
-        ProductEntity $productEntity,
-        SalesChannelContext $salesChannelContext = null,
-        Context $context = null,
-        $channelId = null
-    ): string {
-        if (!$salesChannelContext) {
-            $criteria = new Criteria();
-            $criteria->addFilter(new EqualsFilter('id', $channelId));
-            $criteria->addAssociation('domains');
-            $salesChannel = $this->salesChannelRepository->search($criteria, $context ?? Context::createDefaultContext())->first();
-            $salesChannelContext = $this->getSalesChannelContext($salesChannel);
-        }
-
+    public function getProductViewPageUrlByContext(ProductEntity $productEntity,SalesChannelContext $salesChannelContext): string
+    {
         if ($domains = $salesChannelContext->getSalesChannel()->getDomains()) {
             $raw = $this->seoUrlReplacer->generate('frontend.detail.page', ['productId' => $productEntity->getId()]);
 
@@ -73,6 +62,13 @@ class ProductDataHelper
                 ['productId' => $productEntity->getId()],
                 UrlGeneratorInterface::ABSOLUTE_URL
             );
+    }
+
+    public function getProductViewPageUrlByChannelId(ProductEntity $productEntity, string $channelId,  Context $context): string
+    {
+        $salesChannelContext = $this->getSalesChannelContext($channelId, $context);
+
+        return $this->getProductViewPageUrlByContext($productEntity, $salesChannelContext);
     }
 
     public function getCoverImageUrl(Context $context, ProductEntity $productEntity): string
@@ -188,11 +184,21 @@ class ProductDataHelper
         return $this->productRepository->search(new Criteria([$productId]), $context)->first();
     }
 
-    public function getSalesChannelContext(SalesChannelEntity $salesChannel): SalesChannelContext
+    public function getSalesChannelContext(string $channelId, Context $context)
     {
-        return $this->salesChannelContextFactory->create(
+        if (isset($this->contexts[$channelId])) {
+            return $this->contexts[$channelId];
+        }
+
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('id', $channelId));
+        $criteria->addAssociation('domains');
+        $salesChannel = $this->salesChannelRepository->search($criteria, $context)->first();
+        $salesChannelContext = $this->salesChannelContextFactory->create(
             Uuid::randomHex(),
             $salesChannel->getId()
         );
+
+        return $this->contexts[$channelId] = $salesChannelContext;
     }
 }

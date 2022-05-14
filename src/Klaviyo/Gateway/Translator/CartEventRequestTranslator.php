@@ -107,8 +107,8 @@ class CartEventRequestTranslator
             );
         }
 
-        $imageUrl = $this->productDataHelper->getProductViewPageUrl($product, $context);
-        $viewPageUrl = $this->productDataHelper->getProductViewPageUrl($product, $context);
+        $imageUrl = $this->productDataHelper->getProductViewPageUrlByContext($product, $context);
+        $viewPageUrl = $this->productDataHelper->getProductViewPageUrlByContext($product, $context);
         $categories = $this->productDataHelper->getCategoryNames($context->getContext(), $product);
         $price = $lineItem->getPrice();
 
