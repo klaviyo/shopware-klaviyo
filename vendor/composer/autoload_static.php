@@ -4,25 +4,25 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit43a48f9bdb6df8dfe6dcd81990c34482
+class ComposerStaticInit79a130cfe51796dfe10f0a763a5725cd
 {
     public static $prefixLengthsPsr4 = array (
-        'O' => 
+        'O' =>
         array (
             'Od\\Scheduler\\' => 13,
         ),
-        'K' => 
+        'K' =>
         array (
             'Klaviyo\\Integration\\' => 20,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'Od\\Scheduler\\' => 
+        'Od\\Scheduler\\' =>
         array (
             0 => __DIR__ . '/..' . '/od/sw6-job-scheduler/src',
         ),
-        'Klaviyo\\Integration\\' => 
+        'Klaviyo\\Integration\\' =>
         array (
             0 => __DIR__ . '/../..' . '/src',
         ),
@@ -35,9 +35,9 @@ class ComposerStaticInit43a48f9bdb6df8dfe6dcd81990c34482
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit43a48f9bdb6df8dfe6dcd81990c34482::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit43a48f9bdb6df8dfe6dcd81990c34482::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit43a48f9bdb6df8dfe6dcd81990c34482::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit79a130cfe51796dfe10f0a763a5725cd::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit79a130cfe51796dfe10f0a763a5725cd::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit79a130cfe51796dfe10f0a763a5725cd::$classMap;
 
         }, null, ClassLoader::class);
     }

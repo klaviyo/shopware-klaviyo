@@ -1,0 +1,14 @@
+.klaviyo-job-list {
+    .smart-bar__content {
+        .job-listing-auto-loading-switch {
+            margin: 0;
+        }
+    }
+
+    #job-date-filter {
+        .sw-container {
+            display: flex;
+            flex-direction: column;
+        }
+    }
+}
