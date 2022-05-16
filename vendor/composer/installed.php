@@ -1,42 +1,32 @@
-<?php return array (
-  'root' => 
-  array (
-    'pretty_version' => '1.0.2',
-    'version' => '1.0.2.0',
-    'aliases' => 
-    array (
+<?php return array(
+    'root' => array(
+        'pretty_version' => '1.0.2',
+        'version' => '1.0.2.0',
+        'type' => 'shopware-platform-plugin',
+        'install_path' => __DIR__ . '/../../',
+        'aliases' => array(),
+        'reference' => NULL,
+        'name' => 'od/sw6-klaviyo-integration',
+        'dev' => false,
     ),
-    'reference' => NULL,
-    'name' => 'od/sw6-klaviyo-integration',
-  ),
-  'versions' => 
-  array (
-    'fzaninotto/faker' => 
-    array (
-      'pretty_version' => 'v1.9.2',
-      'version' => '1.9.2.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '848d8125239d7dbf8ab25cb7f054f1a630e68c2e',
+    'versions' => array(
+        'od/sw6-job-scheduler' => array(
+            'pretty_version' => '1.0.0',
+            'version' => '1.0.0.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../od/sw6-job-scheduler',
+            'aliases' => array(),
+            'reference' => '8350e6482b48c42811fe59a89509ff599a040868',
+            'dev_requirement' => false,
+        ),
+        'od/sw6-klaviyo-integration' => array(
+            'pretty_version' => '1.0.2',
+            'version' => '1.0.2.0',
+            'type' => 'shopware-platform-plugin',
+            'install_path' => __DIR__ . '/../../',
+            'aliases' => array(),
+            'reference' => NULL,
+            'dev_requirement' => false,
+        ),
     ),
-    'od/sw6-job-scheduler' => 
-    array (
-      'pretty_version' => '1.0.0',
-      'version' => '1.0.0.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '635a3b27a77fc7b54980360d597d43b95a7580f6',
-    ),
-    'od/sw6-klaviyo-integration' => 
-    array (
-      'pretty_version' => '1.0.2',
-      'version' => '1.0.2.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => NULL,
-    ),
-  ),
 );

@@ -1,0 +1,25 @@
+{% block od_job_charts_base %}
+<div class="od-scheduler-charts">
+    <div class="sw-dashboard-statistics__card-headline-select">
+        <sw-select-field
+                class="charts-date-range"
+                v-model="statisticDateRanges.value"
+                size="small">
+            <option
+                    v-for="(value, option) in statisticDateRanges.options"
+                    :key="option"
+                    :value="option">
+                {{ $tc(`sw-dashboard.monthStats.dateRanges.${option}`) }}
+            </option>
+        </sw-select-field>
+    </div>
+    <sw-chart
+            type="area"
+            :series="chartSeries"
+            :options="chartOptionsCount"
+            :fill-empty-values="getTimeUnitInterval"
+            :fillEmptyDates="false"
+            :sort="true"
+    />
+</div>
+{% endblock %}
