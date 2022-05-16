@@ -24,19 +24,14 @@ class Migration1626690788 extends MigrationStep
             `created_at`        DATETIME(3)     NOT NULL,
             `updated_at`        DATETIME(3)     NULL,
             PRIMARY KEY (`id`),
+            INDEX `odklin_klaviyo_job_event_type_idx` (`type`),
+            INDEX `odklin_klaviyo_job_event_created_at_idx` (`created_at`),
             CONSTRAINT `fk.klaviyo_job_event.sales_channel_id`
                 FOREIGN KEY (`sales_channel_id`)
                 REFERENCES `sales_channel` (`id`)
                 ON DELETE CASCADE
                 ON UPDATE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-SQL;
-        $connection->executeStatement($sql);
-
-        $sql = <<<SQL
-            ALTER TABLE `klaviyo_job_event`
-                ADD INDEX `odklin_klaviyo_job_event_type_idx` (`type`),
-                ADD INDEX `odklin_klaviyo_job_event_created_at_idx` (`created_at`);
 SQL;
         $connection->executeStatement($sql);
 
@@ -48,18 +43,13 @@ SQL;
             `created_at`            DATETIME(3)     NOT NULL,
             `updated_at`            DATETIME(3)     NULL,
             PRIMARY KEY (`id`),
+            INDEX `odklin_klaviyo_job_cart_request_created_at_idx` (`created_at`),
             CONSTRAINT `fk.klaviyo_job_cart_request.sales_channel_id`
                 FOREIGN KEY (`sales_channel_id`)
                 REFERENCES `sales_channel` (`id`)
                 ON DELETE CASCADE
                 ON UPDATE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-SQL;
-        $connection->executeStatement($sql);
-
-        $sql = <<<SQL
-            ALTER TABLE `klaviyo_job_cart_request`
-                ADD INDEX `odklin_klaviyo_job_cart_request_created_at_idx` (`created_at`);
 SQL;
         $connection->executeStatement($sql);
     }

@@ -7,22 +7,22 @@ namespace Composer\Autoload;
 class ComposerStaticInit79a130cfe51796dfe10f0a763a5725cd
 {
     public static $prefixLengthsPsr4 = array (
-        'O' => 
+        'O' =>
         array (
             'Od\\Scheduler\\' => 13,
         ),
-        'K' => 
+        'K' =>
         array (
             'Klaviyo\\Integration\\' => 20,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'Od\\Scheduler\\' => 
+        'Od\\Scheduler\\' =>
         array (
             0 => __DIR__ . '/..' . '/od/sw6-job-scheduler/src',
         ),
-        'Klaviyo\\Integration\\' => 
+        'Klaviyo\\Integration\\' =>
         array (
             0 => __DIR__ . '/../..' . '/src',
         ),

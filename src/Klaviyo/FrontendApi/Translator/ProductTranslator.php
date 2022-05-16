@@ -1,25 +1,20 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Klaviyo\Integration\Klaviyo\FrontendApi\Translator;
 
 use Klaviyo\Integration\Entity\Helper\ProductDataHelper;
 use Klaviyo\Integration\Klaviyo\FrontendApi\DTO\ProductInfo;
 use Shopware\Core\Content\Product\ProductEntity;
-use Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class ProductTranslator
 {
     private ProductDataHelper $productDataHelper;
-    private SeoUrlPlaceholderHandlerInterface $seoUrlReplacer;
 
-    public function __construct(
-        ProductDataHelper $productDataHelper,
-        SeoUrlPlaceholderHandlerInterface $seoUrlReplacer
-    ) {
+    public function __construct(ProductDataHelper $productDataHelper)
+    {
         $this->productDataHelper = $productDataHelper;
-        $this->seoUrlReplacer = $seoUrlReplacer;
     }
 
     public function translateToProductInfo(
@@ -27,7 +22,7 @@ class ProductTranslator
         SalesChannelContext $salesChannelContext,
         ProductEntity $product
     ): ProductInfo {
-        $productViewPageUrl = $this->getProductUrl($product, $salesChannelContext);
+        $productViewPageUrl = $this->productDataHelper->getProductViewPageUrlByContext($product, $salesChannelContext);
         $imageUrl = $this->productDataHelper->getCoverImageUrl($context, $product);
         $categories = $this->productDataHelper->getCategoryNames($context, $product);
         $manufacturerName = $this->productDataHelper->getManufacturerName($context, $product);
@@ -56,16 +51,5 @@ class ProductTranslator
             $grossPrice,
             $compareAtPrice
         );
-    }
-
-    private function getProductUrl(ProductEntity $product, SalesChannelContext $context): string
-    {
-        if ($domains = $context->getSalesChannel()->getDomains()) {
-            $raw = $this->seoUrlReplacer->generate('frontend.detail.page', ['productId' => $product->getId()]);
-
-            return $this->seoUrlReplacer->replace($raw, $domains->first()->getUrl(), $context);
-        }
-
-        return $this->productDataHelper->getProductViewPageUrl($product);
     }
 }
