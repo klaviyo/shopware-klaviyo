@@ -114,7 +114,7 @@ Component.register('klaviyo-job-listing', {
         },
 
         onRefresh() {
-            this.$refs.jobListing.onRefresh();
+            this.$refs.jobListing.onRefresh(this.filterCriteria);
             this.loadFilterValues();
         },
 
@@ -152,7 +152,7 @@ Component.register('klaviyo-job-listing', {
 
                 statuses.forEach((status) => {
                     this.statusFilterOptions.push({
-                        name: status,
+                        name: status === 'succeed' ? 'Success' : status,
                         value: status
                     })
                 })
