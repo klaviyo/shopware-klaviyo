@@ -101,6 +101,9 @@
             <argument type="service" id="product_media.repository"/>
             <argument type="service" id="category.repository"/>
             <argument type="service" id="product_manufacturer.repository"/>
+            <argument type="service" id="Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface"/>
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
         </service>
         <service id="Klaviyo\Integration\Entity\Helper\NewsletterSubscriberHelper">
             <argument type="service" id="newsletter_recipient.repository"/>
@@ -110,7 +113,6 @@
         </service>
         <service id="Klaviyo\Integration\Klaviyo\FrontendApi\Translator\ProductTranslator">
             <argument type="service" id="Klaviyo\Integration\Entity\Helper\ProductDataHelper"/>
-            <argument type="service" id="Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface"/>
         </service>
         <service id="Klaviyo\Integration\Klaviyo\FrontendApi\Translator\StartedCheckoutEventTrackingRequestTranslator">
             <argument type="service" id="router.default"/>
