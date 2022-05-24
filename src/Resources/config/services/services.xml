@@ -137,7 +137,7 @@
         <service id="Klaviyo\Integration\Klaviyo\FrontendApi\ExcludedSubscribers\SyncProgressService">
             <argument type="service" id="klaviyo_flag_storage.repository"/>
         </service>
-        <service id="Klaviyo\Integration\Model\Channel\ChannelRepositoryWithUniqueLists">
+        <service id="Klaviyo\Integration\Model\Channel\ChannelRepositoryWithValidConfig">
             <argument type="service" id="Klaviyo\Integration\Configuration\ConfigurationRegistry"/>
             <argument type="service" id="sales_channel.repository"/>
         </service>

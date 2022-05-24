@@ -174,6 +174,17 @@ class KlaviyoGateway
         return $this->trackEvents($channelId, $requests);
     }
 
+    public function getProfilesId(Context $context, string $channelId, CustomerCollection $customers)
+    {
+        $requests = [];
+        foreach ($customers as $customer) {
+            $requests[] = $this->identifyProfileRequestTranslator->translateToProfileRequest($context, $customer);
+        }
+
+        $client = $this->clientRegistry->getClient($channelId);
+        $clientResult = $client->sendRequests($requests);
+    }
+
     public function trackAddedToCartRequests(string $channelId, array $cartRequests): ClientResult
     {
         return $this->trackEvents($channelId, $cartRequests);

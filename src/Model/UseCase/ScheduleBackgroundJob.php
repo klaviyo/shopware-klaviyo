@@ -3,12 +3,11 @@
 namespace Klaviyo\Integration\Model\UseCase;
 
 use Klaviyo\Integration\Async\Message;
-use Klaviyo\Integration\Exception\{JobAlreadyRunningException, JobAlreadyScheduledException};
-use Klaviyo\Integration\Model\UseCase\Operation\{FullOrderSyncOperation, FullSubscriberSyncOperation};
 use Klaviyo\Integration\Entity\Helper\ExcludedSubscribersProvider;
-use Klaviyo\Integration\Klaviyo\FrontendApi\DTO\SyncProgressInfo;
+use Klaviyo\Integration\Exception\{JobAlreadyRunningException, JobAlreadyScheduledException};
 use Klaviyo\Integration\Klaviyo\FrontendApi\ExcludedSubscribers\CreateArrayHash;
 use Klaviyo\Integration\Klaviyo\FrontendApi\ExcludedSubscribers\SyncProgressService;
+use Klaviyo\Integration\Model\UseCase\Operation\{FullOrderSyncOperation, FullSubscriberSyncOperation};
 use Od\Scheduler\Entity\Job\JobEntity;
 use Od\Scheduler\Model\JobScheduler;
 use Shopware\Core\Framework\Context;
