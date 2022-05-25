@@ -104,10 +104,26 @@ Component.register('klaviyo-job-listing', {
         },
 
         onDisplayModeChange(mode) {
+            let innerBox = this.$el,
+                klaviyoSidebar = innerBox.querySelector('.sw-sidebar'),
+                filterBtn = innerBox.querySelector('[title="Filters"]');
+
+                innerBox.classList.remove('no-filter');
             if (mode !== 'list') {
-                this.$refs.odFilter.resetAll()
+                innerBox.classList.add('no-filter');
+
+                if(klaviyoSidebar.classList.contains('is--opened')){
+                    filterBtn.click();
+                }
+
+                if(this.$refs.odFilter.$el.length !== 0){
+                    this.$refs.odFilter.resetAll();
+                }
+
+                console.log(this.$el.querySelector('.sw-sidebar ').classList.contains('is--opened'));
                 return this.hideFilters = true
             }
+
 
             this.hideFilters = false;
             this.loadFilterValues();
