@@ -104,17 +104,13 @@ Component.register('klaviyo-job-listing', {
         },
 
         onDisplayModeChange(mode) {
-            let innerBox = this.$el,
-                klaviyoSidebar = innerBox.querySelector('.sw-sidebar'),
-                filterBtn = innerBox.querySelector('[title="Filters"]');
+            console.log("fil", this.$refs.odSidebar)
+            let innerBox = this.$el;
 
                 innerBox.classList.remove('no-filter');
             if (mode !== 'list') {
                 innerBox.classList.add('no-filter');
-
-                if(klaviyoSidebar.classList.contains('is--opened')){
-                    filterBtn.click();
-                }
+                this.$refs.odSidebar.closeSidebar();
 
                 if(this.$refs.odFilter.$el.length !== 0){
                     this.$refs.odFilter.resetAll();

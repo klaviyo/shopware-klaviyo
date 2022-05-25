@@ -8,7 +8,7 @@
             </od-job-listing-index>
         </template>
         <template #sidebar>
-            <sw-sidebar>
+            <sw-sidebar ref="odSidebar">
                 {% block sw_jobs_list_sidebar_refresh %}
                     <sw-sidebar-item
                             icon="default-arrow-360-left"
