@@ -104,7 +104,7 @@ Component.register('klaviyo-job-listing', {
         },
 
         onDisplayModeChange(mode) {
-            console.log("fil", this.$refs.odSidebar)
+
             let innerBox = this.$el;
 
                 innerBox.classList.remove('no-filter');
@@ -116,7 +116,6 @@ Component.register('klaviyo-job-listing', {
                     this.$refs.odFilter.resetAll();
                 }
 
-                console.log(this.$el.querySelector('.sw-sidebar ').classList.contains('is--opened'));
                 return this.hideFilters = true
             }
 
