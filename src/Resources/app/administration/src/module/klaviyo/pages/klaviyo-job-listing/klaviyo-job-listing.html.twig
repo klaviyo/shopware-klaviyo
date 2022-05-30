@@ -9,13 +9,14 @@
         </template>
         <template #sidebar>
             <sw-sidebar ref="odSidebar">
-                {% block sw_jobs_list_sidebar_refresh %}
+                {% block od_klaviyo_jobs_list_sidebar_refresh %}
                     <sw-sidebar-item
                             icon="default-arrow-360-left"
                             :title="$tc('sw-product.list.titleSidebarItemRefresh')"
                             @click="onRefresh"></sw-sidebar-item>
                 {% endblock %}
 
+                {% block od_klaviyo_jobs_list_sidebar_refresh %}
                     <sw-sidebar-filter-panel ref="odFilter"
                             :hidden="hideFilters"
                             entity="od_scheduler_job"
@@ -23,8 +24,9 @@
                             :filters="listFilters"
                             :defaults="defaultFilters"
                             :active-filter-number="activeFilterNumber"
-                            @criteria-changed="updateCriteria"></sw-sidebar-filter-panel>
-
+                            @criteria-changed="updateCriteria">
+                    </sw-sidebar-filter-panel>
+                {% endblock %}
             </sw-sidebar>
         </template>
     </sw-page>

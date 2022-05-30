@@ -21,7 +21,11 @@ Component.register('od-grouped-view', {
             required: false,
             default: () => []
         },
-
+        groupCreationDate: {
+            type: Object,
+            required: false,
+            default: () => {}
+        },
         sortType: {
             type: String,
             required: true,
@@ -124,6 +128,13 @@ Component.register('od-grouped-view', {
             this.groupedItems = [];
             this.initGroupedView();
         },
+        groupCreationDate:{
+            handler() {
+                this.groupedItems = [];
+                this.initGroupedView();
+            },
+            deep: true
+        }
     },
 
     methods: {
@@ -138,6 +149,14 @@ Component.register('od-grouped-view', {
 
             if (this.jobTypes !== []) {
                 criteria.addFilter(Criteria.equalsAny('type', this.jobTypes));
+            }
+
+            if(this.groupCreationDate.fromDate){
+                criteria.addFilter(Criteria.range('createdAt', { gte: this.groupCreationDate.fromDate }));
+            }
+
+            if(this.groupCreationDate.toDate){
+                criteria.addFilter(Criteria.range('createdAt', { lte: this.groupCreationDate.toDate }));
             }
 
             return this.jobRepository.search(criteria, Shopware.Context.api).then(items => {
@@ -167,6 +186,14 @@ Component.register('od-grouped-view', {
                 criteria.addSorting(Criteria.sort('createdAt', 'DESC', false));
                 criteria.addAssociation('messages');
                 criteria.addAssociation('subJobs');
+
+                if(this.groupCreationDate.fromDate){
+                    criteria.addFilter(Criteria.range('createdAt', { gte: this.groupCreationDate.fromDate }));
+                }
+
+                if(this.groupCreationDate.toDate){
+                    criteria.addFilter(Criteria.range('createdAt', { lte: this.groupCreationDate.toDate }));
+                }
 
                 if (this.jobTypes !== []) {
                     criteria.addFilter(Criteria.equalsAny('type', this.jobTypes));

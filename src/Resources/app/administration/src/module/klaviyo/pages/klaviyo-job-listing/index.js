@@ -1,7 +1,7 @@
 import template from './klaviyo-job-listing.html.twig';
 import './klaviyo-job-listing.scss';
 
-const {Component, Mixin} = Shopware;
+const {Component} = Shopware;
 const {Criteria} = Shopware.Data;
 
 Component.register('klaviyo-job-listing', {
@@ -104,21 +104,19 @@ Component.register('klaviyo-job-listing', {
         },
 
         onDisplayModeChange(mode) {
-
             let innerBox = this.$el;
+            innerBox.classList.remove('no-filter');
 
-                innerBox.classList.remove('no-filter');
             if (mode !== 'list') {
                 innerBox.classList.add('no-filter');
                 this.$refs.odSidebar.closeSidebar();
 
-                if(this.$refs.odFilter.$el.length !== 0){
+                if (this.$refs.odFilter.$el.length !== 0) {
                     this.$refs.odFilter.resetAll();
                 }
 
                 return this.hideFilters = true
             }
-
 
             this.hideFilters = false;
             this.loadFilterValues();
@@ -141,9 +139,6 @@ Component.register('klaviyo-job-listing', {
             const criteria = new Criteria();
             criteria.addFilter(Criteria.equals('parentId', null));
             criteria.addSorting(Criteria.sort('createdAt', 'DESC', false));
-            criteria.addAssociation('messages');
-            criteria.addAssociation('subJobs');
-
             criteria.addFilter(Criteria.equalsAny('type', [
                 'od-klaviyo-events-sync-handler',
                 'od-klaviyo-cart-event-sync-handler',
@@ -163,7 +158,7 @@ Component.register('klaviyo-job-listing', {
 
                 statuses.forEach((status) => {
                     this.statusFilterOptions.push({
-                        name: status === 'succeed' ? 'Success' : status,
+                        name: this.$tc('job-listing.page.listing.grid.job-status.' + status),
                         value: status
                     })
                 })

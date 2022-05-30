@@ -46,6 +46,8 @@ Component.register('od-job-listing-index', {
             currentJobID: null,
             showMessagesModal: false,
             currentJobMessages: null,
+            groupCreationDate: {
+            },
             sortType: 'status',
             jobDisplayType: null,
             autoLoad: false,

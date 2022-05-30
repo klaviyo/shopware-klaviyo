@@ -1,7 +1,7 @@
 <?php return array(
     'root' => array(
-        'pretty_version' => '1.0.2',
-        'version' => '1.0.2.0',
+        'pretty_version' => '1.0.4',
+        'version' => '1.0.4.0',
         'type' => 'shopware-platform-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -16,12 +16,12 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../od/sw6-job-scheduler',
             'aliases' => array(),
-            'reference' => '8350e6482b48c42811fe59a89509ff599a040868',
+            'reference' => '1e1d94c927563d5527533166c837efd8d7ad286e',
             'dev_requirement' => false,
         ),
         'od/sw6-klaviyo-integration' => array(
-            'pretty_version' => '1.0.2',
-            'version' => '1.0.2.0',
+            'pretty_version' => '1.0.4',
+            'version' => '1.0.4.0',
             'type' => 'shopware-platform-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

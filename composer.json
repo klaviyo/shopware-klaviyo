@@ -1,5 +1,5 @@
 {
-    "version": "1.0.2",
+    "version": "1.0.4",
     "name": "od/sw6-klaviyo-integration",
     "description": "Shopware 6 plugin for Klaviyo integration",
     "type": "shopware-platform-plugin",
@@ -18,7 +18,7 @@
     "repositories": [
         {
             "type": "path",
-            "url": "deps/*",
+            "url": "dependencies/*",
             "options": {
                 "symlink": false
             }

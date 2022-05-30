@@ -6,8 +6,8 @@
             "version_normalized": "1.0.0.0",
             "dist": {
                 "type": "path",
-                "url": "deps/shopware-job-scheduler",
-                "reference": "8350e6482b48c42811fe59a89509ff599a040868"
+                "url": "dependencies/shopware-job-scheduler",
+                "reference": "1e1d94c927563d5527533166c837efd8d7ad286e"
             },
             "require": {
                 "php": "^7.4 || ^8.0"

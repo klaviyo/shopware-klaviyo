@@ -96,6 +96,10 @@
     .sw-block-field {
         max-width: 150px;
         margin-bottom: 0;
+        &.sw-field--datepicker{
+            max-width: unset;
+            width: 220px;
+        }
     }
 
     .action-item {
