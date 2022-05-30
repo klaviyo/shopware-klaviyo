@@ -11,6 +11,7 @@ class NewsletterSubscriberPropertiesTranslator
     {
         return new CustomerProperties(
             $subscriberEntity->getEmail(),
+            null,
             $subscriberEntity->getFirstName() ?? '',
             $subscriberEntity->getLastName() ?? ''
         );

@@ -44,6 +44,7 @@ class CustomerPropertiesTranslator
 
         return new CustomerProperties(
             $orderCustomer->getEmail(),
+            $orderCustomer->getId(),
             $orderCustomer->getFirstName(),
             $orderCustomer->getLastName(),
             $this->guessRelevantCustomerPhone($customer),
@@ -113,6 +114,7 @@ class CustomerPropertiesTranslator
 
         return new CustomerProperties(
             $customerEntity->getEmail(),
+            $customerEntity->getId(),
             $customerEntity->getFirstName(),
             $customerEntity->getLastName(),
             $this->guessRelevantCustomerPhone($customerEntity),

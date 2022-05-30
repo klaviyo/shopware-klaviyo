@@ -9,9 +9,11 @@ use Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer\AddProfilesToList
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer\CollectionDenormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer\GetExcludedSubscribersResponseDenormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer\GetListProfilesResponseDenormalizer;
+use Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer\GetProfileIdResponseDenormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer\GetProfilesListsResponseDenormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer\ProfileInfoDenormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer\RemoveProfilesFromListResponseDenormalizer;
+use Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer\UpdateProfileResponseDenormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\AddedToCartEventTrackingRequestNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\AddProfilesToListRequestsNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\AddressNormalizer;
@@ -49,7 +51,9 @@ class SerializerFactory
                 new CollectionDenormalizer(),
                 new RemoveProfilesFromListResponseDenormalizer(),
                 new IdentifyProfileRequestNormalizer($configuration),
-                new GetExcludedSubscribersResponseDenormalizer()
+                new GetExcludedSubscribersResponseDenormalizer(),
+                new GetProfileIdResponseDenormalizer(),
+                new UpdateProfileResponseDenormalizer()
             ],
             [
                 new JsonEncoder()
