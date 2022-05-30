@@ -4,7 +4,7 @@ namespace Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Search
 
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 
-class GetProfileIdByEmailRequest implements GetProfileIdRequestInterface
+class GetProfileIdByCustomerIdRequest implements GetProfileIdRequestInterface
 {
     private CustomerEntity $customerEntity;
 
@@ -21,11 +21,11 @@ class GetProfileIdByEmailRequest implements GetProfileIdRequestInterface
 
     public function getSearchFieldName(): string
     {
-        return 'email';
+        return 'external_id';
     }
 
     public function getSearchFieldValue(): string
     {
-        return $this->customerEntity->getEmail();
+        return $this->customerEntity->getId();
     }
 }

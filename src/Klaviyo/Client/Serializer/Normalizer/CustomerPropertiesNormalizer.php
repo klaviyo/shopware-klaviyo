@@ -18,6 +18,7 @@ class CustomerPropertiesNormalizer implements NormalizerInterface
     {
         return array_merge(
             [
+                '$id' => $object->getId(),
                 '$email' => $object->getEmail(),
                 '$first_name' => $object->getFirstName(),
                 '$last_name' => $object->getLastName(),
