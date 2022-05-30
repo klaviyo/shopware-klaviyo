@@ -16,7 +16,7 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../od/sw6-job-scheduler',
             'aliases' => array(),
-            'reference' => '1e1d94c927563d5527533166c837efd8d7ad286e',
+            'reference' => '1efc5de0d2409025387a3a68dc5c93ff76731e1b',
             'dev_requirement' => false,
         ),
         'od/sw6-klaviyo-integration' => array(

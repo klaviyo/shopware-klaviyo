@@ -208,8 +208,13 @@ Component.register('od-grouped-view', {
                 }
 
                 this.jobRepository.search(criteria, Shopware.Context.api).then(items => {
+                    const groupType = this.sortType === 'status' ? type.title.toUpperCase() : items[0].name;
+                    const groupTitle = this.sortType === 'status'
+                        ? this.$tc('job-listing.page.listing.grid.job-status.' + type.title)
+                        : items[0].name;
                     this.groupedItems.push({
-                        title: this.sortType === 'status' ? type.title.toUpperCase() : items[0].name,
+                        title: groupTitle,
+                        type: groupType,
                         items: items
                     });
                 });

@@ -12,7 +12,7 @@
             "dist": {
                 "type": "path",
                 "url": "dependencies/shopware-job-scheduler",
-                "reference": "1e1d94c927563d5527533166c837efd8d7ad286e"
+                "reference": "1efc5de0d2409025387a3a68dc5c93ff76731e1b"
             },
             "require": {
                 "php": "^7.4 || ^8.0"

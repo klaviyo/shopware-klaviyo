@@ -2,7 +2,7 @@
     <div class="od-grouped-view-container" v-if="groupedItems" :isLoading="isLoading">
         <div class="od-grouped-view-wrapper"
              v-for="group in groupedItems">
-            <sw-collapse :class="`is-${group.title}`">
+            <sw-collapse :class="`is-${group.type}`">
                 <template #header>{{ group.title }} <span class="amount">({{ group.items.total }})</span></template>
                 <template #content>
                     <od-entity-listing
