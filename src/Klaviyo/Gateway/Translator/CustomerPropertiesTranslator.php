@@ -70,8 +70,12 @@ class CustomerPropertiesTranslator
         return $customerEntity->getActiveShippingAddress();
     }
 
-    private function prepareCustomFields(CustomerEntity $customer): array
+    private function prepareCustomFields(?CustomerEntity $customer): array
     {
+        if ($customer === null) {
+            return [];
+        }
+
         $configuration = $this->configurationRegistry->getConfiguration($customer->getSalesChannelId());
         $fieldMapping = $configuration->getCustomerCustomFieldMapping();
         $customFields = [];
