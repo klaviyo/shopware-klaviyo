@@ -11,4 +11,9 @@
             flex-direction: column;
         }
     }
+    &.no-filter{
+        .sw_sidebar__navigation-list [title="Filters"]{
+            display: none;
+        }
+    }
 }

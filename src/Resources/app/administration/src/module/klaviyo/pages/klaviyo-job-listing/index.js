@@ -104,10 +104,21 @@ Component.register('klaviyo-job-listing', {
         },
 
         onDisplayModeChange(mode) {
+
+            let innerBox = this.$el;
+
+                innerBox.classList.remove('no-filter');
             if (mode !== 'list') {
-                this.$refs.odFilter.resetAll()
+                innerBox.classList.add('no-filter');
+                this.$refs.odSidebar.closeSidebar();
+
+                if(this.$refs.odFilter.$el.length !== 0){
+                    this.$refs.odFilter.resetAll();
+                }
+
                 return this.hideFilters = true
             }
+
 
             this.hideFilters = false;
             this.loadFilterValues();
