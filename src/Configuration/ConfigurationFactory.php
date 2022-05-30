@@ -82,9 +82,9 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
         }
 
         return new Configuration(
-            $privateApiKey,
-            $publicApiKey,
-            $listName,
+            trim($privateApiKey),
+            trim($publicApiKey),
+            trim($listName),
             $trackViewedProduct,
             $trackRecentlyViewedItems,
             $trackAddedToCart,
