@@ -1,5 +1,4 @@
 import './page/od-job-listing-index';
-import './page/od-job-detail-index';
 
 import enGB from './snippet/en-GB.json';
 
@@ -18,7 +17,6 @@ Module.register('od-job-listing', {
 
     routes: {
         detail: {
-            component: 'od-job-detail-index',
             path: 'detail/:id/back/:backPath',
             props: {
                 default: ($route) => {

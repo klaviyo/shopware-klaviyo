@@ -69,8 +69,8 @@ class StartedCheckoutEventTrackingRequestTranslator
             );
         }
 
-        $imageUrl = $this->productDataHelper->getProductViewPageUrl($product);
-        $viewPageUrl = $this->productDataHelper->getProductViewPageUrl($product);
+        $imageUrl = $this->productDataHelper->getProductViewPageUrlByContext($product, $context);
+        $viewPageUrl = $this->productDataHelper->getProductViewPageUrlByContext($product, $context);
         $categories = $this->productDataHelper->getCategoryNames($context->getContext(), $product);
 
         return new CheckoutLineItemInfo(

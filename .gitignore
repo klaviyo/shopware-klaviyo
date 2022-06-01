@@ -1,2 +1,2 @@
-packages/*
-!packages/.gitkeep
+dependencies/*
+!dependencies/.gitkeep

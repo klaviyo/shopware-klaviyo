@@ -82,9 +82,9 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
         }
 
         return new Configuration(
-            $privateApiKey,
-            $publicApiKey,
-            $listName,
+            trim($privateApiKey),
+            trim($publicApiKey),
+            trim($listName),
             $trackViewedProduct,
             $trackRecentlyViewedItems,
             $trackAddedToCart,
@@ -101,34 +101,9 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
         );
     }
 
-    private function getIntConfiguration(string $configurationName, ?string $salesChannelId): int
-    {
-        $value = $this->systemConfigService
-            ->get("KlaviyoIntegrationPlugin.config.{$configurationName}", $salesChannelId);
-        if (is_null($value)) {
-            throw new InvalidConfigurationException(
-                "Klaviyo Integration '$configurationName' configuration is not defined"
-            );
-        }
-        if (!is_int($value)) {
-            throw new InvalidConfigurationException(
-                "Klaviyo Integration configuration[name: '$configurationName', value: '$value'] is not integer"
-            );
-        }
-
-        return $value;
-    }
-
     private function getBoolConfiguration(string $configurationName, ?string $salesChannelId): bool
     {
-        $value = $this->systemConfigService
-            ->get("KlaviyoIntegrationPlugin.config.{$configurationName}", $salesChannelId);
-        if (!is_bool($value)) {
-            throw new InvalidConfigurationException(
-                "Klaviyo Integration '$configurationName' configuration is not defined"
-            );
-        }
-
-        return $value;
+        return $this->systemConfigService
+            ->getBool("KlaviyoIntegrationPlugin.config.{$configurationName}", $salesChannelId);
     }
 }

@@ -1,0 +1,33 @@
+/* Grouped view collapse panels */
+.scheduler-grouped-view {
+    .sw-collapse {
+        .sw-collapse__header {
+            padding: 20px;
+            cursor: pointer;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        &.success-collapse {
+            .sw-collapse__header {
+                background: #1abc9c;
+            }
+        }
+
+        &.error-collapse {
+            .sw-collapse__header {
+                background: #c0392b;
+            }
+        }
+
+        &.pending-collapse {
+            .sw-collapse__header {
+                background: #A9A9A9;
+            }
+        }
+
+        th:not(.is-select-all) {
+            pointer-events: none;
+        }
+    }
+}

@@ -12,6 +12,7 @@ export default class KlaviyoIdentityTrackingComponent extends Plugin {
                 [
                     'identify',
                     {
+                        '$id': this.options.customerIdentityInfo.id,
                         '$email': this.options.customerIdentityInfo.email,
                         '$first_name': this.options.customerIdentityInfo.firstName,
                         '$last_name': this.options.customerIdentityInfo.lastName,

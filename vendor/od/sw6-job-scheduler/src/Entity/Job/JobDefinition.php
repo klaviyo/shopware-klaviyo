@@ -2,11 +2,20 @@
 
 namespace Od\Scheduler\Entity\Job;
 
+use Od\Scheduler\Entity\JobMessage\JobMessageDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\DateTimeField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\ApiAware;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Inherited;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\LongTextField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToManyAssociationField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToManyAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
@@ -54,6 +63,12 @@ class JobDefinition extends EntityDefinition
         $finishedAtField = new DateTimeField('finished_at', 'finishedAt');
         $finishedAtField->addFlags(new Flag\ApiAware());
 
+        $messages = new OneToManyAssociationField('messages', JobMessageDefinition::class, 'job_id', 'id');
+        $messages->addFlags(new Flag\ApiAware());
+
+        $subJobs = new OneToManyAssociationField('subJobs', __CLASS__, 'parent_id', 'id');
+        $subJobs->addFlags(new Flag\ApiAware());
+
         return new FieldCollection([
             $idField,
             $parentIdField,
@@ -62,7 +77,9 @@ class JobDefinition extends EntityDefinition
             $nameField,
             $messageField,
             $startedAtField,
-            $finishedAtField
+            $finishedAtField,
+            $messages,
+            $subJobs
         ]);
     }
 }
