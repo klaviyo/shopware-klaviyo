@@ -9,7 +9,7 @@ export default class KlaviyoProductViewedEventTrackingComponent extends Plugin {
         window._learnq = window._learnq || [];
 
         if (!this.options.productInfo && console) {
-            console.error('Product info configuration was not set');
+            console.error('[Klaviyo] Product info configuration was not set.');
             return;
         }
 

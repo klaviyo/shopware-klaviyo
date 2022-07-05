@@ -6,7 +6,6 @@ export default class KlaviyoCheckoutStartedEventTrackingComponent extends Plugin
     }
 
     init() {
-        console.log('working');
         window._learnq = window._learnq || [];
 
         if (!this.options.startedCheckoutEventTrackingRequest && console) {
