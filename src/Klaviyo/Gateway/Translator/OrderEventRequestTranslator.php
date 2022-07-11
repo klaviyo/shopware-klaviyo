@@ -14,6 +14,7 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEv
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\FulfilledOrderEventTrackingRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\PlacedOrderEventTrackingRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\RefundedOrderEventTrackingRequest;
+use Klaviyo\Integration\Klaviyo\Client\Exception\OrderItemProductNotFound;
 use Klaviyo\Integration\Klaviyo\Gateway\Exception\TranslationException;
 use Klaviyo\Integration\Utils\Reflection\ReflectionHelper;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
@@ -115,28 +116,6 @@ class OrderEventRequestTranslator
         );
 
         return $addressDTO;
-    }
-
-    private function getLineItemProduct(Context $context, OrderLineItemEntity $orderLineItemEntity): ProductEntity
-    {
-        if ($orderLineItemEntity->getProduct()) {
-            return $orderLineItemEntity->getProduct();
-        }
-
-        if (!$orderLineItemEntity->getProductId()) {
-            throw new TranslationException('Order line item product id is not defined');
-        }
-
-        $productEntity = $this->productRepository
-            ->search(new Criteria([$orderLineItemEntity->getProductId()]), $context)
-            ->first();
-        if (!$productEntity) {
-            throw new TranslationException(
-                sprintf('Product[id: %] was not found', $orderLineItemEntity->getProductId())
-            );
-        }
-
-        return $productEntity;
     }
 
     private function getOrderBillingAddress(Context $context, OrderEntity $orderEntity): OrderAddressEntity
@@ -323,24 +302,28 @@ class OrderEventRequestTranslator
         /** @var OrderLineItemEntity $lineItem */
         foreach ($orderEntity->getLineItems() as $lineItem) {
             if ($lineItem->getType() === 'product') {
-                $product = $this->getLineItemProduct($context, $lineItem);
-
-                $productUrl = $this->productDataHelper->getProductViewPageUrlByChannelId(
-                    $product,
-                    $orderEntity->getSalesChannelId(),
-                    $context
-                );
-
-                $imageUrl = $this->productDataHelper->getCoverImageUrl($context, $product);
-
-                $categories = $this->productDataHelper->getCategoryNames($context, $product);
-
-                $manufacturerName = $this->productDataHelper->getManufacturerName($context, $product) ?? '';
+                try {
+                    $product = $this->productDataHelper->getLineItemProduct($context, $lineItem);
+                    $productUrl = $this->productDataHelper->getProductViewPageUrlByChannelId(
+                        $product,
+                        $orderEntity->getSalesChannelId(),
+                        $context
+                    );
+                    $productNumber = $product->getProductNumber();
+                    $imageUrl = $this->productDataHelper->getCoverImageUrl($context, $product);
+                    $categories = $this->productDataHelper->getCategoryNames($context, $product);
+                    $manufacturerName = $this->productDataHelper->getManufacturerName($context, $product) ?? '';
+                } catch (OrderItemProductNotFound $e) {
+                    // TODO: fix such behavior more elegant in future.
+                    $productUrl = $imageUrl = $manufacturerName = '';
+                    $productNumber = 'deleted';
+                    $categories = [];
+                }
 
                 $products->add(
                     new OrderProductItemInfo(
                         $lineItem->getId(),
-                        $product->getProductNumber(),
+                        $productNumber,
                         $lineItem->getLabel(),
                         $lineItem->getQuantity(),
                         $lineItem->getUnitPrice(),
