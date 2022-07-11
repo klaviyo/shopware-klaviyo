@@ -2,6 +2,8 @@
 
 namespace Klaviyo\Integration\Entity\Helper;
 
+use Klaviyo\Integration\Klaviyo\Client\Exception\OrderItemProductNotFound;
+use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Product\Aggregate\ProductManufacturer\ProductManufacturerEntity;
 use Shopware\Core\Content\Product\Aggregate\ProductMedia\ProductMediaEntity;
@@ -69,6 +71,28 @@ class ProductDataHelper
         $salesChannelContext = $this->getSalesChannelContext($channelId, $context);
 
         return $this->getProductViewPageUrlByContext($productEntity, $salesChannelContext);
+    }
+
+    public function getLineItemProduct(Context $context, OrderLineItemEntity $orderLineItemEntity): ProductEntity
+    {
+        if ($orderLineItemEntity->getProduct()) {
+            return $orderLineItemEntity->getProduct();
+        }
+
+        if (!$orderLineItemEntity->getProductId()) {
+            throw new OrderItemProductNotFound('Order line item product id is not defined');
+        }
+
+        $productEntity = $this->productRepository
+            ->search(new Criteria([$orderLineItemEntity->getProductId()]), $context)
+            ->first();
+        if (!$productEntity) {
+            throw new OrderItemProductNotFound(
+                sprintf('Product[id: %] was not found', $orderLineItemEntity->getProductId())
+            );
+        }
+
+        return $productEntity;
     }
 
     public function getCoverImageUrl(Context $context, ProductEntity $productEntity): string
