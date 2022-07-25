@@ -6,6 +6,7 @@ use Klaviyo\Integration\Struct\PopUpConfiguration;
 
 class Configuration implements ConfigurationInterface
 {
+    private bool $accountEnabled;
     private string $privateApiKey;
     private string $publicApiKey;
     private string $subscribersListName;
@@ -24,6 +25,7 @@ class Configuration implements ConfigurationInterface
     private PopUpConfiguration $popUpConfiguration;
 
     public function __construct(
+        bool $accountEnabled,
         string $privateApiKey,
         string $publicApiKey,
         string $subscribersListName,
@@ -40,8 +42,8 @@ class Configuration implements ConfigurationInterface
         bool $afterInteraction,
         bool $trackSubscribedToBackInStock,
         PopUpConfiguration $popUpConfiguration
-    )
-    {
+    ) {
+        $this->accountEnabled = $accountEnabled;
         $this->privateApiKey = $privateApiKey;
         $this->publicApiKey = $publicApiKey;
         $this->subscribersListName = $subscribersListName;
@@ -58,6 +60,11 @@ class Configuration implements ConfigurationInterface
         $this->afterInteraction = $afterInteraction;
         $this->trackSubscribedToBackInStock = $trackSubscribedToBackInStock;
         $this->popUpConfiguration = $popUpConfiguration;
+    }
+
+    public function isAccountEnabled(): bool
+    {
+        return $this->accountEnabled;
     }
 
     public function getPrivateApiKey(): string

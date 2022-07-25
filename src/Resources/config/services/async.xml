@@ -21,6 +21,7 @@
             <argument type="service" id="klaviyo_job_event.repository"/>
             <argument type="service" id="klaviyo_job_cart_request.repository"/>
             <argument type="service" id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob"/>
+            <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannels"/>
         </service>
         <service id="Klaviyo\Integration\Model\UseCase\Operation\CartEventSyncOperation">
             <tag name="od.job_handler" code="od-klaviyo-cart-event-sync-handler"/>
@@ -37,12 +38,13 @@
             <tag name="od.job_handler" code="od-klaviyo-full-order-sync-handler"/>
             <argument type="service" id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob"/>
             <argument type="service" id="order.repository"/>
-            <argument type="service" id="Od\Scheduler\Model\MessageManager"/>
+            <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannels"/>
         </service>
         <service id="Klaviyo\Integration\Model\UseCase\Operation\FullSubscriberSyncOperation">
             <tag name="od.job_handler" code="od-klaviyo-full-subscriber-sync-handler"/>
             <argument type="service" id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob"/>
             <argument type="service" id="newsletter_recipient.repository"/>
+            <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannels"/>
         </service>
         <service id="Klaviyo\Integration\Model\UseCase\Operation\ExcludedSubscriberSyncOperation">
             <tag name="od.job_handler" code="od-klaviyo-excluded-subscriber-sync-handler"/>
@@ -54,21 +56,19 @@
             <argument type="service" id="klaviyo_job_event.repository"/>
             <argument type="service" id="order.repository"/>
             <argument type="service" id="Klaviyo\Integration\System\Tracking\EventsTracker"/>
-            <argument type="service" id="Od\Scheduler\Model\MessageManager"/>
         </service>
         <service id="Klaviyo\Integration\Model\UseCase\Operation\OrderSyncOperation">
             <tag name="od.job_handler" code="od-klaviyo-order-sync-handler"/>
             <argument type="service" id="order.repository"/>
             <argument type="service" id="Klaviyo\Integration\System\Tracking\EventsTracker"/>
-            <argument type="service" id="Od\Scheduler\Model\MessageManager"/>
         </service>
         <service id="Klaviyo\Integration\Model\UseCase\Operation\SubscriberSyncOperation">
             <tag name="od.job_handler" code="od-klaviyo-subscriber-sync-handler"/>
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway"/>
             <argument type="service" id="Klaviyo\Integration\Configuration\ConfigurationRegistry"/>
             <argument type="service" id="newsletter_recipient.repository"/>
-            <argument type="service" id="sales_channel.repository"/>
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\CachedGetListIdByListName"/>
+            <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannels"/>
         </service>
         <!-- /Operations' definitions -->
     </services>

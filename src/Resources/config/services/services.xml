@@ -24,7 +24,6 @@
         <service id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob">
             <argument type="service" id="od_scheduler_job.repository"/>
             <argument type="service" id="Od\Scheduler\Model\JobScheduler"/>
-            <argument type="service" id="sales_channel.repository"/>
             <argument type="service" id="Klaviyo\Integration\Entity\Helper\ExcludedSubscribersProvider"/>
             <argument type="service"
                       id="Klaviyo\Integration\Klaviyo\FrontendApi\ExcludedSubscribers\SyncProgressService"/>
@@ -133,7 +132,7 @@
         <service id="Klaviyo\Integration\Klaviyo\FrontendApi\ExcludedSubscribers\SyncProgressService">
             <argument type="service" id="klaviyo_flag_storage.repository"/>
         </service>
-        <service id="Klaviyo\Integration\Model\Channel\ChannelRepositoryWithValidConfig">
+        <service id="Klaviyo\Integration\Model\Channel\GetValidChannels">
             <argument type="service" id="Klaviyo\Integration\Configuration\ConfigurationRegistry"/>
             <argument type="service" id="sales_channel.repository"/>
         </service>

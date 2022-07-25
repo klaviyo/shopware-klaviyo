@@ -8,10 +8,9 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
-class ChannelRepositoryWithValidConfig
+class GetValidChannels
 {
     private ConfigurationRegistry $configurationRegistry;
     private EntityRepositoryInterface $salesChannelRepository;
@@ -24,7 +23,7 @@ class ChannelRepositoryWithValidConfig
         $this->salesChannelRepository = $salesChannelRepository;
     }
 
-    public function get(): EntityCollection
+    public function execute(): EntityCollection
     {
         $criteria = new Criteria();
         $validChannelIds = [];
@@ -33,13 +32,17 @@ class ChannelRepositoryWithValidConfig
         /** @var SalesChannelEntity $channel */
         foreach ($channels as $channel) {
             try {
-                $this->configurationRegistry->getConfiguration($channel->getId());
-                $validChannelIds[$channel->getId()] = true;
+                $configuration = $this->configurationRegistry->getConfiguration($channel->getId());
+                if ($configuration->isAccountEnabled()) {
+                    $validChannelIds[$channel->getId()] = true;
+                }
             } catch (InvalidConfigurationException $e) {
                 continue;
             }
         }
 
-        return $channels->filter(fn(SalesChannelEntity $channel) => isset($validChannelIds[$channel->getId()]))->getEntities();
+        return $channels->filter(function(SalesChannelEntity $channel) use ($validChannelIds) {
+            return isset($validChannelIds[$channel->getId()]);
+        })->getEntities();
     }
 }

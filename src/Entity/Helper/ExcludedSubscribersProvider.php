@@ -18,16 +18,17 @@ class ExcludedSubscribersProvider
     }
 
     /**
+     * @param string $channelId
+     * @param int $page
+     *
      * @return \Generator|Response[]
      * @throws \Exception
      */
-    public function getExcludedSubscribers(
-        SalesChannelEntity $channel,
-        int $page
-    ): \Generator {
+    public function getExcludedSubscribers(string $channelId, int $page): \Generator
+    {
         $currentPage = $page;
         $result = $this->klaviyoGateway->getExcludedSubscribersFromList(
-            $channel,
+            $channelId,
             self::DEFAULT_COUNT_PER_PAGE,
             $page
         );
@@ -40,7 +41,7 @@ class ExcludedSubscribersProvider
         while ($quantityOfPages > $currentPage) {
             $currentPage++;
             yield $this->klaviyoGateway->getExcludedSubscribersFromList(
-                $channel,
+                $channelId,
                 self::DEFAULT_COUNT_PER_PAGE,
                 $currentPage
             );

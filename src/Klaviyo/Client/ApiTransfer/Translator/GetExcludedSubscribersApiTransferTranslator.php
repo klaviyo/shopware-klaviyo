@@ -9,6 +9,10 @@ use Klaviyo\Integration\Klaviyo\Client\Exception\TranslationException;
 
 class GetExcludedSubscribersApiTransferTranslator extends AbstractApiTransferMessageTranslator
 {
+    /**
+     * @param GetExcludedSubscribers\Request $request
+     * @return Request
+     */
     public function translateRequest(object $request): Request
     {
         $url = sprintf(

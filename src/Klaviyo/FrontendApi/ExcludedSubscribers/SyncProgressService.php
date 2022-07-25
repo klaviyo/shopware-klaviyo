@@ -11,7 +11,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\{EqualsAnyFilter,
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Grouping\FieldGrouping;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 class SyncProgressService
 {
@@ -25,10 +24,10 @@ class SyncProgressService
         $this->klaviyoFlagStorageRepository = $klaviyoFlagStorageRepository;
     }
 
-    public function get(Context $context, SalesChannelEntity $channel): ?SyncProgressInfo
+    public function get(Context $context, string $channelId): ?SyncProgressInfo
     {
         $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('salesChannelId', $channel->getId()));
+        $criteria->addFilter(new EqualsFilter('salesChannelId', $channelId));
         $criteria->addFilter(new EqualsAnyFilter('key', [self::UNSUB_PAGE_HASH, self::UNSUB_PAGE]));
         $criteria->addSorting(new FieldSorting('createdAt', FieldSorting::DESCENDING));
         $criteria->addGroupField(new FieldGrouping('key'));
@@ -39,7 +38,7 @@ class SyncProgressService
         $pageFlag = $unsubInfoFlags->filter(fn(FlagStorageEntity $flag) => $flag->getKey() === self::UNSUB_PAGE)
             ->first() ?? $this->createFlagEntity(self::UNSUB_PAGE);
 
-        return new SyncProgressInfo($pageFlag, $hashFlag, $channel->getId());
+        return new SyncProgressInfo($pageFlag, $hashFlag, $channelId);
     }
 
     public function save(Context $context, SyncProgressInfo $progressInfo)

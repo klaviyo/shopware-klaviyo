@@ -329,16 +329,21 @@ class KlaviyoGateway
     }
 
     /**
+     * @param string $channelId
+     * @param int $count
+     * @param int $page
+     *
+     * @return GetExcludedSubscribers\Response
      * @throws \Exception
      */
     public function getExcludedSubscribersFromList(
-        SalesChannelEntity $salesChannelEntity,
+        string $channelId,
         int $count,
-        $page
+        int $page
     ): GetExcludedSubscribers\Response {
-        $request = new GetExcludedSubscribers\Request($count, (string)$page);
+        $request = new GetExcludedSubscribers\Request($count, $page);
         $clientResult = $this->clientRegistry
-            ->getClient($salesChannelEntity->getId())
+            ->getClient($channelId)
             ->sendRequests([$request]);
 
         /** @var GetExcludedSubscribers\Response $result */
