@@ -2,7 +2,6 @@
 
 namespace Klaviyo\Integration\Model\Channel;
 
-use Klaviyo\Integration\Configuration\ConfigurationRegistry;
 use Klaviyo\Integration\Exception\InvalidConfigurationException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
@@ -12,14 +11,14 @@ use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 class GetValidChannels
 {
-    private ConfigurationRegistry $configurationRegistry;
+    private GetValidChannelConfig $getValidChannelConfig;
     private EntityRepositoryInterface $salesChannelRepository;
 
     public function __construct(
-        ConfigurationRegistry $configurationRegistry,
+        GetValidChannelConfig $getValidChannelConfig,
         EntityRepositoryInterface $salesChannelRepository
     ) {
-        $this->configurationRegistry = $configurationRegistry;
+        $this->getValidChannelConfig = $getValidChannelConfig;
         $this->salesChannelRepository = $salesChannelRepository;
     }
 
@@ -32,8 +31,7 @@ class GetValidChannels
         /** @var SalesChannelEntity $channel */
         foreach ($channels as $channel) {
             try {
-                $configuration = $this->configurationRegistry->getConfiguration($channel->getId());
-                if ($configuration->isAccountEnabled()) {
+                if ($this->getValidChannelConfig->execute($channel->getId())) {
                     $validChannelIds[$channel->getId()] = true;
                 }
             } catch (InvalidConfigurationException $e) {

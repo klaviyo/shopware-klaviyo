@@ -43,10 +43,10 @@ class CustomerPropertiesTranslator
         $customFields = $this->prepareCustomFields($customer);
 
         return new CustomerProperties(
-            $orderCustomer->getEmail(),
-            $orderCustomer->getId(),
-            $orderCustomer->getFirstName(),
-            $orderCustomer->getLastName(),
+            $customer ? $customer->getEmail() : $orderCustomer->getEmail(),
+            $customer ? $customer->getId() : $orderCustomer->getId(),
+            $customer ? $customer->getFirstName() : $orderCustomer->getFirstName(),
+            $customer ? $customer->getLastName() : $orderCustomer->getLastName(),
             $this->guessRelevantCustomerPhone($customer),
             $customerAddress ? $customerAddress->getStreet() : null,
             $customerAddress ? $customerAddress->getCity() : null,

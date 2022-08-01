@@ -8,9 +8,7 @@ use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
 use Od\Scheduler\Model\Job\{GeneratingHandlerInterface, JobHandlerInterface, JobResult, Message};
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\{EntityRepositoryInterface, Search};
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerInterface
@@ -50,8 +48,8 @@ class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerIn
             return $result;
         }
 
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsAnyFilter('salesChannelId', \array_values($channelIds)));
+        $criteria = new Search\Criteria();
+        $criteria->addFilter(new Search\Filter\EqualsAnyFilter('salesChannelId', \array_values($channelIds)));
         $criteria->setLimit(self::ORDER_BATCH_SIZE);
         $iterator = new RepositoryIterator($this->orderRepository, $context, $criteria);
 

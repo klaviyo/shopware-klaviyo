@@ -2,10 +2,10 @@
 
 namespace Klaviyo\Integration\EventListener;
 
+use Klaviyo\Integration\Model\Channel\GetValidChannelConfig;
 use Klaviyo\Integration\System\Tracking\EventsTrackerInterface;
 use Shopware\Core\Content\Newsletter\Aggregate\NewsletterRecipient\NewsletterRecipientEntity;
-use Shopware\Core\Content\Newsletter\Event\NewsletterConfirmEvent;
-use Shopware\Core\Content\Newsletter\Event\NewsletterUnsubscribeEvent;
+use Shopware\Core\Content\Newsletter\Event;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Struct\ArrayStruct;
@@ -15,14 +15,31 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class SubscriptionEventListener implements EventSubscriberInterface
 {
     private EntityRepositoryInterface $eventsRepository;
+    private GetValidChannelConfig $getValidChannelConfig;
 
-    public function __construct(EntityRepositoryInterface $eventsRepository)
-    {
+    public function __construct(
+        EntityRepositoryInterface $eventsRepository,
+        GetValidChannelConfig $getValidChannelConfig
+    ) {
         $this->eventsRepository = $eventsRepository;
+        $this->getValidChannelConfig = $getValidChannelConfig;
     }
 
-    public function onUserSubscription(NewsletterConfirmEvent $event)
+    public static function getSubscribedEvents()
     {
+        return [
+            Event\NewsletterConfirmEvent::class => 'onUserSubscription',
+            Event\NewsletterUnsubscribeEvent::class => 'onUserUnsubscription'
+        ];
+    }
+
+    public function onUserSubscription(Event\NewsletterConfirmEvent $event)
+    {
+        // TODO: add feature to disable newsletter opt_(in/out) tracking
+        if ($this->getValidChannelConfig->execute($event->getSalesChannelId()) === null) {
+            return;
+        }
+
         try {
             $recipient = $event->getNewsletterRecipient();
             $event->getContext()->addExtension('klaviyo_subscriber_id', new ArrayStruct([$recipient->getId()]));
@@ -36,8 +53,12 @@ class SubscriptionEventListener implements EventSubscriberInterface
         }
     }
 
-    public function onUserUnsubscription(NewsletterUnsubscribeEvent $event)
+    public function onUserUnsubscription(Event\NewsletterUnsubscribeEvent $event)
     {
+        if ($this->getValidChannelConfig->execute($event->getSalesChannelId()) === null) {
+            return;
+        }
+
         try {
             $this->writeRecipientEvent(
                 $event->getContext(),
@@ -61,13 +82,5 @@ class SubscriptionEventListener implements EventSubscriberInterface
                 'happenedAt' => $now
             ]
         ], $context);
-    }
-
-    public static function getSubscribedEvents()
-    {
-        return [
-            NewsletterConfirmEvent::class => 'onUserSubscription',
-            NewsletterUnsubscribeEvent::class => 'onUserUnsubscription'
-        ];
     }
 }
