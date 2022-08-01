@@ -69,32 +69,25 @@ Component.register('klaviyo-integration-settings', {
                 .filter((state) => state.code !== undefined)
                 .length !== 0;
 
-            return hasMappingErrors;
-            //TODO: we will use this in future
-            // return !this.privateKeyFilled
-            //     || !this.publicKeyFilled
-            //     || !this.listNameFilled
-            //     || hasMappingErrors;
+            return !this.privateKeyFilled
+                || !this.publicKeyFilled
+                || !this.listNameFilled
+                || hasMappingErrors;
         }
     },
 
     watch: {
         config: {
             handler() {
-                const defaultConfig = this.$refs.configComponent.allConfigs.null;
-                const salesChannelId = this.$refs.configComponent.selectedSalesChannelId;
+                const channelId = this.$refs.configComponent.selectedSalesChannelId;
+                const accountEnabled = !!this.config['KlaviyoIntegrationPlugin.config.enabled'];
 
-                if (salesChannelId === null) {
+                if (channelId !== null && accountEnabled) {
                     this.privateKeyFilled = !!this.config['KlaviyoIntegrationPlugin.config.privateApiKey'];
                     this.publicKeyFilled = !!this.config['KlaviyoIntegrationPlugin.config.publicApiKey'];
                     this.listNameFilled = !!this.config['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync'];
                 } else {
-                    this.privateKeyFilled = !!this.config['KlaviyoIntegrationPlugin.config.privateApiKey']
-                        || !!defaultConfig['KlaviyoIntegrationPlugin.config.privateApiKey'];
-                    this.publicKeyFilled = !!this.config['KlaviyoIntegrationPlugin.config.publicApiKey']
-                        || !!defaultConfig['KlaviyoIntegrationPlugin.config.publicApiKey'];
-                    this.listNameFilled = !!this.config['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync']
-                        || !!defaultConfig['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync'];
+                    this.privateKeyFilled = this.publicKeyFilled = this.listNameFilled = true;
                 }
             },
             deep: true,
@@ -107,7 +100,7 @@ Component.register('klaviyo-integration-settings', {
 
             this.messageBlankErrorState = {
                 code: 1,
-                detail: this.$tc('klaviyo-integration-settings.general.messageNotBlank'),
+                detail: this.$tc('klaviyo-integration-settings.configs.credentials.messageNotBlank'),
             };
         },
 

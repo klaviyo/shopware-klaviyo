@@ -24,7 +24,6 @@
         <service id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob">
             <argument type="service" id="od_scheduler_job.repository"/>
             <argument type="service" id="Od\Scheduler\Model\JobScheduler"/>
-            <argument type="service" id="sales_channel.repository"/>
             <argument type="service" id="Klaviyo\Integration\Entity\Helper\ExcludedSubscribersProvider"/>
             <argument type="service"
                       id="Klaviyo\Integration\Klaviyo\FrontendApi\ExcludedSubscribers\SyncProgressService"/>
@@ -43,21 +42,25 @@
         <!-- Listeners -->
         <service id="Klaviyo\Integration\EventListener\CheckoutOrderPlacedEventListener">
             <argument type="service" id="Klaviyo\Integration\System\Tracking\ScheduledEventsTracker"/>
+            <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannelConfig"/>
             <tag name="kernel.event_subscriber"/>
         </service>
         <service id="Klaviyo\Integration\EventListener\CustomerWrittenEventListener">
             <argument type="service" id="Klaviyo\Integration\System\Tracking\ScheduledEventsTracker"/>
             <argument type="service" id="customer.repository"/>
+            <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannelConfig"/>
             <tag name="kernel.event_subscriber"/>
         </service>
         <service id="Klaviyo\Integration\EventListener\OrderStateChangedEventListener">
             <argument type="service" id="Klaviyo\Integration\System\Tracking\ScheduledEventsTracker"/>
             <argument type="service" id="order.repository"/>
             <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannelConfig"/>
             <tag name="kernel.event_subscriber"/>
         </service>
         <service id="Klaviyo\Integration\EventListener\SubscriptionEventListener">
             <argument type="service" id="klaviyo_job_event.repository"/>
+            <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannelConfig"/>
             <tag name="kernel.event_subscriber"/>
         </service>
         <service id="Klaviyo\Integration\EventListener\RestartConsumerAfterPluginConfigChangedEventListener">
@@ -66,7 +69,7 @@
         </service>
 
         <service id="Klaviyo\Integration\EventListener\AddPluginExtensionToPageDTOEventListener">
-            <argument type="service" id="Klaviyo\Integration\Configuration\ConfigurationRegistry"/>
+            <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannelConfig"/>
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CustomerPropertiesTranslator"/>
             <argument type="service" id="Klaviyo\Integration\Klaviyo\FrontendApi\Translator\ProductTranslator"/>
             <argument type="service"
@@ -74,20 +77,17 @@
             <argument type="service" id="logger"/>
             <argument type="service" id="Klaviyo\Integration\Entity\Helper\NewsletterSubscriberHelper"/>
             <argument type="service" id="request_stack"/>
-            <tag name="kernel.event_subscriber"/>
             <argument type="service"
                       id="Klaviyo\Integration\Klaviyo\Gateway\Translator\NewsletterSubscriberPropertiesTranslator"/>
+            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\CachedGetListIdByListName"/>
+            <tag name="kernel.event_subscriber"/>
         </service>
         <service id="Klaviyo\Integration\EventListener\AddedToCartEventListener">
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator"/>
             <argument type="service" id="Klaviyo\Integration\System\Tracking\ScheduledEventsTracker"/>
             <argument type="service" id="logger"/>
             <argument type="service" id="request_stack"/>
-            <tag name="kernel.event_subscriber"/>
-        </service>
-        <service id="Klaviyo\Integration\EventListener\PageEventListener">
-            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\CachedGetListIdByListName"/>
-            <argument type="service" id="Klaviyo\Integration\Configuration\ConfigurationRegistry"/>
+            <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannelConfig"/>
             <tag name="kernel.event_subscriber"/>
         </service>
         <!-- /Listeners -->
@@ -133,8 +133,12 @@
         <service id="Klaviyo\Integration\Klaviyo\FrontendApi\ExcludedSubscribers\SyncProgressService">
             <argument type="service" id="klaviyo_flag_storage.repository"/>
         </service>
-        <service id="Klaviyo\Integration\Model\Channel\ChannelRepositoryWithValidConfig">
+
+        <service id="Klaviyo\Integration\Model\Channel\GetValidChannelConfig">
             <argument type="service" id="Klaviyo\Integration\Configuration\ConfigurationRegistry"/>
+        </service>
+        <service id="Klaviyo\Integration\Model\Channel\GetValidChannels">
+            <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannelConfig"/>
             <argument type="service" id="sales_channel.repository"/>
         </service>
 

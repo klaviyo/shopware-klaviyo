@@ -103,6 +103,7 @@ class CustomerProperties implements \JsonSerializable
     public function jsonSerialize()
     {
         $basicData = [
+            'id' => $this->getId(),
             'email' => $this->getEmail(),
             'firstName' => $this->getFirstName(),
             'lastName' => $this->getLastName(),

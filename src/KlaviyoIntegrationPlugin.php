@@ -4,12 +4,12 @@ namespace Klaviyo\Integration;
 
 use Composer\Autoload\ClassLoader;
 use Doctrine\DBAL\Connection;
-use Klaviyo\Integration\Utils\{Lifecycle, MigrationHelper};
+use Klaviyo\Integration\Utils\{Lifecycle, Lifecycle\Update\UpdateTo105, MigrationHelper};
 use Od\Scheduler\OdScheduler;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Parameter\AdditionalBundleParameters;
 use Shopware\Core\Framework\Plugin;
-use Shopware\Core\Framework\Plugin\Context\{ActivateContext, UninstallContext};
+use Shopware\Core\Framework\Plugin\Context\{ActivateContext, UninstallContext, UpdateContext};
 use Shopware\Core\Framework\Plugin\Util\AssetService;
 
 class KlaviyoIntegrationPlugin extends Plugin
@@ -26,6 +26,15 @@ class KlaviyoIntegrationPlugin extends Plugin
             $migrationHelper->getMigrationCollection($bundle)->migrateInPlace();
             $assetService->copyAssetsFromBundle((new \ReflectionClass($bundle))->getShortName());
         }
+    }
+
+    public function update(UpdateContext $updateContext): void
+    {
+        if (\version_compare($updateContext->getCurrentPluginVersion(), $updateContext->getUpdatePluginVersion(), '<=')) {
+            (new UpdateTo105($this->container))->execute($updateContext->getContext());
+        }
+
+        parent::update($updateContext);
     }
 
     public function uninstall(UninstallContext $uninstallContext): void

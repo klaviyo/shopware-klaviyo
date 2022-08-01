@@ -1,7 +1,7 @@
 {
     "klaviyo-job-listing": {
         "general": {
-            "title": "Job Listing Pages",
+            "title": "Klaviyo Job Listing",
             "description": "job-listing"
         },
         "menu": {
@@ -46,12 +46,13 @@
         "title": "Klaviyo",
         "general": {
             "title": "General",
+            "credentialsAlert": "All credentials must be configured on sales channel level.",
             "initialization": {
                 "helpText": "After the client starts interacting with the page, the Klaviyo scripts will be initialized. On subsequent page transitions, the scripts will be initialized immediately."
             }
         },
         "pop-up": {
-            "title": "Pop-Up styles",
+            "title": "Back-In-Stock Pop-up Styles",
             "open-button-fieldset-label": "Pop-Up opening button",
             "close-button-fieldset-label": "Pop-Up close button",
             "subscribe-button-fieldset-label": "Subscribe button",
@@ -68,6 +69,13 @@
             "emailFieldPlaceholder": "Email field placeholder"
         },
         "configs": {
+            "credentials": {
+                "messageNotBlank": "This field must be filled."
+            },
+            "enabled": {
+                "label": "Enable Account",
+                "helpText": "By switching this toggle you can enable/disable configured Klaviyo account on current sales-channel."
+            },
             "privateApiKey": {
                 "label": "Klaviyo Private API key",
                 "helpText": "Klaviyo Private API key. You can find it in your klaviyo account"

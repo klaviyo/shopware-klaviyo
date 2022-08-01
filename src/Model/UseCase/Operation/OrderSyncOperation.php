@@ -4,15 +4,11 @@ namespace Klaviyo\Integration\Model\UseCase\Operation;
 
 use Klaviyo\Integration\Async\Message\OrderSyncMessage;
 use Klaviyo\Integration\Klaviyo\Gateway\Result\OrderTrackingResult;
-use Klaviyo\Integration\System\Tracking\Event\Order\OrderEvent;
-use Klaviyo\Integration\System\Tracking\Event\Order\OrderTrackingEventsBag;
+use Klaviyo\Integration\System\Tracking\Event\Order\{OrderEvent, OrderTrackingEventsBag};
 use Klaviyo\Integration\System\Tracking\EventsTrackerInterface as Tracker;
-use Od\Scheduler\Model\Job\JobHandlerInterface;
-use Od\Scheduler\Model\Job\JobResult;
-use Od\Scheduler\Model\MessageManager;
+use Od\Scheduler\Model\Job\{JobHandlerInterface, JobResult, Message};
+use Shopware\Core\Checkout\Order\{OrderEntity, OrderStates};
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
-use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Checkout\Order\OrderStates;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -24,16 +20,13 @@ class OrderSyncOperation implements JobHandlerInterface
 
     private EntityRepositoryInterface $orderRepository;
     private Tracker $eventsTracker;
-    private MessageManager $messageManager;
 
     public function __construct(
         EntityRepositoryInterface $orderRepository,
-        Tracker $eventsTracker,
-        MessageManager $messageManager
+        Tracker $eventsTracker
     ) {
         $this->orderRepository = $orderRepository;
         $this->eventsTracker = $eventsTracker;
-        $this->messageManager = $messageManager;
     }
 
     /**
@@ -42,8 +35,8 @@ class OrderSyncOperation implements JobHandlerInterface
      */
     public function execute(object $message): JobResult
     {
-        $this->messageManager->addInfoMessage($message->getJobId(), 'Starting Order Sync Operation...');
         $result = new JobResult();
+        $result->addMessage(new Message\InfoMessage('Starting Order Sync Operation...'));
         $context = Context::createDefaultContext();
         $eventsBags = [
             Tracker::ORDER_EVENT_PLACED => new OrderTrackingEventsBag(),
@@ -51,8 +44,8 @@ class OrderSyncOperation implements JobHandlerInterface
             Tracker::ORDER_EVENT_CANCELED => new OrderTrackingEventsBag(),
             Tracker::ORDER_EVENT_FULFILLED => new OrderTrackingEventsBag(),
         ];
-        $orderCriteria = new Criteria();
 
+        $orderCriteria = new Criteria();
         $orderCriteria->addFilter(new EqualsAnyFilter('id', $message->getOrderIds()));
         $orderCriteria->addAssociation('stateMachineState');
         $orderCriteria->addAssociation('lineItems.product');
@@ -81,7 +74,7 @@ class OrderSyncOperation implements JobHandlerInterface
         }
 
         if ($orderCollection->count() !== 0) {
-            $this->messageManager->addInfoMessage($message->getJobId(), 'Start sending tracking requests...');
+            $result->addMessage(new Message\InfoMessage('Start sending tracking requests...'));
         }
 
         foreach ($eventsBags as $type => $eventsBag) {
@@ -97,7 +90,7 @@ class OrderSyncOperation implements JobHandlerInterface
             }
         }
 
-        $this->messageManager->addInfoMessage($message->getJobId(), 'Operation finished.');
+        $result->addMessage(new Message\InfoMessage('Operation finished.'));
 
         return $result;
     }

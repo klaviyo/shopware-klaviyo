@@ -5,9 +5,9 @@ namespace Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscri
 class Request
 {
     private ?int $count;
-    private string $page;
+    private int $page;
 
-    public function __construct(int $count, string $page)
+    public function __construct(int $count, int $page)
     {
         $this->count = $count;
         $this->page = $page;
@@ -18,7 +18,7 @@ class Request
         return $this->count;
     }
 
-    public function getPage(): string
+    public function getPage(): int
     {
         return $this->page;
     }

@@ -2,29 +2,27 @@
 
 namespace Klaviyo\Integration\Model\Channel;
 
-use Klaviyo\Integration\Configuration\ConfigurationRegistry;
 use Klaviyo\Integration\Exception\InvalidConfigurationException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
-class ChannelRepositoryWithValidConfig
+class GetValidChannels
 {
-    private ConfigurationRegistry $configurationRegistry;
+    private GetValidChannelConfig $getValidChannelConfig;
     private EntityRepositoryInterface $salesChannelRepository;
 
     public function __construct(
-        ConfigurationRegistry $configurationRegistry,
+        GetValidChannelConfig $getValidChannelConfig,
         EntityRepositoryInterface $salesChannelRepository
     ) {
-        $this->configurationRegistry = $configurationRegistry;
+        $this->getValidChannelConfig = $getValidChannelConfig;
         $this->salesChannelRepository = $salesChannelRepository;
     }
 
-    public function get(): EntityCollection
+    public function execute(): EntityCollection
     {
         $criteria = new Criteria();
         $validChannelIds = [];
@@ -33,13 +31,16 @@ class ChannelRepositoryWithValidConfig
         /** @var SalesChannelEntity $channel */
         foreach ($channels as $channel) {
             try {
-                $this->configurationRegistry->getConfiguration($channel->getId());
-                $validChannelIds[$channel->getId()] = true;
+                if ($this->getValidChannelConfig->execute($channel->getId())) {
+                    $validChannelIds[$channel->getId()] = true;
+                }
             } catch (InvalidConfigurationException $e) {
                 continue;
             }
         }
 
-        return $channels->filter(fn(SalesChannelEntity $channel) => isset($validChannelIds[$channel->getId()]))->getEntities();
+        return $channels->filter(function(SalesChannelEntity $channel) use ($validChannelIds) {
+            return isset($validChannelIds[$channel->getId()]);
+        })->getEntities();
     }
 }

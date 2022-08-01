@@ -15,26 +15,22 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\{AndFilter, EqualsAnyFilter, EqualsFilter};
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 class ScheduleBackgroundJob
 {
     private EntityRepositoryInterface $jobRepository;
     private JobScheduler $scheduler;
-    private EntityRepositoryInterface $salesChannelRepository;
     private ExcludedSubscribersProvider $excludedSubscribersProvider;
     private SyncProgressService $progressService;
 
     public function __construct(
         EntityRepositoryInterface $jobRepository,
         JobScheduler $scheduler,
-        EntityRepositoryInterface $salesChannelRepository,
         ExcludedSubscribersProvider $excludedSubscribersProvider,
         SyncProgressService $progressService
     ) {
         $this->jobRepository = $jobRepository;
         $this->scheduler = $scheduler;
-        $this->salesChannelRepository = $salesChannelRepository;
         $this->excludedSubscribersProvider = $excludedSubscribersProvider;
         $this->progressService = $progressService;
     }
@@ -114,19 +110,19 @@ class ScheduleBackgroundJob
     /**
      * @param Context $context
      * @param string $parentJobId
+     * @param string[] $channelIds
      * @return \Exception[]
      */
-    public function scheduleExcludedSubscribersSyncJobs(Context $context, string $parentJobId): array
+    public function scheduleExcludedSubscribersSyncJobs(Context $context, string $parentJobId, array $channelIds): array
     {
         $errors = [];
-        /** @var SalesChannelEntity $channel */
-        $channels = $this->salesChannelRepository->search(new Criteria(), $context);
-        foreach ($channels as $channel) {
+
+        foreach ($channelIds as $channelId) {
             $isFirstLoadedPage = true;
-            $syncInfo = $this->progressService->get($context, $channel);
+            $syncInfo = $this->progressService->get($context, $channelId);
 
             try {
-                foreach ($this->excludedSubscribersProvider->getExcludedSubscribers($channel, $syncInfo->getPage()) as $result) {
+                foreach ($this->excludedSubscribersProvider->getExcludedSubscribers($channelId, $syncInfo->getPage()) as $result) {
                     if ($isFirstLoadedPage) {
                         $isFirstLoadedPage = false;
                         if ($syncInfo->getHash() === CreateArrayHash::execute($result->getEmails())) {
@@ -138,7 +134,7 @@ class ScheduleBackgroundJob
                         Uuid::randomHex(),
                         $parentJobId,
                         $result->getEmails(),
-                        $channel->getId()
+                        $channelId
                     );
                     $this->scheduler->schedule($jobMessage);
                 }

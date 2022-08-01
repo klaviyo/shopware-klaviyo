@@ -17,6 +17,7 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
 
     public function create(?string $salesChannelId = null): ConfigurationInterface
     {
+        $accountEnabled = $this->getBoolConfiguration('enabled', $salesChannelId);
         $privateApiKey = $this->systemConfigService
             ->get('KlaviyoIntegrationPlugin.config.privateApiKey', $salesChannelId);
         if (!$privateApiKey) {
@@ -61,13 +62,13 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
                 ->get('KlaviyoIntegrationPlugin.config.customerFieldMapping', $salesChannelId) ?? [];
 
         $popUpConfiguration = new PopUpConfiguration(
-            $this->systemConfigService->get('KlaviyoIntegrationPlugin.config.popUpOpenBtnColor', $salesChannelId),
-            $this->systemConfigService->get('KlaviyoIntegrationPlugin.config.popUpOpenBtnBgColor', $salesChannelId),
-            $this->systemConfigService->get('KlaviyoIntegrationPlugin.config.popUpCloseBtnColor', $salesChannelId),
-            $this->systemConfigService->get('KlaviyoIntegrationPlugin.config.popUpCloseBtnBgColor', $salesChannelId),
-            $this->systemConfigService->get('KlaviyoIntegrationPlugin.config.subscribeBtnColor', $salesChannelId),
-            $this->systemConfigService->get('KlaviyoIntegrationPlugin.config.subscribeBtnBgColor', $salesChannelId),
-            $this->systemConfigService->get('KlaviyoIntegrationPlugin.config.popUpAdditionalClasses', $salesChannelId)
+            $this->systemConfigService->getString('KlaviyoIntegrationPlugin.config.popUpOpenBtnColor', $salesChannelId),
+            $this->systemConfigService->getString('KlaviyoIntegrationPlugin.config.popUpOpenBtnBgColor', $salesChannelId),
+            $this->systemConfigService->getString('KlaviyoIntegrationPlugin.config.popUpCloseBtnColor', $salesChannelId),
+            $this->systemConfigService->getString('KlaviyoIntegrationPlugin.config.popUpCloseBtnBgColor', $salesChannelId),
+            $this->systemConfigService->getString('KlaviyoIntegrationPlugin.config.subscribeBtnColor', $salesChannelId),
+            $this->systemConfigService->getString('KlaviyoIntegrationPlugin.config.subscribeBtnBgColor', $salesChannelId),
+            $this->systemConfigService->getString('KlaviyoIntegrationPlugin.config.popUpAdditionalClasses', $salesChannelId)
         );
 
 
@@ -82,6 +83,7 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
         }
 
         return new Configuration(
+            $accountEnabled,
             trim($privateApiKey),
             trim($publicApiKey),
             trim($listName),

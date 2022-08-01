@@ -4,6 +4,8 @@ namespace Klaviyo\Integration\Configuration;
 
 interface ConfigurationInterface
 {
+    public function isAccountEnabled(): bool;
+
     public function getPrivateApiKey(): string;
 
     public function isTrackViewedProduct(): bool;

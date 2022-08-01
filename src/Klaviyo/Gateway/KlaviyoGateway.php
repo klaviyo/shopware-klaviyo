@@ -175,22 +175,22 @@ class KlaviyoGateway
 
     public function upsertCustomerProfiles(Context $context, string $channelId, CustomerCollection $customers)
     {
-        $requests = [];
+        $updateRequests = $createRequests = [];
         $profileIdSearchResult = $this->searchProfileIds($context, $channelId, $customers);
 
         /** First of all - update existing customer's sensitive fields - id, email, and phone_number  */
         foreach ($profileIdSearchResult->getMapping() as $personId => $customerId) {
             $customer = $customers->get($customerId);
-            $requests[] = $this->updateProfileRequestTranslator->translateToProfileRequest($context, $customer, $personId);
+            $updateRequests[] = $this->updateProfileRequestTranslator->translateToProfileRequest($context, $customer, $personId);
         }
-        $this->trackEvents($channelId, $requests);
+        $this->trackEvents($channelId, $updateRequests);
 
         /** Update/create customer profiles  */
         foreach ($customers as $customer) {
-            $requests[] = $this->identifyProfileRequestTranslator->translateToProfileRequest($context, $customer);
+            $createRequests[] = $this->identifyProfileRequestTranslator->translateToProfileRequest($context, $customer);
         }
 
-        return $this->trackEvents($channelId, $requests);
+        return $this->trackEvents($channelId, $createRequests);
     }
 
     public function searchProfileIds(
@@ -329,16 +329,21 @@ class KlaviyoGateway
     }
 
     /**
+     * @param string $channelId
+     * @param int $count
+     * @param int $page
+     *
+     * @return GetExcludedSubscribers\Response
      * @throws \Exception
      */
     public function getExcludedSubscribersFromList(
-        SalesChannelEntity $salesChannelEntity,
+        string $channelId,
         int $count,
-        $page
+        int $page
     ): GetExcludedSubscribers\Response {
-        $request = new GetExcludedSubscribers\Request($count, (string)$page);
+        $request = new GetExcludedSubscribers\Request($count, $page);
         $clientResult = $this->clientRegistry
-            ->getClient($salesChannelEntity->getId())
+            ->getClient($channelId)
             ->sendRequests([$request]);
 
         /** @var GetExcludedSubscribers\Response $result */

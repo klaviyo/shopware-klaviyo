@@ -17,65 +17,60 @@
             </sw-inherit-wrapper>
         </sw-card>
         <sw-card :title="$tc('klaviyo-integration-settings.general.title')">
+            {% block klaviyo_integration_settings_general_credentials_alert %}
+                <sw-alert v-if="selectedSalesChannelId === null" variant="warning">
+                    {{ $t('klaviyo-integration-settings.general.credentialsAlert') }}
+                </sw-alert>
+            {% endblock %}
+
+            {% block klaviyo_integration_settings_general_enabled %}
+                <sw-switch-field
+                    v-if="selectedSalesChannelId !== null"
+                    class="no-top-margin"
+                    v-model="actualConfigData['KlaviyoIntegrationPlugin.config.enabled']"
+                    name="KlaviyoIntegrationPlugin.config.enabled"
+                    :label="$tc('klaviyo-integration-settings.configs.enabled.label')"
+                    :helpText="$tc('klaviyo-integration-settings.configs.enabled.helpText')">
+                </sw-switch-field>
+            {% endblock %}
+
             {% block klaviyo_integration_settings_general_private_api_key %}
-                <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.privateApiKey']"
-                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.privateApiKey']"
-                                    :customInheritationCheckFunction="checkTextFieldInheritance">
-                    <template #content="props">
-                        <sw-field
-                                :label="$tc('klaviyo-integration-settings.configs.privateApiKey.label')"
-                                :helpText="$tc('klaviyo-integration-settings.configs.privateApiKey.helpText')"
-                                type="text"
-                                :map-inheritance="props"
-                                :value="props.currentValue"
-                                :disabled="props.isInherited"
-                                :error="privateKeyErrorState"
-                                required
-                                name="KlaviyoIntegrationPlugin.config.privateApiKey"
-                                @input="props.updateCurrentValue"></sw-field>
-                    </template>
-                </sw-inherit-wrapper>
+                <sw-field
+                    v-model="actualConfigData['KlaviyoIntegrationPlugin.config.privateApiKey']"
+                    name="KlaviyoIntegrationPlugin.config.privateApiKey"
+                    type="text"
+                    :label="$tc('klaviyo-integration-settings.configs.privateApiKey.label')"
+                    :helpText="$tc('klaviyo-integration-settings.configs.privateApiKey.helpText')"
+                    :disabled="selectedSalesChannelId === null"
+                    :error="privateKeyErrorState"
+                    required>
+                </sw-field>
             {% endblock %}
 
             {% block klaviyo_integration_settings_general_public_api_key %}
-                <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.publicApiKey']"
-                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.publicApiKey']"
-                                    :customInheritationCheckFunction="checkTextFieldInheritance">
-                    <template #content="props">
-                        <sw-field
-                                :label="$tc('klaviyo-integration-settings.configs.publicApiKey.label')"
-                                :helpText="$tc('klaviyo-integration-settings.configs.publicApiKey.helpText')"
-                                type="text"
-                                :map-inheritance="props"
-                                :value="props.currentValue"
-                                :disabled="props.isInherited"
-                                :error="publicKeyErrorState"
-                                required
-                                name="KlaviyoIntegrationPlugin.config.publicApiKey"
-                                @input="props.updateCurrentValue"></sw-field>
-                    </template>
-                </sw-inherit-wrapper>
+                <sw-field
+                    v-model="actualConfigData['KlaviyoIntegrationPlugin.config.publicApiKey']"
+                    name="KlaviyoIntegrationPlugin.config.privateApiKey"
+                    type="text"
+                    :label="$tc('klaviyo-integration-settings.configs.publicApiKey.label')"
+                    :helpText="$tc('klaviyo-integration-settings.configs.publicApiKey.helpText')"
+                    :disabled="selectedSalesChannelId === null"
+                    :error="publicKeyErrorState"
+                    required>
+                </sw-field>
             {% endblock %}
 
             {% block klaviyo_integration_settings_general_klaviyo_list_for_subscribers_sync %}
-                <sw-inherit-wrapper
-                        v-model="actualConfigData['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync']"
-                        :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync']"
-                        :customInheritationCheckFunction="checkTextFieldInheritance">
-                    <template #content="props">
-                        <sw-field
-                                :label="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.label')"
-                                :helpText="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.helpText')"
-                                type="text"
-                                :map-inheritance="props"
-                                :value="props.currentValue"
-                                :disabled="props.isInherited"
-                                :error="listNameErrorState"
-                                required
-                                name="KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync"
-                                @input="props.updateCurrentValue"></sw-field>
-                    </template>
-                </sw-inherit-wrapper>
+                <sw-field
+                    v-model="actualConfigData['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync']"
+                    name="KlaviyoIntegrationPlugin.config.privateApiKey"
+                    type="text"
+                    :label="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.label')"
+                    :helpText="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.helpText')"
+                    :disabled="selectedSalesChannelId === null"
+                    :error="listNameErrorState"
+                    required>
+                </sw-field>
             {% endblock %}
 
             {% block klaviyo_integration_settings_general_track_viewed_product %}
@@ -250,7 +245,9 @@
                 </sw-inherit-wrapper>
             {% endblock %}
         </sw-card>
-        <sw-card :title="$tc('klaviyo-integration-settings.pop-up.title')">
+        <sw-card
+            :title="$tc('klaviyo-integration-settings.pop-up.title')"
+            v-if="actualConfigData['KlaviyoIntegrationPlugin.config.trackSubscribedToBackInStock']">
             <fieldset>
                 <legend>{{ $tc('klaviyo-integration-settings.pop-up.open-button-fieldset-label') }}</legend>
                 <sw-container columns="5fr 5fr" gap="16px">
