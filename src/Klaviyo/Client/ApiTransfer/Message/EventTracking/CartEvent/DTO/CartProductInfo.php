@@ -13,6 +13,7 @@ class CartProductInfo
     private string $imageUrl;
     private string $viewPageUrl;
     private array $productCategories;
+    private string $brand;
 
     public function __construct(
         string $id,
@@ -23,7 +24,8 @@ class CartProductInfo
         float $rowTotal,
         string $imageUrl,
         string $viewPageUrl,
-        array $productCategories
+        array $productCategories,
+        string $brand
     ) {
         $this->id = $id;
         $this->sku = $sku;
@@ -34,6 +36,7 @@ class CartProductInfo
         $this->imageUrl = $imageUrl;
         $this->viewPageUrl = $viewPageUrl;
         $this->productCategories = $productCategories;
+        $this->brand = $brand;
     }
 
     public function getId(): string
@@ -79,5 +82,10 @@ class CartProductInfo
     public function getProductCategories(): array
     {
         return $this->productCategories;
+    }
+
+    public function getBrand(): string
+    {
+        return $this->brand;
     }
 }
