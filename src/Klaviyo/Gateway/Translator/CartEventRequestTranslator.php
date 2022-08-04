@@ -122,7 +122,7 @@ class CartEventRequestTranslator
             $imageUrl,
             $viewPageUrl,
             $categories,
-            $this->productDataHelper->getManufacturerName($context->getContext(), $product) ?? ''
+            $this->productDataHelper->getManufacturerName($context->getContext(), $product) ?: ''
         );
     }
 }
