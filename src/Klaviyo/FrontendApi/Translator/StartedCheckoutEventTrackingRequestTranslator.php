@@ -82,7 +82,8 @@ class StartedCheckoutEventTrackingRequestTranslator
             $viewPageUrl,
             $lineItem->getQuantity(),
             $lineItem->getPrice()->getUnitPrice(),
-            $lineItem->getPrice()->getTotalPrice()
+            $lineItem->getPrice()->getTotalPrice(),
+            $this->productDataHelper->getManufacturerName($context->getContext(), $product) ?: ''
         );
     }
 }

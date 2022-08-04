@@ -21,6 +21,7 @@ class AddedToCartEventTrackingRequestNormalizer extends AbstractNormalizer
 
         $itemNames = [];
         $productItems = [];
+
         /** @var CartProductInfo $productInfo */
         foreach ($object->getCartProductInfoCollection() as $productInfo) {
             $itemNames[] = $productInfo->getName();
@@ -33,7 +34,8 @@ class AddedToCartEventTrackingRequestNormalizer extends AbstractNormalizer
                 'RowTotal' => $productInfo->getRowTotal(),
                 'ProductURL' => $productInfo->getViewPageUrl(),
                 'ImageURL' => $productInfo->getImageUrl(),
-                'ProductCategories' => $productInfo->getProductCategories()
+                'ProductCategories' => $productInfo->getProductCategories(),
+                'Brand' => $productInfo->getBrand()
             ];
         }
 

@@ -121,7 +121,8 @@ class CartEventRequestTranslator
             $price ? $lineItem->getPrice()->getTotalPrice() : 0.0,
             $imageUrl,
             $viewPageUrl,
-            $categories
+            $categories,
+            $this->productDataHelper->getManufacturerName($context->getContext(), $product) ?: ''
         );
     }
 }
