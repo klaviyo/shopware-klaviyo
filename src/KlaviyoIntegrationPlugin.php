@@ -11,6 +11,7 @@ use Shopware\Core\Framework\Parameter\AdditionalBundleParameters;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\{ActivateContext, UninstallContext, UpdateContext};
 use Shopware\Core\Framework\Plugin\Util\AssetService;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class KlaviyoIntegrationPlugin extends Plugin
 {
@@ -31,7 +32,10 @@ class KlaviyoIntegrationPlugin extends Plugin
     public function update(UpdateContext $updateContext): void
     {
         if (\version_compare($updateContext->getCurrentPluginVersion(), $updateContext->getUpdatePluginVersion(), '<=')) {
-            (new UpdateTo105($this->container))->execute($updateContext->getContext());
+            (new UpdateTo105(
+                $this->container->get(SystemConfigService::class),
+                $this->container->get('sales_channel.repository')
+            ))->execute($updateContext->getContext());
         }
 
         parent::update($updateContext);
