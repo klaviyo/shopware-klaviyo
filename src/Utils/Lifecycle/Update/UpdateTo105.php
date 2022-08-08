@@ -13,26 +13,15 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class UpdateTo105
 {
-    private static $CRIDETIALS_CONFIGS = [
+    private const CREDENTIALS_CONFIGS = [
         'KlaviyoIntegrationPlugin.config.privateApiKey',
         'KlaviyoIntegrationPlugin.config.publicApiKey',
         'KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync',
     ];
 
-    /**
-     * @var SystemConfigService
-     */
     private SystemConfigService $systemConfigService;
-
-    /**
-     * @var EntityRepositoryInterface
-     */
     private EntityRepositoryInterface $salesChannelRepository;
 
-    /**
-     * @param SystemConfigService $systemConfigService
-     * @param EntityRepositoryInterface $salesChannelRepository
-     */
     public function __construct(
         SystemConfigService $systemConfigService,
         EntityRepositoryInterface $salesChannelRepository
@@ -41,10 +30,6 @@ class UpdateTo105
         $this->salesChannelRepository = $salesChannelRepository;
     }
 
-    /**
-     * @param Context $context
-     * @return void
-     */
     public function execute(Context $context): void
     {
         $channelCriteria = new Criteria();
@@ -56,7 +41,7 @@ class UpdateTo105
         /** @var string $channelId */
         foreach ($channelIds->getIds() as $channelId) {
             $active = true;
-            foreach (self::$CRIDETIALS_CONFIGS as $configName) {
+            foreach (self::CREDENTIALS_CONFIGS as $configName) {
                 $config = $this->systemConfigService->getString($configName, $channelId);
                 if (empty($config)) {
                     // if one of the configs is empty should be disabled
@@ -68,7 +53,7 @@ class UpdateTo105
             $this->systemConfigService->set('KlaviyoIntegrationPlugin.config.enabled', $active, $channelId);
         }
 
-        foreach (self::$CRIDETIALS_CONFIGS as $configName) {
+        foreach (self::CREDENTIALS_CONFIGS as $configName) {
             $this->systemConfigService->delete($configName);
         }
     }
