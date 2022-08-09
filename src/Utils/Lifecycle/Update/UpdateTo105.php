@@ -43,7 +43,12 @@ class UpdateTo105
             $active = true;
             foreach (self::CREDENTIALS_CONFIGS as $configName) {
                 $config = $this->systemConfigService->getString($configName, $channelId);
-                if (empty($config)) {
+                if (empty(trim($config))) {
+                    $config = $this->systemConfigService->getString($configName);
+                }
+
+                if (empty(trim($config))) {
+                    $this->systemConfigService->delete($configName, $channelId);
                     // if one of the configs is empty should be disabled
                     $active = false;
                 } else {
