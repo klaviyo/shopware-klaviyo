@@ -43,7 +43,15 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
 
     public function onStateChange(StateMachineStateChangeEvent $event)
     {
-        $configuration = $this->getValidChannelConfig->execute($event->getSalesChannelId());
+        /** @var OrderEntity $order */
+        $order = $this->orderRepository
+            ->search(new Criteria([$event->getTransition()->getEntityId()]), $event->getContext())
+            ->first();
+        if (!($order instanceof OrderEntity)) {
+            return;
+        }
+
+        $configuration = $this->getValidChannelConfig->execute($order->getSalesChannelId());
         if ($configuration === null) {
             return;
         }
@@ -59,11 +67,6 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
             && $event->getTransition()->getEntityName() === OrderDefinition::ENTITY_NAME
             && !empty($supportedStates[$state->getTechnicalName()])
         ) {
-            /** @var OrderEntity $order */
-            $order = $this->orderRepository
-                ->search(new Criteria([$event->getTransition()->getEntityId()]), $event->getContext())
-                ->first();
-
             $this->trackEvent($event->getContext(), $order, $state->getTechnicalName());
         }
     }
@@ -71,7 +74,22 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
     // TODO: check do we actually need this method?
     public function onTransactionStateChanged(StateMachineStateChangeEvent $event)
     {
-        $configuration = $this->getValidChannelConfig->execute($event->getSalesChannelId());
+        $orderTransactionCriteria = new Criteria([$event->getTransition()->getEntityId()]);
+        $orderTransactionCriteria->addAssociation('order');
+        /** @var OrderTransactionEntity $orderTransaction */
+        $orderTransaction = $this->orderTransactionRepository
+            ->search($orderTransactionCriteria, $event->getContext())
+            ->first();
+        if(!($orderTransaction instanceof OrderTransactionEntity)) {
+            return;
+        }
+
+        $order = $orderTransaction->getOrder();
+        if (!($order instanceof OrderEntity)) {
+            return;
+        }
+
+        $configuration = $this->getValidChannelConfig->execute($order->getSalesChannelId());
         if ($configuration === null || !$configuration->isTrackRefundedOrder()) {
             return;
         }
@@ -81,15 +99,6 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
             && $event->getTransition()->getEntityName() === OrderTransactionDefinition::ENTITY_NAME
             && $state->getTechnicalName() === OrderTransactionStates::STATE_REFUNDED
         ) {
-            $orderTransactionCriteria = new Criteria([$event->getTransition()->getEntityId()]);
-            $orderTransactionCriteria->addAssociation('order');
-            /** @var OrderTransactionEntity $orderTransaction */
-            $orderTransaction = $this->orderTransactionRepository
-                ->search($orderTransactionCriteria, $event->getContext())
-                ->first();
-
-            $order = $orderTransaction->getOrder();
-
             $this->trackEvent($event->getContext(), $order, $state->getTechnicalName());
         }
     }
