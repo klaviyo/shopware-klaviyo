@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c4745c22617df7da0072403f0b83dd62",
+    "content-hash": "2177bce85890642b9ded8652f219cb98",
     "packages": [
         {
             "name": "od/sw6-job-scheduler",

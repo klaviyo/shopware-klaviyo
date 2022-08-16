@@ -16,7 +16,7 @@
     <env name="APP_SECRET" value="s$cretf0rt3st"/>
     <env name="SHELL_VERBOSITY" value="-1"/>
     <!-- Klaviyo creds for integration and load testing -->
-    <const name="KLAVIYO_PRIVATE_KEY" value="pk_1c00c98071a861f3263f2846d2898beb91"/>
+    <const name="KLAVIYO_PRIVATE_KEY" value="pk_000000"/>
     <const name="KLAVIYO_LIST_NAME" value="phpunit"/>
     <!-- /Klaviyo creds for integration and load testing -->
   </php>
