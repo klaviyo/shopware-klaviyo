@@ -103,7 +103,7 @@ class CartEventRequestTranslator
         $product = $this->productDataHelper->getProductById($context->getContext(), $lineItem->getReferencedId());
         if (!$product) {
             throw new TranslationException(
-                sprintf('Product[id: %s] was not found', $lineItem->getReferencedId())
+                \sprintf('Product[id: %s] was not found', $lineItem->getReferencedId())
             );
         }
 

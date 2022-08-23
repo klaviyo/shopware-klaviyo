@@ -17,7 +17,7 @@ class GetListProfilesRequestApiTransferTranslator extends AbstractApiTransferMes
      */
     public function translateRequest(object $request): Request
     {
-        $url = sprintf(
+        $url = \sprintf(
             '%s/group/%s/members/all?api_key=%s',
             $this->configuration->getListAndSegmentsApiEndpointUrl(),
             $request->getListId(),
@@ -67,7 +67,7 @@ class GetListProfilesRequestApiTransferTranslator extends AbstractApiTransferMes
         if ($response->getStatusCode() < 200 || $response->getStatusCode() >= 300) {
             throw new TranslationException(
                 $response,
-                sprintf('Invalid response status code %s', $response->getStatusCode())
+                \sprintf('Invalid response status code %s', $response->getStatusCode())
             );
         }
     }
