@@ -22,7 +22,7 @@ abstract class AbstractDenormalizer implements DenormalizerInterface, Denormaliz
     {
         if (!$this->denormalizerVirtualProxy->supportsDenormalization($value, $type)) {
             throw new DeserializationException(
-                sprintf(
+                \sprintf(
                     'Could not denormalize %s, denormalizer not found',
                     is_object($value) ? get_class($value) : gettype($value)
                 )

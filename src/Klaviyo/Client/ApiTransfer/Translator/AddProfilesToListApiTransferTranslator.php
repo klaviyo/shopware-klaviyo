@@ -19,7 +19,7 @@ class AddProfilesToListApiTransferTranslator extends AbstractApiTransferMessageT
     {
         $body = $this->serialize($request);
 
-        $url = sprintf(
+        $url = \sprintf(
             '%s/list/%s/members?api_key=%s',
             $this->configuration->getListAndSegmentsApiEndpointUrl(),
             $request->getListId(),
@@ -69,7 +69,7 @@ class AddProfilesToListApiTransferTranslator extends AbstractApiTransferMessageT
         if ($response->getStatusCode() < 200 || $response->getStatusCode() >= 300) {
             throw new TranslationException(
                 $response,
-                sprintf('Invalid response status code %s', $response->getStatusCode())
+                \sprintf('Invalid response status code %s', $response->getStatusCode())
             );
         }
     }

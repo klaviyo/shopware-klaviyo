@@ -80,7 +80,7 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
             ]));
         } catch (\Throwable $throwable) {
             $this->logger->error(
-                sprintf(
+                \sprintf(
                     'Could not add Klaviyo plugin extension to the page object, reason: %s',
                     $throwable->getMessage()
                 ),
@@ -112,7 +112,7 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
             ];
         } catch (\Throwable $throwable) {
             $this->logger->error(
-                sprintf(
+                \sprintf(
                     'Could not add Klaviyo plugin extension product information to the page object, reason: %s',
                     $throwable->getMessage()
                 ),

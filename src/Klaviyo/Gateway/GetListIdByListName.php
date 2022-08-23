@@ -28,7 +28,7 @@ class GetListIdByListName implements GetListIdByListNameInterface
         $result = $clientResult->getRequestResponse($request);
         if (!$result->isSuccess()) {
             throw new ProfilesListNotFoundException(
-                sprintf('Could not get Profiles list from Klaviyo. Reason: %s', $result->getErrorDetails())
+                \sprintf('Could not get Profiles list from Klaviyo. Reason: %s', $result->getErrorDetails())
             );
         }
 
@@ -40,7 +40,7 @@ class GetListIdByListName implements GetListIdByListNameInterface
         }
 
         throw new ProfilesListNotFoundException(
-            sprintf('Profiles list[name: "%s"] was not found', $listName)
+            \sprintf('Profiles list[name: "%s"] was not found', $listName)
         );
     }
 }

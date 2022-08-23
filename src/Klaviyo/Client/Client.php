@@ -53,7 +53,7 @@ class Client implements ClientInterface
                 $clientResult->addRequestError($request, $exception);
             } catch (\Throwable $exception) {
                 $clientException = new EventTrackingOperationRequestFailedException(
-                    sprintf('Klaviyo API request failed. Reason: %s', $exception->getMessage()),
+                    \sprintf('Klaviyo API request failed. Reason: %s', $exception->getMessage()),
                     $exception,
                     $guzzleRequest,
                     $response

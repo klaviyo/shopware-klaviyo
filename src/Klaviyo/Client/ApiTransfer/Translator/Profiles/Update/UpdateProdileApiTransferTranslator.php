@@ -57,7 +57,7 @@ class UpdateProdileApiTransferTranslator extends AbstractApiTransferMessageTrans
         if ($response->getStatusCode() !== 200) {
             throw new TranslationException(
                 $response,
-                sprintf('Invalid profile update API response status code: %s', $response->getStatusCode())
+                \sprintf('Invalid profile update API response status code: %s', $response->getStatusCode())
             );
         }
     }
