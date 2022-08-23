@@ -1,0 +1,23 @@
+.klaviyo-job-list {
+    .smart-bar__content {
+        .job-listing-auto-loading-switch {
+            margin: 0;
+        }
+    }
+
+    .sw-page__main-content .sw-data-grid {
+        height: calc(100% - 133px);
+    }
+
+    #job-date-filter {
+        .sw-container {
+            display: flex;
+            flex-direction: column;
+        }
+    }
+    &.no-filter{
+        .sw_sidebar__navigation-list [title="Filters"]{
+            display: none;
+        }
+    }
+}

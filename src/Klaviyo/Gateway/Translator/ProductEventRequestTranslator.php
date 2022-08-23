@@ -4,9 +4,9 @@ namespace Klaviyo\Integration\Klaviyo\Gateway\Translator;
 
 use Klaviyo\Integration\Entity\Helper\ProductDataHelper;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderedProductEvent\OrderedProductEventTrackingRequest;
+use Klaviyo\Integration\Klaviyo\Client\Exception\OrderItemProductNotFound;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
 
 class ProductEventRequestTranslator
@@ -27,14 +27,25 @@ class ProductEventRequestTranslator
         OrderLineItemEntity $lineItem,
         OrderEntity $orderEntity
     ): OrderedProductEventTrackingRequest {
-        $product = $this->getLineItemProduct($lineItem, $context);
+        try {
+            $product = $this->productDataHelper->getLineItemProduct($context, $lineItem);
+            $productUrl = $this->productDataHelper->getProductViewPageUrlByChannelId(
+                $product,
+                $orderEntity->getSalesChannelId(),
+                $context
+            );
+            $productNumber = $product->getProductNumber();
+            $imageUrl = $this->productDataHelper->getCoverImageUrl($context, $product);
+            $categories = $this->productDataHelper->getCategoryNames($context, $product);
+            $manufacturerName = $this->productDataHelper->getManufacturerName($context, $product) ?? '';
+        } catch (OrderItemProductNotFound $e) {
+            // TODO: fix such behavior more elegant in future.
+            $productUrl = $imageUrl = $manufacturerName = '';
+            $productNumber = 'deleted';
+            $categories = [];
+        }
 
         $customerProperties = $this->translator->translateOrder($context, $orderEntity);
-
-        $productUrl = $this->productDataHelper->getProductViewPageUrl($product);
-        $imageUrl = $this->productDataHelper->getCoverImageUrl($context, $product);
-        $categories = $this->productDataHelper->getCategoryNames($context, $product);
-        $manufacturerName = $this->productDataHelper->getManufacturerName($context, $product) ?? '';
 
         return new OrderedProductEventTrackingRequest(
             $lineItem->getId(),
@@ -42,8 +53,8 @@ class ProductEventRequestTranslator
             $customerProperties,
             $lineItem->getUnitPrice(),
             $lineItem->getOrderId(),
-            $lineItem->getProductId(),
-            $product->getProductNumber(),
+            $lineItem->getProductId() ?? '',
+            $productNumber,
             $lineItem->getLabel(),
             $lineItem->getQuantity(),
             $productUrl,
@@ -51,14 +62,5 @@ class ProductEventRequestTranslator
             $categories,
             $manufacturerName
         );
-    }
-
-    private function getLineItemProduct(OrderLineItemEntity $lineItemEntity, Context $context): ProductEntity
-    {
-        if ($lineItemEntity->getProduct()) {
-            return $lineItemEntity->getProduct();
-        }
-
-        return $this->productDataHelper->getProductById($context, $lineItemEntity->getProductId());
     }
 }

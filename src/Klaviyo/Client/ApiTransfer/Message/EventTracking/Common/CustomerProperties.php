@@ -5,6 +5,7 @@ namespace Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\C
 class CustomerProperties implements \JsonSerializable
 {
     private string $email;
+    private ?string $id;
     private ?string $firstName;
     private ?string $lastName;
     private ?string $phone_number;
@@ -18,6 +19,7 @@ class CustomerProperties implements \JsonSerializable
 
     public function __construct(
         string $email,
+        ?string $id,
         ?string $firstName = null,
         ?string $lastName = null,
         ?string $phone_number = null,
@@ -30,6 +32,7 @@ class CustomerProperties implements \JsonSerializable
         ?string $birthday = null
     ) {
         $this->email = $email;
+        $this->id = $id;
         $this->firstName = $firstName;
         $this->lastName = $lastName;
         $this->phone_number = $phone_number;
@@ -45,6 +48,11 @@ class CustomerProperties implements \JsonSerializable
     public function getEmail(): string
     {
         return $this->email;
+    }
+
+    public function getId(): ?string
+    {
+        return $this->id;
     }
 
     public function getFirstName(): ?string
@@ -95,6 +103,7 @@ class CustomerProperties implements \JsonSerializable
     public function jsonSerialize()
     {
         $basicData = [
+            'id' => $this->getId(),
             'email' => $this->getEmail(),
             'firstName' => $this->getFirstName(),
             'lastName' => $this->getLastName(),

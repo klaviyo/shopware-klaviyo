@@ -1,9 +1,15 @@
 {
-    "version": "1.0.2",
+    "version": "1.0.5",
     "name": "od/sw6-klaviyo-integration",
     "description": "Shopware 6 plugin for Klaviyo integration",
     "type": "shopware-platform-plugin",
     "license": "MIT",
+    "authors": [
+        {
+            "name": "Overdose",
+            "homepage": "https://overdose.digital/"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "Klaviyo\\Integration\\": "src/"
@@ -12,7 +18,7 @@
     "repositories": [
         {
             "type": "path",
-            "url": "packages/*",
+            "url": "dependencies/*",
             "options": {
                 "symlink": false
             }
@@ -28,10 +34,10 @@
     },
     "require": {
         "php": "^7.4 || ^8.0",
-        "shopware/administration": "v6.4.*",
-        "shopware/core": "v6.4.*",
-        "shopware/storefront": "v6.4.*",
-        "od/sw6-job-scheduler": "^1.0.0",
+        "shopware/administration": "~v6.4.0",
+        "shopware/core": "~v6.4.0",
+        "shopware/storefront": "~v6.4.0",
+        "od/sw6-job-scheduler": "^1.0.1",
         "ext-json": "*"
     },
     "require-dev": {

@@ -69,8 +69,8 @@ class StartedCheckoutEventTrackingRequestTranslator
             );
         }
 
-        $imageUrl = $this->productDataHelper->getProductViewPageUrl($product);
-        $viewPageUrl = $this->productDataHelper->getProductViewPageUrl($product);
+        $imageUrl = $this->productDataHelper->getCoverImageUrl($context->getContext(), $product);
+        $viewPageUrl = $this->productDataHelper->getProductViewPageUrlByContext($product, $context);
         $categories = $this->productDataHelper->getCategoryNames($context->getContext(), $product);
 
         return new CheckoutLineItemInfo(
@@ -82,7 +82,8 @@ class StartedCheckoutEventTrackingRequestTranslator
             $viewPageUrl,
             $lineItem->getQuantity(),
             $lineItem->getPrice()->getUnitPrice(),
-            $lineItem->getPrice()->getTotalPrice()
+            $lineItem->getPrice()->getTotalPrice(),
+            $this->productDataHelper->getManufacturerName($context->getContext(), $product) ?: ''
         );
     }
 }

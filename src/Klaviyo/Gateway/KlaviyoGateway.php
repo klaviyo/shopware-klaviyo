@@ -8,6 +8,8 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Common\Profi
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfilesFromList\RemoveProfilesFromListRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfilesFromList\RemoveProfilesFromListResponse;
 use Klaviyo\Integration\Klaviyo\Client\ClientResult;
+use Klaviyo\Integration\Klaviyo\Gateway\Domain\Profile\Search\ProfileIdSearchResult;
+use Klaviyo\Integration\Klaviyo\Gateway\Domain\Profile\Search\Strategy\SearchStrategyInterface;
 use Klaviyo\Integration\Klaviyo\Gateway\Exception\ProfilesListNotFoundException;
 use Klaviyo\Integration\Klaviyo\Gateway\Result\OrderTrackingResult;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator;
@@ -15,6 +17,7 @@ use Klaviyo\Integration\Klaviyo\Gateway\Translator\IdentifyProfileRequestTransla
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\OrderEventRequestTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\ProductEventRequestTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\SubscribersToKlaviyoRequestsTranslator;
+use Klaviyo\Integration\Klaviyo\Gateway\Translator\UpdateProfileRequestTranslator;
 use Klaviyo\Integration\System\Tracking\Event\Order\OrderEventInterface;
 use Klaviyo\Integration\Utils\Logger\ContextHelper;
 use Psr\Log\LoggerInterface;
@@ -32,6 +35,8 @@ class KlaviyoGateway
     private CartEventRequestTranslator $cartEventRequestTranslator;
     private SubscribersToKlaviyoRequestsTranslator $subscribersTranslator;
     private IdentifyProfileRequestTranslator $identifyProfileRequestTranslator;
+    private SearchStrategyInterface $profileIdSearchStrategy;
+    private UpdateProfileRequestTranslator $updateProfileRequestTranslator;
     private LoggerInterface $logger;
 
     public function __construct(
@@ -41,6 +46,8 @@ class KlaviyoGateway
         CartEventRequestTranslator $cartEventRequestTranslator,
         SubscribersToKlaviyoRequestsTranslator $subscribersTranslator,
         IdentifyProfileRequestTranslator $identifyProfileRequestTranslator,
+        SearchStrategyInterface $profileIdSearchStrategy,
+        UpdateProfileRequestTranslator $updateProfileRequestTranslator,
         LoggerInterface $logger
     ) {
         $this->clientRegistry = $clientRegistry;
@@ -49,6 +56,8 @@ class KlaviyoGateway
         $this->cartEventRequestTranslator = $cartEventRequestTranslator;
         $this->subscribersTranslator = $subscribersTranslator;
         $this->identifyProfileRequestTranslator = $identifyProfileRequestTranslator;
+        $this->profileIdSearchStrategy = $profileIdSearchStrategy;
+        $this->updateProfileRequestTranslator = $updateProfileRequestTranslator;
         $this->logger = $logger;
     }
 
@@ -166,12 +175,30 @@ class KlaviyoGateway
 
     public function upsertCustomerProfiles(Context $context, string $channelId, CustomerCollection $customers)
     {
-        $requests = [];
+        $updateRequests = $createRequests = [];
+        $profileIdSearchResult = $this->searchProfileIds($context, $channelId, $customers);
+
+        /** First of all - update existing customer's sensitive fields - id, email, and phone_number  */
+        foreach ($profileIdSearchResult->getMapping() as $personId => $customerId) {
+            $customer = $customers->get($customerId);
+            $updateRequests[] = $this->updateProfileRequestTranslator->translateToProfileRequest($context, $customer, $personId);
+        }
+        $this->trackEvents($channelId, $updateRequests);
+
+        /** Update/create customer profiles  */
         foreach ($customers as $customer) {
-            $requests[] = $this->identifyProfileRequestTranslator->translateToProfileRequest($context, $customer);
+            $createRequests[] = $this->identifyProfileRequestTranslator->translateToProfileRequest($context, $customer);
         }
 
-        return $this->trackEvents($channelId, $requests);
+        return $this->trackEvents($channelId, $createRequests);
+    }
+
+    public function searchProfileIds(
+        Context $context,
+        string $channelId,
+        CustomerCollection $customers
+    ): ProfileIdSearchResult {
+        return $this->profileIdSearchStrategy->searchProfilesIds($context, $channelId, $customers);
     }
 
     public function trackAddedToCartRequests(string $channelId, array $cartRequests): ClientResult
@@ -302,16 +329,21 @@ class KlaviyoGateway
     }
 
     /**
+     * @param string $channelId
+     * @param int $count
+     * @param int $page
+     *
+     * @return GetExcludedSubscribers\Response
      * @throws \Exception
      */
     public function getExcludedSubscribersFromList(
-        SalesChannelEntity $salesChannelEntity,
+        string $channelId,
         int $count,
-        $page
+        int $page
     ): GetExcludedSubscribers\Response {
-        $request = new GetExcludedSubscribers\Request($count, (string)$page);
+        $request = new GetExcludedSubscribers\Request($count, $page);
         $clientResult = $this->clientRegistry
-            ->getClient($salesChannelEntity->getId())
+            ->getClient($channelId)
             ->sendRequests([$request]);
 
         /** @var GetExcludedSubscribers\Response $result */

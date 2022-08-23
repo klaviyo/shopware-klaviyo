@@ -5,6 +5,26 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service id="Klaviyo\Integration\Klaviyo\Gateway\Translator\GetProfileIdByCustomerIdRequestTranslator"/>
+        <service id="Klaviyo\Integration\Klaviyo\Gateway\Translator\GetProfileIdByEmailRequestTranslator"/>
+
+        <service id="od.klaviyo.profile.search.strategy.byid"
+                 class="Klaviyo\Integration\Klaviyo\Gateway\Domain\Profile\Search\Strategy\SearchByFieldStrategy">
+            <tag name="od.klaviyo.profile.search.strategy" priority="100"/>
+            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\ClientRegistry"/>
+            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\GetProfileIdByCustomerIdRequestTranslator"/>
+        </service>
+        <service id="od.klaviyo.profile.search.strategy.byemail"
+                 class="Klaviyo\Integration\Klaviyo\Gateway\Domain\Profile\Search\Strategy\SearchByFieldStrategy">
+            <tag name="od.klaviyo.profile.search.strategy" priority="50"/>
+            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\ClientRegistry"/>
+            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\GetProfileIdByEmailRequestTranslator"/>
+        </service>
+
+        <service id="Klaviyo\Integration\Klaviyo\Gateway\Domain\Profile\Search\Strategy\CompositeSearchStrategy">
+            <argument type="tagged_iterator" tag="od.klaviyo.profile.search.strategy" />
+        </service>
+
         <service id="Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway">
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\ClientRegistry"/>
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\OrderEventRequestTranslator"/>
@@ -14,6 +34,8 @@
                       id="Klaviyo\Integration\Klaviyo\Gateway\Translator\SubscribersToKlaviyoRequestsTranslator"/>
             <argument type="service"
                       id="Klaviyo\Integration\Klaviyo\Gateway\Translator\IdentifyProfileRequestTranslator"/>
+            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Domain\Profile\Search\Strategy\CompositeSearchStrategy"/>
+            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\UpdateProfileRequestTranslator"/>
             <argument type="service" id="logger"/>
         </service>
         <service id="Klaviyo\Integration\Klaviyo\Gateway\Translator\OrderEventRequestTranslator">
@@ -32,6 +54,9 @@
         <service id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CustomerPropertiesTranslator">
             <argument type="service" id="Klaviyo\Integration\Entity\Helper\AddressDataHelper"/>
             <argument type="service" id="Klaviyo\Integration\Configuration\ConfigurationRegistry"/>
+        </service>
+        <service id="Klaviyo\Integration\Klaviyo\Gateway\Translator\UpdateProfileRequestTranslator">
+            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CustomerPropertiesTranslator"/>
         </service>
         <service id="Klaviyo\Integration\Klaviyo\Gateway\Translator\NewsletterSubscriberPropertiesTranslator"/>
         <service id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator">

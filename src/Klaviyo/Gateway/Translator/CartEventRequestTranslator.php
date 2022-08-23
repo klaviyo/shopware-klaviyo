@@ -107,8 +107,8 @@ class CartEventRequestTranslator
             );
         }
 
-        $imageUrl = $this->productDataHelper->getProductViewPageUrl($product);
-        $viewPageUrl = $this->productDataHelper->getProductViewPageUrl($product);
+        $imageUrl = $this->productDataHelper->getCoverImageUrl($context->getContext(), $product);
+        $viewPageUrl = $this->productDataHelper->getProductViewPageUrlByContext($product, $context);
         $categories = $this->productDataHelper->getCategoryNames($context->getContext(), $product);
         $price = $lineItem->getPrice();
 
@@ -121,7 +121,8 @@ class CartEventRequestTranslator
             $price ? $lineItem->getPrice()->getTotalPrice() : 0.0,
             $imageUrl,
             $viewPageUrl,
-            $categories
+            $categories,
+            $this->productDataHelper->getManufacturerName($context->getContext(), $product) ?: ''
         );
     }
 }

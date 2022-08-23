@@ -8,10 +8,8 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Common\Profi
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Common\ProfileContactInfoCollection;
 use Klaviyo\Integration\Klaviyo\Gateway\GetListIdByListNameInterface;
 use Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway;
-use Klaviyo\Integration\Model\Channel\ChannelRepositoryWithUniqueLists;
-use Od\Scheduler\Model\Job\JobHandlerInterface;
-use Od\Scheduler\Model\Job\JobResult;
-use Od\Scheduler\Model\Job\Message\WarningMessage;
+use Klaviyo\Integration\Model\Channel\GetValidChannels;
+use Od\Scheduler\Model\Job\{JobHandlerInterface, JobResult, Message};
 use Shopware\Core\Content\Newsletter\Aggregate\NewsletterRecipient\NewsletterRecipientCollection;
 use Shopware\Core\Content\Newsletter\SalesChannel\NewsletterSubscribeRoute;
 use Shopware\Core\Framework\Context;
@@ -28,21 +26,21 @@ class SubscriberSyncOperation implements JobHandlerInterface
     private KlaviyoGateway $klaviyoGateway;
     private ConfigurationRegistry $configurationRegistry;
     private EntityRepositoryInterface $subscriberRepository;
-    private EntityRepositoryInterface $salesChannelRepository;
     private GetListIdByListNameInterface $listIdByListName;
+    private GetValidChannels $getValidChannels;
 
     public function __construct(
         KlaviyoGateway $klaviyoGateway,
         ConfigurationRegistry $configurationRegistry,
         EntityRepositoryInterface $subscriberRepository,
-        EntityRepositoryInterface $salesChannelRepository,
-        GetListIdByListNameInterface $listIdByListName
+        GetListIdByListNameInterface $listIdByListName,
+        GetValidChannels $getValidChannels
     ) {
         $this->klaviyoGateway = $klaviyoGateway;
         $this->configurationRegistry = $configurationRegistry;
         $this->subscriberRepository = $subscriberRepository;
-        $this->salesChannelRepository = $salesChannelRepository;
         $this->listIdByListName = $listIdByListName;
+        $this->getValidChannels = $getValidChannels;
     }
 
     /**
@@ -53,14 +51,13 @@ class SubscriberSyncOperation implements JobHandlerInterface
     {
         $result = new JobResult();
         $context = Context::createDefaultContext();
-        /** @var SalesChannelEntity $channel */
-        $channels = $this->salesChannelRepository->search(new Criteria(), $context);
 
-        foreach ($channels as $channel) {
+        /** @var SalesChannelEntity $channel */
+        foreach ($this->getValidChannels->execute() as $channel) {
             try {
                 $errors = $this->doOperation($message, $context, $channel);
                 foreach ($errors as $error) {
-                    $result->addMessage(new WarningMessage($error->getMessage()));
+                    $result->addMessage(new Message\ErrorMessage($error->getMessage()));
                 }
             } catch (\Throwable $e) {
                 $result->addError($e);

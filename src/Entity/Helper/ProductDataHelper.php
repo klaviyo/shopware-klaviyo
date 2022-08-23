@@ -2,13 +2,20 @@
 
 namespace Klaviyo\Integration\Entity\Helper;
 
+use Klaviyo\Integration\Klaviyo\Client\Exception\OrderItemProductNotFound;
+use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Product\Aggregate\ProductManufacturer\ProductManufacturerEntity;
 use Shopware\Core\Content\Product\Aggregate\ProductMedia\ProductMediaEntity;
 use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class ProductDataHelper
@@ -18,31 +25,74 @@ class ProductDataHelper
     private EntityRepositoryInterface $productMediaRepository;
     private EntityRepositoryInterface $categoriesRepository;
     private EntityRepositoryInterface $productManufacturerRepository;
+    private SeoUrlPlaceholderHandlerInterface $seoUrlReplacer;
+    private EntityRepositoryInterface $salesChannelRepository;
+    private AbstractSalesChannelContextFactory $salesChannelContextFactory;
+    private array $contexts = [];
 
     public function __construct(
         UrlGeneratorInterface $urlGenerator,
         EntityRepositoryInterface $productRepository,
         EntityRepositoryInterface $productMediaRepository,
         EntityRepositoryInterface $categoriesRepository,
-        EntityRepositoryInterface $productManufacturerRepository
+        EntityRepositoryInterface $productManufacturerRepository,
+        SeoUrlPlaceholderHandlerInterface $seoUrlReplacer,
+        EntityRepositoryInterface $salesChannelRepository,
+        AbstractSalesChannelContextFactory $salesChannelContextFactory
     ) {
         $this->urlGenerator = $urlGenerator;
         $this->productRepository = $productRepository;
         $this->productMediaRepository = $productMediaRepository;
         $this->categoriesRepository = $categoriesRepository;
         $this->productManufacturerRepository = $productManufacturerRepository;
+        $this->seoUrlReplacer = $seoUrlReplacer;
+        $this->salesChannelRepository = $salesChannelRepository;
+        $this->salesChannelContextFactory = $salesChannelContextFactory;
     }
 
-    public function getProductViewPageUrl(ProductEntity $productEntity): string
+    public function getProductViewPageUrlByContext(ProductEntity $productEntity,SalesChannelContext $salesChannelContext): string
     {
-        $productUrl = $this->urlGenerator
+        if ($domains = $salesChannelContext->getSalesChannel()->getDomains()) {
+            $raw = $this->seoUrlReplacer->generate('frontend.detail.page', ['productId' => $productEntity->getId()]);
+
+            return $this->seoUrlReplacer->replace($raw, $domains->first()->getUrl(), $salesChannelContext);
+        }
+
+        return $this->urlGenerator
             ->generate(
                 'frontend.detail.page',
                 ['productId' => $productEntity->getId()],
                 UrlGeneratorInterface::ABSOLUTE_URL
             );
+    }
 
-        return $productUrl;
+    public function getProductViewPageUrlByChannelId(ProductEntity $productEntity, string $channelId,  Context $context): string
+    {
+        $salesChannelContext = $this->getSalesChannelContext($channelId, $context);
+
+        return $this->getProductViewPageUrlByContext($productEntity, $salesChannelContext);
+    }
+
+    public function getLineItemProduct(Context $context, OrderLineItemEntity $orderLineItemEntity): ProductEntity
+    {
+        if ($orderLineItemEntity->getProduct()) {
+            return $orderLineItemEntity->getProduct();
+        }
+
+        if (!$orderLineItemEntity->getProductId()) {
+            throw new OrderItemProductNotFound('Order line item product id is not defined');
+        }
+
+        $productEntity = $this->productRepository
+            ->search(new Criteria([$orderLineItemEntity->getProductId()]), $context)
+            ->first();
+        if (!$productEntity) {
+            throw new OrderItemProductNotFound(
+                sprintf('Product[id: %] was not found', $orderLineItemEntity->getProductId())
+            );
+        }
+
+        return $productEntity;
     }
 
     public function getCoverImageUrl(Context $context, ProductEntity $productEntity): string
@@ -156,5 +206,23 @@ class ProductDataHelper
     public function getProductById(Context $context, string $productId): ProductEntity
     {
         return $this->productRepository->search(new Criteria([$productId]), $context)->first();
+    }
+
+    public function getSalesChannelContext(string $channelId, Context $context)
+    {
+        if (isset($this->contexts[$channelId])) {
+            return $this->contexts[$channelId];
+        }
+
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('id', $channelId));
+        $criteria->addAssociation('domains');
+        $salesChannel = $this->salesChannelRepository->search($criteria, $context)->first();
+        $salesChannelContext = $this->salesChannelContextFactory->create(
+            Uuid::randomHex(),
+            $salesChannel->getId()
+        );
+
+        return $this->contexts[$channelId] = $salesChannelContext;
     }
 }

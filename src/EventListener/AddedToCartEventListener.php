@@ -3,6 +3,7 @@
 namespace Klaviyo\Integration\EventListener;
 
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator;
+use Klaviyo\Integration\Model\Channel\GetValidChannelConfig;
 use Klaviyo\Integration\System\Tracking\Event\Cart\CartEventRequestBag;
 use Klaviyo\Integration\System\Tracking\EventsTrackerInterface;
 use Klaviyo\Integration\Utils\Logger\ContextHelper;
@@ -19,17 +20,20 @@ class AddedToCartEventListener implements EventSubscriberInterface
     private EventsTrackerInterface $eventsTracker;
     private LoggerInterface $logger;
     private RequestStack $requestStack;
+    private GetValidChannelConfig $getValidChannelConfig;
 
     public function __construct(
         CartEventRequestTranslator $cartEventRequestTranslator,
         EventsTrackerInterface $eventsTracker,
         LoggerInterface $logger,
-        RequestStack $requestStack
+        RequestStack $requestStack,
+        GetValidChannelConfig $getValidChannelConfig
     ) {
         $this->cartEventRequestTranslator = $cartEventRequestTranslator;
         $this->eventsTracker = $eventsTracker;
         $this->logger = $logger;
         $this->requestStack = $requestStack;
+        $this->getValidChannelConfig = $getValidChannelConfig;
     }
 
     public static function getSubscribedEvents(): array
@@ -43,6 +47,11 @@ class AddedToCartEventListener implements EventSubscriberInterface
     public function onAfterLineItemAdded(AfterLineItemAddedEvent $event)
     {
         try {
+            $config = $this->getValidChannelConfig->execute($event->getSalesChannelContext()->getSalesChannelId());
+            if ($config === null || !$config->isTrackAddedToCart()) {
+                return;
+            }
+
             $salesChannelContext = $event->getSalesChannelContext();
             $request = $this->requestStack->getCurrentRequest();
             if (!$salesChannelContext->getCustomer() && !$request->cookies->get('klaviyo_subscriber')) {
@@ -67,17 +76,21 @@ class AddedToCartEventListener implements EventSubscriberInterface
 
             $this->eventsTracker->trackAddedToCart($salesChannelContext->getContext(), $requestBag);
         } catch (\Throwable $throwable) {
-            $this->logger
-                ->error(
-                    'Could not track Add to Cart event after new item added to the cart',
-                    ContextHelper::createContextFromException($throwable)
-                );
+            $this->logger->error(
+                'Could not track Add to Cart event after new item added to the cart',
+                ContextHelper::createContextFromException($throwable)
+            );
         }
     }
 
     public function onLineItemQuantityChanged(AfterLineItemQuantityChangedEvent $event)
     {
         try {
+            $config = $this->getValidChannelConfig->execute($event->getSalesChannelContext()->getSalesChannelId());
+            if ($config === null || !$config->isTrackAddedToCart()) {
+                return;
+            }
+
             $now = new \DateTime('now', new \DateTimeZone('UTC'));
             $cart = $event->getCart();
             $salesChannelContext = $event->getSalesChannelContext();
@@ -103,11 +116,10 @@ class AddedToCartEventListener implements EventSubscriberInterface
 
             $this->eventsTracker->trackAddedToCart(Context::createDefaultContext(), $requestBag);
         } catch (\Throwable $throwable) {
-            $this->logger
-                ->error(
-                    'Could not track Add to Cart event after the item qty updated',
-                    ContextHelper::createContextFromException($throwable)
-                );
+            $this->logger->error(
+                'Could not track Add to Cart event after the item qty updated',
+                ContextHelper::createContextFromException($throwable)
+            );
         }
     }
 }

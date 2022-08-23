@@ -1,7 +1,7 @@
 {
     "klaviyo-job-listing": {
         "general": {
-            "title": "Job Listing Pages",
+            "title": "Klaviyo Job Listing",
             "description": "job-listing"
         },
         "menu": {
@@ -46,11 +46,36 @@
         "title": "Klaviyo",
         "general": {
             "title": "General",
+            "credentialsAlert": "All credentials must be configured on sales channel level.",
             "initialization": {
                 "helpText": "After the client starts interacting with the page, the Klaviyo scripts will be initialized. On subsequent page transitions, the scripts will be initialized immediately."
             }
         },
+        "pop-up": {
+            "title": "Back-In-Stock Pop-up Styles",
+            "open-button-fieldset-label": "Pop-Up opening button",
+            "close-button-fieldset-label": "Pop-Up close button",
+            "subscribe-button-fieldset-label": "Subscribe button",
+            "snippet-button-fieldset-label": "Snippet names",
+            "additional-classes-fieldset-label": "Additional classes",
+            "colorLabel": "Color",
+            "backgroundLabel": "Background",
+            "openBtnLabel": "Open Button",
+            "closeBtnLabel": "Close Button",
+            "contentMessageLabel": "Content message",
+            "subscribeBtnLabel": "Subscribe Button",
+            "subscribeCheckboxLabel": "Subscribe checkbox text",
+            "emailFieldLabel": "Email field label",
+            "emailFieldPlaceholder": "Email field placeholder"
+        },
         "configs": {
+            "credentials": {
+                "messageNotBlank": "This field must be filled."
+            },
+            "enabled": {
+                "label": "Enable Account",
+                "helpText": "By switching this toggle you can enable/disable configured Klaviyo account on current sales-channel."
+            },
             "privateApiKey": {
                 "label": "Klaviyo Private API key",
                 "helpText": "Klaviyo Private API key. You can find it in your klaviyo account"
@@ -98,6 +123,10 @@
             "trackRefundedOrder": {
                 "label": "Track Refunded Order",
                 "helpText": "Do we need to send \"Refunded Order Event\" to Klaviyo?\nDecision will also affect Synchronization of the historical events"
+            },
+            "trackSubscribedToBackInStock": {
+                "label": "Track Back In Stock",
+                "helpText": "Do we need to send \"Back In Stock Event\" to Klaviyo?\n"
             }
         },
         "customer": {

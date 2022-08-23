@@ -1,6 +1,27 @@
-.klaviyo-interaction-settings {
-    .sw-card__content {
-        padding-top: 0;
-        padding-bottom: 0;
+fieldset {
+    border: 1px solid #d1d9e0;
+    padding: 20px;
+    border-radius: 4px;
+    margin-bottom: 30px;
+    &:last-child {
+        margin-bottom: 0;
+    }
+
+    legend {
+        padding: 0 10px;
     }
 }
+
+.klaviyo-integration-settings {
+    .klaviyo-interaction-settings {
+        .sw-card__content {
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+    }
+
+    .no-top-margin {
+        margin-top: 0;
+    }
+}
+

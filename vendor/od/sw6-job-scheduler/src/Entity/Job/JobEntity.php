@@ -2,6 +2,7 @@
 
 namespace Od\Scheduler\Entity\Job;
 
+use Od\Scheduler\Entity\JobMessage\JobMessageCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 
@@ -21,6 +22,8 @@ class JobEntity extends Entity
     protected ?string $message = null;
     protected ?\DateTimeInterface $startedAt = null;
     protected ?\DateTimeInterface $finishedAt = null;
+    protected ?JobMessageCollection $messages = null;
+    protected ?JobCollection $subJobs = null;
 
     public function getParentId(): ?string
     {
@@ -90,5 +93,37 @@ class JobEntity extends Entity
     public function setFinishedAt(?\DateTimeInterface $finishedAt): void
     {
         $this->finishedAt = $finishedAt;
+    }
+
+    /**
+     * @return JobMessageCollection
+     */
+    public function getMessages(): ?JobMessageCollection
+    {
+        return $this->messages;
+    }
+
+    /**
+     * @param JobMessageCollection $messages
+     */
+    public function setMessages(JobMessageCollection $messages): void
+    {
+        $this->messages = $messages;
+    }
+
+    /**
+     * @return JobCollection|null
+     */
+    public function getSubJobs(): ?JobCollection
+    {
+        return $this->subJobs;
+    }
+
+    /**
+     * @param JobCollection|null $subJobs
+     */
+    public function setSubJobs(?JobCollection $subJobs): void
+    {
+        $this->subJobs = $subJobs;
     }
 }

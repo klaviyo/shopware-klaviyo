@@ -12,7 +12,7 @@ const {Module} = Shopware;
 
 Module.register('klaviyo-plugin', {
     type: 'plugin',
-    title: 'klaviyo-job-listing.general.title',
+    title: 'klaviyo-integration-settings.title',
     description: 'klaviyo-job-listing.general.description',
     color: '#F88962',
     icon: 'default-avatar-multiple',

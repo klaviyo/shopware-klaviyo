@@ -1,4 +1,5 @@
 import Plugin from 'src/plugin-system/plugin.class';
+import KlaviyoGateway from "../util/gateway";
 
 export default class KlaviyoCheckoutStartedEventTrackingComponent extends Plugin {
     static options = {
@@ -6,14 +7,11 @@ export default class KlaviyoCheckoutStartedEventTrackingComponent extends Plugin
     }
 
     init() {
-        console.log('working');
-        window._learnq = window._learnq || [];
-
         if (!this.options.startedCheckoutEventTrackingRequest && console) {
             console.error('Checkout Started Event Tracking DTO was not set');
             return;
         }
 
-        window._learnq.push(["track", "Started Checkout", this.options.startedCheckoutEventTrackingRequest]);
+        KlaviyoGateway.push(["track", "Started Checkout", this.options.startedCheckoutEventTrackingRequest]);
     }
 }

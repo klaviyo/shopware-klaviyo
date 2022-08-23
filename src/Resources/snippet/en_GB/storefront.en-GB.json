@@ -1,0 +1,21 @@
+{
+    "klaviyo": {
+        "back-in-stock": {
+            "modal": {
+                "openBtnLabel": "Notify me when available!",
+                "title": "Be notified when the product is back in stock.",
+                "subscribe-to-newsletter": "Subscribe to newsletter",
+                "email": "Email",
+                "email-placeholder": "email@example.com",
+                "subscribeBtnLabel": "Subscribe",
+                "contentMessage": "Register to receive a notification when this item comes back in stock.",
+                "closeBtnLabel": "Close"
+            },
+            "messages": {
+                "not-valid-email": "Email isn't valid formatted email address!",
+                "response-error-message": "Something went wrong, please try again later!",
+                "response-success-message": "You've successfully subscribed!"
+            }
+        }
+    }
+}

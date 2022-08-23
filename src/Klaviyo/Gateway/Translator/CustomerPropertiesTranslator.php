@@ -43,9 +43,10 @@ class CustomerPropertiesTranslator
         $customFields = $this->prepareCustomFields($customer);
 
         return new CustomerProperties(
-            $orderCustomer->getEmail(),
-            $orderCustomer->getFirstName(),
-            $orderCustomer->getLastName(),
+            $customer ? $customer->getEmail() : $orderCustomer->getEmail(),
+            $customer ? $customer->getId() : $orderCustomer->getId(),
+            $customer ? $customer->getFirstName() : $orderCustomer->getFirstName(),
+            $customer ? $customer->getLastName() : $orderCustomer->getLastName(),
             $this->guessRelevantCustomerPhone($customer),
             $customerAddress ? $customerAddress->getStreet() : null,
             $customerAddress ? $customerAddress->getCity() : null,
@@ -69,8 +70,12 @@ class CustomerPropertiesTranslator
         return $customerEntity->getActiveShippingAddress();
     }
 
-    private function prepareCustomFields(CustomerEntity $customer): array
+    private function prepareCustomFields(?CustomerEntity $customer): array
     {
+        if ($customer === null) {
+            return [];
+        }
+
         $configuration = $this->configurationRegistry->getConfiguration($customer->getSalesChannelId());
         $fieldMapping = $configuration->getCustomerCustomFieldMapping();
         $customFields = [];
@@ -113,6 +118,7 @@ class CustomerPropertiesTranslator
 
         return new CustomerProperties(
             $customerEntity->getEmail(),
+            $customerEntity->getId(),
             $customerEntity->getFirstName(),
             $customerEntity->getLastName(),
             $this->guessRelevantCustomerPhone($customerEntity),

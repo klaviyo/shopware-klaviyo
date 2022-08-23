@@ -3,7 +3,7 @@
 namespace Klaviyo\Integration\Configuration;
 
 use Klaviyo\Integration\Exception\InvalidConfigurationException;
-use Shopware\Core\System\SalesChannel\SalesChannelEntity;
+use Klaviyo\Integration\Struct\PopUpConfiguration;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class ConfigurationFactory implements ConfigurationFactoryInterface
@@ -17,6 +17,7 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
 
     public function create(?string $salesChannelId = null): ConfigurationInterface
     {
+        $accountEnabled = $this->getBoolConfiguration('enabled', $salesChannelId);
         $privateApiKey = $this->systemConfigService
             ->get('KlaviyoIntegrationPlugin.config.privateApiKey', $salesChannelId);
         if (!$privateApiKey) {
@@ -53,10 +54,23 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
         $trackFulfilledOrder = $this->getBoolConfiguration('trackFulfilledOrder', $salesChannelId);
         $trackCancelledOrder = $this->getBoolConfiguration('trackCancelledOrder', $salesChannelId);
         $trackRefundedOrder = $this->getBoolConfiguration('trackRefundedOrder', $salesChannelId);
+
+        $trackSubscribedToBackInStock = $this->getBoolConfiguration('trackSubscribedToBackInStock', $salesChannelId);
         $afterInteraction = $this->systemConfigService->getBool('KlaviyoIntegrationPlugin.config.isInitializeKlaviyoAfterInteraction', $salesChannelId);
 
         $mapping = $this->systemConfigService
-            ->get('KlaviyoIntegrationPlugin.config.customerFieldMapping', $salesChannelId) ?? [];
+                ->get('KlaviyoIntegrationPlugin.config.customerFieldMapping', $salesChannelId) ?? [];
+
+        $popUpConfiguration = new PopUpConfiguration(
+            $this->systemConfigService->getString('KlaviyoIntegrationPlugin.config.popUpOpenBtnColor', $salesChannelId),
+            $this->systemConfigService->getString('KlaviyoIntegrationPlugin.config.popUpOpenBtnBgColor', $salesChannelId),
+            $this->systemConfigService->getString('KlaviyoIntegrationPlugin.config.popUpCloseBtnColor', $salesChannelId),
+            $this->systemConfigService->getString('KlaviyoIntegrationPlugin.config.popUpCloseBtnBgColor', $salesChannelId),
+            $this->systemConfigService->getString('KlaviyoIntegrationPlugin.config.subscribeBtnColor', $salesChannelId),
+            $this->systemConfigService->getString('KlaviyoIntegrationPlugin.config.subscribeBtnBgColor', $salesChannelId),
+            $this->systemConfigService->getString('KlaviyoIntegrationPlugin.config.popUpAdditionalClasses', $salesChannelId)
+        );
+
 
         if (is_array($mapping)) {
             foreach ($mapping as $mappingId => $mappingAssociation) {
@@ -69,9 +83,10 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
         }
 
         return new Configuration(
-            $privateApiKey,
-            $publicApiKey,
-            $listName,
+            $accountEnabled,
+            trim($privateApiKey),
+            trim($publicApiKey),
+            trim($listName),
             $trackViewedProduct,
             $trackRecentlyViewedItems,
             $trackAddedToCart,
@@ -82,38 +97,15 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
             $trackCancelledOrder,
             $trackRefundedOrder,
             $mapping,
-            $afterInteraction
+            $afterInteraction,
+            $trackSubscribedToBackInStock,
+            $popUpConfiguration
         );
     }
 
     private function getBoolConfiguration(string $configurationName, ?string $salesChannelId): bool
     {
-        $value = $this->systemConfigService
-            ->get("KlaviyoIntegrationPlugin.config.{$configurationName}", $salesChannelId);
-        if (!is_bool($value)) {
-            throw new InvalidConfigurationException(
-                "Klaviyo Integration '$configurationName' configuration is not defined"
-            );
-        }
-
-        return $value;
-    }
-
-    private function getIntConfiguration(string $configurationName, ?string $salesChannelId): int
-    {
-        $value = $this->systemConfigService
-            ->get("KlaviyoIntegrationPlugin.config.{$configurationName}", $salesChannelId);
-        if (is_null($value)) {
-            throw new InvalidConfigurationException(
-                "Klaviyo Integration '$configurationName' configuration is not defined"
-            );
-        }
-        if (!is_int($value)) {
-            throw new InvalidConfigurationException(
-                "Klaviyo Integration configuration[name: '$configurationName', value: '$value'] is not integer"
-            );
-        }
-
-        return $value;
+        return $this->systemConfigService
+            ->getBool("KlaviyoIntegrationPlugin.config.{$configurationName}", $salesChannelId);
     }
 }

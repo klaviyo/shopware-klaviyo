@@ -51,6 +51,7 @@ Component.register('klaviyo-integration-settings-general', {
         createdComponent() {
             const configPrefix = 'KlaviyoIntegrationPlugin.config.',
                 defaultConfigs = {
+                    enabled: false,
                     trackViewedProduct: true,
                     trackRecentlyViewedItems: true,
                     trackAddedToCart: true,
@@ -60,7 +61,15 @@ Component.register('klaviyo-integration-settings-general', {
                     trackFulfilledOrder: true,
                     trackCancelledOrder: true,
                     trackRefundedOrder: true,
-                    isInitializeKlaviyoAfterInteraction: false
+                    trackSubscribedToBackInStock: true,
+                    isInitializeKlaviyoAfterInteraction: true,
+                    popUpOpenBtnColor: '',
+                    popUpOpenBtnBgColor: '',
+                    popUpCloseBtnColor: '',
+                    popUpCloseBtnBgColor: '',
+                    subscribeBtnColor: '',
+                    subscribeBtnBgColor: '',
+                    popUpAdditionalClasses: '',
                 };
 
             /**

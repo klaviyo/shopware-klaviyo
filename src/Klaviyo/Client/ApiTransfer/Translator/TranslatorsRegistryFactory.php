@@ -8,6 +8,8 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEv
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\FulfilledOrderEventTrackingRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\PlacedOrderEventTrackingRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\RefundedOrderEventTrackingRequest;
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator\Profiles\Search\SearchProfileIdApiTransferTranslator;
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator\Profiles\Update\UpdateProdileApiTransferTranslator;
 use Klaviyo\Integration\Klaviyo\Client\Configuration\ConfigurationInterface;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\SerializerFactory;
 
@@ -65,6 +67,12 @@ class TranslatorsRegistryFactory
         );
         $registry->addTranslator(
             new GetExcludedSubscribersApiTransferTranslator($serializer, $configuration)
+        );
+        $registry->addTranslator(
+            new SearchProfileIdApiTransferTranslator($serializer, $configuration)
+        );
+        $registry->addTranslator(
+            new UpdateProdileApiTransferTranslator($serializer, $configuration)
         );
 
         return $registry;
