@@ -1,0 +1,12 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Klaviyo\Integration\Utils\Lifecycle\Update;
+
+use Shopware\Core\Kernel;
+
+class UpdateOldTemplate
+{
+    private const MD5_HASH = "e89d84423f5f4f8cdc575f49ef5d3933";
+}
