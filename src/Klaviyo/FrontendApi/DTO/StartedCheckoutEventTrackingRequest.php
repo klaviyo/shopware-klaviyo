@@ -58,7 +58,7 @@ class StartedCheckoutEventTrackingRequest implements \JsonSerializable
             '$value' => $this->getCheckoutTotal(),
             'CheckoutURL' => $this->getCheckoutUrl(),
             'ItemNames' => $itemNames,
-            'Categories' => $this->getCheckoutUrl(),
+            'Categories' => $categories,
             'Items' => $this->getLineItemInfoCollection()->getElements()
         ];
     }
