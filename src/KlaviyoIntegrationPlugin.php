@@ -32,18 +32,18 @@ class KlaviyoIntegrationPlugin extends Plugin
 
     public function update(UpdateContext $updateContext): void
     {
-        if (\version_compare($updateContext->getCurrentPluginVersion(), "1.0.6", '<=')) {
-            $adapter = new Local(__DIR__);   
-            $filesystem = new Filesystem($adapter);
-            $connection = $this->container->get(Connection::class);
-            (new UpdateOldTemplate($filesystem, $connection))->updateTemplateByMD5hash();
-        }
-
         if (\version_compare($updateContext->getCurrentPluginVersion(), "1.0.5", '<=')) {
             (new UpdateTo105(
                 $this->container->get(SystemConfigService::class),
                 $this->container->get('sales_channel.repository')
             ))->execute($updateContext->getContext());
+        }
+
+        if (\version_compare($updateContext->getCurrentPluginVersion(), "1.0.6", '<=')) {
+            $adapter = new Local(__DIR__);
+            $filesystem = new Filesystem($adapter);
+            $connection = $this->container->get(Connection::class);
+            (new UpdateOldTemplate($filesystem, $connection))->updateTemplateByMD5hash();
         }
 
         parent::update($updateContext);

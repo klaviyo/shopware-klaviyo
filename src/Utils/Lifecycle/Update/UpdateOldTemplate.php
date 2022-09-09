@@ -13,11 +13,10 @@ class UpdateOldTemplate
     private const MD5_HASH_OLD_TEMPLATE = "e89d84423f5f4f8cdc575f49ef5d3933";
 
     private Connection $connection;
-
     private FilesystemInterface $filesystem;
 
     public function __construct(
-        FilesystemInterface $filesystem, 
+        FilesystemInterface $filesystem,
         Connection $connection
     ) {
         $this->connection = $connection;
