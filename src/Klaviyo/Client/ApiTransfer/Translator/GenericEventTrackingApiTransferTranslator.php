@@ -54,7 +54,7 @@ class GenericEventTrackingApiTransferTranslator extends AbstractApiTransferMessa
                 'Accept' => 'text/html',
                 'Content-Type' => 'application/x-www-form-urlencoded'
             ],
-            sprintf(
+            \sprintf(
                 'data=%s',
                 urlencode($body)
             )
@@ -72,7 +72,7 @@ class GenericEventTrackingApiTransferTranslator extends AbstractApiTransferMessa
         if ($response->getStatusCode() < 200 || $response->getStatusCode() >= 300) {
             throw new TranslationException(
                 $response,
-                sprintf('Invalid response status code %s', $response->getStatusCode())
+                \sprintf('Invalid response status code %s', $response->getStatusCode())
             );
         }
     }

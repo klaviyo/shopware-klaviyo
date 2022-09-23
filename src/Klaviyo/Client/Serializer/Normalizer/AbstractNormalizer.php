@@ -35,7 +35,7 @@ abstract class AbstractNormalizer implements NormalizerInterface, NormalizerAwar
 
         if (!$this->normalizerVirtualProxy->supportsNormalization($object)) {
             throw new SerializationException(
-                sprintf('Could not normalize %s, normalizer not found', get_class($object))
+                \sprintf('Could not normalize %s, normalizer not found', get_class($object))
             );
         }
 

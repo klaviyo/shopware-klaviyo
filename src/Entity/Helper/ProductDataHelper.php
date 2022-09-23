@@ -88,7 +88,7 @@ class ProductDataHelper
             ->first();
         if (!$productEntity) {
             throw new OrderItemProductNotFound(
-                sprintf('Product[id: %] was not found', $orderLineItemEntity->getProductId())
+                \sprintf('Product[id: %s] was not found', $orderLineItemEntity->getProductId())
             );
         }
 

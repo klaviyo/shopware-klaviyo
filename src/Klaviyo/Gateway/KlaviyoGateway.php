@@ -222,7 +222,7 @@ class KlaviyoGateway
             /** @var AddProfilesToListResponse $result */
             $result = $clientResult->getRequestResponse($request);
             if (!$result->isSuccess()) {
-                $error = new \Exception(sprintf(
+                $error = new \Exception(\sprintf(
                     'Could not add Shopware subscribers to Klaviyo profiles list, reason: %s',
                     $result->getErrorDetails()
                 ));
@@ -241,7 +241,7 @@ class KlaviyoGateway
             return $errors;
         } catch (\Throwable $exception) {
             $this->logger->error(
-                sprintf(
+                \sprintf(
                     'Could not add Shopware subscribers to Klaviyo profiles list, reason: %s',
                     $exception->getMessage()
                 ),
@@ -267,7 +267,7 @@ class KlaviyoGateway
             $result = $clientResult->getRequestResponse($request);
             if (!$result->isSuccess()) {
                 $this->logger->error(
-                    sprintf(
+                    \sprintf(
                         'Could not remove Shopware subscribers from Klaviyo profiles list, reason: %s',
                         $result->getErrorDetails()
                     )
@@ -277,7 +277,7 @@ class KlaviyoGateway
             return $result->isSuccess();
         } catch (\Throwable $exception) {
             $this->logger->error(
-                sprintf(
+                \sprintf(
                     'Could not remove Shopware subscribers from Klaviyo profiles list, reason: %s',
                     $exception->getMessage()
                 ),
@@ -315,7 +315,7 @@ class KlaviyoGateway
                 }
 
                 $this->logger->error(
-                    sprintf(
+                    \sprintf(
                         'Could not track %s, reason: %s',
                         $eventType,
                         $error->getMessage()
