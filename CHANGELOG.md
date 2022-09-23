@@ -1,3 +1,8 @@
+# 1.0.6
+ * Fix: We fixed issue with order empty delivery
+ * Fix: We fixed issue with checkout tracker categories
+ * Fix: We fixed issue with feed generation, when there is no cover picture
+
 # 1.0.5
  * New: Now product manufacturer is being transferred to all product-related Klaviyo events.
  * New: Now Klaviyo account credentials could be configured on sales channel level only.

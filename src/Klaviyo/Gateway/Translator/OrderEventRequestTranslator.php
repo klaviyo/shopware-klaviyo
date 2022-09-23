@@ -129,17 +129,22 @@ class OrderEventRequestTranslator
 
     private function getOrderShippingAddress(Context $context, OrderEntity $orderEntity): ?OrderAddressEntity
     {
+        $shippingAddress = null;
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('orderId', $orderEntity->getId()));
         $criteria->addSorting(new FieldSorting('createdAt', 'DESC'));
         $criteria->setLimit(1);
 
-        /** @var OrderDeliveryEntity $delivery */
+        /** @var OrderDeliveryEntity|null $delivery */
         $delivery = $this->orderDeliveryRepository
             ->search($criteria, $context)
             ->first();
 
-        return $delivery->getShippingOrderAddress();
+        if ($delivery) {
+            $shippingAddress = $delivery->getShippingOrderAddress();
+        }
+
+        return $shippingAddress;
     }
 
     private function getOrderAddressById(Context $context, string $id): OrderAddressEntity
@@ -147,7 +152,7 @@ class OrderEventRequestTranslator
         $address = $this->orderAddressRepository->search(new Criteria([$id]), $context)->first();
         if (!$address) {
             throw new TranslationException(
-                sprintf('Address[id: %] was not found', $id)
+                \sprintf('Address[id: %s] was not found', $id)
             );
         }
 
@@ -252,7 +257,7 @@ class OrderEventRequestTranslator
     ) {
         if (!ReflectionHelper::isClassInstanceOf($className, AbstractOrderEventTrackingRequest::class)) {
             throw new TranslationException(
-                sprintf(
+                \sprintf(
                     'Unexpected Event tracking request class "%s", descendants of %s expected',
                     $className,
                     AbstractOrderEventTrackingRequest::class

@@ -19,7 +19,7 @@ class SearchProfileIdApiTransferTranslator extends AbstractApiTransferMessageTra
      */
     public function translateRequest(object $request): Request
     {
-        $url = sprintf(
+        $url = \sprintf(
             '%s/people/search?%s=%s&api_key=%s',
             $this->configuration->getListAndSegmentsApiEndpointUrl(),
             $request->getSearchFieldName(),
@@ -50,7 +50,7 @@ class SearchProfileIdApiTransferTranslator extends AbstractApiTransferMessageTra
         if ($response->getStatusCode() !== 200 || $response->getStatusCode() !== 404) {
             throw new TranslationException(
                 $response,
-                sprintf('Invalid profile search API response status code: %s', $response->getStatusCode())
+                \sprintf('Invalid profile search API response status code: %s', $response->getStatusCode())
             );
         }
     }

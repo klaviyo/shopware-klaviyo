@@ -29,7 +29,7 @@ abstract class AbstractApiTransferMessageTranslator implements ApiTransferMessag
         $result = $this->serializer->deserialize($valueForDeserialization, $class, JsonEncoder::FORMAT);
         if (!$result instanceof $class) {
             throw new DeserializationException(
-                sprintf(
+                \sprintf(
                     'Failed to deserialize string into instance of class %s. "%s" received after deserialization',
                     $class,
                     is_object($result) ? get_class($result) : gettype($result)

@@ -9,9 +9,9 @@ class TranslationException extends ClientException
         $reason = "",
         \Throwable $previous = null
     ) {
-        $message = sprintf('Failed to translate "%s".', get_class($translatedValue));
+        $message = \sprintf('Failed to translate "%s".', get_class($translatedValue));
         if ($reason) {
-            $message = sprintf('%s Reason: %s', $message, $reason);
+            $message = \sprintf('%s Reason: %s', $message, $reason);
         }
 
         $this->addToLoggableContext('translatedValue', $translatedValue);

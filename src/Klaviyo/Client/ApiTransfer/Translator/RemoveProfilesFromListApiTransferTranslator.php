@@ -14,7 +14,7 @@ class RemoveProfilesFromListApiTransferTranslator extends AbstractApiTransferMes
     {
         $body = $this->serialize($request);
 
-        $url = sprintf(
+        $url = \sprintf(
             '%s/list/%s/members?api_key=%s',
             $this->configuration->getListAndSegmentsApiEndpointUrl(),
             $request->getListId(),
