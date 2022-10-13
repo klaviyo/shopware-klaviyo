@@ -32,4 +32,9 @@ class ClientRegistry
 
         return $this->clientPerSalesChannelHashMap[$salesChannelId];
     }
+
+    public function getClientByKeys(string $privateKey, string $publicKey): ClientInterface
+    {
+        return $this->clientFactory->create($this->clientConfigurationFactory->createByKeys($privateKey, $publicKey));
+    }
 }
