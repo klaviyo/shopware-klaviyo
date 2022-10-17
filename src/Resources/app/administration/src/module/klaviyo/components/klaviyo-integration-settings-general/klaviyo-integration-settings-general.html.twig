@@ -73,6 +73,23 @@
                 </sw-field>
             {% endblock %}
 
+            {% block klaviyo_integration_settings_general_track_deleted_account_orders %}
+                <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackDeletedAccountOrders']"
+                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackDeletedAccountOrders']"
+                                    :customInheritationCheckFunction="checkBoolFieldInheritance">
+                    <template #content="props">
+                        <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackDeletedAccountOrders"
+                                         :mapInheritance="props"
+                                         :label="$tc('klaviyo-integration-settings.configs.trackDeletedAccountOrders.label')"
+                                         :helpText="$tc('klaviyo-integration-settings.configs.trackDeletedAccountOrders.helpText')"
+                                         :disabled="props.isInherited"
+                                         :value="props.currentValue"
+                                         @change="props.updateCurrentValue">
+                        </sw-switch-field>
+                    </template>
+                </sw-inherit-wrapper>
+            {% endblock %}
+
             {% block klaviyo_integration_settings_general_track_viewed_product %}
                 <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackViewedProduct']"
                                     :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackViewedProduct']"

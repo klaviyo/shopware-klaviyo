@@ -32,6 +32,7 @@ class CheckoutOrderPlacedEventListener implements EventSubscriberInterface
         $eventsBag->add($orderPlacedEvent);
 
         $this->eventsTracker->trackPlacedOrders($event->getContext(), $eventsBag);
+        $this->eventsTracker->trackOrderedProducts($event->getContext(), $eventsBag);
     }
 
     public static function getSubscribedEvents(): array
