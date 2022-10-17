@@ -88,6 +88,10 @@
                 "label": "Klaviyo List name for subscribers sync",
                 "helpText": "The name of the Subscribers list in klaviyo where all Shopware 6 subscribers will be added.\n In case of duplicate names first found list will be used"
             },
+            "trackDeletedAccountOrders": {
+                "label": "Übersicht über die Bestellungen eines gelöschten Kontos",
+                "helpText": "Sollen die Bestellevents von gelöschten Kunden zu Klaviyo synchronisiert werden? Hinweis: Wenn diese Funktion aktiviert ist, können doppelte Klaviyo-Profile synchronisiert werden."
+            },
             "trackViewedProduct": {
                 "label": "Track Viewed Product",
                 "helpText": "Do we need to send \"Viewed Product\" Event to Klaviyo?"

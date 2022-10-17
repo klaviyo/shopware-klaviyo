@@ -4,6 +4,7 @@ namespace Klaviyo\Integration\Klaviyo\Gateway\Translator;
 
 use Klaviyo\Integration\Configuration\ConfigurationRegistry;
 use Klaviyo\Integration\Entity\Helper\AddressDataHelper;
+use Klaviyo\Integration\Exception\JobRuntimeWarningException;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\Common\CustomerProperties;
 use Klaviyo\Integration\Klaviyo\Gateway\Exception\TranslationException;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
@@ -27,6 +28,7 @@ class CustomerPropertiesTranslator
 
     public function translateOrder(Context $context, OrderEntity $orderEntity): CustomerProperties
     {
+        $configuration = $this->configurationRegistry->getConfiguration($orderEntity->getSalesChannelId());
         $orderCustomer = $orderEntity->getOrderCustomer();
         if (!$orderCustomer) {
             throw new TranslationException(
@@ -35,6 +37,12 @@ class CustomerPropertiesTranslator
         }
 
         $customer = $orderCustomer->getCustomer();
+        if ($customer === null && !$configuration->isTrackDeletedAccountOrders()) {
+            throw new JobRuntimeWarningException(
+                \sprintf("Order[id: %s] associated account has been deleted - skipping.", $orderEntity->getId())
+            );
+        }
+
         $customerAddress = $this->guessRelevantCustomerAddress($customer);
 
         $state = $this->addressHelper->getAddressRegion($context, $customerAddress);
