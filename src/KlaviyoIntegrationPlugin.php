@@ -14,7 +14,7 @@ use Shopware\Core\Framework\Plugin\Util\AssetService;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use League\Flysystem\{Filesystem, Adapter\Local};
 
-class overd_klaviyo extends Plugin
+class KlaviyoIntegrationPlugin extends Plugin
 {
     public function activate(ActivateContext $activateContext): void
     {

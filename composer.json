@@ -25,7 +25,7 @@
         }
     ],
     "extra": {
-        "shopware-plugin-class": "Klaviyo\\Integration\\overd_klaviyo",
+        "shopware-plugin-class": "Klaviyo\\Integration\\KlaviyoIntegrationPlugin",
         "plugin-icon": "src/Resources/config/plugin.png",
         "label": {
             "de-DE": "Klaviyo Integration Plugin",
