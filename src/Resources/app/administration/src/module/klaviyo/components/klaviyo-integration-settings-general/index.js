@@ -1,10 +1,13 @@
 import template from './klaviyo-integration-settings-general.html.twig';
 import './klaviyo-integration-settings-general.scss';
 
-const {Component} = Shopware;
+const {Component, Mixin, Utils} = Shopware;
 
 Component.register('klaviyo-integration-settings-general', {
     template,
+
+    inject: ['klaviyoApiKeyValidatorService'],
+    mixins: [Mixin.getByName('notification')],
 
     props: {
         actualConfigData: {
@@ -40,6 +43,7 @@ Component.register('klaviyo-integration-settings-general', {
     data() {
         return {
             isLoading: false,
+            apiValidationInProgress: false
         };
     },
 
@@ -93,6 +97,64 @@ Component.register('klaviyo-integration-settings-general', {
 
         checkBoolFieldInheritance(value) {
             return typeof value !== 'boolean';
+        },
+
+        validateApiCredentials() {
+            this.apiValidationInProgress = true;
+            const privateKey = this.actualConfigData['KlaviyoIntegrationPlugin.config.privateApiKey'];
+            const publicKey = this.actualConfigData['KlaviyoIntegrationPlugin.config.publicApiKey'];
+            const list = this.actualConfigData['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync'];
+
+            if (!(this.credentialsEmptyValidation('privateApiKey', privateKey) * this.credentialsEmptyValidation('publicApiKey', publicKey) * this.credentialsEmptyValidation('klaviyoListForSubscribersSync', list))) {
+                this.apiValidationInProgress = false;
+                return;
+            }
+
+            this.klaviyoApiKeyValidatorService.validate(privateKey, publicKey, list).then((response) => {
+                if (response.status !== 200) {
+                    this.createNotificationError({
+                        message: this.$tc('klaviyo-integration-settings.configs.apiValidation.generalErrorMessage'),
+                    });
+                    return;
+                }
+                const data = response.data;
+
+                if (data.success) {
+                    this.createNotificationSuccess({
+                        title: this.$root.$tc('global.default.success'),
+                        message: this.$tc('klaviyo-integration-settings.configs.apiValidation.correctApiMessage'),
+                    });
+                } else if (data.general_error) {
+                    this.createNotificationError({
+                        message: this.$tc('klaviyo-integration-settings.configs.apiValidation.generalErrorMessage'),
+                    });
+                } else if (data.incorrect_credentials) {
+                    this.createNotificationError({
+                        title: this.$tc('klaviyo-integration-settings.configs.apiValidation.incorrectCredentialsTitle'),
+                        message: data.incorrect_credentials_message,
+                    });
+                } else if (data.incorrect_list) {
+                    this.createNotificationWarning({
+                        message: this.$tc('klaviyo-integration-settings.configs.apiValidation.listNotExistMessage'),
+                    });
+                }
+            }).catch(() => {
+                this.createNotificationError({
+                    message: this.$tc('klaviyo-integration-settings.configs.apiValidation.generalErrorMessage'),
+                });
+            }).finally(() => {
+                this.apiValidationInProgress = false;
+            });
+        },
+
+        credentialsEmptyValidation(key, value) {
+            if (value === undefined || value === '' || value === null) {
+                this.createNotificationError({
+                    message: this.$tc('klaviyo-integration-settings.configs.apiValidation.emptyErrorMessage', 0, {entityName: this.$tc('klaviyo-integration-settings.configs.' + key + '.label')}),
+                });
+                return false
+            }
+            return true;
         }
     },
 });

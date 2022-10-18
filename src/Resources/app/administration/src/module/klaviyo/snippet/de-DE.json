@@ -131,6 +131,14 @@
             "trackSubscribedToBackInStock": {
                 "label": "Wieder auf Lager tracken",
                 "helpText": "Soll das \"Back In Stock Event\" zu Klaviyo übertragen werden?\n"
+            },
+            "apiValidation": {
+                "buttonLabel": "API-key test",
+                "emptyErrorMessage": "\"{entityName}\" should not be blank!",
+                "generalErrorMessage": "Unable to validate API-keys",
+                "incorrectCredentialsTitle": "Incorrect Credentials",
+                "correctApiMessage": "API-keys are valid",
+                "listNotExistMessage": "The specified list is not in the Klavio account"
             }
         },
         "customer": {

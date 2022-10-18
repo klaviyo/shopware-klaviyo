@@ -23,6 +23,14 @@
                 </sw-alert>
             {% endblock %}
 
+            {% block klaviyo_integration_settings_general_test_api %}
+                <sw-button-process variant="ghost" v-if="selectedSalesChannelId !== null"
+                                   :isLoading="apiValidationInProgress"
+                                   @click="validateApiCredentials">
+                    {{ $tc('klaviyo-integration-settings.configs.apiValidation.buttonLabel') }}
+                </sw-button-process>
+            {% endblock %}
+
             {% block klaviyo_integration_settings_general_enabled %}
                 <sw-switch-field
                     v-if="selectedSalesChannelId !== null"
