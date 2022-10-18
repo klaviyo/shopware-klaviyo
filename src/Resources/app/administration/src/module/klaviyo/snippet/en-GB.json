@@ -78,15 +78,15 @@
             },
             "privateApiKey": {
                 "label": "Klaviyo Private API key",
-                "helpText": "Klaviyo Private API key. You can find it in your klaviyo account"
+                "helpText": "Klaviyo Private API key. You can find it in your Klaviyo account"
             },
             "publicApiKey": {
                 "label": "Klaviyo Public API key",
-                "helpText": "Klaviyo Public API key. You can find it in your klaviyo account"
+                "helpText": "Klaviyo Public API key. You can find it in your Klaviyo account"
             },
             "klaviyoListForSubscribersSync": {
                 "label": "Klaviyo List name for subscribers sync",
-                "helpText": "The name of the Subscribers list in klaviyo where all Shopware 6 subscribers will be added.\n In case of duplicate names first found list will be used"
+                "helpText": "The name of the Subscribers list in Klaviyo where all Shopware 6 subscribers will be added.\n In case of duplicate names first found list will be used"
             },
             "trackDeletedAccountOrders": {
                 "label": "Track Deleted Account's Orders",
