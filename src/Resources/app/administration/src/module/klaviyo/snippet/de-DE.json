@@ -1,25 +1,25 @@
 {
     "klaviyo-job-listing": {
         "general": {
-            "title": "Klaviyo Job Listing",
+            "title": "Klaviyo Job Übersicht",
             "description": "job-listing"
         },
         "menu": {
-            "title": "Klaviyo Job Listing"
+            "title": "Klaviyo Job Übersicht"
         },
         "page": {
             "listing": {
-                "title": "Job Listing",
-                "description": "List of Jobs",
+                "title": "Job Übersicht",
+                "description": "Job Übersicht",
                 "grid": {
                     "column": {
-                        "type": "Type",
-                        "message": "Message",
+                        "type": "Typ",
+                        "message": "Nachricht",
                         "status": "Status",
                         "name": "Name",
-                        "started-at": "Started at",
-                        "finished-at": "Finished at",
-                        "created-at": "Created at"
+                        "started-at": "Begonnen am",
+                        "finished-at": "Fertiggestellt am",
+                        "created-at": "Erstellt am"
                     }
                 }
             },
@@ -31,12 +31,12 @@
         "actions": {
             "reschedule-job": {
                 "button": {
-                    "label": "Reschedule job"
+                    "label": "Job nochmal ausführen"
                 }
             },
             "show-messages": {
                 "button": {
-                    "label": "Show messages"
+                    "label": "Zeige Nachrichten"
                 }
             }
         }
@@ -46,97 +46,97 @@
         "title": "Klaviyo",
         "general": {
             "title": "General",
-            "credentialsAlert": "All credentials must be configured on sales channel level.",
+            "credentialsAlert": "Einstellungen müssen auf Verkaufskanal Ebene durchgeführt sein.",
             "initialization": {
-                "helpText": "After the client starts interacting with the page, the Klaviyo scripts will be initialized. On subsequent page transitions, the scripts will be initialized immediately."
+                "helpText": "Nachdem eun User mit der Seite interagiert hat, werden die Klaviyo-Skripte initialisiert. Bei nachfolgenden Seitenübergängen werden die Skripte sofort initialisiert."
             }
         },
         "pop-up": {
             "title": "Back-In-Stock Pop-up Styles",
-            "open-button-fieldset-label": "Pop-Up opening button",
-            "close-button-fieldset-label": "Pop-Up close button",
-            "subscribe-button-fieldset-label": "Subscribe button",
-            "snippet-button-fieldset-label": "Snippet names",
-            "additional-classes-fieldset-label": "Additional classes",
-            "colorLabel": "Color",
-            "backgroundLabel": "Background",
-            "openBtnLabel": "Open Button",
-            "closeBtnLabel": "Close Button",
+            "open-button-fieldset-label": "Pop-Up öffnen Button",
+            "close-button-fieldset-label": "Pop-Up schließen Button",
+            "subscribe-button-fieldset-label": "Anmelden Button",
+            "snippet-button-fieldset-label": "Snippet Namen",
+            "additional-classes-fieldset-label": "Zusätzliche Klassen",
+            "colorLabel": "Farbe",
+            "backgroundLabel": "Hintergrund",
+            "openBtnLabel": "Öffnen Button",
+            "closeBtnLabel": "Schließen Button",
             "contentMessageLabel": "Content message",
-            "subscribeBtnLabel": "Subscribe Button",
-            "subscribeCheckboxLabel": "Subscribe checkbox text",
-            "emailFieldLabel": "Email field label",
-            "emailFieldPlaceholder": "Email field placeholder"
+            "subscribeBtnLabel": "Anmelden Button",
+            "subscribeCheckboxLabel": "Anmelden Checkbox Text",
+            "emailFieldLabel": "E-Mail Feld Label",
+            "emailFieldPlaceholder": "E-Mail Feld Platzhalter"
         },
         "configs": {
             "credentials": {
-                "messageNotBlank": "This field must be filled."
+                "messageNotBlank": "Pflichtfeld."
             },
             "enabled": {
-                "label": "Enable Account",
-                "helpText": "By switching this toggle you can enable/disable configured Klaviyo account on current sales-channel."
+                "label": "Account aktivieren",
+                "helpText": "Durch Aktivieren dieses Schalters kannst du das konfigurierte Klaviyo-Konto für den aktuellen Verkaufskanal aktivieren/deaktivieren."
             },
             "privateApiKey": {
-                "label": "Klaviyo Private API key",
-                "helpText": "Klaviyo Private API key. You can find it in your klaviyo account"
+                "label": "Klaviyo Private API Schlüssel",
+                "helpText": "Klaviyo Private API Schlüssel. Du findest ihn in deinem Klaviyo Konto."
             },
             "publicApiKey": {
-                "label": "Klaviyo Public API key",
-                "helpText": "Klaviyo Public API key. You can find it in your klaviyo account"
+                "label": "Klaviyo Public API Schlüssel",
+                "helpText": "Klaviyo Public API Schlüssel. Du findest ihn in deinem Klaviyo Konto."
             },
             "klaviyoListForSubscribersSync": {
-                "label": "Klaviyo List name for subscribers sync",
-                "helpText": "The name of the Subscribers list in klaviyo where all Shopware 6 subscribers will be added.\n In case of duplicate names first found list will be used"
+                "label": "Klaviyo Liste für Newsletter Anmeldungen",
+                "helpText": "Der Name der Abonnentenliste in Klaviyo, zu der alle Shopware 6 Abonnenten hinzugefügt werden sollen.\n Bei doppelten Namen wird die zuerst gefundene Liste verwendet."
             },
             "trackViewedProduct": {
-                "label": "Track Viewed Product",
-                "helpText": "Do we need to send \"Viewed Product\" Event to Klaviyo?"
+                "label": "Angesehene Produkte tracken",
+                "helpText": "Soll das \"Viewed Product\" zu Klaviyo übertragen werden?"
             },
             "trackRecentlyViewedItems": {
-                "label": "Track Recently Viewed Items",
-                "helpText": "Do we need to send \"Recently Viewed Items\" Event to Klaviyo?"
+                "label": "Kürzlich angesehene Produkte tracken",
+                "helpText": "Soll das \"Recently Viewed Items\" zu Klaviyo übertragen werden?"
             },
             "trackAddedToCart": {
-                "label": "Track Added to Cart",
-                "helpText": "Do we need to send \"Added to Cart Event\" to Klaviyo?\nDecision will also affect Synchronization of the historical events"
+                "label": "Zum Warenkorb hinzugefügt tracken",
+                "helpText": "Soll das \"Added to Cart Event\" zu Klaviyo übertragen werden?\nDas beeinflusst auch histoirische Events."
             },
             "trackStartedCheckout": {
-                "label": "Track Started Checkout",
-                "helpText": "Do we need to send \"Started Checkout Event\" to Klaviyo?\nDecision will also affect Synchronization of the historical events"
+                "label": "Begonnener Checkout tracken",
+                "helpText": "Soll das \"Started Checkout Event\" zu Klaviyo übertragen werden?\nDas beeinflusst auch histoirische Events."
             },
             "trackPlacedOrder": {
-                "label": "Track Placed Order",
-                "helpText": "Do we need to send \"Placed Order Event\" to Klaviyo?\nDecision will also affect Synchronization of the historical events"
+                "label": "Bestellungen tracken",
+                "helpText": "Soll das \"Placed Order Event\" zu Klaviyo übertragen werden?\nDas beeinflusst auch histoirische Events."
             },
             "trackOrderedProduct": {
-                "label": "Track Ordered Product",
-                "helpText": "Do we need to send \"Ordered Product Event\" to Klaviyo?\nDecision will also affect Synchronization of the historical events"
+                "label": "Bestelltes Produkt tracken",
+                "helpText": "Soll das \"Ordered Product Event\" zu Klaviyo übertragen werden?\nDas beeinflusst auch histoirische Events."
             },
             "trackFulfilledOrder": {
-                "label": "Track Fulfilled Order",
-                "helpText": "Do we need to send \"Fulfilled Order Event\" to Klaviyo?\nDecision will also affect Synchronization of the historical events"
+                "label": "Ausgelieferte Bestellung tracken",
+                "helpText": "Soll das \"Fulfilled Order Event\" zu Klaviyo übertragen werden?\nDas beeinflusst auch histoirische Events."
             },
             "trackCancelledOrder": {
-                "label": "Track Cancelled Order",
-                "helpText": "Do we need to send \"Cancelled Order Event\" to Klaviyo?\nDecision will also affect Synchronization of the historical events"
+                "label": "Stornierte Bestellung tracken",
+                "helpText": "Soll das \"Cancelled Order Event\" zu Klaviyo übertragen werden?\nDas beeinflusst auch histoirische Events."
             },
             "trackRefundedOrder": {
-                "label": "Track Refunded Order",
-                "helpText": "Do we need to send \"Refunded Order Event\" to Klaviyo?\nDecision will also affect Synchronization of the historical events"
+                "label": "Retournierte Bestellung tracken",
+                "helpText": "Soll das \"Refunded Order Event\" zu Klaviyo übertragen werden?\nDas beeinflusst auch histoirische Events."
             },
             "trackSubscribedToBackInStock": {
-                "label": "Track Back In Stock",
-                "helpText": "Do we need to send \"Back In Stock Event\" to Klaviyo?\n"
+                "label": "Wieder auf Lager tracken",
+                "helpText": "Soll das \"Back In Stock Event\" zu Klaviyo übertragen werden?\n"
             }
         },
         "customer": {
-            "title": "Custom Field Mapping",
+            "title": "Zusatzfelder Mapping",
             "fieldMapping": {
-                "labelNotFilledError": "Field Name must be filled.",
-                "noMappingFieldsError": "There are no customer custom fields for mapping.",
+                "labelNotFilledError": "Feldname muss ausgefüllt sein.",
+                "noMappingFieldsError": "Es gibt keine Kunden-Zusatzfelder.",
                 "item": {
-                    "fieldName": "Field Name",
-                    "fieldNamePlaceholder": "Type mapping custom label"
+                    "fieldName": "Zusatzfeld Name",
+                    "fieldNamePlaceholder": "Zusatzfeld Typ"
                 }
             }
         }
@@ -145,40 +145,40 @@
         "not_available": "N/A",
         "subscribers": {
             "last_synchronization_status": {
-                "finished": "Last Synchronization: {status} ({date})",
-                "not_finished": "Last Synchronization: {status}"
+                "finished": "Letzte Synchronisierung: {status} ({date})",
+                "not_finished": "Letzte Synchronisierung: {status}"
             },
-            "last_success_synchronization": "Last Success Synchronization: {date}",
+            "last_success_synchronization": "Letzte erfolgreiche Synchronisierung: {date}",
             "get_synchronization_status": {
-                "failed": "Failed to get Last Subscribers synchronization status"
+                "failed": "Fehler bei letzter Synchronisierung"
             },
             "schedule_synchronization": {
-                "button_label": "Synchronize subscribers",
-                "success": "Subscribers synchronization scheduled",
-                "failed": "Subscribers synchronization failed to schedule",
-                "is_running": "Subscribers synchronization is already running",
-                "is_scheduled": "Subscribers synchronization is already scheduled"
+                "button_label": "Synchronisiere Abonnenten.",
+                "success": "Abonennten Synchronisierung eingeplant.",
+                "failed": "Fehler bei der Planung der Abonennten Synchronisierung.",
+                "is_running": "Abonennten Synchronisierung läuft bereits.",
+                "is_scheduled": "Abonennten Synchronisierung ist bereits eingeplant."
             }
         },
         "historical_events_tracking": {
             "last_synchronization_status": {
-                "finished": "Last Synchronization: {status} ({date})",
-                "not_finished": "Last Synchronization: {status}"
+                "finished": "Letzte Synchronisierung: {status} ({date})",
+                "not_finished": "Letzte Synchronisierung: {status}"
             },
-            "last_success_synchronization": "Last Success Synchronization: {date}",
+            "last_success_synchronization": "Letzte erfolgreiche Synchronisierung: {date}",
             "get_synchronization_status": {
-                "failed": "Failed to get Last Historical Events Tracking synchronization status"
+                "failed": "Fehler bei der historischen Events Tracking Synchronisierung."
             },
             "schedule_synchronization": {
-                "button_label": "Synchronize historical events",
-                "success": "Historical events synchronization scheduled",
-                "failed": "Historical events synchronization failed to schedule",
-                "is_running": "Historical events synchronization is already running",
-                "is_scheduled": "Historical events synchronization is already scheduled"
+                "button_label": "Synchronisiere historische Events.",
+                "success": "Historische Events Synchronisierung eingeplant.",
+                "failed": "Fehler bei Planung der historischen Events Synchronisation.",
+                "is_running": "Historische Events Synchronisation läuft bereits.",
+                "is_scheduled": "Historische Events Synchronisation ist bereits eingeplant."
             }
         },
         "promotion": {
-            "exportInKlaviyoFormatButtonLabel": "Export in Klaviyo Format"
+            "exportInKlaviyoFormatButtonLabel": "Export im Klaviyo Format"
         },
         "productComparison": {
             "templates": {
