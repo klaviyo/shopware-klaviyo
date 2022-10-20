@@ -13,9 +13,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 
 /**
- * @Route(defaults={"_routeScope"={"api"}})
+ * @RouteScope(scopes={"api"})
  */
 class ValidationController extends AbstractController
 {

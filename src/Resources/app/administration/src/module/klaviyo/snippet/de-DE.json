@@ -147,11 +147,11 @@
             },
             "apiValidation": {
                 "buttonLabel": "API-key test",
-                "emptyErrorMessage": "\"{entityName}\" should not be blank!",
-                "generalErrorMessage": "Unable to validate API-keys",
-                "incorrectCredentialsTitle": "Incorrect Credentials",
-                "correctApiMessage": "API-keys are valid",
-                "listNotExistMessage": "The specified list is not in the Klavio account"
+                "emptyErrorMessage": "\"{entityName}\" darf nicht leer sein!",
+                "generalErrorMessage": "API-Schlüssel können nicht validiert werden",
+                "incorrectCredentialsTitle": "Falsche Anmeldeinformationen",
+                "correctApiMessage": "API-keys sind gültig",
+                "listNotExistMessage": "Die angegebene Liste befindet sich nicht im Klaviyo-Konto"
             }
         },
         "customer": {
