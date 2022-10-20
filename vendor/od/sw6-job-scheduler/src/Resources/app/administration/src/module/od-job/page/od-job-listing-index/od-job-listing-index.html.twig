@@ -3,23 +3,23 @@
     <div class="od-job-listing-actions-bar">
       <div class="action-item">
         {% block od_scheduler_job_view_mode %}
-          <sw-select-field v-model="jobDisplayType" label="Display mode">
+          <sw-select-field v-model="jobDisplayType" :label="$tc('job-listing.page.listing.index.display-mode')">
             <option v-for="option in jobDisplayMode" :value="option.value">{{ option.name }}</option>
           </sw-select-field>
 
-          <sw-select-field v-if="jobDisplayType !== 'list'" v-model="sortType" label="Group by">
-            <option value="status">Status</option>
-            <option value="type">Job type</option>
+          <sw-select-field v-if="jobDisplayType !== 'list'" v-model="sortType" :label="$tc('job-listing.page.listing.index.group-by')">
+              <option value="status">{{ $tc('job-listing.page.listing.index.status') }}</option>
+              <option value="type">{{ $tc('job-listing.page.listing.index.job-type') }}</option>
           </sw-select-field>
 
           <sw-datepicker
-            label="Date from"
+            :label="$tc('job-listing.page.listing.index.date-from')"
             v-if="jobDisplayType == 'grouped'"
             v-model="groupCreationDate.fromDate"
           />
 
           <sw-datepicker
-            label="Date to"
+            :label="$tc('job-listing.page.listing.index.date-to')"
             v-if="jobDisplayType == 'grouped'"
             v-model="groupCreationDate.toDate"
           />
@@ -29,7 +29,7 @@
       <div class="cation-item">
         {% block od_scheduler_job_auto_load_switcher %}
           <sw-switch-field class="job-listing-auto-loading-switch" v-model="autoLoadIsActive"
-                           label="Auto load"></sw-switch-field>
+                           :label="$tc('job-listing.page.listing.index.auto-load')"></sw-switch-field>
         {% endblock %}
       </div>
     </div>
@@ -126,7 +126,7 @@
                      :disabled="item.subJobs.length <= 0"
                      @click="showSubJobs(item.id)">
             <sw-icon name="default-action-settings" color="#fff" :small="true" :decorative="true"></sw-icon>
-            Show sub jobs
+              {{ $tc('job-listing.page.listing.index.show-sub-jobs') }}
           </sw-button>
         </template>
         <template #column-messages="{ item }">
@@ -161,7 +161,7 @@
                        :disabled="item.messages.length <= 0"
                        @click="showJobMessages(item)">
               <sw-icon name="default-communication-envelope" color="#fff" :small="true" :decorative="true"></sw-icon>
-              Show job messages
+                {{ $tc('job-listing.page.listing.index.show-job-messages') }}
             </sw-button>
           {% endblock %}
         </template>
@@ -180,7 +180,7 @@
     {% endblock %}
 
     {% block od_entity_listing_job_subs_modal %}
-      <sw-modal class="od-job-sub-jobs-modal" v-if="showJobSubsModal" title="Child Jobs"
+      <sw-modal class="od-job-sub-jobs-modal" v-if="showJobSubsModal" :title="$tc('job-listing.page.listing.grid.column.child-jobs')"
                 @modal-close="showJobSubsModal = false">
         <od-job-sub-jobs v-if="currentJobID" :jobId="currentJobID">
 
@@ -188,14 +188,15 @@
         <template #modal-footer>
           <sw-button variant="primary"
                      @click="showJobSubsModal = false">
-            Close
+              {{ $tc('job-listing.page.listing.index.close') }}
           </sw-button>
         </template>
       </sw-modal>
     {% endblock %}
 
     {% block od_entity_listing_job_messages_modal %}
-      <sw-modal class="od-job-messages-modal" v-if="showMessagesModal" title="Job messages"
+      <sw-modal class="od-job-messages-modal" v-if="showMessagesModal"
+                :title="$tc('job-listing.page.listing.grid.column.messages')"
                 @modal-close="showMessagesModal = false">
         {% block job_messages_listing %}
           <div v-if="currentJobMessages" class="job_list_grid_job_messages-information" style="width:100%;">
@@ -230,7 +231,7 @@
         <template #modal-footer>
           <sw-button variant="primary"
                      @click="showMessagesModal = false">
-            Close
+              {{ $tc('job-listing.page.listing.index.close') }}
           </sw-button>
         </template>
       </sw-modal>

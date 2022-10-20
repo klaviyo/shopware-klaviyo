@@ -101,7 +101,7 @@ Component.register('od-grouped-view', {
                 },
                 {
                     property: 'subJobs',
-                    label: 'Sub jobs',
+                    label: this.$tc('job-listing.page.listing.grid.column.child-jobs'),
                     allowResize: true,
                     width: '250px',
                     visible: true,
@@ -109,7 +109,7 @@ Component.register('od-grouped-view', {
                 },
                 {
                     property: 'messages',
-                    label: 'Messages',
+                    label: this.$tc('job-listing.page.listing.grid.column.messages'),
                     allowResize: true,
                     width: '350px',
                     visible: true,
