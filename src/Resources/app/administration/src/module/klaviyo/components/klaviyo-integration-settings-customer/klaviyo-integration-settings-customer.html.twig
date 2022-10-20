@@ -7,7 +7,7 @@
                 <sw-container columns="2fr 5fr 5fr" gap="16px">
 
                     <sw-switch-field
-                            :label="{{ $tc('sw-boolean-filter.active') }}"
+                            :label="$tc('sw-boolean-filter.active')"
                             :disabled="isLoading"
                             size="small"
                             v-model="mappedField.active">
