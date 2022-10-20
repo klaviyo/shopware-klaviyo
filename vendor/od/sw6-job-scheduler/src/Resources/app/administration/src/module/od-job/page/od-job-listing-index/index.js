@@ -115,7 +115,7 @@ Component.register('od-job-listing-index', {
                 },
                 {
                     property: 'subJobs',
-                    label: 'Child Jobs',
+                    label: this.$tc('job-listing.page.listing.grid.column.child-jobs'),
                     allowResize: true,
                     width: '250px',
                     visible: true,
@@ -123,7 +123,7 @@ Component.register('od-job-listing-index', {
                 },
                 {
                     property: 'messages',
-                    label: 'Messages',
+                    label: this.$tc('job-listing.page.listing.grid.column.messages'),
                     allowResize: true,
                     width: '250px',
                     visible: true,
@@ -135,15 +135,15 @@ Component.register('od-job-listing-index', {
         jobDisplayMode() {
             return [
                 {
-                    name: 'List',
+                    name: this.$tc('job-listing.page.listing.index.list'),
                     value: 'list'
                 },
                 {
-                    name: 'Grouped',
+                    name: this.$tc('job-listing.page.listing.index.grouped'),
                     value: 'grouped'
                 },
                 {
-                    name: 'Chart',
+                    name: this.$tc('job-listing.page.listing.index.chart'),
                     value: 'chart'
                 }
             ]

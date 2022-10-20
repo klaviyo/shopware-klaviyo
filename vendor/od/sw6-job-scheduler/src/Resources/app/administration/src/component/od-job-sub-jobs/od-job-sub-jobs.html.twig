@@ -73,7 +73,7 @@
                                        :disabled="item.messages.length <= 0"
                                        @click="showMessageModal(item.messages)">
                                 <sw-icon name="default-communication-envelope" color="#fff" :small="true" :decorative="true"></sw-icon>
-                                Show messages
+                                {{ $tc('job-listing.actions.show-messages.button.label') }}
                             </sw-button>
                         {% endblock %}
                     </template>
@@ -92,9 +92,9 @@
             {% endblock %}
         </div>
         <div v-else>
-           Loading...
+            {{ $tc('job-listing.page.listing.index.loading') }}
         </div>
-        <sw-modal class="od-job-messages-modal" v-if="showMessagesModal" title="Job messages"
+        <sw-modal class="od-job-messages-modal" v-if="showMessagesModal" :title="$tc('job-listing.page.listing.grid.column.messages')"
                   @modal-close="showMessagesModal = false">
             {% block job_messages_listing %}
                 <div v-if="currentJobMessages" class="job_list_grid_job_messages-information" style="width:100%;">
@@ -129,7 +129,7 @@
             <template #modal-footer>
                 <sw-button variant="primary"
                            @click="showMessagesModal = false">
-                    Close
+                    {{ $tc('job-listing.page.listing.index.close') }}
                 </sw-button>
             </template>
         </sw-modal>

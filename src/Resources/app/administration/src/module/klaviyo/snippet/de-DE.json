@@ -26,6 +26,17 @@
             "detail": {
                 "textHeadline": "Job",
                 "jobChildrenTitle": "Job Children"
+            },
+            "job-listing": {
+                "filter": {
+                    "job-status": "Job Status",
+                    "job-status-placeholder": "Wähle einen Job Status...",
+                    "job-type": "Job Type",
+                    "job-type-placeholder": "Wähle einen Job Type...",
+                    "created-at": "Job erstellt am",
+                    "from": "von",
+                    "to": "bis"
+                }
             }
         },
         "actions": {
@@ -48,6 +59,8 @@
             "title": "General",
             "credentialsAlert": "Einstellungen müssen auf Verkaufskanal Ebene durchgeführt sein.",
             "initialization": {
+                "label": "Klaviyo nach der ersten Interaktion mit der Seite initialisieren.",
+                "general-label": "Interaktionseinstellungen",
                 "helpText": "Nachdem eun User mit der Seite interagiert hat, werden die Klaviyo-Skripte initialisiert. Bei nachfolgenden Seitenübergängen werden die Skripte sofort initialisiert."
             }
         },

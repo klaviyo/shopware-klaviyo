@@ -1,6 +1,7 @@
 import './page/od-job-listing-index';
 
 import enGB from './snippet/en-GB.json';
+import deDE from './snippet/de-DE.json';
 
 const {Module} = Shopware;
 
@@ -13,6 +14,7 @@ Module.register('od-job-listing', {
 
     snippets: {
         'en-GB': enGB,
+        'de-DE': deDE
     },
 
     routes: {

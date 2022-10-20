@@ -26,6 +26,17 @@
             "detail": {
                 "textHeadline": "Job",
                 "jobChildrenTitle": "Job Children"
+            },
+            "job-listing": {
+                "filter": {
+                    "job-status": "Job status",
+                    "job-status-placeholder": "Select job status...",
+                    "job-type": "Job type",
+                    "job-type-placeholder": "Select job type...",
+                    "created-at": "Job Created At",
+                    "from": "From",
+                    "to": "To"
+                }
             }
         },
         "actions": {
@@ -48,6 +59,8 @@
             "title": "General",
             "credentialsAlert": "All credentials must be configured on sales channel level.",
             "initialization": {
+                "label": "Initialize Klaviyo After First Interaction With Page.",
+                "general-label": "Interaction settings",
                 "helpText": "After the client starts interacting with the page, the Klaviyo scripts will be initialized. On subsequent page transitions, the scripts will be initialized immediately."
             }
         },
