@@ -11,7 +11,8 @@
             {% set options = {'customerIdentityInfo': extensionData.customerIdentity } %}
             {% set configurationOptions = {
                 'afterInteraction': extensionData.configuration.afterInteraction,
-                'publicApiKey':  extensionData.configuration.publicApiKey
+                'publicApiKey':  extensionData.configuration.publicApiKey,
+                'customerId': context.customer.id
             } %}
             <div style="display: none;" data-klaviyo-identity-tracking-component=""
                  data-klaviyo-tracking="true"

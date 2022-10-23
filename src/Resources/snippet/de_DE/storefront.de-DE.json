@@ -16,6 +16,10 @@
                 "response-error-message": "Etwas ist schief gelaufen. Bitte nocheinmal probieren!",
                 "response-success-message": "Erfolgreich angemeldet!"
             }
+        },
+        "cookie": {
+            "value": "Klaviyo Cookies",
+            "description": "Ermöglicht die Identifizierung des Benutzers, wenn er nicht angemeldet ist!"
         }
     }
 }
