@@ -24,8 +24,20 @@ class Lifecycle
 
     public function uninstall(UninstallContext $context): void
     {
+        $this->removePendingJobs();
         $this->removeConfigs($context->getContext());
         $this->removeTables();
+    }
+
+    public function removePendingJobs()
+    {
+        $this->connection->executeStatement(
+            "DELETE from `od_scheduler_job` WHERE `status` = :status AND type LIKE :prefix",
+            [
+                'status' => 'pending',
+                'prefix' => 'od-klaviyo%',
+            ],
+        );
     }
 
     public function removeConfigs(Context $context): void
