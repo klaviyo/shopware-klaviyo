@@ -1,12 +1,15 @@
 import Plugin from 'src/plugin-system/plugin.class';
 import Storage from 'src/helper/storage/storage.helper';
+import KlaviyoCookie from '../util/cookie'
 
 export default class KlaviyoTracking extends Plugin {
     static options = {
-        klaviyoInitializedStorageKey: 'klaviyoInitializedStorageKey'
+        klaviyoInitializedStorageKey: 'klaviyoInitializedStorageKey',
+        cookieOff: '__kla_off'
     };
 
     init() {
+        this.refreshCookies();
         this.storage = Storage;
         if (this.options.afterInteraction) {
             if (this.storage.getItem(this.options.klaviyoInitializedStorageKey) !== null) {
@@ -21,6 +24,14 @@ export default class KlaviyoTracking extends Plugin {
 
     registerEvents() {
         window.addEventListener('scroll', this._prepareForInitialization.bind(this), {once: true});
+    }
+
+    refreshCookies() {
+        if (!this.options.customerId && !KlaviyoCookie.getCookie('od-klaviyo-track-allow')) {
+            KlaviyoCookie.setCookie(this.options.cookieOff, true, 30)
+        } else {
+            KlaviyoCookie.setCookie(this.options.cookieOff, true, -1)
+        }
     }
 
     _prepareForInitialization() {
