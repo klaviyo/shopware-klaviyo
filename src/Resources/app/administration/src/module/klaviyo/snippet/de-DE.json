@@ -25,13 +25,13 @@
             },
             "detail": {
                 "textHeadline": "Job",
-                "jobChildrenTitle": "Job Children"
+                "jobChildrenTitle": "Job Kinder"
             },
             "job-listing": {
                 "filter": {
                     "job-status": "Job Status",
                     "job-status-placeholder": "Wähle einen Job Status...",
-                    "job-type": "Job Type",
+                    "job-type": "Job Typ",
                     "job-type-placeholder": "Wähle einen Job Type...",
                     "created-at": "Job erstellt am",
                     "from": "von",
@@ -56,7 +56,7 @@
         "label": "Klaviyo",
         "title": "Klaviyo",
         "general": {
-            "title": "General",
+            "title": "Allgemein",
             "credentialsAlert": "Einstellungen müssen auf Verkaufskanal Ebene durchgeführt sein.",
             "initialization": {
                 "label": "Klaviyo nach der ersten Interaktion mit der Seite initialisieren.",
@@ -65,7 +65,7 @@
             }
         },
         "pop-up": {
-            "title": "Back-In-Stock Pop-up Styles",
+            "title": "Wieder auf Lager Popup-Stile",
             "open-button-fieldset-label": "Pop-Up öffnen Button",
             "close-button-fieldset-label": "Pop-Up schließen Button",
             "subscribe-button-fieldset-label": "Anmelden Button",
@@ -75,10 +75,10 @@
             "backgroundLabel": "Hintergrund",
             "openBtnLabel": "Öffnen Button",
             "closeBtnLabel": "Schließen Button",
-            "contentMessageLabel": "Content message",
+            "contentMessageLabel": "Inhaltsnachricht",
             "subscribeBtnLabel": "Anmelden Button",
-            "subscribeCheckboxLabel": "Anmelden Checkbox Text",
-            "emailFieldLabel": "E-Mail Feld Label",
+            "subscribeCheckboxLabel": "Anmelden Kontrollkästchen-Text",
+            "emailFieldLabel": "E-Mail Feld Etikett",
             "emailFieldPlaceholder": "E-Mail Feld Platzhalter"
         },
         "configs": {
@@ -100,6 +100,10 @@
             "klaviyoListForSubscribersSync": {
                 "label": "Klaviyo Liste für Newsletter Anmeldungen",
                 "helpText": "Der Name der Abonnentenliste in Klaviyo, zu der alle Shopware 6 Abonnenten hinzugefügt werden sollen.\n Bei doppelten Namen wird die zuerst gefundene Liste verwendet."
+            },
+            "trackDeletedAccountOrders": {
+                "label": "Übersicht über die Bestellungen eines gelöschten Kontos",
+                "helpText": "Sollen die Bestellevents von gelöschten Kunden zu Klaviyo synchronisiert werden? Hinweis: Wenn diese Funktion aktiviert ist, können doppelte Klaviyo-Profile synchronisiert werden."
             },
             "trackViewedProduct": {
                 "label": "Angesehene Produkte tracken",
@@ -140,6 +144,14 @@
             "trackSubscribedToBackInStock": {
                 "label": "Wieder auf Lager tracken",
                 "helpText": "Soll das \"Back In Stock Event\" zu Klaviyo übertragen werden?\n"
+            },
+            "apiValidation": {
+                "buttonLabel": "API-key Prüfung",
+                "emptyErrorMessage": "\"{entityName}\" darf nicht leer sein!",
+                "generalErrorMessage": "API-Schlüssel können nicht validiert werden",
+                "incorrectCredentialsTitle": "Falsche Anmeldeinformationen",
+                "correctApiMessage": "API-keys sind gültig",
+                "listNotExistMessage": "Die angegebene Liste befindet sich nicht im Klaviyo-Konto"
             }
         },
         "customer": {
