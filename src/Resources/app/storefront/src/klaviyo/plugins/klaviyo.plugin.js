@@ -22,16 +22,17 @@ export default class KlaviyoTracking extends Plugin {
         this._initKlaviyo();
     }
 
-    registerEvents() {
-        window.addEventListener('scroll', this._prepareForInitialization.bind(this), {once: true});
-    }
-
     refreshCookies() {
+        console.error('Refresh is called');
         if (!this.options.customerId && !KlaviyoCookie.getCookie('od-klaviyo-track-allow')) {
             KlaviyoCookie.setCookie(this.options.cookieOff, true, 30)
         } else {
             KlaviyoCookie.setCookie(this.options.cookieOff, true, -1)
         }
+    }
+
+    registerEvents() {
+        window.addEventListener('scroll', this._prepareForInitialization.bind(this), {once: true});
     }
 
     _prepareForInitialization() {
