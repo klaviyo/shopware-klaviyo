@@ -4,7 +4,6 @@ import KlaviyoCheckoutStartedEventTrackingComponent from './klaviyo/events-track
 import KlaviyoTracking from "./klaviyo/plugins/klaviyo.plugin";
 import KlaviyoBackInStockNotification from "./klaviyo/plugins/kaviyo-back-in-stock-notification.plugin";
 import './reacting-cookie/reacting-cookie'
-console.error('Main is here');
 const PluginManager = window.PluginManager;
 PluginManager.register(
     'KlaviyoIdentityTrackingComponent',

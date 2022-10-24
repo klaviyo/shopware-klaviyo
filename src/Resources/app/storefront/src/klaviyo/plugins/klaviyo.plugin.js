@@ -23,7 +23,6 @@ export default class KlaviyoTracking extends Plugin {
     }
 
     refreshCookies() {
-        console.error('Refresh is called');
         if (!this.options.customerId && !KlaviyoCookie.getCookie('od-klaviyo-track-allow')) {
             KlaviyoCookie.setCookie(this.options.cookieOff, true, 30)
         } else {
