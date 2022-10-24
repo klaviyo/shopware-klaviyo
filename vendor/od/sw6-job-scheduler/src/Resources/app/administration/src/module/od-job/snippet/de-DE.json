@@ -18,11 +18,11 @@
                     "chart": "Diagramm",
                     "group-by": "Gruppiere nach",
                     "status": "Status",
-                    "job-type": "Job Type",
+                    "job-type": "Job Typ",
                     "date-from": "Datum von",
                     "date-to": "Datum bis",
                     "auto-load": "Automatisches Laden",
-                    "child-jobs": "Child-Jobs",
+                    "child-jobs": "Kinder-Jobs",
                     "messages": "Meldungen",
                     "show-sub-jobs": "Sub-Jobs anzeigen",
                     "show-job-messages": "Meldungen zu Jobs anzeigen",
@@ -30,7 +30,7 @@
                     "loading": "Wird geladen..."
                 },
                 "grouped-view": {
-                    "job-info": "Job-Info",
+                    "job-info": "Job-Die Info",
                     "job-messages": "Job-Meldungen",
                     "sub-jobs": "Sub-Jobs"
                 },
@@ -48,7 +48,7 @@
                         "started-at": "Gestartet um",
                         "finished-at": "Fertig um",
                         "created-at": "Beendet um",
-                        "child-jobs": "Child-Jobs",
+                        "child-jobs": "Kinder-Jobs",
                         "messages": "Meldungen",
                         "show-sub-jobs": "Unterjobs anzeigen",
                         "show-job-messages": "Meldungen zu Jobs anzeigen",
@@ -61,13 +61,13 @@
             },
             "detail": {
                 "textHeadline": "Job",
-                "jobChildrenTitle": "Child-Jobs"
+                "jobChildrenTitle": "Kinder-Jobs"
             }
         },
         "actions": {
             "reschedule-job": {
                 "button": {
-                    "label": "Reschedule Job"
+                    "label": "Umplanen Job"
                 }
             },
             "delete-job": {

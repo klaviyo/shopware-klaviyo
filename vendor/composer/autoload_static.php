@@ -15,10 +15,6 @@ class ComposerStaticInitef5fa6064a03e2a4506f51520ff0b1c5
         array (
             'Klaviyo\\Integration\\' => 20,
         ),
-        'F' => 
-        array (
-            'Faker\\' => 6,
-        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -29,10 +25,6 @@ class ComposerStaticInitef5fa6064a03e2a4506f51520ff0b1c5
         'Klaviyo\\Integration\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src',
-        ),
-        'Faker\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/fzaninotto/faker/src/Faker',
         ),
     );
 
