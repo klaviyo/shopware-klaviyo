@@ -61,6 +61,7 @@ class OrderEventsSyncOperation implements JobHandlerInterface
             $eventTypeOrderIds = array_map(fn(EventEntity $event) => $event->getEntityId(), $events);
             $orderCriteria = new Criteria();
             $orderCriteria->addFilter(new EqualsAnyFilter('id', $eventTypeOrderIds));
+            $orderCriteria->addAssociation('lineItems');
             $orderCriteria->addAssociation('orderCustomer.customer.defaultBillingAddress');
             $orderCriteria->addAssociation('orderCustomer.customer.defaultShippingAddress');
             $orders = $this->orderRepository->search($orderCriteria, $context)->getEntities()->getElements();
