@@ -93,7 +93,7 @@ class KlaviyoGateway
 
         /** @var OrderEventInterface $event */
         foreach ($orderEvents as $event) {
-            foreach ($event->getOrder()->getLineItems() as $lineItem) {
+            foreach ($event->getOrder()->getLineItems() ?? [] as $lineItem) {
                 if ($lineItem->getType() !== 'product') {
                     continue;
                 }
