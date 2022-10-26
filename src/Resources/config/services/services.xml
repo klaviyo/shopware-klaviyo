@@ -157,6 +157,12 @@
                 <argument type="service" id="service_container"/>
             </call>
         </service>
+
+        <service id="Klaviyo\Integration\Decorator\Storefront\Framework\Cookie\KlaviyoCookieProvider"
+                 decorates="Shopware\Storefront\Framework\Cookie\CookieProviderInterface">
+            <argument type="service"
+                      id="Klaviyo\Integration\Decorator\Storefront\Framework\Cookie\KlaviyoCookieProvider.inner"/>
+        </service>
         <!-- /Decorators -->
     </services>
 

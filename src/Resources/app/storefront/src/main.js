@@ -3,7 +3,7 @@ import KlaviyoProductViewedEventTrackingComponent from './klaviyo/events-trackin
 import KlaviyoCheckoutStartedEventTrackingComponent from './klaviyo/events-tracking/checkout-started-event-tracking-component';
 import KlaviyoTracking from "./klaviyo/plugins/klaviyo.plugin";
 import KlaviyoBackInStockNotification from "./klaviyo/plugins/kaviyo-back-in-stock-notification.plugin";
-
+import './reacting-cookie/reacting-cookie'
 const PluginManager = window.PluginManager;
 PluginManager.register(
     'KlaviyoIdentityTrackingComponent',
