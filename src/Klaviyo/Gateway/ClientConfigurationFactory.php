@@ -24,10 +24,14 @@ class ClientConfigurationFactory
     public function create(string $channelId): ConfigurationInterface
     {
         $pluginConfiguration = $this->pluginConfigurationRegistry->getConfiguration($channelId);
+        return $this->createByKeys($pluginConfiguration->getPrivateApiKey(), $pluginConfiguration->getPublicApiKey());
+    }
 
+    public function createByKeys(string $privateKey, string $publicKey): ConfigurationInterface
+    {
         return new Configuration(
-            $pluginConfiguration->getPrivateApiKey(),
-            $pluginConfiguration->getPublicApiKey(),
+            $privateKey,
+            $publicKey,
             self::TRACKING_ENDPOINT_URL,
             self::IDENTIFY_ENDPOINT_URL,
             self::LIST_AND_SEGMENTS_API_ROOT_ENDPOINT_URL,
