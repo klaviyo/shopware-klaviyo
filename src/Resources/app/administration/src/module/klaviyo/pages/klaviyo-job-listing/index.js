@@ -67,8 +67,8 @@ Component.register('klaviyo-job-listing', {
                 'job-status-filter': {
                     property: 'status',
                     type: 'multi-select-filter',
-                    label: 'Job Status',
-                    placeholder: 'Select status...',
+                    label: this.$tc('klaviyo-job-listing.page.job-listing.filter.job-status'),
+                    placeholder: this.$tc('klaviyo-job-listing.page.job-listing.filter.job-status-placeholder'),
                     valueProperty: 'value',
                     labelProperty: 'name',
                     options: this.statusFilterOptions
@@ -76,18 +76,18 @@ Component.register('klaviyo-job-listing', {
                 'job-type-filter': {
                     property: 'name',
                     type: 'multi-select-filter',
-                    label: 'Job Type',
-                    placeholder: 'Select type...',
+                    label: this.$tc('klaviyo-job-listing.page.job-listing.filter.job-type'),
+                    placeholder: this.$tc('klaviyo-job-listing.page.job-listing.filter.job-type-placeholder'),
                     valueProperty: 'value',
                     labelProperty: 'name',
                     options: this.typeFilterOptions
                 },
                 'job-date-filter': {
                     property: 'createdAt',
-                    label: 'Job Created At',
+                    label: this.$tc('klaviyo-job-listing.page.job-listing.filter.created-at'),
                     dateType: 'datetime-local',
-                    fromFieldLabel: 'From',
-                    toFieldLabel: 'To',
+                    fromFieldLabel: this.$tc('klaviyo-job-listing.page.job-listing.filter.from'),
+                    toFieldLabel: this.$tc('klaviyo-job-listing.page.job-listing.filter.to'),
                     showTimeframe: true,
                 },
             });

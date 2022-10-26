@@ -11,6 +11,29 @@
             "listing": {
                 "title": "Job Listing",
                 "description": "List of Jobs",
+                "index": {
+                    "display-mode": "Display Mode",
+                    "list": "List",
+                    "grouped": "Grouped",
+                    "chart": "Chart",
+                    "group-by": "Group by",
+                    "status": "Status",
+                    "job-type": "Job Type",
+                    "date-from": "Date from",
+                    "date-to": "Date to",
+                    "auto-load": "Auto load",
+                    "child-jobs": "Child Jobs",
+                    "messages": "Messages",
+                    "show-sub-jobs": "Show sub jobs",
+                    "show-job-messages": "Show Job Messages",
+                    "close": "Close",
+                    "loading": "Loading..."
+                },
+                "grouped-view": {
+                    "job-info": "Job info",
+                    "job-messages": "Job Messages",
+                    "sub-jobs": "Sub jobs"
+                },
                 "grid": {
                     "job-status": {
                         "succeed": "Success",
@@ -24,7 +47,12 @@
                         "name": "Name",
                         "started-at": "Started at",
                         "finished-at": "Finished at",
-                        "created-at": "Created at"
+                        "created-at": "Created at",
+                        "child-jobs": "Child Jobs",
+                        "messages": "Messages",
+                        "show-sub-jobs": "Show sub jobs",
+                        "show-job-messages": "Show Job Messages",
+                        "close": "Close"
                     },
                     "message-modal": {
                         "label": "Job Messages"

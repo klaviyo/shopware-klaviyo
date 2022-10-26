@@ -2,19 +2,19 @@
     "klaviyo": {
         "back-in-stock": {
             "modal": {
-                "openBtnLabel": "Notify me when available!",
-                "title": "Be notified when the product is back in stock.",
-                "subscribe-to-newsletter": "Subscribe to newsletter",
-                "email": "Email",
+                "openBtnLabel": "Benachrichtigt werden, sobald Artikel wieder lieferbar ist!",
+                "title": "Benachrichtigt werden, sobald Artikel wieder lieferbar ist!",
+                "subscribe-to-newsletter": "Für den Newsletter anmelden.",
+                "email": "E-Mail Adresse",
                 "email-placeholder": "email@example.com",
-                "subscribeBtnLabel": "Subscribe",
-                "contentMessage": "Register to receive a notification when this item comes back in stock.",
-                "closeBtnLabel": "Close"
+                "subscribeBtnLabel": "Anmelden",
+                "contentMessage": "Jetzt Anmelden und sofort benachrichtigt werden, sobald der Artikel wieder lieferbar ist.",
+                "closeBtnLabel": "Schließen"
             },
             "messages": {
-                "not-valid-email": "Email isn't valid formatted email address!",
-                "response-error-message": "Something went wrong, please try again later!",
-                "response-success-message": "You've successfully subscribed!"
+                "not-valid-email": "Kein korrektes E-Mail Format!",
+                "response-error-message": "Etwas ist schief gelaufen. Bitte nocheinmal probieren!",
+                "response-success-message": "Erfolgreich angemeldet!"
             }
         },
         "cookie": {

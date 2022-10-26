@@ -1,13 +1,13 @@
 {% block klaviyo_integration_settings_general %}
     <div>
-        <sw-card title="Interaction settings" class="klaviyo-interaction-settings">
+        <sw-card :title="$tc('klaviyo-integration-settings.general.initialization.general-label')" class="klaviyo-interaction-settings">
             <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.isInitializeKlaviyoAfterInteraction']"
                                 :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.isInitializeKlaviyoAfterInteraction']"
                                 :customInheritationCheckFunction="checkBoolFieldInheritance">
                 <template #content="props">
                     <sw-switch-field name="KlaviyoIntegrationPlugin.config.isInitializeKlaviyoAfterInteraction"
                                      :mapInheritance="props"
-                                     label="Initialize Klaviyo After First Interaction With Page."
+                                     :label="$tc('klaviyo-integration-settings.general.initialization.label')"
                                      :disabled="props.isInherited"
                                      :value="props.currentValue"
                                      :helpText="$tc('klaviyo-integration-settings.general.initialization.helpText')"
