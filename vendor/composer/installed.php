@@ -7,25 +7,16 @@
         'aliases' => array(),
         'reference' => NULL,
         'name' => 'od/sw6-klaviyo-integration',
-        'dev' => true,
+        'dev' => false,
     ),
     'versions' => array(
-        'fzaninotto/faker' => array(
-            'pretty_version' => 'v1.9.2',
-            'version' => '1.9.2.0',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../fzaninotto/faker',
-            'aliases' => array(),
-            'reference' => '848d8125239d7dbf8ab25cb7f054f1a630e68c2e',
-            'dev_requirement' => true,
-        ),
         'od/sw6-job-scheduler' => array(
             'pretty_version' => '1.0.2',
             'version' => '1.0.2.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../od/sw6-job-scheduler',
             'aliases' => array(),
-            'reference' => '0d5e82c22149d517d72d0d228d2d6fcdcf885223',
+            'reference' => '85d8eb6c7c5a2ecf0dee4057a65a409e70625281',
             'dev_requirement' => false,
         ),
         'od/sw6-klaviyo-integration' => array(

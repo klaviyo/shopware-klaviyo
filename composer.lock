@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://bitbucket.org/overdosedigital/shopware-job-scheduler.git",
-                "reference": "0d5e82c22149d517d72d0d228d2d6fcdcf885223"
+                "reference": "85d8eb6c7c5a2ecf0dee4057a65a409e70625281"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://bitbucket.org/overdosedigital/shopware-job-scheduler/get/0d5e82c22149d517d72d0d228d2d6fcdcf885223.zip",
-                "reference": "0d5e82c22149d517d72d0d228d2d6fcdcf885223",
+                "url": "https://bitbucket.org/overdosedigital/shopware-job-scheduler/get/85d8eb6c7c5a2ecf0dee4057a65a409e70625281.zip",
+                "reference": "85d8eb6c7c5a2ecf0dee4057a65a409e70625281",
                 "shasum": ""
             },
             "require": {
@@ -36,9 +36,9 @@
             "description": "System library for async job scheduling for Shopware 6",
             "homepage": "https://bitbucket.org/overdosedigital/shopware-job-scheduler",
             "support": {
-                "source": "https://bitbucket.org/overdosedigital/shopware-job-scheduler/src/0d5e82c22149d517d72d0d228d2d6fcdcf885223/?at=1.0.2"
+                "source": "https://bitbucket.org/overdosedigital/shopware-job-scheduler/src/85d8eb6c7c5a2ecf0dee4057a65a409e70625281/?at=1.0.2"
             },
-            "time": "2022-10-20T16:26:14+00:00"
+            "time": "2022-10-24T21:46:44+00:00"
         }
     ],
     "packages-dev": [
