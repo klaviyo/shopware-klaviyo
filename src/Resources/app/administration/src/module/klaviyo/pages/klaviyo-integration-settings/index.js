@@ -40,6 +40,17 @@ Component.register('klaviyo-integration-settings', {
             return this.repositoryFactory.create('sales_channel');
         },
 
+        salesChannelCriteria() {
+            // Limit of 500 is fine according same limits on Shopware's official Paypal plugin.
+            const criteria = new Criteria(1, 500);
+            criteria.addFilter(Criteria.equalsAny('typeId', [
+                Defaults.storefrontSalesChannelTypeId,
+                Defaults.apiSalesChannelTypeId,
+            ]));
+
+            return criteria;
+        },
+
         privateKeyErrorState() {
             if (this.privateKeyFilled) {
                 return null;
@@ -110,14 +121,7 @@ Component.register('klaviyo-integration-settings', {
 
         getSalesChannels() {
             this.isLoading = true;
-
-            const criteria = new Criteria();
-            criteria.addFilter(Criteria.equalsAny('typeId', [
-                Defaults.storefrontSalesChannelTypeId,
-                Defaults.apiSalesChannelTypeId,
-            ]));
-
-            this.salesChannelRepository.search(criteria, Shopware.Context.api).then(res => {
+            this.salesChannelRepository.search(this.salesChannelCriteria, Shopware.Context.api).then(res => {
                 res.add({
                     id: null,
                     translated: {

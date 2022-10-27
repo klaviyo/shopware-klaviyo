@@ -1,3 +1,11 @@
+# 1.0.7
+* New: Added api key validation in Klaviyo config
+* New: Added toggling the Klaviyo tracking on and off by cookies
+* New: Cleanup pending jobs during uninstall process
+* New: Changed icon and name of Klaviyo plugin
+* Fix: Removed limitations for sales channel options in Klaviyo config
+* Fix: Added translations for all Klaviyo texts
+
 # 1.0.6
  * Fix: We fixed issue with order empty delivery
  * Fix: We fixed issue with checkout tracker categories

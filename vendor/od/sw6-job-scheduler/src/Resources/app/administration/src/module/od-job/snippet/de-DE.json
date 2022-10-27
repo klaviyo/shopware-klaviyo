@@ -1,0 +1,90 @@
+{
+    "job-listing": {
+        "general": {
+            "title": "Übersicht der Jobs",
+            "description": "Job Übersicht"
+        },
+        "menu": {
+            "title": "Job Übersicht"
+        },
+        "page": {
+            "listing": {
+                "title": "Job Übersicht",
+                "description": "Liste der Jobs",
+                "index": {
+                    "display-mode": "Anzeigemodus",
+                    "list": "Übersicht",
+                    "grouped": "Gruppiert",
+                    "chart": "Diagramm",
+                    "group-by": "Gruppiere nach",
+                    "status": "Status",
+                    "job-type": "Job Typ",
+                    "date-from": "Datum von",
+                    "date-to": "Datum bis",
+                    "auto-load": "Automatisches Laden",
+                    "child-jobs": "Kinder-Jobs",
+                    "messages": "Meldungen",
+                    "show-sub-jobs": "Sub-Jobs anzeigen",
+                    "show-job-messages": "Meldungen zu Jobs anzeigen",
+                    "close": "Schließen",
+                    "loading": "Wird geladen..."
+                },
+                "grouped-view": {
+                    "job-info": "Job-Die Info",
+                    "job-messages": "Job-Meldungen",
+                    "sub-jobs": "Sub-Jobs"
+                },
+                "grid": {
+                    "job-status": {
+                        "succeed": "erfolgreich",
+                        "error": "fehlgeschlagen",
+                        "pending": "ausstehend",
+                        "running": "in Bearbeitung"
+                    },
+                    "column": {
+                        "type": "Typ",
+                        "status": "Status",
+                        "name": "Name",
+                        "started-at": "Gestartet um",
+                        "finished-at": "Fertig um",
+                        "created-at": "Beendet um",
+                        "child-jobs": "Kinder-Jobs",
+                        "messages": "Meldungen",
+                        "show-sub-jobs": "Unterjobs anzeigen",
+                        "show-job-messages": "Meldungen zu Jobs anzeigen",
+                        "close": "Schließen"
+                    },
+                    "message-modal": {
+                        "label": "Job-Meldungen"
+                    }
+                }
+            },
+            "detail": {
+                "textHeadline": "Job",
+                "jobChildrenTitle": "Kinder-Jobs"
+            }
+        },
+        "actions": {
+            "reschedule-job": {
+                "button": {
+                    "label": "Umplanen Job"
+                }
+            },
+            "delete-job": {
+                "button": {
+                    "label": "Job löschen"
+                }
+            },
+            "view-job": {
+                "button": {
+                    "label": "Job anzeigen"
+                }
+            },
+            "show-messages": {
+                "button": {
+                    "label": "Meldungen anzeigen"
+                }
+            }
+        }
+    }
+}

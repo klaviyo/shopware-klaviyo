@@ -1,5 +1,5 @@
 {
-    "version": "1.0.6",
+    "version": "1.0.7",
     "name": "od/sw6-klaviyo-integration",
     "description": "Shopware 6 plugin for Klaviyo integration",
     "type": "shopware-platform-plugin",
@@ -28,8 +28,12 @@
         "shopware-plugin-class": "Klaviyo\\Integration\\overd_klaviyo",
         "plugin-icon": "src/Resources/config/plugin.png",
         "label": {
-            "de-DE": "Klaviyo Integration Plugin",
-            "en-GB": "Klaviyo Integration Plugin"
+            "de-DE": "Klaviyo: Email Marketing & SMS",
+            "en-GB": "Klaviyo: Email Marketing & SMS"
+        },
+        "description": {
+            "de-DE": "Klaviyo: Email Marketing & SMS",
+            "en-GB": "Klaviyo: Email Marketing & SMS"
         }
     },
     "require": {
@@ -37,7 +41,7 @@
         "shopware/administration": "~v6.4.0",
         "shopware/core": "~v6.4.0",
         "shopware/storefront": "~v6.4.0",
-        "od/sw6-job-scheduler": "^1.0.1",
+        "od/sw6-job-scheduler": "1.0.2",
         "ext-json": "*"
     },
     "require-dev": {

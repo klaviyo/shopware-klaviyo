@@ -26,6 +26,17 @@
             "detail": {
                 "textHeadline": "Job",
                 "jobChildrenTitle": "Job Children"
+            },
+            "job-listing": {
+                "filter": {
+                    "job-status": "Job status",
+                    "job-status-placeholder": "Select job status...",
+                    "job-type": "Job type",
+                    "job-type-placeholder": "Select job type...",
+                    "created-at": "Job Created At",
+                    "from": "From",
+                    "to": "To"
+                }
             }
         },
         "actions": {
@@ -48,6 +59,8 @@
             "title": "General",
             "credentialsAlert": "All credentials must be configured on sales channel level.",
             "initialization": {
+                "label": "Initialize Klaviyo After First Interaction With Page.",
+                "general-label": "Interaction settings",
                 "helpText": "After the client starts interacting with the page, the Klaviyo scripts will be initialized. On subsequent page transitions, the scripts will be initialized immediately."
             }
         },
@@ -78,15 +91,15 @@
             },
             "privateApiKey": {
                 "label": "Klaviyo Private API key",
-                "helpText": "Klaviyo Private API key. You can find it in your klaviyo account"
+                "helpText": "Klaviyo Private API key. You can find it in your Klaviyo account"
             },
             "publicApiKey": {
                 "label": "Klaviyo Public API key",
-                "helpText": "Klaviyo Public API key. You can find it in your klaviyo account"
+                "helpText": "Klaviyo Public API key. You can find it in your Klaviyo account"
             },
             "klaviyoListForSubscribersSync": {
                 "label": "Klaviyo List name for subscribers sync",
-                "helpText": "The name of the Subscribers list in klaviyo where all Shopware 6 subscribers will be added.\n In case of duplicate names first found list will be used"
+                "helpText": "The name of the Subscribers list in Klaviyo where all Shopware 6 subscribers will be added.\n In case of duplicate names first found list will be used"
             },
             "trackViewedProduct": {
                 "label": "Track Viewed Product",
@@ -134,7 +147,7 @@
                 "generalErrorMessage": "Unable to validate API-keys",
                 "incorrectCredentialsTitle": "Incorrect Credentials",
                 "correctApiMessage": "API-keys are valid",
-                "listNotExistMessage": "The specified list is not in the Klavio account"
+                "listNotExistMessage": "The specified list is not in the Klaviyo account"
             }
         },
         "customer": {

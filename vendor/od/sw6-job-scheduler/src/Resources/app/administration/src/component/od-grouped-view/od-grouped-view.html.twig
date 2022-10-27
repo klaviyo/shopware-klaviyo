@@ -73,7 +73,7 @@
                             <sw-button v-if="item.subJobs.length > 0" class="sub-job-show-modal" size="small" variant="primary"
                                        :disabled="item.subJobs.length <= 0" @click="showSubJobs(item.id)">
                                 <sw-icon name="default-action-settings" color="#fff" :small="true" :decorative="true"></sw-icon>
-                                Show sub jobs
+                                {{ $tc('job-listing.page.listing.grid.column.show-sub-jobs') }}
                             </sw-button>
                         </template>
                         <template #column-messages="{ item }">
@@ -126,7 +126,7 @@
             </sw-collapse>
         </div>
         {% block od_entity_listing_job_info_modal %}
-            <sw-modal class="od-job-info-modal" v-if="showJobInfoModal" title="Job info"
+            <sw-modal class="od-job-info-modal" v-if="showJobInfoModal" :title="$tc('job-listing.page.listing.grouped-view.job-info')"
                       @modal-close="showJobInfoModal = false">
                 <od-job-info v-if="currentJobID" :jobId="currentJobID">
 
@@ -134,14 +134,14 @@
                 <template #modal-footer>
                     <sw-button variant="primary"
                                @click="showJobInfoModal = false">
-                        Close
+                        {{ $tc('job-listing.page.listing.index.close') }}
                     </sw-button>
                 </template>
             </sw-modal>
         {% endblock %}
 
         {% block od_entity_listing_job_subs_modal %}
-            <sw-modal class="od-job-sub-jobs-modal" v-if="showJobSubsModal" title="Sub jobs"
+            <sw-modal class="od-job-sub-jobs-modal" v-if="showJobSubsModal" :title="$tc('job-listing.page.listing.grouped-view.sub-jobs')"
                       @modal-close="showJobSubsModal = false">
                 <od-job-sub-jobs v-if="currentJobID" :jobId="currentJobID">
 
@@ -149,14 +149,14 @@
                 <template #modal-footer>
                     <sw-button variant="primary"
                                @click="showJobSubsModal = false">
-                        Close
+                        {{ $tc('job-listing.page.listing.index.close') }}
                     </sw-button>
                 </template>
             </sw-modal>
         {% endblock %}
 
         {% block od_entity_listing_job_messages_modal %}
-            <sw-modal class="od-job-messages-modal" v-if="showMessagesModal" title="Job messages"
+            <sw-modal class="od-job-messages-modal" v-if="showMessagesModal" :title="$tc('job-listing.page.listing.grouped-view.job-messages')"
                       @modal-close="showMessagesModal = false">
                 {% block job_messages_listing %}
                     <sw-data-grid
@@ -206,7 +206,7 @@
                 <template #modal-footer>
                     <sw-button variant="primary"
                                @click="showMessagesModal = false">
-                        Close
+                        {{ $tc('job-listing.page.listing.index.close') }}
                     </sw-button>
                 </template>
             </sw-modal>

@@ -248,17 +248,17 @@ Component.register('od-scheduler-charts', {
         statusCharts() {
             return [
                 {
-                    name: 'Succeed',
+                    name: this.$tc('job-listing.page.listing.grid.job-status.succeed'),
                     data: [],
                     color: '#37d046'
                 },
                 {
-                    name: 'Failed',
+                    name: this.$tc('job-listing.page.listing.grid.job-status.error'),
                     data: [],
                     color: '#de294c'
                 },
                 {
-                    name: 'Pending',
+                    name: this.$tc('job-listing.page.listing.grid.job-status.pending'),
                     data: [],
                     color: '#d1d9e0'
                 }
