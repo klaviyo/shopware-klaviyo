@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://bitbucket.org/overdosedigital/shopware-job-scheduler.git",
-                "reference": "85d8eb6c7c5a2ecf0dee4057a65a409e70625281"
+                "reference": "0d5e82c22149d517d72d0d228d2d6fcdcf885223"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://bitbucket.org/overdosedigital/shopware-job-scheduler/get/85d8eb6c7c5a2ecf0dee4057a65a409e70625281.zip",
-                "reference": "85d8eb6c7c5a2ecf0dee4057a65a409e70625281",
+                "url": "https://bitbucket.org/overdosedigital/shopware-job-scheduler/get/0d5e82c22149d517d72d0d228d2d6fcdcf885223.zip",
+                "reference": "0d5e82c22149d517d72d0d228d2d6fcdcf885223",
                 "shasum": ""
             },
             "require": {
