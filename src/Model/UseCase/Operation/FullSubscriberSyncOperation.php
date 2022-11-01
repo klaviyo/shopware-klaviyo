@@ -42,6 +42,7 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
      */
     public function execute(object $message): JobResult
     {
+        $subOperationCount = 0;
         $result = new JobResult();
         $context = Context::createDefaultContext();
         $channelIds = $this->getValidChannels->execute()->map(fn(SalesChannelEntity $channel) => $channel->getId());
@@ -86,11 +87,12 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
 
         $iterator = new RepositoryIterator($this->subscriberRepository, $context, $criteria);
         while (($subscriberIds = $iterator->fetchIds()) !== null) {
-            $this->scheduleBackgroundJob->scheduleSubscriberSyncJob(
-                \array_values(\array_diff($subscriberIds, $excludedSubscriberIds)),
-                $message->getJobId()
-            );
+            $subscriberIds = \array_values(\array_diff($subscriberIds, $excludedSubscriberIds));
+            $subOperationCount++;
+            $this->scheduleBackgroundJob->scheduleSubscriberSyncJob($subscriberIds, $message->getJobId());
         }
+
+        $result->addMessage(new Message\InfoMessage(\sprintf('Total %s jobs has been scheduled.', $subOperationCount)));
 
         foreach ($schedulingResult->getErrors() as $error) {
             $result->addMessage(new Message\ErrorMessage($error->getMessage()));

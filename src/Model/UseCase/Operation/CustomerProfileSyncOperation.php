@@ -7,6 +7,7 @@ use Klaviyo\Integration\System\Tracking\Event\Customer\ProfileEventsBag;
 use Klaviyo\Integration\System\Tracking\EventsTrackerInterface;
 use Od\Scheduler\Model\Job\JobHandlerInterface;
 use Od\Scheduler\Model\Job\JobResult;
+use Od\Scheduler\Model\Job\Message\InfoMessage;
 use Shopware\Core\Checkout\Customer\CustomerCollection;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -34,6 +35,11 @@ class CustomerProfileSyncOperation implements JobHandlerInterface
      */
     public function execute(object $message): JobResult
     {
+        $result = new JobResult();
+        $result->addMessage(
+            new InfoMessage(\sprintf('Total %s customer profiles to update.', \count($message->getCustomerIds())))
+        );
+
         $context = Context::createDefaultContext();
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsAnyFilter('id', $message->getCustomerIds()));
