@@ -43,6 +43,12 @@
                 <argument type="service" id="service_container"/>
             </call>
         </service>
+        <service id="Klaviyo\Integration\Controller\Storefront\CartController" public="true">
+            <argument type="service" id="Klaviyo\Integration\Storefront\Checkout\Cart\RestorerService\RestorerService"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
         <!-- /Controllers -->
 
         <!-- Listeners -->
@@ -96,6 +102,11 @@
             <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannelConfig"/>
             <tag name="kernel.event_subscriber"/>
         </service>
+        <service id="Klaviyo\Integration\EventListener\CartEventListeners">
+            <argument type="service" id="klaviyo_checkout_mapping.repository"/>
+            <argument type="service" id="logger"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
         <!-- /Listeners -->
 
         <service id="Klaviyo\Integration\Entity\Helper\AddressDataHelper">
@@ -122,7 +133,8 @@
             <argument type="service" id="Klaviyo\Integration\Entity\Helper\ProductDataHelper"/>
         </service>
         <service id="Klaviyo\Integration\Klaviyo\FrontendApi\Translator\StartedCheckoutEventTrackingRequestTranslator">
-            <argument type="service" id="router.default"/>
+            <argument type="service"
+                      id="Klaviyo\Integration\Storefront\Checkout\Cart\RestoreUrlService\RestoreUrlService"/>
             <argument type="service" id="Klaviyo\Integration\Entity\Helper\ProductDataHelper"/>
         </service>
         <service id="Klaviyo\Integration\Klaviyo\Promotion\PromotionsExporter">
@@ -170,6 +182,21 @@
                       id="Klaviyo\Integration\Decorator\Storefront\Framework\Cookie\KlaviyoCookieProvider.inner"/>
         </service>
         <!-- /Decorators -->
+
+        <service id="Klaviyo\Integration\Storefront\Checkout\Cart\RestoreUrlService\RestoreUrlService">
+            <argument type="service" id="klaviyo_checkout_mapping.repository"/>
+            <argument type="service" id="router.default"/>
+            <argument type="service" id="request_stack"/>
+        </service>
+
+        <service id="Klaviyo\Integration\Storefront\Checkout\Cart\RestorerService\RestorerService">
+            <argument type="service" id="klaviyo_checkout_mapping.repository"/>
+            <argument type="service" id="order.repository"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\CartRuleLoader"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\Order\OrderConverter"/>
+            <argument type="service" id="logger"/>
+        </service>
     </services>
 
 </container>
