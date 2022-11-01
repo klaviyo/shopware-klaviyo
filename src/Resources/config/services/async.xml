@@ -14,6 +14,14 @@
             <argument type="service" id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob"/>
             <tag name="messenger.message_handler"/>
         </service>
+        <service id="Klaviyo\Integration\Async\Task\OldJobCleanupScheduledTask">
+            <tag name="shopware.scheduled.task"/>
+        </service>
+        <service id="Klaviyo\Integration\Async\TaskHandler\OldJobCleanupScheduledTaskHandler">
+            <argument type="service" id="scheduled_task.repository"/>
+            <argument type="service" id="od_scheduler_job.repository"/>
+            <tag name="messenger.message_handler"/>
+        </service>
         <!-- /Message Handlers and Scheduled Tasks -->
         <!-- Operations' definitions -->
         <service id="Klaviyo\Integration\Model\UseCase\Operation\EventsProcessingOperation">
