@@ -7,6 +7,7 @@ use Klaviyo\Integration\Entity\CheckoutMapping\CheckoutMappingEntity;
 use Klaviyo\Integration\Utils\Logger\ContextHelper;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Checkout\Cart\CartRuleLoader;
 use Shopware\Core\Checkout\Cart\Order\OrderConverter;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Order\OrderEntity;
@@ -14,14 +15,12 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Symfony\Contracts\Service\ResetInterface;
-
 
 class RestorerService implements RestorerServiceInterface
 {
     private EntityRepositoryInterface $mappingRepository;
     private EntityRepositoryInterface $orderRepository;
-    private ResetInterface $cartRuleLoader;
+    private CartRuleLoader $cartRuleLoader;
     private CartService $cartService;
     private OrderConverter $orderConverter;
     private LoggerInterface $logger;
@@ -29,7 +28,7 @@ class RestorerService implements RestorerServiceInterface
     public function __construct(
         EntityRepositoryInterface $mappingRepository,
         EntityRepositoryInterface $orderRepository,
-        ResetInterface $cartRuleLoader,
+        CartRuleLoader $cartRuleLoader,
         CartService $cartService,
         OrderConverter $orderConverter,
         LoggerInterface $logger
