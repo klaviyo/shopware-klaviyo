@@ -71,6 +71,8 @@
         </service>
         <service id="Klaviyo\Integration\EventListener\RestartConsumerAfterPluginConfigChangedEventListener">
             <argument type="service" id="cache.messenger.restart_workers_signal"/>
+            <argument type="service" id="cache.object"/>
+            <argument type="service" id="logger"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 

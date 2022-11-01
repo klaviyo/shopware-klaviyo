@@ -118,59 +118,83 @@ class KlaviyoGateway
 
     public function trackFulfilledOrders(Context $context, string $channelId, array $orderEvents): OrderTrackingResult
     {
-        $requestOrderIdMap = [];
-        $requests = array_map(function (OrderEventInterface $event) use ($context, $requestOrderIdMap) {
-            $request = $this->orderEventRequestTranslator->translateToFulfilledOrderEventRequest(
-                $context,
-                $event->getOrder(),
-                $event->getEventDateTime()
-            );
-            $requestOrderIdMap[spl_object_id($request)] = $event->getOrder()->getId();
+        $requestOrderIdMap = $requests = [];
+        $result = new OrderTrackingResult();
 
-            return $request;
-        }, $orderEvents);
+        /** @var OrderEventInterface $orderEvent */
+        foreach ($orderEvents as $orderEvent) {
+            try {
+                $request = $this->orderEventRequestTranslator->translateToFulfilledOrderEventRequest(
+                    $context,
+                    $orderEvent->getOrder(),
+                    $orderEvent->getEventDateTime()
+                );
+                $requestOrderIdMap[spl_object_id($request)] = $orderEvent->getOrder()->getId();
+                $requests[] = $request;
+            } catch (\Throwable $e) {
+                $result->addFailedOrder($orderEvent->getOrder()->getId(), $e);
+            }
+        }
 
         $clientResult = $this->trackEvents($channelId, $requests);
 
-        return $this->handleClientTrackingResult($clientResult, $requestOrderIdMap, 'FulfilledOrder');
+        return $result->mergeWith(
+            $this->handleClientTrackingResult($clientResult, $requestOrderIdMap, 'FulfilledOrder')
+        );
     }
 
     public function trackCancelledOrders(Context $context, string $channelId, array $orderEvents): OrderTrackingResult
     {
-        $requestOrderIdMap = [];
-        $requests = array_map(function (OrderEventInterface $event) use ($context, $requestOrderIdMap) {
-            $request = $this->orderEventRequestTranslator->translateToCanceledOrderEventRequest(
-                $context,
-                $event->getOrder(),
-                $event->getEventDateTime()
-            );
-            $requestOrderIdMap[spl_object_id($request)] = $event->getOrder()->getId();
+        $requestOrderIdMap = $requests = [];
+        $result = new OrderTrackingResult();
 
-            return $request;
-        }, $orderEvents);
+        /** @var OrderEventInterface $orderEvent */
+        foreach ($orderEvents as $orderEvent) {
+            try {
+                $request = $this->orderEventRequestTranslator->translateToCanceledOrderEventRequest(
+                    $context,
+                    $orderEvent->getOrder(),
+                    $orderEvent->getEventDateTime()
+                );
+                $requestOrderIdMap[spl_object_id($request)] = $orderEvent->getOrder()->getId();
+                $requests[] = $request;
+            } catch (\Throwable $e) {
+                $result->addFailedOrder($orderEvent->getOrder()->getId(), $e);
+            }
+        }
 
         $clientResult = $this->trackEvents($channelId, $requests);
 
-        return $this->handleClientTrackingResult($clientResult, $requestOrderIdMap, 'CancelledOrder');
+        return $result->mergeWith(
+            $this->handleClientTrackingResult($clientResult, $requestOrderIdMap, 'CancelledOrder')
+        );
     }
 
     public function trackRefundedOrders(Context $context, string $channelId, array $orderEvents): OrderTrackingResult
     {
-        $requestOrderIdMap = [];
-        $requests = array_map(function (OrderEventInterface $event) use ($context, $requestOrderIdMap) {
-            $request = $this->orderEventRequestTranslator->translateToRefundedOrderEventRequest(
-                $context,
-                $event->getOrder(),
-                $event->getEventDateTime()
-            );
-            $requestOrderIdMap[spl_object_id($request)] = $event->getOrder()->getId();
+        $requestOrderIdMap = $requests = [];
+        $result = new OrderTrackingResult();
 
-            return $request;
-        }, $orderEvents);
+        /** @var OrderEventInterface $orderEvent */
+        foreach ($orderEvents as $orderEvent) {
+            try {
+                $request = $this->orderEventRequestTranslator->translateToRefundedOrderEventRequest(
+                    $context,
+                    $orderEvent->getOrder(),
+                    $orderEvent->getEventDateTime()
+                );
+                $requestOrderIdMap[spl_object_id($request)] = $orderEvent->getOrder()->getId();
+                $requests[] = $request;
+            } catch (\Throwable $e) {
+                $result->addFailedOrder($orderEvent->getOrder()->getId(), $e);
+            }
+        }
 
         $clientResult = $this->trackEvents($channelId, $requests);
 
-        return $this->handleClientTrackingResult($clientResult, $requestOrderIdMap, 'RefundedOrder');
+        return $result->mergeWith(
+            $this->handleClientTrackingResult($clientResult, $requestOrderIdMap, 'RefundedOrder')
+        );
     }
 
     public function upsertCustomerProfiles(Context $context, string $channelId, CustomerCollection $customers)
