@@ -62,7 +62,7 @@
         <service id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator">
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CustomerPropertiesTranslator"/>
             <argument type="service" id="Klaviyo\Integration\Entity\Helper\ProductDataHelper"/>
-            <argument type="service" id="router.default"/>
+            <argument type="service" id="Klaviyo\Integration\Storefront\Checkout\Cart\RestoreUrlService\RestoreUrlService"/>
             <argument type="service" id="Klaviyo\Integration\Entity\Helper\NewsletterSubscriberHelper"/>
             <argument type="service" id="request_stack"/>
             <argument type="service"

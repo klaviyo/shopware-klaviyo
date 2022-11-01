@@ -7,6 +7,7 @@ use Klaviyo\Integration\Klaviyo\FrontendApi\DTO\CheckoutLineItemInfo;
 use Klaviyo\Integration\Klaviyo\FrontendApi\DTO\CheckoutLineItemInfoCollection;
 use Klaviyo\Integration\Klaviyo\FrontendApi\DTO\StartedCheckoutEventTrackingRequest;
 use Klaviyo\Integration\Klaviyo\Gateway\Exception\TranslationException;
+use Klaviyo\Integration\Storefront\Checkout\Cart\RestoreUrlService\RestoreUrlServiceInterface;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -14,10 +15,10 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class StartedCheckoutEventTrackingRequestTranslator
 {
-    private UrlGeneratorInterface $urlGenerator;
+    private RestoreUrlServiceInterface $urlGenerator;
     private ProductDataHelper $productDataHelper;
 
-    public function __construct(UrlGeneratorInterface $urlGenerator, ProductDataHelper $productDataHelper)
+    public function __construct(RestoreUrlServiceInterface $urlGenerator, ProductDataHelper $productDataHelper)
     {
         $this->urlGenerator = $urlGenerator;
         $this->productDataHelper = $productDataHelper;
@@ -25,13 +26,7 @@ class StartedCheckoutEventTrackingRequestTranslator
 
     public function translate(SalesChannelContext $context, Cart $cart): StartedCheckoutEventTrackingRequest
     {
-        $checkoutUrl = $this->urlGenerator
-            ->generate(
-                'frontend.checkout.confirm.page',
-                [],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            );
-
+        $checkoutUrl = $this->urlGenerator->getCurrentRestoreUrl($context);
         $lineItems = $this->translateToCheckoutLineItems($context, $cart);
 
         return new StartedCheckoutEventTrackingRequest(
