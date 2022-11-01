@@ -12,6 +12,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHandlerInterface
@@ -66,21 +67,33 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
             new EqualsAnyFilter('salesChannelId', $channelIds)
         );
 
-        $errors = $this->scheduleBackgroundJob->scheduleExcludedSubscribersSyncJobs(
+        $schedulingResult = $this->scheduleBackgroundJob->scheduleExcludedSubscribersSyncJobs(
             $context,
             $message->getJobId(),
             $channelIds
         );
-        foreach ($errors as $error) {
-            $result->addMessage(new Message\ErrorMessage($error->getMessage()));
+
+        $excludedSubscriberIds = [];
+        foreach ($schedulingResult->all() as $channelId => $emails) {
+            $excludedCriteria = new Criteria();
+            $excludedCriteria->addFilter(new EqualsFilter('salesChannelId', $channelId));
+            $excludedCriteria->addFilter(new EqualsAnyFilter('email', $emails));
+            $excludedSubscriberIds = \array_merge(
+                $excludedSubscriberIds,
+                \array_values($this->subscriberRepository->searchIds($excludedCriteria, $context)->getIds())
+            );
         }
 
         $iterator = new RepositoryIterator($this->subscriberRepository, $context, $criteria);
         while (($subscriberIds = $iterator->fetchIds()) !== null) {
             $this->scheduleBackgroundJob->scheduleSubscriberSyncJob(
-                $subscriberIds,
+                \array_values(\array_diff($subscriberIds, $excludedSubscriberIds)),
                 $message->getJobId()
             );
+        }
+
+        foreach ($schedulingResult->getErrors() as $error) {
+            $result->addMessage(new Message\ErrorMessage($error->getMessage()));
         }
 
         return $result;
