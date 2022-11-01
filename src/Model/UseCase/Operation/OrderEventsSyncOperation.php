@@ -4,6 +4,7 @@ namespace Klaviyo\Integration\Model\UseCase\Operation;
 
 use Klaviyo\Integration\Async\Message\OrderEventSyncMessage;
 use Klaviyo\Integration\Entity\Event\EventEntity;
+use Klaviyo\Integration\Exception\JobRuntimeWarningException;
 use Klaviyo\Integration\Klaviyo\Gateway\Result\OrderTrackingResult;
 use Klaviyo\Integration\System\Tracking\Event\Order\OrderEvent;
 use Klaviyo\Integration\System\Tracking\Event\Order\OrderTrackingEventsBag;
@@ -20,6 +21,7 @@ class OrderEventsSyncOperation implements JobHandlerInterface
     public const OPERATION_HANDLER_CODE = 'od-klaviyo-order-event-sync-handler';
     private const ALLOWED_EVENT_TYPES = [
         EventsTrackerInterface::ORDER_EVENT_PLACED,
+        EventsTrackerInterface::ORDER_EVENT_ORDERED_PRODUCT,
         EventsTrackerInterface::ORDER_EVENT_REFUNDED,
         EventsTrackerInterface::ORDER_EVENT_CANCELED,
         EventsTrackerInterface::ORDER_EVENT_FULFILLED,
@@ -59,6 +61,7 @@ class OrderEventsSyncOperation implements JobHandlerInterface
             $eventTypeOrderIds = array_map(fn(EventEntity $event) => $event->getEntityId(), $events);
             $orderCriteria = new Criteria();
             $orderCriteria->addFilter(new EqualsAnyFilter('id', $eventTypeOrderIds));
+            $orderCriteria->addAssociation('lineItems');
             $orderCriteria->addAssociation('orderCustomer.customer.defaultBillingAddress');
             $orderCriteria->addAssociation('orderCustomer.customer.defaultShippingAddress');
             $orders = $this->orderRepository->search($orderCriteria, $context)->getEntities()->getElements();
@@ -76,6 +79,9 @@ class OrderEventsSyncOperation implements JobHandlerInterface
             switch ($eventType) {
                 case EventsTrackerInterface::ORDER_EVENT_PLACED:
                     $trackingResult = $this->eventsTracker->trackPlacedOrders($context, $eventsBag);
+                    break;
+                case EventsTrackerInterface::ORDER_EVENT_ORDERED_PRODUCT:
+                    $trackingResult = $this->eventsTracker->trackOrderedProducts($context, $eventsBag);
                     break;
                 case EventsTrackerInterface::ORDER_EVENT_CANCELED:
                     $trackingResult = $this->eventsTracker->trackCanceledOrders($context, $eventsBag);
@@ -99,9 +105,13 @@ class OrderEventsSyncOperation implements JobHandlerInterface
             foreach ($trackingResult->getFailedOrdersErrors() as $orderId => $orderErrors) {
                 /** @var \Throwable $error */
                 foreach ($orderErrors as $error) {
-                    $result->addMessage(new Message\ErrorMessage(
-                        \sprintf('Order[id: %s] error: %s', $orderId, $error->getMessage())
-                    ));
+                    if ($error instanceof JobRuntimeWarningException) {
+                        $result->addMessage(new Message\WarningMessage($error->getMessage()));
+                    } else {
+                        $result->addMessage(new Message\ErrorMessage(
+                            \sprintf('Order[id: %s] error: %s', $orderId, $error->getMessage())
+                        ));
+                    }
                 }
             }
         }

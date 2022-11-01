@@ -105,7 +105,7 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
 
     private function processOrderEvents(Context $context, string $parentJobId, array $channelIds)
     {
-        $iterator = $this->getEventRepoIterator($context, EventsTrackerInterface::ORDER_EVENTS, $channelIds);
+        $iterator = $this->getEventRepoIterator($context, \array_keys(EventsTrackerInterface::ORDER_EVENTS), $channelIds);
 
         while (($eventIds = $iterator->fetchIds()) !== null) {
             $this->scheduleBackgroundJob->scheduleOrderEventsSyncJob($eventIds, $parentJobId);

@@ -42,11 +42,9 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
             );
         }
 
+        $trackDeletedAccountOrders = $this->getBoolConfiguration('trackDeletedAccountOrders', $salesChannelId);
         $trackViewedProduct = $this->getBoolConfiguration('trackViewedProduct', $salesChannelId);
-        $trackRecentlyViewedItems = $this->getBoolConfiguration(
-            'trackRecentlyViewedItems',
-            $salesChannelId
-        );
+        $trackRecentlyViewedItems = $this->getBoolConfiguration('trackRecentlyViewedItems', $salesChannelId);
         $trackAddedToCart = $this->getBoolConfiguration('trackAddedToCart', $salesChannelId);
         $trackStartedCheckout = $this->getBoolConfiguration('trackStartedCheckout', $salesChannelId);
         $trackPlacedOrder = $this->getBoolConfiguration('trackPlacedOrder', $salesChannelId);
@@ -87,6 +85,7 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
             trim($privateApiKey),
             trim($publicApiKey),
             trim($listName),
+            $trackDeletedAccountOrders,
             $trackViewedProduct,
             $trackRecentlyViewedItems,
             $trackAddedToCart,

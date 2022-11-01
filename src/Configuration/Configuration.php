@@ -10,6 +10,7 @@ class Configuration implements ConfigurationInterface
     private string $privateApiKey;
     private string $publicApiKey;
     private string $subscribersListName;
+    private bool $trackDeletedAccountOrders;
     private bool $trackViewedProduct;
     private bool $trackRecentlyViewedItems;
     private bool $trackAddedToCart;
@@ -29,6 +30,7 @@ class Configuration implements ConfigurationInterface
         string $privateApiKey,
         string $publicApiKey,
         string $subscribersListName,
+        bool $trackDeletedAccountOrders,
         bool $trackViewedProduct,
         bool $trackRecentlyViewedItems,
         bool $trackAddedToCart,
@@ -47,6 +49,7 @@ class Configuration implements ConfigurationInterface
         $this->privateApiKey = $privateApiKey;
         $this->publicApiKey = $publicApiKey;
         $this->subscribersListName = $subscribersListName;
+        $this->trackDeletedAccountOrders = $trackDeletedAccountOrders;
         $this->trackViewedProduct = $trackViewedProduct;
         $this->trackRecentlyViewedItems = $trackRecentlyViewedItems;
         $this->trackAddedToCart = $trackAddedToCart;
@@ -80,6 +83,11 @@ class Configuration implements ConfigurationInterface
     public function getSubscribersListName(): string
     {
         return $this->subscribersListName;
+    }
+
+    public function isTrackDeletedAccountOrders(): bool
+    {
+        return $this->trackDeletedAccountOrders;
     }
 
     public function isTrackViewedProduct(): bool
