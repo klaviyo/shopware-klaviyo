@@ -56,7 +56,7 @@ class Lifecycle
     public function removePendingJobs()
     {
         $this->connection->executeStatement(
-            "DELETE from `od_scheduler_job` WHERE `status` = :status AND type LIKE :prefix",
+            "DELETE from `od_scheduler_job` WHERE `type` LIKE :prefix",
             [
                 'prefix' => 'od-klaviyo%',
             ],
