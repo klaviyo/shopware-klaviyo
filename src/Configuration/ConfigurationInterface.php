@@ -8,6 +8,8 @@ interface ConfigurationInterface
 
     public function getPrivateApiKey(): string;
 
+    public function isTrackDeletedAccountOrders(): bool;
+
     public function isTrackViewedProduct(): bool;
 
     public function isTrackAddedToCart(): bool;

@@ -4,6 +4,7 @@ namespace Klaviyo\Integration\Klaviyo\Gateway\Translator;
 
 use Klaviyo\Integration\Configuration\ConfigurationRegistry;
 use Klaviyo\Integration\Entity\Helper\AddressDataHelper;
+use Klaviyo\Integration\Exception\JobRuntimeWarningException;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\Common\CustomerProperties;
 use Klaviyo\Integration\Klaviyo\Gateway\Exception\TranslationException;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
@@ -27,6 +28,7 @@ class CustomerPropertiesTranslator
 
     public function translateOrder(Context $context, OrderEntity $orderEntity): CustomerProperties
     {
+        $configuration = $this->configurationRegistry->getConfiguration($orderEntity->getSalesChannelId());
         $orderCustomer = $orderEntity->getOrderCustomer();
         if (!$orderCustomer) {
             throw new TranslationException(
@@ -35,12 +37,18 @@ class CustomerPropertiesTranslator
         }
 
         $customer = $orderCustomer->getCustomer();
+        if ($customer === null && !$configuration->isTrackDeletedAccountOrders()) {
+            throw new JobRuntimeWarningException(
+                \sprintf("Order[id: %s] associated account has been deleted - skipping.", $orderEntity->getId())
+            );
+        }
+
         $customerAddress = $this->guessRelevantCustomerAddress($customer);
 
         $state = $this->addressHelper->getAddressRegion($context, $customerAddress);
         $country = $this->addressHelper->getAddressCountry($context, $customerAddress);
 
-        $customFields = $this->prepareCustomFields($customer);
+        $customFields = $this->prepareCustomFields($customer, $orderEntity->getSalesChannelId());
 
         return new CustomerProperties(
             $customer ? $customer->getEmail() : $orderCustomer->getEmail(),
@@ -70,13 +78,13 @@ class CustomerPropertiesTranslator
         return $customerEntity->getActiveShippingAddress();
     }
 
-    private function prepareCustomFields(?CustomerEntity $customer): array
+    private function prepareCustomFields(?CustomerEntity $customer, string $channelId): array
     {
         if ($customer === null) {
             return [];
         }
 
-        $configuration = $this->configurationRegistry->getConfiguration($customer->getSalesChannelId());
+        $configuration = $this->configurationRegistry->getConfiguration($channelId);
         $fieldMapping = $configuration->getCustomerCustomFieldMapping();
         $customFields = [];
 
@@ -114,7 +122,7 @@ class CustomerPropertiesTranslator
         $state = $this->addressHelper->getAddressRegion($context, $customerAddress);
         $country = $this->addressHelper->getAddressCountry($context, $customerAddress);
         $birthday = $customerEntity->getBirthday();
-        $customFields = $this->prepareCustomFields($customerEntity);
+        $customFields = $this->prepareCustomFields($customerEntity, $customerEntity->getSalesChannelId());
 
         return new CustomerProperties(
             $customerEntity->getEmail(),

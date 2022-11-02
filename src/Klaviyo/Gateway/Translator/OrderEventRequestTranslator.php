@@ -82,7 +82,7 @@ class OrderEventRequestTranslator
         $discounts = new DiscountInfoCollection();
         $this->ensureOrderLineItemsLoaded($context, $orderEntity);
         /** @var OrderLineItemEntity $lineItem */
-        foreach ($orderEntity->getLineItems() as $lineItem) {
+        foreach ($orderEntity->getLineItems() ?? [] as $lineItem) {
             if ($lineItem->getType() === 'promotion') {
                 $discounts->add(new DiscountInfo($lineItem->getLabel(), $lineItem->getTotalPrice()));
             }
@@ -305,7 +305,7 @@ class OrderEventRequestTranslator
 
         $this->ensureOrderLineItemsLoaded($context, $orderEntity);
         /** @var OrderLineItemEntity $lineItem */
-        foreach ($orderEntity->getLineItems() as $lineItem) {
+        foreach ($orderEntity->getLineItems() ?? [] as $lineItem) {
             if ($lineItem->getType() === 'product') {
                 try {
                     $product = $this->productDataHelper->getLineItemProduct($context, $lineItem);

@@ -3,7 +3,7 @@
 namespace Klaviyo\Integration\Model\UseCase\Operation;
 
 use Klaviyo\Integration\Async\Message\ExcludedSubscriberSyncMessage;
-use Od\Scheduler\Model\Job\{JobHandlerInterface, JobResult};
+use Od\Scheduler\Model\Job\{JobHandlerInterface, JobResult, Message\InfoMessage};
 use Shopware\Core\Content\Newsletter\SalesChannel\NewsletterSubscribeRoute;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -28,11 +28,24 @@ class ExcludedSubscriberSyncOperation implements JobHandlerInterface
      */
     public function execute(object $message): JobResult
     {
+        $result = new JobResult();
         $context = Context::createDefaultContext();
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsAnyFilter('email', $message->getEmails()));
         $criteria->addFilter(new EqualsFilter('salesChannelId', $message->getSalesChannelId()));
         $subscribers = $this->newsletterRepository->search($criteria, $context);
+
+        $result->addMessage(new InfoMessage(\sprintf('Total %s customers was unsubscribed.', \count($message->getEmails()))));
+        if (!empty($message->getEmails())) {
+            $result->addMessage(new InfoMessage(
+                \sprintf(
+                    'Channel[id: %s] unsubscribed emails: %s',
+                    $message->getSalesChannelId(),
+                    \implode(',', $message->getEmails())
+                )
+            ));
+        }
+
         $subscriberData = array_values(array_map(function ($subscriber) {
             return [
                 'id' => $subscriber->getId(),
@@ -40,7 +53,6 @@ class ExcludedSubscriberSyncOperation implements JobHandlerInterface
                 'status' => NewsletterSubscribeRoute::STATUS_OPT_OUT
             ];
         }, $subscribers->getElements()));
-
         $this->newsletterRepository->update($subscriberData, $context);
 
         return new JobResult();

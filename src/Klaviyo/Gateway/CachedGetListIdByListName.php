@@ -2,16 +2,18 @@
 
 namespace Klaviyo\Integration\Klaviyo\Gateway;
 
+use Psr\Cache\CacheItemPoolInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
 
 class CachedGetListIdByListName implements GetListIdByListNameInterface
 {
-    private TagAwareAdapterInterface $cache;
+    public const CACHE_PREFIX = 'od_klaviyo_list_';
+
+    private CacheItemPoolInterface $cache;
     private GetListIdByListName $getListIdByListName;
 
     public function __construct(
-        TagAwareAdapterInterface $cache,
+        CacheItemPoolInterface $cache,
         GetListIdByListName $getListIdByListName
     ) {
         $this->cache = $cache;
@@ -20,7 +22,7 @@ class CachedGetListIdByListName implements GetListIdByListNameInterface
 
     public function execute(SalesChannelEntity $salesChannelEntity, string $listName): string
     {
-        $cacheKey = 'od_klaviyo_list_' . $salesChannelEntity->getId();
+        $cacheKey = self::CACHE_PREFIX . $salesChannelEntity->getId();
         $cachedItem = $this->cache->getItem($cacheKey);
 
         if ($cachedItem->isHit()) {

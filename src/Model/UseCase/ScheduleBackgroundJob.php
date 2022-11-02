@@ -8,6 +8,7 @@ use Klaviyo\Integration\Exception\{JobAlreadyRunningException, JobAlreadySchedul
 use Klaviyo\Integration\Klaviyo\FrontendApi\ExcludedSubscribers\CreateArrayHash;
 use Klaviyo\Integration\Klaviyo\FrontendApi\ExcludedSubscribers\SyncProgressService;
 use Klaviyo\Integration\Model\UseCase\Operation\{FullOrderSyncOperation, FullSubscriberSyncOperation};
+use Klaviyo\Integration\System\Scheduling\ExcludedSubscriberSync;
 use Od\Scheduler\Entity\Job\JobEntity;
 use Od\Scheduler\Model\JobScheduler;
 use Shopware\Core\Framework\Context;
@@ -111,11 +112,14 @@ class ScheduleBackgroundJob
      * @param Context $context
      * @param string $parentJobId
      * @param string[] $channelIds
-     * @return \Exception[]
+     * @return ExcludedSubscriberSync\Result
      */
-    public function scheduleExcludedSubscribersSyncJobs(Context $context, string $parentJobId, array $channelIds): array
-    {
-        $errors = [];
+    public function scheduleExcludedSubscribersSyncJobs(
+        Context $context,
+        string $parentJobId,
+        array $channelIds
+    ): ExcludedSubscriberSync\Result {
+        $schedulingResult = new ExcludedSubscriberSync\Result();
 
         foreach ($channelIds as $channelId) {
             $isFirstLoadedPage = true;
@@ -137,6 +141,7 @@ class ScheduleBackgroundJob
                         $channelId
                     );
                     $this->scheduler->schedule($jobMessage);
+                    $schedulingResult->addEmails($channelId, $result->getEmails());
                 }
 
                 if (isset($result)) {
@@ -145,10 +150,10 @@ class ScheduleBackgroundJob
                     $this->progressService->save($context, $syncInfo);
                 }
             } catch (\Exception $e) {
-                $errors[] = $e;
+                $schedulingResult->addError($e);
             }
         }
 
-        return $errors;
+        return $schedulingResult;
     }
 }

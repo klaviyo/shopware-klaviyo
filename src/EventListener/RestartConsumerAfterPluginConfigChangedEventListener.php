@@ -1,8 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Klaviyo\Integration\EventListener;
 
+use Klaviyo\Integration\Klaviyo\Gateway\CachedGetListIdByListName;
 use Psr\Cache\CacheItemPoolInterface;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SystemConfig\Event\SystemConfigChangedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\EventListener\StopWorkerOnRestartSignalListener;
@@ -10,18 +12,41 @@ use Symfony\Component\Messenger\EventListener\StopWorkerOnRestartSignalListener;
 class RestartConsumerAfterPluginConfigChangedEventListener implements EventSubscriberInterface
 {
     private CacheItemPoolInterface $restartSignalCachePool;
+    private CacheItemPoolInterface $cachePool;
+    private LoggerInterface $logger;
+
+    private bool $consumersRestarted = false;
+    private bool $listCacheCleared = false;
 
     public function __construct(
-        CacheItemPoolInterface $restartSignalCachePool
+        CacheItemPoolInterface $restartSignalCachePool,
+        CacheItemPoolInterface $cachePool,
+        LoggerInterface $logger
     ) {
         $this->restartSignalCachePool = $restartSignalCachePool;
+        $this->cachePool = $cachePool;
+        $this->logger = $logger;
     }
 
     public function onSystemConfigurationChange(SystemConfigChangedEvent $systemConfigChangedEvent)
     {
-        $key = $systemConfigChangedEvent->getKey();
-        if (strpos($key, 'KlaviyoIntegrationPlugin.config') === 0) {
-            $this->restartConsumers();
+        try {
+            $key = $systemConfigChangedEvent->getKey();
+            if (strpos($key, 'KlaviyoIntegrationPlugin.config') === 0) {
+                if ($key === 'KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync' && !$this->listCacheCleared) {
+                    $this->listCacheCleared = true;
+                    $this->cachePool->deleteItem(
+                        CachedGetListIdByListName::CACHE_PREFIX . $systemConfigChangedEvent->getSalesChannelId()
+                    );
+                }
+
+                if (!$this->consumersRestarted) {
+                    $this->consumersRestarted = true;
+                    $this->restartConsumers();
+                }
+            }
+        } catch (\Throwable $e) {
+            $this->logger->error('[Klaviyo] Unable to clear plugin\'s cache, reason:' . $e);
         }
     }
 

@@ -1,0 +1,9 @@
+#klaviyo-plugin {
+    .sw-settings-item__icon.background--enabled {
+        background-color: #333c44;
+    }
+
+    &:hover {
+        background-color: initial;
+    }
+}

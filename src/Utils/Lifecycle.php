@@ -8,23 +8,47 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Lifecycle
 {
     private EntityRepositoryInterface $systemConfigRepository;
     private Connection $connection;
+    private ContainerInterface $container;
+    private bool $hasOtherSchedulerDependency;
 
     public function __construct(
-        EntityRepositoryInterface $systemConfigRepository,
-        Connection $connection
+        ContainerInterface $container,
+        bool $hasOtherSchedulerDependency
     ) {
+        /** @var EntityRepositoryInterface $systemConfigRepository */
+        $systemConfigRepository = $container->get('system_config.repository');
+        /** @var Connection $connection */
+        $connection = $container->get(Connection::class);
+
+        $this->container = $container;
+        $this->hasOtherSchedulerDependency = $hasOtherSchedulerDependency;
+
         $this->systemConfigRepository = $systemConfigRepository;
         $this->connection = $connection;
     }
 
     public function uninstall(UninstallContext $context): void
     {
-        $this->removePendingJobs();
+        if ($this->hasOtherSchedulerDependency) {
+            $this->removePendingJobs();
+        } else {
+            // TODO: OdScheduler must be responsible for its uninstallation - move such operations to it in future.
+            $this->connection->executeStatement('DROP TABLE IF EXISTS `od_scheduler_job_message`');
+            $this->connection->executeStatement('DROP TABLE IF EXISTS `od_scheduler_job`');
+
+            $schedulerMigrationClassWildcard = addcslashes('Od\Scheduler\Migration', '\\_%') . '%';
+            $this->connection->executeUpdate(
+                'DELETE FROM migration WHERE class LIKE :class',
+                ['class' => $schedulerMigrationClassWildcard]
+            );
+        }
+
         $this->removeConfigs($context->getContext());
         $this->removeTables();
     }
@@ -32,9 +56,8 @@ class Lifecycle
     public function removePendingJobs()
     {
         $this->connection->executeStatement(
-            "DELETE from `od_scheduler_job` WHERE `status` = :status AND type LIKE :prefix",
+            "DELETE from `od_scheduler_job` WHERE `type` LIKE :prefix",
             [
-                'status' => 'pending',
                 'prefix' => 'od-klaviyo%',
             ],
         );

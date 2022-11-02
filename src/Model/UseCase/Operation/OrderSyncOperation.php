@@ -3,6 +3,7 @@
 namespace Klaviyo\Integration\Model\UseCase\Operation;
 
 use Klaviyo\Integration\Async\Message\OrderSyncMessage;
+use Klaviyo\Integration\Exception\JobRuntimeWarningException;
 use Klaviyo\Integration\Klaviyo\Gateway\Result\OrderTrackingResult;
 use Klaviyo\Integration\System\Tracking\Event\Order\{OrderEvent, OrderTrackingEventsBag};
 use Klaviyo\Integration\System\Tracking\EventsTrackerInterface as Tracker;
@@ -40,6 +41,7 @@ class OrderSyncOperation implements JobHandlerInterface
         $context = Context::createDefaultContext();
         $eventsBags = [
             Tracker::ORDER_EVENT_PLACED => new OrderTrackingEventsBag(),
+            Tracker::ORDER_EVENT_ORDERED_PRODUCT => new OrderTrackingEventsBag(),
             Tracker::ORDER_EVENT_REFUNDED => new OrderTrackingEventsBag(),
             Tracker::ORDER_EVENT_CANCELED => new OrderTrackingEventsBag(),
             Tracker::ORDER_EVENT_FULFILLED => new OrderTrackingEventsBag(),
@@ -56,6 +58,7 @@ class OrderSyncOperation implements JobHandlerInterface
         /** @var OrderEntity $order */
         foreach ($orderCollection as $order) {
             $eventsBags[Tracker::ORDER_EVENT_PLACED]->add(new OrderEvent($order, $order->getCreatedAt()));
+            $eventsBags[Tracker::ORDER_EVENT_ORDERED_PRODUCT]->add(new OrderEvent($order, $order->getCreatedAt()));
 
             if ($order->getStateMachineState()->getTechnicalName() === OrderStates::STATE_COMPLETED) {
                 $happenedAt = $order->getStateMachineState()->getCreatedAt();
@@ -83,9 +86,17 @@ class OrderSyncOperation implements JobHandlerInterface
             foreach ($trackingResult->getFailedOrdersErrors() as $orderId => $orderErrors) {
                 /** @var \Throwable $error */
                 foreach ($orderErrors as $error) {
-                    $result->addError(new \Exception(
-                        \sprintf('Order[id: %s] error: %s', $orderId, $error->getMessage())
-                    ));
+                    $eventTypeName = Tracker::ORDER_EVENTS[$type] ?? 'Undefined type';
+
+                    if ($error instanceof JobRuntimeWarningException) {
+                        $result->addMessage(new Message\WarningMessage(
+                            \sprintf('[%s] %s', $eventTypeName, $error->getMessage())
+                        ));
+                    } else {
+                        $result->addMessage(new Message\ErrorMessage(
+                            \sprintf('[%s] Order[id: %s] error: %s', $eventTypeName, $orderId, $error->getMessage())
+                        ));
+                    }
                 }
             }
         }
@@ -103,6 +114,9 @@ class OrderSyncOperation implements JobHandlerInterface
         switch ($type) {
             case Tracker::ORDER_EVENT_PLACED:
                 $trackingResult = $this->eventsTracker->trackPlacedOrders($context, $eventsBag);
+                break;
+            case Tracker::ORDER_EVENT_ORDERED_PRODUCT:
+                $trackingResult = $this->eventsTracker->trackOrderedProducts($context, $eventsBag);
                 break;
             case Tracker::ORDER_EVENT_CANCELED:
                 $trackingResult = $this->eventsTracker->trackCanceledOrders($context, $eventsBag);

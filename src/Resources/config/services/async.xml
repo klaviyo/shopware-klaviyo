@@ -14,12 +14,21 @@
             <argument type="service" id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob"/>
             <tag name="messenger.message_handler"/>
         </service>
+        <service id="Klaviyo\Integration\Async\Task\OldJobCleanupScheduledTask">
+            <tag name="shopware.scheduled.task"/>
+        </service>
+        <service id="Klaviyo\Integration\Async\TaskHandler\OldJobCleanupScheduledTaskHandler">
+            <argument type="service" id="scheduled_task.repository"/>
+            <argument type="service" id="od_scheduler_job.repository"/>
+            <tag name="messenger.message_handler"/>
+        </service>
         <!-- /Message Handlers and Scheduled Tasks -->
         <!-- Operations' definitions -->
         <service id="Klaviyo\Integration\Model\UseCase\Operation\EventsProcessingOperation">
             <tag name="od.job_handler" code="od-klaviyo-events-sync-handler"/>
             <argument type="service" id="klaviyo_job_event.repository"/>
             <argument type="service" id="klaviyo_job_cart_request.repository"/>
+            <argument type="service" id="newsletter_recipient.repository"/>
             <argument type="service" id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob"/>
             <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannels"/>
         </service>

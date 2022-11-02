@@ -56,6 +56,7 @@ Component.register('klaviyo-integration-settings-general', {
             const configPrefix = 'KlaviyoIntegrationPlugin.config.',
                 defaultConfigs = {
                     enabled: false,
+                    trackDeletedAccountOrders: false,
                     trackViewedProduct: true,
                     trackRecentlyViewedItems: true,
                     trackAddedToCart: true,
