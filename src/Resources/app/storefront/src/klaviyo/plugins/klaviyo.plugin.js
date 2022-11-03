@@ -2,49 +2,95 @@ import Plugin from 'src/plugin-system/plugin.class';
 import Storage from 'src/helper/storage/storage.helper';
 import KlaviyoCookie from '../util/cookie'
 
+/**
+ * This component is responsible for Klaviyo script initialization on storefront.
+ * We have some component behavior-defining restrictions from cookie consent and Klaviyo script deferred initialization.
+ * There is all possible Klaviyo script initialization cases:
+ *
+ * Glossary:
+ * - "INTERACT" -> Customer interacts with page by scrolling it.
+ * - "CONSENT" -> Customer allowed Klaviyo cookies.
+ *
+ * 1. Preconditions: deferred script initialization is ON
+ *    Steps:
+ *    A) INTERACT -> "klaviyoInitializedStorageKey" is added to localStorage;
+ *    B) CONSENT -> "od-klaviyo-track-allow" is added + Klaviyo script is initialized.
+ *
+ * 2. Preconditions: deferred script initialization is ON
+ *    Steps:
+ *    A) CONSENT -> "od-klaviyo-track-allow" cookie is added;
+ *    B) INTERACT -> "klaviyoInitializedStorageKey" is added to localStorage + Klaviyo script is initialized.
+ *
+ * 3. Preconditions: deferred script initialization is OFF
+ *    Steps:
+ *    A) INTERACT -> nothing happens;
+ *    B) CONSENT -> "od-klaviyo-track-allow" is added + Klaviyo script is initialized.
+ *
+ * 4. Preconditions: deferred script initialization is OFF
+ *    Steps:
+ *    A) CONSENT -> "od-klaviyo-track-allow" is added + Klaviyo script is initialized;
+ *    B) INTERACT -> "nothing happens.
+ *
+ * Note: If deferred script initialization is enabled, customer had interacted with page and reloaded current page
+ * or opened next page, Klaviyo script will be initialized immediately
+ */
 export default class KlaviyoTracking extends Plugin {
     static options = {
         klaviyoInitializedStorageKey: 'klaviyoInitializedStorageKey',
-        cookieOff: '__kla_off'
+        scriptInitialized: false,
+        afterInteraction: false,
+        publicApiKey: '',
     };
 
     init() {
-        this.refreshCookies();
         this.storage = Storage;
-        if (this.options.afterInteraction) {
-            if (this.storage.getItem(this.options.klaviyoInitializedStorageKey) !== null) {
-                return this._initKlaviyo();
-            } else {
-                return this.registerEvents();
-            }
+
+        if (this.canInitializeKlaviyoScript()) {
+            this.initKlaviyoScript();
         }
 
-        this._initKlaviyo();
-    }
-
-    refreshCookies() {
-        if (!this.options.customerId && !KlaviyoCookie.getCookie('od-klaviyo-track-allow')) {
-            KlaviyoCookie.setCookie(this.options.cookieOff, true, 30)
-        } else {
-            KlaviyoCookie.setCookie(this.options.cookieOff, true, -1)
-        }
+        this.registerEvents();
     }
 
     registerEvents() {
-        window.addEventListener('scroll', this._prepareForInitialization.bind(this), {once: true});
+        if (this.isPageInteractionRequired()) {
+            window.addEventListener('scroll', function () {
+                this.storage.setItem(this.options.klaviyoInitializedStorageKey, 'true');
+                if (this.canInitializeKlaviyoScript()) {
+                    this.initKlaviyoScript();
+                }
+            }.bind(this), {once: true});
+        }
     }
 
-    _prepareForInitialization() {
-        this.storage.setItem(this.options.klaviyoInitializedStorageKey, '')
-        this._initKlaviyo();
+    onKlaviyoCookieConsentAllowed() {
+        if (this.canInitializeKlaviyoScript()) {
+            this.initKlaviyoScript();
+        }
     }
 
-    _initKlaviyo() {
-         let script = document.createElement('script');
-         script.type = 'text/javascript';
-         script.setAttribute('async', true);
-         script.src = 'https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=' + this.options.publicApiKey;
+    isPageInteractionRequired() {
+        return this.options.afterInteraction
+            && this.storage.getItem(this.options.klaviyoInitializedStorageKey) === null;
+    }
 
-         document.body.appendChild(script);
+    canInitializeKlaviyoScript() {
+        return !this.options.scriptInitialized
+            && KlaviyoCookie.getCookie('od-klaviyo-track-allow')
+            && !this.isPageInteractionRequired();
+    }
+
+    initKlaviyoScript() {
+        const initializer = function () {
+            let script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.setAttribute('async', true);
+            script.src = 'https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=' + this.options.publicApiKey;
+
+            document.body.appendChild(script);
+            this.options.scriptInitialized = true;
+        }.bind(this)
+
+        initializer();
     }
 }
