@@ -1,3 +1,7 @@
+# 1.0.9
+* Fix: Problem mit der Initialisierung des Klaviyo-Skripts ohne Cookie-Zustimmung behoben
+* Fix: Problem mit unsicherer Anzeige des Felds "Private API Schlüssel" behoben
+
 #1.0.8
 * Neu: Neue Klviyo-Markensymbole hinzugefügt
 * Neu: Neue Funktion hinzugefügt, um die Synchronisierung von Bestellereignissen gelöschter Konten zu aktivieren/deaktivieren
