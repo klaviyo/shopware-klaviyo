@@ -43,6 +43,9 @@ class NewsletterControllerDecorator extends NewsletterController
     public function subscribeMail(SalesChannelContext $context, Request $request, QueryDataBag $queryDataBag): Response
     {
         $response = parent::subscribeMail($context, $request, $queryDataBag);
+        if (!$request->cookies->get('od-klaviyo-track-allow')) {
+            return $response;
+        }
 
         if ($context->getContext()->hasExtension('klaviyo_subscriber_id')) {
             $subscriberExtension = $context->getContext()->getExtension('klaviyo_subscriber_id');
