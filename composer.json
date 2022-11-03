@@ -3,7 +3,7 @@
     "name": "od/sw6-klaviyo-integration",
     "description": "Shopware 6 plugin for Klaviyo integration",
     "type": "shopware-platform-plugin",
-    "license": "MIT",
+    "license": "proprietary",
     "authors": [
         {
             "name": "Overdose",
