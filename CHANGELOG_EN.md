@@ -1,3 +1,7 @@
+# 1.0.9
+* Fix: Fixed issue with Klaviyo script initialization with no cookie consent allowance
+* Fix: Fixed issue with "Private API Key" field unsecure displaying
+
 # 1.0.8
 * New: Added new Klviyo brand icons
 * New: Added new feature to enable/disable synchronization of deleted accounts' order events

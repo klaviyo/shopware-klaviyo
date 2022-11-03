@@ -43,7 +43,7 @@
             {% endblock %}
 
             {% block klaviyo_integration_settings_general_private_api_key %}
-                <sw-field
+                <sw-password-field
                     v-model="actualConfigData['KlaviyoIntegrationPlugin.config.privateApiKey']"
                     name="KlaviyoIntegrationPlugin.config.privateApiKey"
                     type="text"
@@ -52,7 +52,7 @@
                     :disabled="selectedSalesChannelId === null"
                     :error="privateKeyErrorState"
                     required>
-                </sw-field>
+                </sw-password-field>
             {% endblock %}
 
             {% block klaviyo_integration_settings_general_public_api_key %}
