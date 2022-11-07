@@ -1,3 +1,6 @@
+# 1.0.10
+* Fix: Fixed issue with plugin's localstorage item set without cookie consent
+
 # 1.0.9
 * Fix: Fixed issue with Klaviyo script initialization with no cookie consent allowance
 * Fix: Fixed issue with "Private API Key" field unsecure displaying
