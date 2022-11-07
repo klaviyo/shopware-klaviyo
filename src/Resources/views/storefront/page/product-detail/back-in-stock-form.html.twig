@@ -2,7 +2,7 @@
     {% if page.product.isCloseout and page.product.availableStock < page.product.minPurchase %}
         <div class="klaviyo-stock-notification-container">
                 {% set notificationConfigurationOptions = {
-                    publicApiKey:  extensionData.configuration.publicApiKey,
+                    publicApiKey:  extensionData.configuration.publicApiKey|sw_sanitize,
                     listName: extensionData.configuration.subscribersListName,
                     variantID: page.product.productNumber,
                     productID: page.product.parentId,

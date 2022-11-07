@@ -38,6 +38,6 @@
             "install-path": "../od/sw6-job-scheduler"
         }
     ],
-    "dev": false,
+    "dev": true,
     "dev-package-names": []
 }

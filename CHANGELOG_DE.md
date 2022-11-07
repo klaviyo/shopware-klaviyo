@@ -1,3 +1,6 @@
+# 1.0.10
+* Fix: Problem mit Plugin-Localstorage-Item-Set ohne Cookie-Einwilligung behoben
+
 # 1.0.9
 * Fix: Problem mit der Initialisierung des Klaviyo-Skripts ohne Cookie-Zustimmung behoben
 * Fix: Problem mit unsicherer Anzeige des Felds "Private API Schlüssel" behoben
