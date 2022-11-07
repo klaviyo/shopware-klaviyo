@@ -5,7 +5,7 @@ namespace Klaviyo\Integration\Migration;
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
-class Migration1626690788 extends MigrationStep
+class Migration1626690788EventTables extends MigrationStep
 {
     public function getCreationTimestamp(): int
     {

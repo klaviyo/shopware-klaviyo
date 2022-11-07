@@ -13,13 +13,17 @@ import KlaviyoCookie from '../util/cookie'
  *
  * 1. Preconditions: deferred script initialization is ON
  *    Steps:
- *    A) INTERACT -> "klaviyoInitializedStorageKey" is added to localStorage;
- *    B) CONSENT -> "od-klaviyo-track-allow" is added + Klaviyo script is initialized.
+ *    A) INTERACT -> nothing happens;
+ *    B) CONSENT -> "interacted_with_page" is added to localStorage,
+ *                  "od-klaviyo-track-allow" is added to cookies,
+ *                  Klaviyo script is initialized.
  *
  * 2. Preconditions: deferred script initialization is ON
  *    Steps:
- *    A) CONSENT -> "od-klaviyo-track-allow" cookie is added;
- *    B) INTERACT -> "klaviyoInitializedStorageKey" is added to localStorage + Klaviyo script is initialized.
+ *    A) CONSENT -> "interacted_with_page" is added to localStorage,
+ *                  "od-klaviyo-track-allow" is added to cookies,
+ *                  Klaviyo script is initialized;
+ *    B) INTERACT -> nothing happens.
  *
  * 3. Preconditions: deferred script initialization is OFF
  *    Steps:
@@ -36,7 +40,7 @@ import KlaviyoCookie from '../util/cookie'
  */
 export default class KlaviyoTracking extends Plugin {
     static options = {
-        klaviyoInitializedStorageKey: 'klaviyoInitializedStorageKey',
+        klaviyoInitializedStorageKey: 'interacted_with_page',
         scriptInitialized: false,
         afterInteraction: false,
         publicApiKey: '',
@@ -64,13 +68,20 @@ export default class KlaviyoTracking extends Plugin {
     }
 
     onKlaviyoCookieConsentAllowed() {
+        // As far as cookie accept event can be recognized as "page interaction",
+        // we are set our interaction key to the storage.
+        if (this.options.afterInteraction) {
+            this.storage.setItem(this.options.klaviyoInitializedStorageKey, 'true')
+        }
+
         if (this.canInitializeKlaviyoScript()) {
             this.initKlaviyoScript();
         }
     }
 
     isPageInteractionRequired() {
-        return this.options.afterInteraction
+        return KlaviyoCookie.getCookie('od-klaviyo-track-allow')
+            && this.options.afterInteraction
             && this.storage.getItem(this.options.klaviyoInitializedStorageKey) === null;
     }
 
