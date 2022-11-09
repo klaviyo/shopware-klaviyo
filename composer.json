@@ -1,9 +1,9 @@
 {
-    "version": "1.0.7",
+    "version": "1.0.10",
     "name": "od/sw6-klaviyo-integration",
     "description": "Shopware 6 plugin for Klaviyo integration",
     "type": "shopware-platform-plugin",
-    "license": "MIT",
+    "license": "proprietary",
     "authors": [
         {
             "name": "Overdose",
@@ -32,19 +32,16 @@
             "en-GB": "Klaviyo: Email Marketing & SMS"
         },
         "description": {
-            "de-DE": "Klaviyo: Email Marketing & SMS",
-            "en-GB": "Klaviyo: Email Marketing & SMS"
+            "de-DE": "Plugin, das Klaviyo mit Shopware verbindet und wesentliche Funktionen zur Nutzung von E-Mail-Marketingkampagnen bietet",
+            "en-GB": "Plugin that connects Klaviyo with Shopware and provides essential functionality to use email marketing campaigns"
         }
     },
     "require": {
         "php": "^7.4 || ^8.0",
-        "shopware/administration": "~v6.4.0",
-        "shopware/core": "~v6.4.0",
-        "shopware/storefront": "~v6.4.0",
-        "od/sw6-job-scheduler": "1.0.2",
+        "shopware/administration": ">=6.4.4.0",
+        "shopware/core": ">=6.4.4.0",
+        "shopware/storefront": ">=6.4.4.0",
+        "od/sw6-job-scheduler": "^1.0.3",
         "ext-json": "*"
-    },
-    "require-dev": {
-        "fzaninotto/faker": "~1.9.1"
     }
 }

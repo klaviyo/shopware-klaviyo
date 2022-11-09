@@ -1,3 +1,22 @@
+# 1.0.10
+* Fix: Fixed issue with plugin's localstorage item set without cookie consent
+
+# 1.0.9
+* Fix: Fixed issue with Klaviyo script initialization with no cookie consent allowance
+* Fix: Fixed issue with "Private API Key" field unsecure displaying
+
+# 1.0.8
+* New: Added new Klviyo brand icons
+* New: Added new feature to enable/disable synchronization of deleted accounts' order events
+* New: Added job listing cleanup mechanism
+* New: Added additional information messages during background job processing
+* New: Job Scheduler Update - added job message correct sort order
+* Fix: Improved plugin uninstallation process
+* Fix: Fixed possible issue with Klaviyo list ID caching 
+* Fix: Fixed possible issue with unsubscribed recipients sync from Klaviyo
+* Fix: Fixed possible issue with order line items background processing
+* Fix: Fixed possible issue with not existing plugin configuration during order synchronization
+
 # 1.0.7
 * New: Added api key validation in Klaviyo config
 * New: Added toggling the Klaviyo tracking on and off by cookies

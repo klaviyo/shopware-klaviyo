@@ -6,7 +6,7 @@ document.$emitter.subscribe(COOKIE_CONFIGURATION_UPDATE, eventCallback);
 function eventCallback(updatedCookies) {
     if (updatedCookies.detail['od-klaviyo-track-allow']) {
         Iterator.iterate(PluginManager.getPluginInstances('KlaviyoTracking'), (plugin) => {
-            plugin.refreshCookies();
+            plugin.onKlaviyoCookieConsentAllowed();
         })
     }
 }

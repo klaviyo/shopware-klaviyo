@@ -4,15 +4,15 @@ namespace Klaviyo\Integration;
 
 use Composer\Autoload\ClassLoader;
 use Doctrine\DBAL\Connection;
-use Klaviyo\Integration\Utils\{Lifecycle, Lifecycle\Update\UpdateTo105, Lifecycle\Update\UpdateOldTemplate, MigrationHelper};
+use Klaviyo\Integration\Utils\{Lifecycle, Lifecycle\Update\UpdateOldTemplate, Lifecycle\Update\UpdateTo105, MigrationHelper};
+use League\Flysystem\{Adapter\Local, Filesystem};
 use Od\Scheduler\OdScheduler;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Parameter\AdditionalBundleParameters;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\{ActivateContext, UninstallContext, UpdateContext};
 use Shopware\Core\Framework\Plugin\Util\AssetService;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use League\Flysystem\{Filesystem, Adapter\Local};
+use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 
 class KlaviyoIntegrationPlugin extends Plugin
 {
@@ -55,12 +55,29 @@ class KlaviyoIntegrationPlugin extends Plugin
             return;
         }
 
-        /** @var EntityRepositoryInterface $systemConfigRepository */
-        $systemConfigRepository = $this->container->get('system_config.repository');
-        /** @var Connection $connection */
-        $connection = $this->container->get(Connection::class);
+        $hasOtherSchedulerDependency = false;
+        $bundleParameters = new AdditionalBundleParameters(new ClassLoader(), new Plugin\KernelPluginCollection(), []);
+        $kernel = $this->container->get('kernel');
 
-        (new Lifecycle($systemConfigRepository, $connection))->uninstall($uninstallContext);
+        foreach ($kernel->getPluginLoader()->getPluginInstances()->getActives() as $bundle) {
+            if (!$bundle instanceof Plugin || $bundle instanceof self) {
+                continue;
+            }
+
+            $schedulerDependencies = \array_filter(
+                $bundle->getAdditionalBundles($bundleParameters),
+                function (BundleInterface $bundle) {
+                    return $bundle instanceof OdScheduler;
+                }
+            );
+
+            if (\count($schedulerDependencies) !== 0) {
+                $hasOtherSchedulerDependency = true;
+                break;
+            }
+        }
+
+        (new Lifecycle($this->container, $hasOtherSchedulerDependency))->uninstall($uninstallContext);
     }
 
     public function getAdditionalBundles(AdditionalBundleParameters $parameters): array
