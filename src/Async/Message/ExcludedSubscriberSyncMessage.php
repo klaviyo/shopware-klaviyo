@@ -4,6 +4,7 @@ namespace Klaviyo\Integration\Async\Message;
 
 use Klaviyo\Integration\Model\UseCase\Operation\ExcludedSubscriberSyncOperation;
 use Od\Scheduler\Async\ParentAwareMessageInterface;
+use Shopware\Core\Framework\Context;
 
 class ExcludedSubscriberSyncMessage extends AbstractBasicMessage implements ParentAwareMessageInterface
 {
@@ -17,9 +18,10 @@ class ExcludedSubscriberSyncMessage extends AbstractBasicMessage implements Pare
         string $parentJobId,
         array $emails,
         string $salesChannelId,
-        ?string $name = null
+        ?string $name = null,
+        ?Context $context = null
     ) {
-        parent::__construct($jobId, $name);
+        parent::__construct($jobId, $name, $context);
         $this->parentJobId = $parentJobId;
         $this->emails = $emails;
         $this->salesChannelId = $salesChannelId;

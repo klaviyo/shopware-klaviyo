@@ -38,10 +38,9 @@ class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerIn
     {
         $result = new JobResult();
         $result->addMessage(new Message\InfoMessage('Starting Full Order Sync Operation...'));
-        $context = Context::createDefaultContext();
         $subOperationCount = 0;
 
-        $channelIds = $this->getValidChannels->execute()->map(fn(SalesChannelEntity $channel) => $channel->getId());
+        $channelIds = $this->getValidChannels->execute($message->getContext())->map(fn(SalesChannelEntity $channel) => $channel->getId());
         if (empty($channelIds)) {
             $result->addMessage(new Message\WarningMessage('There are no configured channels - skipping.'));
 
@@ -51,11 +50,11 @@ class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerIn
         $criteria = new Search\Criteria();
         $criteria->addFilter(new Search\Filter\EqualsAnyFilter('salesChannelId', \array_values($channelIds)));
         $criteria->setLimit(self::ORDER_BATCH_SIZE);
-        $iterator = new RepositoryIterator($this->orderRepository, $context, $criteria);
+        $iterator = new RepositoryIterator($this->orderRepository, $message->getContext(), $criteria);
 
         while (($orderIds = $iterator->fetchIds()) !== null) {
             $subOperationCount++;
-            $this->scheduleBackgroundJob->scheduleOrderSyncJob($orderIds, $message->getJobId());
+            $this->scheduleBackgroundJob->scheduleOrderSyncJob($orderIds, $message->getJobId(), $message->getContext());
         }
 
         $result->addMessage(new Message\InfoMessage(\sprintf('Total %s jobs has been scheduled.', $subOperationCount)));

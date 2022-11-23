@@ -4,6 +4,7 @@ namespace Klaviyo\Integration\Async\Message;
 
 use Klaviyo\Integration\Model\UseCase\Operation\CustomerProfileSyncOperation;
 use Od\Scheduler\Async\ParentAwareMessageInterface;
+use Shopware\Core\Framework\Context;
 
 class CustomerProfileSyncMessage extends AbstractBasicMessage implements ParentAwareMessageInterface
 {
@@ -15,9 +16,10 @@ class CustomerProfileSyncMessage extends AbstractBasicMessage implements ParentA
         string $jobId,
         string $parentJobId,
         array $customerIds,
-        ?string $name = null
+        ?string $name = null,
+        ?Context $context = null
     ) {
-        parent::__construct($jobId, $name);
+        parent::__construct($jobId, $name, $context);
         $this->parentJobId = $parentJobId;
         $this->customerIds = $customerIds;
     }

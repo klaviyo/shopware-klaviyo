@@ -50,10 +50,10 @@ class SubscriberSyncOperation implements JobHandlerInterface
     public function execute(object $message): JobResult
     {
         $result = new JobResult();
-        $context = Context::createDefaultContext();
+        $context = $message->getContext();
 
         /** @var SalesChannelEntity $channel */
-        foreach ($this->getValidChannels->execute() as $channel) {
+        foreach ($this->getValidChannels->execute($message->getContext()) as $channel) {
             try {
                 $errors = $this->doOperation($message, $context, $channel);
                 foreach ($errors as $error) {

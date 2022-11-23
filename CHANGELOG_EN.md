@@ -1,3 +1,6 @@
+# 1.0.11
+* Fix: Context is kept for background processes
+
 # 1.0.10
 * Fix: Fixed issue with plugin's localstorage item set without cookie consent
 

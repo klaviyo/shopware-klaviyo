@@ -22,11 +22,11 @@ class GetValidChannels
         $this->salesChannelRepository = $salesChannelRepository;
     }
 
-    public function execute(): EntityCollection
+    public function execute(Context $context): EntityCollection
     {
         $criteria = new Criteria();
         $validChannelIds = [];
-        $channels = $this->salesChannelRepository->search($criteria, Context::createDefaultContext());
+        $channels = $this->salesChannelRepository->search($criteria, $context);
 
         /** @var SalesChannelEntity $channel */
         foreach ($channels as $channel) {
