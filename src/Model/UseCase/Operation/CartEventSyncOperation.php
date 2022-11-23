@@ -38,7 +38,7 @@ class CartEventSyncOperation implements JobHandlerInterface
     public function execute(object $message): JobResult
     {
         $result = new JobResult();
-        $context = Context::createDefaultContext();
+        $context = $message->getContext();
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsAnyFilter('id', $message->getEventRequestIds()));
         $cartEvents = $this->cartEventRequestRepository->search($criteria, $context);

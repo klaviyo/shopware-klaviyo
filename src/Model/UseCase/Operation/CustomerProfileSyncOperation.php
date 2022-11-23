@@ -40,13 +40,12 @@ class CustomerProfileSyncOperation implements JobHandlerInterface
             new InfoMessage(\sprintf('Total %s customer profiles to update.', \count($message->getCustomerIds())))
         );
 
-        $context = Context::createDefaultContext();
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsAnyFilter('id', $message->getCustomerIds()));
 
         /** @var CustomerCollection $customers */
-        $customers = $this->customerRepository->search($criteria, $context)->getEntities();
-        $this->eventsTracker->trackCustomerWritten($context, ProfileEventsBag::fromCollection($customers));
+        $customers = $this->customerRepository->search($criteria, $message->getContext())->getEntities();
+        $this->eventsTracker->trackCustomerWritten($message->getContext(), ProfileEventsBag::fromCollection($customers));
 
         return new JobResult();
     }

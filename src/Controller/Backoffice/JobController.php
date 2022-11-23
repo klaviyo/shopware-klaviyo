@@ -5,6 +5,7 @@ namespace Klaviyo\Integration\Controller\Backoffice;
 use Klaviyo\Integration\Exception\JobAlreadyRunningException;
 use Klaviyo\Integration\Exception\JobAlreadyScheduledException;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -33,10 +34,10 @@ class JobController
      * )
      * @return JsonResponse
      */
-    public function scheduleHistoricalEventTrackingSynchronizationAction()
+    public function scheduleHistoricalEventTrackingSynchronizationAction(Context $context)
     {
-        return $this->doScheduleJob(function () {
-            $this->scheduleBackgroundJob->scheduleFullOrderSyncJob();
+        return $this->doScheduleJob(function () use ($context) {
+            $this->scheduleBackgroundJob->scheduleFullOrderSyncJob($context);
         });
     }
 
@@ -49,10 +50,10 @@ class JobController
      * )
      * @return JsonResponse
      */
-    public function scheduleSubscribersSynchronizationAction()
+    public function scheduleSubscribersSynchronizationAction(Context $context)
     {
-        return $this->doScheduleJob(function () {
-            $this->scheduleBackgroundJob->scheduleFullSubscriberSyncJob();
+        return $this->doScheduleJob(function () use ($context) {
+            $this->scheduleBackgroundJob->scheduleFullSubscriberSyncJob($context);
         });
     }
 

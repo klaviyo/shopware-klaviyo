@@ -4,6 +4,7 @@ namespace Klaviyo\Integration\Async\TaskHandler;
 
 use Klaviyo\Integration\Async\Task\OldJobCleanupScheduledTask;
 use Shopware\Core\Defaults;
+use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -31,7 +32,8 @@ class OldJobCleanupScheduledTaskHandler extends ScheduledTaskHandler
     {
         // TODO: make it configurable from plugin settings in future
         $numberOfDaysBeforeToday = new \DateTime(' - 5 day');
-        $context = Context::createDefaultContext();
+        // Here we have context less task
+        $context = new Context(new SystemSource());
         $criteria = new Criteria();
         $criteria->addFilter(new Filter\AndFilter([
             new Filter\RangeFilter(

@@ -50,8 +50,8 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
     public function execute(object $message): JobResult
     {
         $result = new JobResult();
-        $context = Context::createDefaultContext();
-        $channelIds = $this->getValidChannels->execute()->map(fn(SalesChannelEntity $channel) => $channel->getId());
+        $context = $message->getContext();
+        $channelIds = $this->getValidChannels->execute($context)->map(fn(SalesChannelEntity $channel) => $channel->getId());
         $channelIds = \array_values($channelIds);
 
         if (empty($channelIds)) {
@@ -96,7 +96,7 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
             $customerIds = $events->map(fn(EventEntity $event) => $event->getEntityId());
             $customerIds = array_values(array_unique($customerIds));
             $total += \count($customerIds);
-            $this->scheduleBackgroundJob->scheduleCustomerProfilesSyncJob($customerIds, $parentJobId);
+            $this->scheduleBackgroundJob->scheduleCustomerProfilesSyncJob($customerIds, $parentJobId, $context);
             $this->deleteProcessedEvents($context, $events->getEntities());
         }
 
@@ -114,7 +114,7 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
 
         while (($eventRequestIds = $iterator->fetchIds()) !== null) {
             $total += \count($eventRequestIds);
-            $this->scheduleBackgroundJob->scheduleCartEventsSyncJob($eventRequestIds, $parentJobId);
+            $this->scheduleBackgroundJob->scheduleCartEventsSyncJob($eventRequestIds, $parentJobId, $context);
         }
 
         return $total;
@@ -127,7 +127,7 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
 
         while (($eventIds = $iterator->fetchIds()) !== null) {
             $total += \count($eventIds);
-            $this->scheduleBackgroundJob->scheduleOrderEventsSyncJob($eventIds, $parentJobId);
+            $this->scheduleBackgroundJob->scheduleOrderEventsSyncJob($eventIds, $parentJobId, $context);
         }
 
         return $total;
@@ -162,7 +162,7 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
             $subscriberIds = $events->map(fn(EventEntity $event) => $event->getEntityId());
             $subscriberIds = \array_values(\array_diff($subscriberIds, $excludedSubscriberIds));
             $total += \count($subscriberIds);
-            $this->scheduleBackgroundJob->scheduleSubscriberSyncJob($subscriberIds, $parentJobId);
+            $this->scheduleBackgroundJob->scheduleSubscriberSyncJob($subscriberIds, $parentJobId, $context);
             $this->deleteProcessedEvents($context, $events->getEntities());
         }
 

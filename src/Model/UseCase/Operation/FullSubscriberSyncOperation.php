@@ -44,8 +44,7 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
     {
         $subOperationCount = 0;
         $result = new JobResult();
-        $context = Context::createDefaultContext();
-        $channelIds = $this->getValidChannels->execute()->map(fn(SalesChannelEntity $channel) => $channel->getId());
+        $channelIds = $this->getValidChannels->execute($message->getContext())->map(fn(SalesChannelEntity $channel) => $channel->getId());
         $channelIds = \array_values($channelIds);
 
         if (empty($channelIds)) {
@@ -69,7 +68,7 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
         );
 
         $schedulingResult = $this->scheduleBackgroundJob->scheduleExcludedSubscribersSyncJobs(
-            $context,
+            $message->getContext(),
             $message->getJobId(),
             $channelIds
         );
@@ -81,15 +80,15 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
             $excludedCriteria->addFilter(new EqualsAnyFilter('email', $emails));
             $excludedSubscriberIds = \array_merge(
                 $excludedSubscriberIds,
-                \array_values($this->subscriberRepository->searchIds($excludedCriteria, $context)->getIds())
+                \array_values($this->subscriberRepository->searchIds($excludedCriteria, $message->getContext())->getIds())
             );
         }
 
-        $iterator = new RepositoryIterator($this->subscriberRepository, $context, $criteria);
+        $iterator = new RepositoryIterator($this->subscriberRepository, $message->getContext(), $criteria);
         while (($subscriberIds = $iterator->fetchIds()) !== null) {
             $subscriberIds = \array_values(\array_diff($subscriberIds, $excludedSubscriberIds));
             $subOperationCount++;
-            $this->scheduleBackgroundJob->scheduleSubscriberSyncJob($subscriberIds, $message->getJobId());
+            $this->scheduleBackgroundJob->scheduleSubscriberSyncJob($subscriberIds, $message->getJobId(), $message->getContext());
         }
 
         $result->addMessage(new Message\InfoMessage(\sprintf('Total %s jobs has been scheduled.', $subOperationCount)));

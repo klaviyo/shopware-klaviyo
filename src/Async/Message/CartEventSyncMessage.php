@@ -4,6 +4,7 @@ namespace Klaviyo\Integration\Async\Message;
 
 use Klaviyo\Integration\Model\UseCase\Operation\CartEventSyncOperation;
 use Od\Scheduler\Async\ParentAwareMessageInterface;
+use Shopware\Core\Framework\Context;
 
 class CartEventSyncMessage extends AbstractBasicMessage implements ParentAwareMessageInterface
 {
@@ -15,9 +16,10 @@ class CartEventSyncMessage extends AbstractBasicMessage implements ParentAwareMe
         string $jobId,
         string $parentJobId,
         array $eventRequestIds,
-        ?string $name = null
+        ?string $name = null,
+        ?Context $context = null
     ) {
-        parent::__construct($jobId, $name);
+        parent::__construct($jobId, $name, $context);
         $this->eventRequestIds = $eventRequestIds;
         $this->parentJobId = $parentJobId;
     }

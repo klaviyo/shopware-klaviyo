@@ -36,14 +36,14 @@ class ScheduleBackgroundJob
         $this->progressService = $progressService;
     }
 
-    public function scheduleFullSubscriberSyncJob()
+    public function scheduleFullSubscriberSyncJob(Context $context)
     {
-        $this->checkJobStatus(FullSubscriberSyncOperation::OPERATION_HANDLER_CODE);
-        $jobMessage = new Message\FullSubscriberSyncMessage(Uuid::randomHex());
+        $this->checkJobStatus(FullSubscriberSyncOperation::OPERATION_HANDLER_CODE, $context);
+        $jobMessage = new Message\FullSubscriberSyncMessage(Uuid::randomHex(), null, $context);
         $this->scheduler->schedule($jobMessage);
     }
 
-    private function checkJobStatus(string $type)
+    private function checkJobStatus(string $type, Context $context)
     {
         $criteria = new Criteria();
         $criteria->addFilter(new AndFilter([
@@ -51,7 +51,7 @@ class ScheduleBackgroundJob
             new EqualsAnyFilter('status', [JobEntity::TYPE_PENDING, JobEntity::TYPE_RUNNING])
         ]));
         /** @var JobEntity $job */
-        if ($job = $this->jobRepository->search($criteria, Context::createDefaultContext())->first()) {
+        if ($job = $this->jobRepository->search($criteria, $context)->first()) {
             if ($job->getStatus() === JobEntity::TYPE_PENDING) {
                 throw new JobAlreadyScheduledException('Job is already scheduled.');
             } else {
@@ -60,51 +60,54 @@ class ScheduleBackgroundJob
         }
     }
 
-    public function scheduleSubscriberSyncJob(array $subscriberIds, string $parentJobId)
+    public function scheduleSubscriberSyncJob(array $subscriberIds, string $parentJobId, Context $context)
     {
         $jobMessage = new Message\SubscriberSyncMessage(
             Uuid::randomHex(),
             $parentJobId,
-            $subscriberIds
+            $subscriberIds,
+            null,
+            $context
         );
 
         $this->scheduler->schedule($jobMessage);
     }
 
-    public function scheduleFullOrderSyncJob()
+    public function scheduleFullOrderSyncJob(Context $context)
     {
-        $this->checkJobStatus(FullOrderSyncOperation::OPERATION_HANDLER_CODE);
-        $jobMessage = new Message\FullOrderSyncMessage(Uuid::randomHex());
+        $this->checkJobStatus(FullOrderSyncOperation::OPERATION_HANDLER_CODE, $context);
+        $jobMessage = new Message\FullOrderSyncMessage(Uuid::randomHex(), null, $context);
         $this->scheduler->schedule($jobMessage);
     }
 
-    public function scheduleOrderSyncJob(array $orderIds, string $parentJobId)
+    public function scheduleOrderSyncJob(array $orderIds, string $parentJobId, Context $context)
     {
-        $jobMessage = new Message\OrderSyncMessage(Uuid::randomHex(), $parentJobId, $orderIds);
+        $jobMessage = new Message\OrderSyncMessage(Uuid::randomHex(), $parentJobId, $orderIds, null, $context);
         $this->scheduler->schedule($jobMessage);
     }
 
-    public function scheduleOrderEventsSyncJob(array $eventIds, string $parentJobId)
+    public function scheduleOrderEventsSyncJob(array $eventIds, string $parentJobId, Context $context)
     {
-        $jobMessage = new Message\OrderEventSyncMessage(Uuid::randomHex(), $parentJobId, $eventIds);
+        $jobMessage = new Message\OrderEventSyncMessage(Uuid::randomHex(), $parentJobId, $eventIds, null, $context);
         $this->scheduler->schedule($jobMessage);
     }
 
-    public function scheduleCartEventsSyncJob(array $eventRequestIds, string $parentJobId)
+    public function scheduleCartEventsSyncJob(array $eventRequestIds, string $parentJobId, Context $context)
     {
-        $jobMessage = new Message\CartEventSyncMessage(Uuid::randomHex(), $parentJobId, $eventRequestIds);
+        $jobMessage = new Message\CartEventSyncMessage(Uuid::randomHex(), $parentJobId, $eventRequestIds, null, $context);
         $this->scheduler->schedule($jobMessage);
     }
 
     public function scheduleEventsProcessingJob()
     {
+        // Here we have context-less process
         $jobMessage = new Message\EventsProcessingMessage(Uuid::randomHex());
         $this->scheduler->schedule($jobMessage);
     }
 
-    public function scheduleCustomerProfilesSyncJob(array $customerIds, string $parentJobId)
+    public function scheduleCustomerProfilesSyncJob(array $customerIds, string $parentJobId, Context $context)
     {
-        $jobMessage = new Message\CustomerProfileSyncMessage(Uuid::randomHex(), $parentJobId, $customerIds);
+        $jobMessage = new Message\CustomerProfileSyncMessage(Uuid::randomHex(), $parentJobId, $customerIds, null, $context);
         $this->scheduler->schedule($jobMessage);
     }
 
@@ -138,7 +141,9 @@ class ScheduleBackgroundJob
                         Uuid::randomHex(),
                         $parentJobId,
                         $result->getEmails(),
-                        $channelId
+                        $channelId,
+                        null,
+                        $context
                     );
                     $this->scheduler->schedule($jobMessage);
                     $schedulingResult->addEmails($channelId, $result->getEmails());
