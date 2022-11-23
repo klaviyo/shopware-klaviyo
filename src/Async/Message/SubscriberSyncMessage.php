@@ -17,7 +17,7 @@ class SubscriberSyncMessage extends AbstractBasicMessage implements ParentAwareM
         string $parentJobId,
         array $subscriberIds,
         ?string $name = null,
-        ?Context $context = null,
+        ?Context $context = null
     ) {
         parent::__construct($jobId, $name, $context);
         $this->subscriberIds = $subscriberIds;
