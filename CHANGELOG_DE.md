@@ -1,3 +1,6 @@
+# 1.0.11
+* Fix: Kontext wird für Hintergrundprozesse beibehalten
+
 # 1.0.10
 * Fix: Problem mit Plugin-Localstorage-Item-Set ohne Cookie-Einwilligung behoben
 

@@ -21,9 +21,9 @@ class PromotionsExporter
     /**
      * @return \SplFileObject
      */
-    public function exportToCSV(?string $salesChannelId = null): \SplFileObject
+    public function exportToCSV(Context $context, ?string $salesChannelId = null): \SplFileObject
     {
-        $promotions = $this->getPromotions($salesChannelId);
+        $promotions = $this->getPromotions($context, $salesChannelId);
 
         $tmpFileName = tempnam(sys_get_temp_dir(), "shopware6_promotion_export");
         $fileObject = new \SplFileObject("$tmpFileName.csv", 'a+');
@@ -37,7 +37,7 @@ class PromotionsExporter
         return $fileObject;
     }
 
-    private function getPromotions(?string $salesChannelId): PromotionCollection
+    private function getPromotions(Context $context, ?string $salesChannelId): PromotionCollection
     {
         $criteria = new Criteria();
         $criteria->addFilter(
@@ -50,7 +50,7 @@ class PromotionsExporter
 
         /** @var PromotionCollection $promotionsCollection */
         $promotionsCollection = $this->promotionRepository
-            ->search($criteria, Context::createDefaultContext())->getEntities();
+            ->search($criteria, $context)->getEntities();
 
         return $promotionsCollection;
     }

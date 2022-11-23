@@ -4,6 +4,7 @@ namespace Klaviyo\Integration\Controller\Backoffice;
 
 use Klaviyo\Integration\Klaviyo\Promotion\PromotionsExporter;
 use Klaviyo\Integration\Model\Response\KlaviyoBinaryFileResponse;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
@@ -23,9 +24,9 @@ class PromotionsExportController
      *     "/api/klaviyo/integration/promotion/export", defaults={"auth_required"=false}
      * )
      */
-    public function export()
+    public function export(Context $context)
     {
-        $fileObject = $this->promotionsExporter->exportToCSV();
+        $fileObject = $this->promotionsExporter->exportToCSV($context);
 
         $response = new KlaviyoBinaryFileResponse($fileObject);
         $response->deleteFileAfterSend(true);

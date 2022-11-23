@@ -38,7 +38,6 @@ class OrderSyncOperation implements JobHandlerInterface
     {
         $result = new JobResult();
         $result->addMessage(new Message\InfoMessage('Starting Order Sync Operation...'));
-        $context = Context::createDefaultContext();
         $eventsBags = [
             Tracker::ORDER_EVENT_PLACED => new OrderTrackingEventsBag(),
             Tracker::ORDER_EVENT_ORDERED_PRODUCT => new OrderTrackingEventsBag(),
@@ -53,7 +52,7 @@ class OrderSyncOperation implements JobHandlerInterface
         $orderCriteria->addAssociation('lineItems.product');
         $orderCriteria->addAssociation('orderCustomer.customer.defaultBillingAddress');
         $orderCriteria->addAssociation('orderCustomer.customer.defaultShippingAddress');
-        $orderCollection = $this->orderRepository->search($orderCriteria, $context);
+        $orderCollection = $this->orderRepository->search($orderCriteria, $message->getContext());
 
         /** @var OrderEntity $order */
         foreach ($orderCollection as $order) {
@@ -81,7 +80,7 @@ class OrderSyncOperation implements JobHandlerInterface
         }
 
         foreach ($eventsBags as $type => $eventsBag) {
-            $trackingResult = $this->trackEventBagByType($context, $eventsBag, $type);
+            $trackingResult = $this->trackEventBagByType($message->getContext(), $eventsBag, $type);
 
             foreach ($trackingResult->getFailedOrdersErrors() as $orderId => $orderErrors) {
                 /** @var \Throwable $error */

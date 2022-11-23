@@ -29,7 +29,7 @@ class ExcludedSubscriberSyncOperation implements JobHandlerInterface
     public function execute(object $message): JobResult
     {
         $result = new JobResult();
-        $context = Context::createDefaultContext();
+        $context = $message->getContext();
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsAnyFilter('email', $message->getEmails()));
         $criteria->addFilter(new EqualsFilter('salesChannelId', $message->getSalesChannelId()));

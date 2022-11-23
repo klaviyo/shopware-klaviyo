@@ -114,7 +114,7 @@ class AddedToCartEventListener implements EventSubscriberInterface
                 );
             }
 
-            $this->eventsTracker->trackAddedToCart(Context::createDefaultContext(), $requestBag);
+            $this->eventsTracker->trackAddedToCart($event->getContext(), $requestBag);
         } catch (\Throwable $throwable) {
             $this->logger->error(
                 'Could not track Add to Cart event after the item qty updated',

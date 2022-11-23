@@ -49,7 +49,7 @@ class OrderEventsSyncOperation implements JobHandlerInterface
     {
         $result = new JobResult();
         $result->addMessage(new Message\InfoMessage('Starting Order Events Sync Operation...'));
-        $context = Context::createDefaultContext();
+        $context = $message->getContext();
 
         foreach (self::ALLOWED_EVENT_TYPES as $eventType) {
             $eventCriteria = new Criteria();
