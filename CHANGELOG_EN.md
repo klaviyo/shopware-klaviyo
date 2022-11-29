@@ -1,3 +1,6 @@
+# 1.0.12
+* New: Added cart resotre functionality
+
 # 1.0.11
 * Fix: Context is kept for background processes
 

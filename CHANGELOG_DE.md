@@ -1,4 +1,7 @@
-# 1.0.11
+# 1.0.12
+* Neu: Warenkorb-Reset-Funktionalität hinzugefügt
+
+#1.0.11
 * Fix: Kontext wird für Hintergrundprozesse beibehalten
 
 # 1.0.10
