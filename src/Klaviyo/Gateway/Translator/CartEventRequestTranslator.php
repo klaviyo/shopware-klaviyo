@@ -2,6 +2,7 @@
 
 namespace Klaviyo\Integration\Klaviyo\Gateway\Translator;
 
+use Klaviyo\Integration\Storefront\Checkout\Cart\RestoreUrlService\RestoreUrlServiceInterface;
 use Klaviyo\Integration\Entity\Helper\{NewsletterSubscriberHelper, ProductDataHelper};
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\CartEvent\AddedToCartEventTrackingRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\CartEvent\DTO as CartEventDTO;
@@ -10,13 +11,12 @@ use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class CartEventRequestTranslator
 {
     private CustomerPropertiesTranslator $customerPropertiesTranslator;
     private ProductDataHelper $productDataHelper;
-    private UrlGeneratorInterface $urlGenerator;
+    private RestoreUrlServiceInterface $urlGenerator;
     private NewsletterSubscriberHelper $newsletterSubscriberHelper;
     private RequestStack $requestStack;
     private NewsletterSubscriberPropertiesTranslator $newsletterSubscriberPropertiesTranslator;
@@ -24,7 +24,7 @@ class CartEventRequestTranslator
     public function __construct(
         CustomerPropertiesTranslator $customerPropertiesTranslator,
         ProductDataHelper $productDataHelper,
-        UrlGeneratorInterface $urlGenerator,
+        RestoreUrlServiceInterface $urlGenerator,
         NewsletterSubscriberHelper $newsletterSubscriberHelper,
         RequestStack $requestStack,
         NewsletterSubscriberPropertiesTranslator $newsletterSubscriberPropertiesTranslator
@@ -63,11 +63,7 @@ class CartEventRequestTranslator
 
         $addedProductInfo = $this->translateToCartProductInfo($context, $lineItem);
         $checkoutUrl = $this->urlGenerator
-            ->generate(
-                'frontend.checkout.confirm.page',
-                [],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            );
+            ->getCurrentRestoreUrl($context);
 
         $collection = new CartEventDTO\CartProductInfoCollection();
         foreach ($cart->getLineItems() as $cartLineItem) {
