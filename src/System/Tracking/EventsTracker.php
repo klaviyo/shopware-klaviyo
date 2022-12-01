@@ -136,4 +136,22 @@ class EventsTracker implements EventsTrackerInterface
             $this->gateway->upsertCustomerProfiles($context, $channelId, $customerCollection);
         }
     }
+
+    public function trackPaiedOrders(Context $context, OrderTrackingEventsBag $trackingBag): OrderTrackingResult
+    {
+        $trackingResult = new OrderTrackingResult();
+
+        foreach ($trackingBag->all() as $channelId => $events) {
+            $configuration = $this->configurationRegistry->getConfiguration($channelId);
+            // Added paid config or not
+            if (!$configuration->isTrackPaidOrder()) {
+                continue;
+            }
+
+            $channelTrackingResult = $this->gateway->trackPaiedOrders($context, $channelId, $events);
+            $trackingResult->mergeWith($channelTrackingResult);
+        }
+
+        return $trackingResult;
+    }
 }

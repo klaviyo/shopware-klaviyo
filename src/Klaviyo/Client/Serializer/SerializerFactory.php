@@ -22,6 +22,7 @@ use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\CustomerPropertiesN
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\IdentifyProfileRequestNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\OrderedProductEventTrackingRequestNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\ConfigurableOrderEventTrackingRequestNormalizer;
+use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\PaidOrderEventTrackingRequestNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\RefundedOrderEventTrackingRequestNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\RemoveProfilesFromListRequestNormalizer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -41,6 +42,7 @@ class SerializerFactory
                 new ConfigurableOrderEventTrackingRequestNormalizer($configuration, FulfilledOrderEventTrackingRequest::class, 'Fulfilled Order'),
                 new CanceledOrderEventTrackingRequestNormalizer($configuration),
                 new RefundedOrderEventTrackingRequestNormalizer($configuration),
+                new PaidOrderEventTrackingRequestNormalizer($configuration),
                 new AddedToCartEventTrackingRequestNormalizer($configuration),
                 new AddProfilesToListRequestsNormalizer($configuration),
                 new RemoveProfilesFromListRequestNormalizer($configuration),
