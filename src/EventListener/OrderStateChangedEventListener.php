@@ -59,7 +59,8 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
         $supportedStates = [
             OrderStates::STATE_COMPLETED => $configuration->isTrackFulfilledOrder(),
             OrderStates::STATE_CANCELLED => $configuration->isTrackCanceledOrder(),
-            OrderTransactionStates::STATE_REFUNDED => $configuration->isTrackRefundedOrder()
+            OrderTransactionStates::STATE_REFUNDED => $configuration->isTrackRefundedOrder(),
+            OrderTransactionStates::STATE_PAID => $configuration->isTrackPaidOrder()
         ];
 
         $state = $event->getNextState();
@@ -90,14 +91,17 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
         }
 
         $configuration = $this->getValidChannelConfig->execute($order->getSalesChannelId());
-        if ($configuration === null || !$configuration->isTrackRefundedOrder()) {
+        if ($configuration === null) {
             return;
         }
 
         $state = $event->getNextState();
         if ($event->getTransitionSide() === StateMachineStateChangeEvent::STATE_MACHINE_TRANSITION_SIDE_ENTER
             && $event->getTransition()->getEntityName() === OrderTransactionDefinition::ENTITY_NAME
-            && $state->getTechnicalName() === OrderTransactionStates::STATE_REFUNDED
+            && (
+                ($state->getTechnicalName() === OrderTransactionStates::STATE_REFUNDED && $configuration->isTrackRefundedOrder()) ||
+                ($state->getTechnicalName() === OrderTransactionStates::STATE_PAID && $configuration->isTrackPaidOrder())
+            )
         ) {
             $this->trackEvent($event->getContext(), $order, $state->getTechnicalName());
         }
@@ -118,6 +122,9 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
                 return;
             case OrderTransactionStates::STATE_REFUNDED:
                 $this->eventsTracker->trackRefundOrders($context, $eventsBag);
+                return;
+            case OrderTransactionStates::STATE_PAID:
+                $this->eventsTracker->trackPaiedOrders($context, $eventsBag);
                 return;
         }
     }

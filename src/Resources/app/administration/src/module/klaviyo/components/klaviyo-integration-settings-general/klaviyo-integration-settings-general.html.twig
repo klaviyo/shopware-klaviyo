@@ -252,6 +252,24 @@
                 </sw-inherit-wrapper>
             {% endblock %}
 
+
+            {% block klaviyo_integration_settings_general_track_paid_order %}
+                <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackPaidOrder']"
+                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackPaidOrder']"
+                                    :customInheritationCheckFunction="checkBoolFieldInheritance">
+                    <template #content="props">
+                        <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackPaidOrder"
+                                         :mapInheritance="props"
+                                         :label="$tc('klaviyo-integration-settings.configs.trackPaidOrder.label')"
+                                         :helpText="$tc('klaviyo-integration-settings.configs.trackPaidOrder.helpText')"
+                                         :disabled="props.isInherited"
+                                         :value="props.currentValue"
+                                         @change="props.updateCurrentValue">
+                        </sw-switch-field>
+                    </template>
+                </sw-inherit-wrapper>
+            {% endblock %}
+
             {% block klaviyo_integration_settings_general_track_back_in_stock %}
                 <sw-inherit-wrapper
                         v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackSubscribedToBackInStock']"
