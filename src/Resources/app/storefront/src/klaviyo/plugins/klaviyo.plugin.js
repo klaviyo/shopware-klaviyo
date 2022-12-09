@@ -1,6 +1,8 @@
 import Plugin from 'src/plugin-system/plugin.class';
 import Storage from 'src/helper/storage/storage.helper';
 import KlaviyoCookie from '../util/cookie'
+import CookieBotConsentService from './services/cookie-bot-consent-service';
+import ShopwareCookiesServiceConsent from './services/shopware-cookies-service-consent';
 
 /**
  * This component is responsible for Klaviyo script initialization on storefront.
@@ -44,10 +46,22 @@ export default class KlaviyoTracking extends Plugin {
         scriptInitialized: false,
         afterInteraction: false,
         publicApiKey: '',
+        cookieConsent: ''
     };
 
     init() {
         this.storage = Storage;
+
+        if (this.options.cookieConsent && this.options.cookieConsent === 'shopware') {
+            const ShopwareCookiesService = new ShopwareCookiesServiceConsent(this.initKlaviyoScript);
+            ShopwareCookiesService.bootstrap();
+        } else if (this.options.cookieConsent && this.options.cookieConsent === 'cookiebot') {
+            const cookieBotService = new CookieBotConsentService(this.initKlaviyoScript);
+            cookieBotService.bootstrap();
+        } else if (this.options.cookieConsent && this.options.cookieConsent === 'nothing') {
+
+        }
+
 
         if (this.canInitializeKlaviyoScript()) {
             this.initKlaviyoScript();

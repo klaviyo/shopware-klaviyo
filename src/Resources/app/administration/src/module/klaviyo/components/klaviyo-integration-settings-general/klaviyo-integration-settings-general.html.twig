@@ -1,9 +1,31 @@
 {% block klaviyo_integration_settings_general %}
     <div>
-        <sw-card :title="$tc('klaviyo-integration-settings.general.initialization.general-label')" class="klaviyo-interaction-settings">
-            <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.isInitializeKlaviyoAfterInteraction']"
-                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.isInitializeKlaviyoAfterInteraction']"
-                                :customInheritationCheckFunction="checkBoolFieldInheritance">
+        <sw-card :title="$tc('klaviyo-integration-settings.general.initialization.general-label')"
+                 class="klaviyo-interaction-settings">
+            <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.cookieConsent']"
+                                style="margin-top: 20px;"
+                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.cookieConsent']"
+                                :customInheritationCheckFunction="null">
+                <template #content="props">
+                    <sw-field name="KlaviyoIntegrationPlugin.config.cookieConsent"
+                              type="select"
+                              :mapInheritance="props"
+                              label="Cookie consent"
+                              :disabled="props.isInherited"
+                              :value="props.currentValue"
+                              @change="props.updateCurrentValue">
+                        <option value="nothing">Nothing</option>
+                        <option value="shopware">Shopware default</option>
+                        <option value="cookiebot">CookieBot</option>
+                    </sw-field>
+                </template>
+            </sw-inherit-wrapper>
+
+            <sw-inherit-wrapper
+                    v-if="actualConfigData['KlaviyoIntegrationPlugin.config.cookieConsent'] == 'nothing'"
+                    v-model="actualConfigData['KlaviyoIntegrationPlugin.config.isInitializeKlaviyoAfterInteraction']"
+                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.isInitializeKlaviyoAfterInteraction']"
+                    :customInheritationCheckFunction="checkBoolFieldInheritance">
                 <template #content="props">
                     <sw-switch-field name="KlaviyoIntegrationPlugin.config.isInitializeKlaviyoAfterInteraction"
                                      :mapInheritance="props"
@@ -33,58 +55,59 @@
 
             {% block klaviyo_integration_settings_general_enabled %}
                 <sw-switch-field
-                    v-if="selectedSalesChannelId !== null"
-                    class="no-top-margin"
-                    v-model="actualConfigData['KlaviyoIntegrationPlugin.config.enabled']"
-                    name="KlaviyoIntegrationPlugin.config.enabled"
-                    :label="$tc('klaviyo-integration-settings.configs.enabled.label')"
-                    :helpText="$tc('klaviyo-integration-settings.configs.enabled.helpText')">
+                        v-if="selectedSalesChannelId !== null"
+                        class="no-top-margin"
+                        v-model="actualConfigData['KlaviyoIntegrationPlugin.config.enabled']"
+                        name="KlaviyoIntegrationPlugin.config.enabled"
+                        :label="$tc('klaviyo-integration-settings.configs.enabled.label')"
+                        :helpText="$tc('klaviyo-integration-settings.configs.enabled.helpText')">
                 </sw-switch-field>
             {% endblock %}
 
             {% block klaviyo_integration_settings_general_private_api_key %}
                 <sw-password-field
-                    v-model="actualConfigData['KlaviyoIntegrationPlugin.config.privateApiKey']"
-                    name="KlaviyoIntegrationPlugin.config.privateApiKey"
-                    type="text"
-                    :label="$tc('klaviyo-integration-settings.configs.privateApiKey.label')"
-                    :helpText="$tc('klaviyo-integration-settings.configs.privateApiKey.helpText')"
-                    :disabled="selectedSalesChannelId === null"
-                    :error="privateKeyErrorState"
-                    required>
+                        v-model="actualConfigData['KlaviyoIntegrationPlugin.config.privateApiKey']"
+                        name="KlaviyoIntegrationPlugin.config.privateApiKey"
+                        type="text"
+                        :label="$tc('klaviyo-integration-settings.configs.privateApiKey.label')"
+                        :helpText="$tc('klaviyo-integration-settings.configs.privateApiKey.helpText')"
+                        :disabled="selectedSalesChannelId === null"
+                        :error="privateKeyErrorState"
+                        required>
                 </sw-password-field>
             {% endblock %}
 
             {% block klaviyo_integration_settings_general_public_api_key %}
                 <sw-field
-                    v-model="actualConfigData['KlaviyoIntegrationPlugin.config.publicApiKey']"
-                    name="KlaviyoIntegrationPlugin.config.privateApiKey"
-                    type="text"
-                    :label="$tc('klaviyo-integration-settings.configs.publicApiKey.label')"
-                    :helpText="$tc('klaviyo-integration-settings.configs.publicApiKey.helpText')"
-                    :disabled="selectedSalesChannelId === null"
-                    :error="publicKeyErrorState"
-                    required>
+                        v-model="actualConfigData['KlaviyoIntegrationPlugin.config.publicApiKey']"
+                        name="KlaviyoIntegrationPlugin.config.privateApiKey"
+                        type="text"
+                        :label="$tc('klaviyo-integration-settings.configs.publicApiKey.label')"
+                        :helpText="$tc('klaviyo-integration-settings.configs.publicApiKey.helpText')"
+                        :disabled="selectedSalesChannelId === null"
+                        :error="publicKeyErrorState"
+                        required>
                 </sw-field>
             {% endblock %}
 
             {% block klaviyo_integration_settings_general_klaviyo_list_for_subscribers_sync %}
                 <sw-field
-                    v-model="actualConfigData['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync']"
-                    name="KlaviyoIntegrationPlugin.config.privateApiKey"
-                    type="text"
-                    :label="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.label')"
-                    :helpText="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.helpText')"
-                    :disabled="selectedSalesChannelId === null"
-                    :error="listNameErrorState"
-                    required>
+                        v-model="actualConfigData['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync']"
+                        name="KlaviyoIntegrationPlugin.config.privateApiKey"
+                        type="text"
+                        :label="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.label')"
+                        :helpText="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.helpText')"
+                        :disabled="selectedSalesChannelId === null"
+                        :error="listNameErrorState"
+                        required>
                 </sw-field>
             {% endblock %}
 
             {% block klaviyo_integration_settings_general_track_deleted_account_orders %}
-                <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackDeletedAccountOrders']"
-                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackDeletedAccountOrders']"
-                                    :customInheritationCheckFunction="checkBoolFieldInheritance">
+                <sw-inherit-wrapper
+                        v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackDeletedAccountOrders']"
+                        :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackDeletedAccountOrders']"
+                        :customInheritationCheckFunction="checkBoolFieldInheritance">
                     <template #content="props">
                         <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackDeletedAccountOrders"
                                          :mapInheritance="props"
@@ -271,8 +294,8 @@
             {% endblock %}
         </sw-card>
         <sw-card
-            :title="$tc('klaviyo-integration-settings.pop-up.title')"
-            v-if="actualConfigData['KlaviyoIntegrationPlugin.config.trackSubscribedToBackInStock']">
+                :title="$tc('klaviyo-integration-settings.pop-up.title')"
+                v-if="actualConfigData['KlaviyoIntegrationPlugin.config.trackSubscribedToBackInStock']">
             <fieldset>
                 <legend>{{ $tc('klaviyo-integration-settings.pop-up.open-button-fieldset-label') }}</legend>
                 <sw-container columns="5fr 5fr" gap="16px">

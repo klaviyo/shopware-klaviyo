@@ -43,7 +43,21 @@ Component.register('klaviyo-integration-settings-general', {
     data() {
         return {
             isLoading: false,
-            apiValidationInProgress: false
+            apiValidationInProgress: false,
+            cookieConsentOptions: [
+                {
+                    name: 'Nothing',
+                    value: 'nothing'
+                },
+                {
+                    name: 'Shopware default',
+                    value: 'shopware'
+                },
+                {
+                    name: 'CookieBot',
+                    value: 'cookiebot'
+                }
+            ]
         };
     },
 
@@ -75,6 +89,7 @@ Component.register('klaviyo-integration-settings-general', {
                     subscribeBtnColor: '',
                     subscribeBtnBgColor: '',
                     popUpAdditionalClasses: '',
+                    cookieConsent: ''
                 };
 
             /**
@@ -88,6 +103,7 @@ Component.register('klaviyo-integration-settings-general', {
         },
 
         checkTextFieldInheritance(value) {
+            console.log(typeof value)
             if (typeof value !== 'string') {
                 return true;
             }

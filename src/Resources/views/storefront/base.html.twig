@@ -2,7 +2,6 @@
 
 {# Adding Klaviyo script #}
 {% block base_body_script %}
-
     {{ parent() }}
     {# Klaviyo script #}
     {% block base_body_script_klaviyo_integration %}
@@ -12,7 +11,8 @@
             {% set configurationOptions = {
                 'afterInteraction': extensionData.configuration.afterInteraction,
                 'publicApiKey':  extensionData.configuration.publicApiKey|sw_sanitize,
-                'customerId': context.customer.id
+                'customerId': context.customer.id,
+                'cookieConsent': extensionData.configuration.cookieConsent
             } %}
             <div style="display: none;" data-klaviyo-identity-tracking-component=""
                  data-klaviyo-tracking="true"

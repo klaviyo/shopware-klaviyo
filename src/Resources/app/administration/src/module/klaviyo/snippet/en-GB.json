@@ -62,6 +62,9 @@
                 "label": "Initialize Klaviyo After First Interaction With Page.",
                 "general-label": "Interaction settings",
                 "helpText": "After the client starts interacting with the page, the Klaviyo scripts will be initialized. On subsequent page transitions, the scripts will be initialized immediately."
+            },
+            "cookie": {
+                "title": "Cookie consent"
             }
         },
         "pop-up": {
