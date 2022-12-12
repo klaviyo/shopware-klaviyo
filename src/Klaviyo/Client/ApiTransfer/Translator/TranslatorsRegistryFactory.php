@@ -6,6 +6,7 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\CartEve
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderedProductEvent\OrderedProductEventTrackingRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\CanceledOrderEventTrackingRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\FulfilledOrderEventTrackingRequest;
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\PaidOrderEventTrackingRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\PlacedOrderEventTrackingRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\RefundedOrderEventTrackingRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator\Profiles\Search\SearchProfileIdApiTransferTranslator;
@@ -46,6 +47,9 @@ class TranslatorsRegistryFactory
 
         $registry->addTranslator(
             new GenericEventTrackingApiTransferTranslator($serializer, $configuration, RefundedOrderEventTrackingRequest::class)
+        );
+        $registry->addTranslator(
+            new GenericEventTrackingApiTransferTranslator($serializer, $configuration, PaidOrderEventTrackingRequest::class)
         );
         $registry->addTranslator(
             new GenericEventTrackingApiTransferTranslator($serializer, $configuration, AddedToCartEventTrackingRequest::class)

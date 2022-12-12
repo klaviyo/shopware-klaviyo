@@ -25,6 +25,7 @@ class OrderEventsSyncOperation implements JobHandlerInterface
         Tracker::ORDER_EVENT_REFUNDED,
         Tracker::ORDER_EVENT_CANCELED,
         Tracker::ORDER_EVENT_FULFILLED,
+        Tracker::ORDER_EVENT_PAID
     ];
 
     private EntityRepositoryInterface $eventsRepository;
@@ -94,6 +95,9 @@ class OrderEventsSyncOperation implements JobHandlerInterface
                     break;
                 case Tracker::ORDER_EVENT_FULFILLED:
                     $trackingResult = $this->eventsTracker->trackFulfilledOrders($context, $eventsBag);
+                    break;
+                case Tracker::ORDER_EVENT_PAID:
+                    $trackingResult = $this->eventsTracker->trackPaiedOrders($context, $eventsBag);
                     break;
                 default:
                     $trackingResult = new OrderTrackingResult();
