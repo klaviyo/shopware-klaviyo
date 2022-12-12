@@ -1,3 +1,7 @@
+# 1.0.13
+* Neu: Tracking für "PAID"-Bestellungen hinzugefügt
+* Neu: Produkt-SKU in der Funktion "Benachrichtigen, wenn auf Lager" hinzugefügt
+
 # 1.0.12
 * Neu: Warenkorb-Reset-Funktionalität hinzugefügt
 
