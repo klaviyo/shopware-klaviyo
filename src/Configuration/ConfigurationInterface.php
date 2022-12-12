@@ -26,6 +26,8 @@ interface ConfigurationInterface
 
     public function isTrackRefundedOrder(): bool;
 
+    public function isTrackPaidOrder(): bool;
+
     public function getPublicApiKey(): string;
 
     public function getSubscribersListName(): string;

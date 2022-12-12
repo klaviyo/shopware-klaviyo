@@ -4,7 +4,8 @@
                 {% set notificationConfigurationOptions = {
                     publicApiKey:  extensionData.configuration.publicApiKey|sw_sanitize,
                     listName: extensionData.configuration.subscribersListName,
-                    variantID: page.product.productNumber,
+                    variantId: page.product.id,
+                    variantNumber: page.product.productNumber,
                     productID: page.product.parentId,
                 } %}
 

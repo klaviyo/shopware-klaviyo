@@ -138,4 +138,9 @@ class ScheduledEventsTracker implements EventsTrackerInterface
 
         return $result;
     }
+
+    public function trackPaiedOrders(Context $context, OrderTrackingEventsBag $trackingBag): OrderTrackingResult
+    {
+        return $this->trackOrderEventsForBackgroundProcessing($context, $trackingBag, self::ORDER_EVENT_PAID);
+    }
 }

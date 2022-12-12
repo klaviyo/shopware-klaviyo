@@ -1,5 +1,9 @@
+# 1.0.13
+* New: Added tracking for "PAID" orders
+* New: Added product SKU in "Notify in stock" functionality
+
 # 1.0.12
-* New: Added cart resotre functionality
+* New: Added cart restore functionality
 
 # 1.0.11
 * Fix: Context is kept for background processes

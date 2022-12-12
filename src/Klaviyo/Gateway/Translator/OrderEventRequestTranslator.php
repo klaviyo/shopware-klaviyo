@@ -12,6 +12,7 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEv
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\DTO\OrderProductItemInfo;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\DTO\OrderProductItemInfoCollection;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\FulfilledOrderEventTrackingRequest;
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\PaidOrderEventTrackingRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\PlacedOrderEventTrackingRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\RefundedOrderEventTrackingRequest;
 use Klaviyo\Integration\Klaviyo\Client\Exception\OrderItemProductNotFound;
@@ -33,6 +34,7 @@ class OrderEventRequestTranslator
 {
     private const ORDER_CANCELLED_REASON = 'Cancelled by shopware 6';
     private const ORDER_REFUND_REASON = 'Refund by shopware 6';
+    private const ORDER_PAID_REASON = 'Paid by shopware 6';
 
     private EntityRepositoryInterface $productRepository;
     private EntityRepositoryInterface $orderAddressRepository;
@@ -194,6 +196,41 @@ class OrderEventRequestTranslator
         );
 
         return $request;
+    }
+
+    public function translateToPaidOrderEventRequest(
+        Context $context,
+        OrderEntity $orderEntity,
+        \DateTimeInterface $eventHappenedDateTime
+    ): PaidOrderEventTrackingRequest {
+        $customerProperties = $this->orderCustomerPropertiesTranslator
+            ->translateOrder($context, $orderEntity);
+
+        $discounts = $this->translateToDiscountInfoCollection($context, $orderEntity);
+        $products = $this->translateToOrderInfoCollection($context, $orderEntity);
+
+        $billingAddressEntity = $this->getOrderBillingAddress($context, $orderEntity);
+        $billingAddress = $this->translateOrderAddress($context, $billingAddressEntity);
+
+        $shippingAddressEntity = $this->getOrderShippingAddress($context, $orderEntity);
+        if ($shippingAddressEntity) {
+            $shippingAddress = $this->translateOrderAddress($context, $shippingAddressEntity);
+        } else {
+            $shippingAddress = $billingAddress;
+        }
+
+        return new PaidOrderEventTrackingRequest(
+            $orderEntity->getId(),
+            $eventHappenedDateTime,
+            $customerProperties,
+            $orderEntity->getAmountTotal(),
+            $orderEntity->getId(),
+            $discounts,
+            $products,
+            $billingAddress,
+            $shippingAddress,
+            self::ORDER_PAID_REASON
+        );
     }
 
     public function translateToRefundedOrderEventRequest(
