@@ -10,6 +10,7 @@ class Configuration implements ConfigurationInterface
     private string $privateApiKey;
     private string $publicApiKey;
     private string $subscribersListName;
+    private string $bisVariantField;
     private bool $trackDeletedAccountOrders;
     private bool $trackViewedProduct;
     private bool $trackRecentlyViewedItems;
@@ -31,6 +32,7 @@ class Configuration implements ConfigurationInterface
         string $privateApiKey,
         string $publicApiKey,
         string $subscribersListName,
+        string $bisVariantField,
         bool $trackDeletedAccountOrders,
         bool $trackViewedProduct,
         bool $trackRecentlyViewedItems,
@@ -51,6 +53,7 @@ class Configuration implements ConfigurationInterface
         $this->privateApiKey = $privateApiKey;
         $this->publicApiKey = $publicApiKey;
         $this->subscribersListName = $subscribersListName;
+        $this->bisVariantField = $bisVariantField;
         $this->trackDeletedAccountOrders = $trackDeletedAccountOrders;
         $this->trackViewedProduct = $trackViewedProduct;
         $this->trackRecentlyViewedItems = $trackRecentlyViewedItems;
@@ -161,5 +164,10 @@ class Configuration implements ConfigurationInterface
     public function getPopUpConfiguration(): PopUpConfiguration
     {
         return $this->popUpConfiguration;
+    }
+
+    public function getBisVariantField(): string
+    {
+        return $this->bisVariantField;
     }
 }

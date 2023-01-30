@@ -81,6 +81,26 @@
                 </sw-field>
             {% endblock %}
 
+            {% block klaviyo_integration_settings_general_varian_for_bis %}
+                <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.bisVariantField']"
+                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.bisVariantField']"
+                                    :label="$tc('klaviyo-integration-settings.configs.bisVariantField.label')"
+                                    :help-text="$tc('klaviyo-integration-settings.configs.bisVariantField.helpText')">
+                    <template #content="props">
+                        <sw-single-select name="KlaviyoIntegrationPlugin.config.bisVariantField"
+                                          labelProperty="label"
+                                          valueProperty="value"
+                                          :options="createBisVariantFieldOptions"
+                                          :isInherited="props.isInherited"
+                                          :disabled="props.isInherited"
+                                          show-clearable-button
+                                          :value="props.currentValue"
+                                          @change="props.updateCurrentValue">
+                        </sw-single-select>
+                    </template>
+                </sw-inherit-wrapper>
+            {% endblock %}
+
             {% block klaviyo_integration_settings_general_track_deleted_account_orders %}
                 <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackDeletedAccountOrders']"
                                     :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackDeletedAccountOrders']"

@@ -47,6 +47,21 @@ Component.register('klaviyo-integration-settings-general', {
         };
     },
 
+    computed : {
+        createBisVariantFieldOptions() {
+            return [
+                {
+                    label: this.$tc('klaviyo-integration-settings.configs.bisVariantField.productId'),
+                    value: 'product-id'
+                },
+                {
+                    label: this.$tc('sw-product.basicForm.labelProductNumber'),
+                    value: 'product-number'
+                }
+            ]
+        },
+    },
+
     created() {
         this.createdComponent();
     },
@@ -56,6 +71,7 @@ Component.register('klaviyo-integration-settings-general', {
             const configPrefix = 'KlaviyoIntegrationPlugin.config.',
                 defaultConfigs = {
                     enabled: false,
+                    bisVariantField: 'product-number',
                     trackDeletedAccountOrders: false,
                     trackViewedProduct: true,
                     trackRecentlyViewedItems: true,
