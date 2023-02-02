@@ -1,3 +1,6 @@
+# 1.0.14
+* Neu: Auswahl von Variantenbezeichnern für BIS hinzugefügt
+
 # 1.0.13
 * Neu: Tracking für "PAID"-Bestellungen hinzugefügt
 * Neu: Produkt-SKU in der Funktion "Benachrichtigen, wenn auf Lager" hinzugefügt
