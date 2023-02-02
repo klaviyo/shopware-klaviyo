@@ -1,3 +1,6 @@
+# 1.0.14
+* New: Added variant identifier selection for BIS
+ 
 # 1.0.13
 * New: Added tracking for "PAID" orders
 * New: Added product SKU in "Notify in stock" functionality
