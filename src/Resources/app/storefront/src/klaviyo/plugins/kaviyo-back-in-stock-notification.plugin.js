@@ -96,8 +96,7 @@ export default class KlaviyoBackInStockNotification extends Plugin {
         data.append('a', this.options.publicApiKey);
         data.append('email', this._email.value);
         data.append('platform', 'api');
-        data.append('variantId', this.options.variantId);
-        data.append('variant', this.options.variantNumber);
+        data.append('variant', this.options.variantId);
         data.append('product', this.options.productID);
         data.append('subscribe_for_newsletter', this._subscribeToNewsletter.checked);
         return data;
