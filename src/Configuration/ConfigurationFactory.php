@@ -42,6 +42,7 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
             );
         }
 
+        $bisVariantField = $this->systemConfigService->get('KlaviyoIntegrationPlugin.config.bisVariantField', $salesChannelId) ?? 'product-number';
         $trackDeletedAccountOrders = $this->getBoolConfiguration('trackDeletedAccountOrders', $salesChannelId);
         $trackViewedProduct = $this->getBoolConfiguration('trackViewedProduct', $salesChannelId);
         $trackRecentlyViewedItems = $this->getBoolConfiguration('trackRecentlyViewedItems', $salesChannelId);
@@ -86,6 +87,7 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
             trim($privateApiKey),
             trim($publicApiKey),
             trim($listName),
+            $bisVariantField,
             $trackDeletedAccountOrders,
             $trackViewedProduct,
             $trackRecentlyViewedItems,

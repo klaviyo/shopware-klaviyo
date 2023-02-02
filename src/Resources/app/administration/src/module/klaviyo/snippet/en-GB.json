@@ -101,6 +101,11 @@
                 "label": "Klaviyo List name for subscribers sync",
                 "helpText": "The name of the Subscribers list in Klaviyo where all Shopware 6 subscribers will be added.\n In case of duplicate names first found list will be used"
             },
+            "bisVariantField": {
+                "label": "Back in stock variant field mapping",
+                "helpText": "Back in stock variant mapping",
+                "productId": "Product ID"
+            },
             "trackDeletedAccountOrders": {
                 "label": "Track Deleted Account's Orders",
                 "helpText": "Do we need to synchronize deleted customer's order events to Klaviyo? Note: When this feature is enabled, duplicate Klaviyo profiles may be synchronized."

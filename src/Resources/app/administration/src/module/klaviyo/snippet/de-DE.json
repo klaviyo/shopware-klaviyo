@@ -101,6 +101,11 @@
                 "label": "Klaviyo Liste für Newsletter Anmeldungen",
                 "helpText": "Der Name der Abonnentenliste in Klaviyo, zu der alle Shopware 6 Abonnenten hinzugefügt werden sollen.\n Bei doppelten Namen wird die zuerst gefundene Liste verwendet."
             },
+            "bisVariantField": {
+                "label": "Wieder auf Lager Varianten Feldzuordnung",
+                "helpText": "Wieder auf Lager Varianten Feldzuordnung",
+                "productId": "Produkt ID"
+            },
             "trackDeletedAccountOrders": {
                 "label": "Übersicht über die Bestellungen eines gelöschten Kontos",
                 "helpText": "Sollen die Bestellevents von gelöschten Kunden zu Klaviyo synchronisiert werden? Hinweis: Wenn diese Funktion aktiviert ist, können doppelte Klaviyo-Profile synchronisiert werden."
