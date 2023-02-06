@@ -62,6 +62,9 @@
                 "label": "Klaviyo nach der ersten Interaktion mit der Seite initialisieren.",
                 "general-label": "Interaktionseinstellungen",
                 "helpText": "Nachdem eun User mit der Seite interagiert hat, werden die Klaviyo-Skripte initialisiert. Bei nachfolgenden Seitenübergängen werden die Skripte sofort initialisiert."
+            },
+            "cookie": {
+                "title": "Cookie consent"
             }
         },
         "pop-up": {

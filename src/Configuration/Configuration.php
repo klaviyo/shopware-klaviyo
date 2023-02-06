@@ -26,6 +26,7 @@ class Configuration implements ConfigurationInterface
     private bool $afterInteraction;
     private bool $trackSubscribedToBackInStock;
     private PopUpConfiguration $popUpConfiguration;
+    private string $cookieConsent;
 
     public function __construct(
         bool $accountEnabled,
@@ -47,7 +48,8 @@ class Configuration implements ConfigurationInterface
         array $customFieldMapping,
         bool $afterInteraction,
         bool $trackSubscribedToBackInStock,
-        PopUpConfiguration $popUpConfiguration
+        PopUpConfiguration $popUpConfiguration,
+        string $cookieConsent
     ) {
         $this->accountEnabled = $accountEnabled;
         $this->privateApiKey = $privateApiKey;
@@ -69,6 +71,7 @@ class Configuration implements ConfigurationInterface
         $this->afterInteraction = $afterInteraction;
         $this->trackSubscribedToBackInStock = $trackSubscribedToBackInStock;
         $this->popUpConfiguration = $popUpConfiguration;
+        $this->cookieConsent = $cookieConsent;
     }
 
     public function isAccountEnabled(): bool
@@ -169,5 +172,10 @@ class Configuration implements ConfigurationInterface
     public function getBisVariantField(): string
     {
         return $this->bisVariantField;
+    }
+
+    public function getCookieConsent(): string
+    {
+        return $this->cookieConsent;
     }
 }

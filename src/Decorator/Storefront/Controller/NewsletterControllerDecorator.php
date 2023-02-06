@@ -2,6 +2,7 @@
 
 namespace Klaviyo\Integration\Decorator\Storefront\Controller;
 
+use Klaviyo\Integration\Model\Channel\GetValidChannelConfig;
 use Shopware\Core\Content\Newsletter\SalesChannel\AbstractNewsletterConfirmRoute;
 use Shopware\Core\Content\Newsletter\SalesChannel\AbstractNewsletterSubscribeRoute;
 use Shopware\Core\Content\Newsletter\SalesChannel\AbstractNewsletterUnsubscribeRoute;
@@ -22,13 +23,16 @@ use Symfony\Component\HttpFoundation\Response;
 class NewsletterControllerDecorator extends NewsletterController
 {
 
-   public function __construct(
+    private GetValidChannelConfig $validChannelConfig;
+
+    public function __construct(
        NewsletterSubscribePageLoader $newsletterConfirmRegisterPageLoader,
        EntityRepositoryInterface $customerRepository,
        AbstractNewsletterSubscribeRoute $newsletterSubscribeRoute,
        AbstractNewsletterConfirmRoute $newsletterConfirmRoute,
        AbstractNewsletterUnsubscribeRoute $newsletterUnsubscribeRoute,
-       NewsletterAccountPageletLoader $newsletterAccountPageletLoader
+       NewsletterAccountPageletLoader $newsletterAccountPageletLoader,
+       GetValidChannelConfig $validChannelConfig
    ) {
        parent::__construct(
            $newsletterConfirmRegisterPageLoader,
@@ -38,12 +42,14 @@ class NewsletterControllerDecorator extends NewsletterController
            $newsletterUnsubscribeRoute,
            $newsletterAccountPageletLoader
        );
+       $this->validChannelConfig = $validChannelConfig;
    }
 
     public function subscribeMail(SalesChannelContext $context, Request $request, QueryDataBag $queryDataBag): Response
     {
         $response = parent::subscribeMail($context, $request, $queryDataBag);
-        if (!$request->cookies->get('od-klaviyo-track-allow')) {
+
+        if (!$this->isCookieAllowed($context, $request)) {
             return $response;
         }
 
@@ -59,5 +65,29 @@ class NewsletterControllerDecorator extends NewsletterController
         }
 
         return $response;
+    }
+
+    private function isCookieAllowed(SalesChannelContext $context, Request $request)
+    {
+        $cookieType = $this->validChannelConfig->execute($context->getSalesChannelId())->getCookieConsent();
+        switch ($cookieType) {
+            case 'shopware':
+                return $request->cookies->get('od-klaviyo-track-allow');
+            case 'cookiebot':
+                return $this->isCookieBotAllowed($request);
+            default:
+                return true;
+        }
+    }
+
+    private function isCookieBotAllowed(Request $request) : bool {
+        $data = $request->cookies->get('CookieConsent');
+        if (!$data) {
+            return false;
+        }
+        // cookiebot official
+        $valid_php_json = preg_replace('/\s*:\s*([a-zA-Z0-9_]+?)([}\[,])/', ':"$1"$2', preg_replace('/([{\[,])\s*([a-zA-Z0-9_]+?):/', '$1"$2":', str_replace("'", '"', stripslashes($data))));
+        $CookieConsent = json_decode($valid_php_json, true);
+        return empty($CookieConsent['marketing']) ? false : $CookieConsent['marketing'] === 'true';
     }
 }
