@@ -22,7 +22,6 @@
             </sw-inherit-wrapper>
 
             <sw-inherit-wrapper
-                    v-if="actualConfigData['KlaviyoIntegrationPlugin.config.cookieConsent'] == 'nothing'"
                     v-model="actualConfigData['KlaviyoIntegrationPlugin.config.isInitializeKlaviyoAfterInteraction']"
                     :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.isInitializeKlaviyoAfterInteraction']"
                     :customInheritationCheckFunction="checkBoolFieldInheritance">

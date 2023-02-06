@@ -89,7 +89,7 @@ Component.register('klaviyo-integration-settings-general', {
                     subscribeBtnColor: '',
                     subscribeBtnBgColor: '',
                     popUpAdditionalClasses: '',
-                    cookieConsent: ''
+                    cookieConsent: 'shopware'
                 };
 
             /**
