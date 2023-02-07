@@ -61,6 +61,25 @@ Component.register('klaviyo-integration-settings-general', {
         };
     },
 
+    computed : {
+        createCookieConsentOptions() {
+            return [
+                {
+                    label: this.$tc('klaviyo-integration-settings.configs.cookieConsent.nothingLabel'),
+                    value: 'nothing'
+                },
+                {
+                    label: this.$tc('klaviyo-integration-settings.configs.cookieConsent.shopwareLabel'),
+                    value: 'shopware'
+                },
+                {
+                    label: this.$tc('klaviyo-integration-settings.configs.cookieConsent.cookieBotLabel'),
+                    value: 'cookiebot'
+                }
+            ]
+        },
+    },
+
     created() {
         this.createdComponent();
     },
@@ -103,7 +122,6 @@ Component.register('klaviyo-integration-settings-general', {
         },
 
         checkTextFieldInheritance(value) {
-            console.log(typeof value)
             if (typeof value !== 'string') {
                 return true;
             }

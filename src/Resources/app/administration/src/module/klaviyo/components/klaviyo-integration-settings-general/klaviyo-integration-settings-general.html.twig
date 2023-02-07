@@ -2,22 +2,23 @@
     <div>
         <sw-card :title="$tc('klaviyo-integration-settings.general.initialization.general-label')"
                  class="klaviyo-interaction-settings">
-            <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.cookieConsent']"
-                                style="margin-top: 20px;"
-                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.cookieConsent']"
-                                :customInheritationCheckFunction="null">
+            <sw-inherit-wrapper
+                class="cookie-consent-inheritance"
+                v-model="actualConfigData['KlaviyoIntegrationPlugin.config.cookieConsent']"
+                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.cookieConsent']"
+                :label="$tc('klaviyo-integration-settings.configs.cookieConsent.label')"
+                :help-text="$tc('klaviyo-integration-settings.configs.cookieConsent.helpText')">
                 <template #content="props">
-                    <sw-field name="KlaviyoIntegrationPlugin.config.cookieConsent"
-                              type="select"
-                              :mapInheritance="props"
-                              label="Cookie consent"
-                              :disabled="props.isInherited"
-                              :value="props.currentValue"
-                              @change="props.updateCurrentValue">
-                        <option value="nothing">Nothing</option>
-                        <option value="shopware">Shopware default</option>
-                        <option value="cookiebot">CookieBot</option>
-                    </sw-field>
+                    <sw-single-select name="KlaviyoIntegrationPlugin.config.cookieConsent"
+                                      labelProperty="label"
+                                      valueProperty="value"
+                                      :options="createCookieConsentOptions"
+                                      :isInherited="props.isInherited"
+                                      :disabled="props.isInherited"
+                                      show-clearable-button
+                                      :value="props.currentValue"
+                                      @change="props.updateCurrentValue">
+                    </sw-single-select>
                 </template>
             </sw-inherit-wrapper>
 
