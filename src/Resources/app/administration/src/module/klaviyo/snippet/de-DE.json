@@ -109,6 +109,13 @@
                 "helpText": "Wieder auf Lager Varianten Feldzuordnung",
                 "productId": "Produkt ID"
             },
+            "cookieConsent": {
+                "label": "Cookie Consent",
+                "helpText": "Cookie Consent",
+                "nothingLabel": "Nothing",
+                "shopwareLabel": "Shopware Default",
+                "cookieBotLabel": "CookieBot"
+            },
             "trackDeletedAccountOrders": {
                 "label": "Übersicht über die Bestellungen eines gelöschten Kontos",
                 "helpText": "Sollen die Bestellevents von gelöschten Kunden zu Klaviyo synchronisiert werden? Hinweis: Wenn diese Funktion aktiviert ist, können doppelte Klaviyo-Profile synchronisiert werden."
