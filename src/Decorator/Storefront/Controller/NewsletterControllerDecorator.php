@@ -9,12 +9,14 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Validation\DataBag\QueryDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Controller\NewsletterController;
 use Shopware\Storefront\Page\Newsletter\Subscribe\NewsletterSubscribePageLoader;
 use Shopware\Storefront\Pagelet\Newsletter\Account\NewsletterAccountPageletLoader;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use function version_compare;
 
 /**
  * @RouteScope(scopes={"storefront"})
@@ -28,16 +30,32 @@ class NewsletterControllerDecorator extends NewsletterController
        AbstractNewsletterSubscribeRoute $newsletterSubscribeRoute,
        AbstractNewsletterConfirmRoute $newsletterConfirmRoute,
        AbstractNewsletterUnsubscribeRoute $newsletterUnsubscribeRoute,
-       NewsletterAccountPageletLoader $newsletterAccountPageletLoader
+       NewsletterAccountPageletLoader $newsletterAccountPageletLoader,
+       SystemConfigService $systemConfigService,
+       string $swVersion
    ) {
-       parent::__construct(
-           $newsletterConfirmRegisterPageLoader,
-           $customerRepository,
-           $newsletterSubscribeRoute,
-           $newsletterConfirmRoute,
-           $newsletterUnsubscribeRoute,
-           $newsletterAccountPageletLoader
-       );
+       if (version_compare($swVersion, '6.4.18.1', '<')) {
+           // Before 6.4.18.1
+           parent::__construct(
+               $newsletterConfirmRegisterPageLoader,
+               $customerRepository,
+               $newsletterSubscribeRoute,
+               $newsletterConfirmRoute,
+               $newsletterUnsubscribeRoute,
+               $newsletterAccountPageletLoader
+           );
+       } else {
+           // From 6.4.18.1 (included)
+           parent::__construct(
+               $newsletterConfirmRegisterPageLoader,
+               $customerRepository,
+               $newsletterSubscribeRoute,
+               $newsletterConfirmRoute,
+               $newsletterUnsubscribeRoute,
+               $newsletterAccountPageletLoader,
+               $systemConfigService
+           );
+       }
    }
 
     public function subscribeMail(SalesChannelContext $context, Request $request, QueryDataBag $queryDataBag): Response
