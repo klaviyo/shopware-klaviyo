@@ -62,6 +62,9 @@
                 "label": "Initialize Klaviyo After First Interaction With Page.",
                 "general-label": "Interaction settings",
                 "helpText": "After the client starts interacting with the page, the Klaviyo scripts will be initialized. On subsequent page transitions, the scripts will be initialized immediately."
+            },
+            "cookie": {
+                "title": "Cookie consent"
             }
         },
         "pop-up": {
@@ -105,6 +108,13 @@
                 "label": "Back in stock variant field mapping",
                 "helpText": "Back in stock variant mapping",
                 "productId": "Product ID"
+            },
+            "cookieConsent": {
+                "label": "Cookie Consent",
+                "helpText": "Cookie Consent",
+                "nothingLabel": "Nothing",
+                "shopwareLabel": "Shopware Default",
+                "cookieBotLabel": "CookieBot"
             },
             "trackDeletedAccountOrders": {
                 "label": "Track Deleted Account's Orders",

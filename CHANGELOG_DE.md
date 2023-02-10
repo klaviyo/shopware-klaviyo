@@ -1,3 +1,7 @@
+# 1.0.15
+* New: Kompatibilität mit CookieBot hinzugefügt
+* New: Zusätzliche Kompatibilität mit den neuesten Versionen
+
 # 1.0.14
 * Neu: Auswahl von Variantenbezeichnern für BIS hinzugefügt
 
