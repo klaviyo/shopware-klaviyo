@@ -1,4 +1,8 @@
-# 1.0.14
+# 1.0.15
+* New: Added compatibility with CookieBot
+* New: Added compatibility with the newest versions
+
+#1.0.14
 * New: Added variant identifier selection for BIS
  
 # 1.0.13
