@@ -44,6 +44,7 @@ export default class KlaviyoTracking extends Plugin {
         scriptInitialized: false,
         afterInteraction: false,
         publicApiKey: '',
+        cookieConsent: ''
     };
 
     init() {
@@ -67,6 +68,16 @@ export default class KlaviyoTracking extends Plugin {
         }
     }
 
+    cookiebotOnDecline() {
+        const scriptList = document.querySelectorAll("script[type='text/javascript']");
+        for (let i = 0; i < scriptList.length; i++) {
+            if (typeof scriptList[i].src === 'string' && scriptList[i].src.includes('klaviyo.com')) {
+                scriptList[i].parentNode.removeChild(scriptList[i]);
+            }
+        }
+        KlaviyoCookie.setCookie('__kla_id', null, -1);
+    }
+
     onKlaviyoCookieConsentAllowed() {
         // As far as cookie accept event can be recognized as "page interaction",
         // we are set our interaction key to the storage.
@@ -79,15 +90,30 @@ export default class KlaviyoTracking extends Plugin {
         }
     }
 
+    isAllowToTrack() {
+        if (this.options.cookieConsent === 'nothing') {
+            // In this config, always loading klaviyo cookies
+            return true;
+        } else if (this.options.cookieConsent && this.options.cookieConsent === 'shopware') {
+            // In this config, shopware default cookies is checked
+            return KlaviyoCookie.getCookie('od-klaviyo-track-allow');
+        } else if (this.options.cookieConsent && this.options.cookieConsent === 'cookiebot') {
+            // In this config, cookiebot cookies is checked
+            return Cookiebot.consent.marketing && Cookiebot.consent && Cookiebot.consent.marketing
+        }
+
+        return false;
+    }
+
     isPageInteractionRequired() {
-        return KlaviyoCookie.getCookie('od-klaviyo-track-allow')
+        return this.isAllowToTrack()
             && this.options.afterInteraction
             && this.storage.getItem(this.options.klaviyoInitializedStorageKey) === null;
     }
 
     canInitializeKlaviyoScript() {
         return !this.options.scriptInitialized
-            && KlaviyoCookie.getCookie('od-klaviyo-track-allow')
+            && this.isAllowToTrack()
             && !this.isPageInteractionRequired();
     }
 

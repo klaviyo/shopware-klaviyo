@@ -10,3 +10,15 @@ function eventCallback(updatedCookies) {
         })
     }
 }
+
+window.addEventListener('CookiebotOnAccept', () => {
+    Iterator.iterate(PluginManager.getPluginInstances('KlaviyoTracking'), (plugin) => {
+        plugin.onKlaviyoCookieConsentAllowed();
+    })
+});
+
+window.addEventListener('CookiebotOnDecline', () => {
+    Iterator.iterate(PluginManager.getPluginInstances('KlaviyoTracking'), (plugin) => {
+        plugin.cookiebotOnDecline();
+    })
+});

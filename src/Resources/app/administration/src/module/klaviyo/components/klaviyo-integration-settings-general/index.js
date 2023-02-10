@@ -43,7 +43,21 @@ Component.register('klaviyo-integration-settings-general', {
     data() {
         return {
             isLoading: false,
-            apiValidationInProgress: false
+            apiValidationInProgress: false,
+            cookieConsentOptions: [
+                {
+                    name: 'Nothing',
+                    value: 'nothing'
+                },
+                {
+                    name: 'Shopware default',
+                    value: 'shopware'
+                },
+                {
+                    name: 'CookieBot',
+                    value: 'cookiebot'
+                }
+            ]
         };
     },
 
@@ -60,6 +74,22 @@ Component.register('klaviyo-integration-settings-general', {
                 }
             ]
         },
+        createCookieConsentOptions() {
+            return [
+                {
+                    label: this.$tc('klaviyo-integration-settings.configs.cookieConsent.nothingLabel'),
+                    value: 'nothing'
+                },
+                {
+                    label: this.$tc('klaviyo-integration-settings.configs.cookieConsent.shopwareLabel'),
+                    value: 'shopware'
+                },
+                {
+                    label: this.$tc('klaviyo-integration-settings.configs.cookieConsent.cookieBotLabel'),
+                    value: 'cookiebot'
+                }
+            ]
+        }
     },
 
     created() {
@@ -92,6 +122,7 @@ Component.register('klaviyo-integration-settings-general', {
                     subscribeBtnColor: '',
                     subscribeBtnBgColor: '',
                     popUpAdditionalClasses: '',
+                    cookieConsent: 'shopware'
                 };
 
             /**

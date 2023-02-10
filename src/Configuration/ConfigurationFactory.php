@@ -71,6 +71,7 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
             $this->systemConfigService->getString('KlaviyoIntegrationPlugin.config.popUpAdditionalClasses', $salesChannelId)
         );
 
+        $cookieConsent = $this->systemConfigService->get('KlaviyoIntegrationPlugin.config.cookieConsent', $salesChannelId) ?? 'shopware';
 
         if (is_array($mapping)) {
             foreach ($mapping as $mappingId => $mappingAssociation) {
@@ -102,7 +103,8 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
             $mapping,
             $afterInteraction,
             $trackSubscribedToBackInStock,
-            $popUpConfiguration
+            $popUpConfiguration,
+            $cookieConsent
         );
     }
 
