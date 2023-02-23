@@ -28,7 +28,11 @@ class CustomerPropertiesNormalizer implements NormalizerInterface
                 '$region' => $object->getRegion(),
                 '$country' => $object->getCountry(),
                 '$zip' => $object->getZip(),
-                'Birthday' => $object->getBirthday()
+                'Birthday' => $object->getBirthday(),
+                'salesChannelId' => $object->getSalesChannelId(),
+                'salesChannelName' => $object->getSalesChannelName(),
+                'boundedSalesChannelId' => $object->getBoundedSalesChannelId(),
+                'boundedSalesChannelName' => $object->getBoundedSalesChannelName()
             ],
             $object->getCustomFields()
         );
