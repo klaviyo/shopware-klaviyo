@@ -55,7 +55,7 @@ class CustomerPropertiesTranslator
         $country = $this->addressHelper->getAddressCountry($context, $customerAddress);
 
         $customFields = $this->prepareCustomFields($customer, $orderEntity->getSalesChannelId());
-        $birthday = $customer->getBirthday();
+        $birthday = $customer ? $customer->getBirthday() : null;
 
         return new CustomerProperties(
             $customer ? $customer->getEmail() : $orderCustomer->getEmail(),
@@ -70,10 +70,10 @@ class CustomerPropertiesTranslator
             $country ? $country->getIso() : null,
             $customFields,
             $birthday ? $birthday->format(Defaults::STORAGE_DATE_FORMAT) : null,
-            $customer->getSalesChannelId(),
-            $this->getSalesChannelName($customer->getSalesChannelId(), $customer->getSalesChannel(), $context),
-            $customer->getBoundSalesChannelId(),
-            $this->getSalesChannelName($customer->getBoundSalesChannelId(), $customer->getBoundSalesChannel(), $context)
+            $customer ? $customer->getSalesChannelId() : null,
+            $customer ? $this->getSalesChannelName($customer->getSalesChannelId(), $customer->getSalesChannel(), $context) : null,
+            $customer ? $customer->getBoundSalesChannelId(): null,
+            $customer ? $this->getSalesChannelName($customer->getBoundSalesChannelId(), $customer->getBoundSalesChannel(), $context) : null
         );
     }
 
