@@ -16,6 +16,10 @@ class CustomerProperties implements \JsonSerializable
     private ?string $country;
     private array $customFields;
     private ?string $birthday;
+    private string $salesChannelId;
+    private ?string $salesChannelName;
+    private ?string $boundedSalesChannelId;
+    private ?string $boundedSalesChannelName;
 
     public function __construct(
         string $email,
@@ -29,7 +33,11 @@ class CustomerProperties implements \JsonSerializable
         ?string $region = null,
         ?string $country = null,
         array $customFields = [],
-        ?string $birthday = null
+        ?string $birthday = null,
+        string $salesChannelId,
+        ?string $salesChannelName,
+        ?string $boundedSalesChannelId,
+        ?string $boundedSalesChannelName
     ) {
         $this->email = $email;
         $this->id = $id;
@@ -43,6 +51,10 @@ class CustomerProperties implements \JsonSerializable
         $this->country = $country;
         $this->customFields = $customFields;
         $this->birthday = $birthday;
+        $this->salesChannelId = $salesChannelId;
+        $this->salesChannelName = $salesChannelName;
+        $this->boundedSalesChannelId = $boundedSalesChannelId;
+        $this->boundedSalesChannelName = $boundedSalesChannelName;
     }
 
     public function getEmail(): string
@@ -100,6 +112,26 @@ class CustomerProperties implements \JsonSerializable
         return $this->customFields;
     }
 
+    public function getSalesChannelId(): string
+    {
+        return $this->salesChannelId;
+    }
+
+    public function getSalesChannelName(): ?string
+    {
+        return $this->salesChannelName;
+    }
+
+    public function getBoundedSalesChannelId(): ?string
+    {
+        return $this->boundedSalesChannelId;
+    }
+
+    public function getBoundedSalesChannelName(): ?string
+    {
+        return $this->boundedSalesChannelName;
+    }
+
     public function jsonSerialize()
     {
         $basicData = [
@@ -113,7 +145,11 @@ class CustomerProperties implements \JsonSerializable
             'address' => $this->getAddress(),
             'region' => $this->getRegion(),
             'country' => $this->getCountry(),
-            'birthday' => $this->getBirthday()
+            'birthday' => $this->getBirthday(),
+            'salesChannelId' => $this->getSalesChannelId(),
+            'salesChannelName' => $this->getSalesChannelName(),
+            'boundedSalesChannelId' => $this->getBoundedSalesChannelId(),
+            'boundedSalesChannelName' => $this->getBoundedSalesChannelName()
         ];
 
         foreach ($this->getCustomFields() as $fieldKey => $fieldValue) {
@@ -127,5 +163,4 @@ class CustomerProperties implements \JsonSerializable
     {
         return $this->birthday;
     }
-
 }

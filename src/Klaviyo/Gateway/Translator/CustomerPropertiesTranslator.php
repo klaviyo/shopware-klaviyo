@@ -12,18 +12,24 @@ use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 class CustomerPropertiesTranslator
 {
     private AddressDataHelper $addressHelper;
     private ConfigurationRegistry $configurationRegistry;
+    private EntityRepositoryInterface $salesChannelRepository;
 
     public function __construct(
         AddressDataHelper $addressHelper,
-        ConfigurationRegistry $configurationRegistry
+        ConfigurationRegistry $configurationRegistry,
+        EntityRepositoryInterface $salesChannelRepository
     ) {
         $this->addressHelper = $addressHelper;
         $this->configurationRegistry = $configurationRegistry;
+        $this->salesChannelRepository = $salesChannelRepository;
     }
 
     public function translateOrder(Context $context, OrderEntity $orderEntity): CustomerProperties
@@ -116,6 +122,19 @@ class CustomerPropertiesTranslator
         return null;
     }
 
+    protected function getSalesChannelName(?string $id, ?SalesChannelEntity $channelEntity, Context $context): ?string
+    {
+        if ($channelEntity) {
+            return $channelEntity->getName();
+        }
+        if (!$id) {
+            return null;
+        }
+        $criteria = new Criteria([$id]);
+        $loadedChannel = $this->salesChannelRepository->search($criteria, $context)->first();
+        return $loadedChannel ? $loadedChannel->getName() : null;
+    }
+
     public function translateCustomer(Context $context, CustomerEntity $customerEntity): CustomerProperties
     {
         $customerAddress = $this->guessRelevantCustomerAddress($customerEntity);
@@ -136,7 +155,11 @@ class CustomerPropertiesTranslator
             $state ? $state->getShortCode() : null,
             $country ? $country->getIso() : null,
             $customFields,
-            $birthday ? $birthday->format(Defaults::STORAGE_DATE_FORMAT) : null
+            $birthday ? $birthday->format(Defaults::STORAGE_DATE_FORMAT) : null,
+            $customerEntity->getSalesChannelId(),
+            $this->getSalesChannelName($customerEntity->getSalesChannelId(), $customerEntity->getSalesChannel(), $context),
+            $customerEntity->getBoundSalesChannelId(),
+            $this->getSalesChannelName($customerEntity->getBoundSalesChannelId(), $customerEntity->getBoundSalesChannel(), $context),
         );
     }
 }
