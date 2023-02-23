@@ -16,7 +16,7 @@ class CustomerProperties implements \JsonSerializable
     private ?string $country;
     private array $customFields;
     private ?string $birthday;
-    private string $salesChannelId;
+    private ?string $salesChannelId;
     private ?string $salesChannelName;
     private ?string $boundedSalesChannelId;
     private ?string $boundedSalesChannelName;
@@ -34,10 +34,10 @@ class CustomerProperties implements \JsonSerializable
         ?string $country = null,
         array $customFields = [],
         ?string $birthday = null,
-        string $salesChannelId,
-        ?string $salesChannelName,
-        ?string $boundedSalesChannelId,
-        ?string $boundedSalesChannelName
+        ?string $salesChannelId = null,
+        ?string $salesChannelName = null,
+        ?string $boundedSalesChannelId = null,
+        ?string $boundedSalesChannelName = null
     ) {
         $this->email = $email;
         $this->id = $id;
@@ -112,7 +112,7 @@ class CustomerProperties implements \JsonSerializable
         return $this->customFields;
     }
 
-    public function getSalesChannelId(): string
+    public function getSalesChannelId(): ?string
     {
         return $this->salesChannelId;
     }
