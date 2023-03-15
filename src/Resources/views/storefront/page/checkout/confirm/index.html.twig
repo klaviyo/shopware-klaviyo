@@ -3,7 +3,7 @@
 {% block page_checkout_main_content %}
     {{ parent() }}
 
-    {% if page.hasExtension('klaviyoIntegrationPluginExtension') %}
+    {% if page.hasExtension('klaviyoIntegrationPluginExtension') and page.getExtension('klaviyoIntegrationPluginExtension').configuration.trackStartedCheckout  %}
         {% set extensionData =  page.getExtension('klaviyoIntegrationPluginExtension') %}
             {% set klaviyoComponentOptions = {
                 'startedCheckoutEventTrackingRequest': extensionData.startedCheckoutEventTrackingRequest
