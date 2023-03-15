@@ -13,6 +13,7 @@
 
     {% if page.hasExtension('klaviyoIntegrationPluginExtension') %}
         {% set extensionData =  page.getExtension('klaviyoIntegrationPluginExtension') %}
+
         {% set klaviyoComponentOptions = {
                 'productInfo': extensionData.productInfo
             }
