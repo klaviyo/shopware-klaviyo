@@ -2,9 +2,10 @@
 
 {% block base_main_inner %}
     {{ parent() }}
-    {% if page.hasExtension('klaviyoIntegrationPluginExtension') %}
+
+    {% if page.hasExtension('klaviyoIntegrationPluginExtension') and page.getExtension('klaviyoIntegrationPluginExtension').configuration.trackViewedProduct %}
         {% set extensionData =  page.getExtension('klaviyoIntegrationPluginExtension') %}
-        {{ dump(extensionData) }}
+
         {% set klaviyoComponentOptions = {
             'productInfo': extensionData.productInfo
         }
