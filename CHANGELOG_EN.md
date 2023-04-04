@@ -1,3 +1,6 @@
+# 1.0.16
+* New: Added sales channel information to Klaviyo customer 
+
 # 1.0.15
 * New: Added compatibility with CookieBot
 * New: Added compatibility with the newest versions
