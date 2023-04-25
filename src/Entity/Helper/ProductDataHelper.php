@@ -56,16 +56,10 @@ class ProductDataHelper
 
     public function getProductViewPageUrlByContext(ProductEntity $productEntity,SalesChannelContext $salesChannelContext): string
     {
-        if ($domains = $salesChannelContext->getSalesChannel()->getDomains()) {
+        if ($salesChannelContext->getSalesChannel()->getDomains()) {
             $request = $this->requestStack->getCurrentRequest();
 
-            if ($request) {
-                $host = $request->attributes->get(
-                    \Shopware\Storefront\Framework\Routing\RequestTransformer::STOREFRONT_URL
-                );
-            } else {
-                $host = $domains->first()->getUrl();
-            }
+            $host = $request->get('sw-storefront-url');
             $raw = $this->seoUrlReplacer->generate('frontend.detail.page', ['productId' => $productEntity->getId()]);
 
             return $this->seoUrlReplacer->replace($raw, $host, $salesChannelContext);
