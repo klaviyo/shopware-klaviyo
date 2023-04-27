@@ -16,6 +16,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Storefront\Framework\Routing\RequestTransformer;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -54,15 +55,21 @@ class ProductDataHelper
         $this->requestStack = $requestStack;
     }
 
-    public function getProductViewPageUrlByContext(ProductEntity $productEntity,SalesChannelContext $salesChannelContext): string
+    public function getProductViewPageUrlByContext(ProductEntity $productEntity, SalesChannelContext $salesChannelContext): string
     {
-        if ($salesChannelContext->getSalesChannel()->getDomains()) {
-            $request = $this->requestStack->getCurrentRequest();
+        $request = $this->requestStack->getCurrentRequest();
+        $raw = $this->seoUrlReplacer->generate('frontend.detail.page', ['productId' => $productEntity->getId()]);
 
-            $host = $request->get('sw-storefront-url');
-            $raw = $this->seoUrlReplacer->generate('frontend.detail.page', ['productId' => $productEntity->getId()]);
+        if ($request !== null && !empty($request->get(RequestTransformer::STOREFRONT_URL))) {
+            return $this->seoUrlReplacer->replace(
+                $raw,
+                $request->get(RequestTransformer::STOREFRONT_URL),
+                $salesChannelContext
+            );
+        }
 
-            return $this->seoUrlReplacer->replace($raw, $host, $salesChannelContext);
+        if ($salesChannelContext->getSalesChannel() && $salesChannelContext->getSalesChannel()->getDomains()) {
+            return $this->seoUrlReplacer->replace($raw, $salesChannelContext->getSalesChannel()->getDomains()->first()->getUrl(), $salesChannelContext);
         }
 
         return $this->urlGenerator
