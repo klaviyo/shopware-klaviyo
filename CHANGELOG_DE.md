@@ -1,3 +1,6 @@
+# 1.0.17
+* Fix: Das Problem wurde behoben, bei dem Produkte falsche Links (in klaviyo) zu Shops anderer Sprachen/Domains (shopware) hatten, wenn einem einzelnen Verkaufskanal zahlreiche Domains zugewiesen waren.
+
 # 1.0.16
 * Neu: Vertriebskanalinformationen wurden zum Klaviyo-Kunden hinzugefügt.
 
