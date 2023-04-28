@@ -124,6 +124,7 @@
             <argument type="service" id="Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface"/>
             <argument type="service" id="sales_channel.repository"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
+            <argument type="service" id="Symfony\Component\HttpFoundation\RequestStack"/>
         </service>
         <service id="Klaviyo\Integration\Entity\Helper\NewsletterSubscriberHelper">
             <argument type="service" id="newsletter_recipient.repository"/>
