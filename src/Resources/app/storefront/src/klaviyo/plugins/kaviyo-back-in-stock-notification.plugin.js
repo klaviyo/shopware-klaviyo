@@ -93,6 +93,10 @@ export default class KlaviyoBackInStockNotification extends Plugin {
 
     _createFormData() {
         let data = new URLSearchParams();
+        if (this.options.variantId !== this.options.productID) {
+            this.options.productID = this.options.variantId;
+        }
+
         data.append('a', this.options.publicApiKey);
         data.append('email', this._email.value);
         data.append('platform', 'api');
