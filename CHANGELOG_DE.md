@@ -1,3 +1,6 @@
+# 1.0.18
+# Fix: Das Problem wurde behoben, bei dem „Back In Stock at Product Pate“ keine Daten an klaviyo sendete
+
 # 1.0.17
 * Fix: Das Problem wurde behoben, bei dem Produkte falsche Links (in klaviyo) zu Shops anderer Sprachen/Domains (shopware) hatten, wenn einem einzelnen Verkaufskanal zahlreiche Domains zugewiesen waren.
 
