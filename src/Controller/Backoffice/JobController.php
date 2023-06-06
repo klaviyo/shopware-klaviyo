@@ -16,6 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *     "/api/_action/klaviyo"
  * )
  */
+#[Route(defaults: ['_routeScope' => ['api']])]
 class JobController
 {
     private ScheduleBackgroundJob $scheduleBackgroundJob;
@@ -34,6 +35,7 @@ class JobController
      * )
      * @return JsonResponse
      */
+    #[Route(path:"/historical-event-tracking/synchronization/schedule", name:"api.action.klaviyo.historical.event.tracking.synchronization.schedule", requirements: ['version' => '\d+'], methods:["POST"])]
     public function scheduleHistoricalEventTrackingSynchronizationAction(Context $context)
     {
         return $this->doScheduleJob(function () use ($context) {
@@ -50,6 +52,7 @@ class JobController
      * )
      * @return JsonResponse
      */
+    #[Route(path:"/subscribers/synchronization/schedule", name:"api.action.klaviyo.subscribers.synchronization.schedule", requirements: ['version' => '\d+'], methods:["POST"])]
     public function scheduleSubscribersSynchronizationAction(Context $context)
     {
         return $this->doScheduleJob(function () use ($context) {

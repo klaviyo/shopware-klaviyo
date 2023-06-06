@@ -14,6 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @RouteScope(scopes={"storefront"})
  */
+#[Route(defaults: ['_routeScope' => ['api']])]
 class CartController extends StorefrontController
 {
     private RestorerServiceInterface $restorerService;

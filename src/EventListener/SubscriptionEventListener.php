@@ -7,18 +7,18 @@ use Klaviyo\Integration\System\Tracking\EventsTrackerInterface;
 use Shopware\Core\Content\Newsletter\Aggregate\NewsletterRecipient\NewsletterRecipientEntity;
 use Shopware\Core\Content\Newsletter\Event;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class SubscriptionEventListener implements EventSubscriberInterface
 {
-    private EntityRepositoryInterface $eventsRepository;
+    private EntityRepository $eventsRepository;
     private GetValidChannelConfig $getValidChannelConfig;
 
     public function __construct(
-        EntityRepositoryInterface $eventsRepository,
+        EntityRepository $eventsRepository,
         GetValidChannelConfig $getValidChannelConfig
     ) {
         $this->eventsRepository = $eventsRepository;

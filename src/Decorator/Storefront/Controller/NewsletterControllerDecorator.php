@@ -6,7 +6,7 @@ use Klaviyo\Integration\Model\Channel\GetValidChannelConfig;
 use Shopware\Core\Content\Newsletter\SalesChannel\AbstractNewsletterConfirmRoute;
 use Shopware\Core\Content\Newsletter\SalesChannel\AbstractNewsletterSubscribeRoute;
 use Shopware\Core\Content\Newsletter\SalesChannel\AbstractNewsletterUnsubscribeRoute;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Validation\DataBag\QueryDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -29,7 +29,7 @@ class NewsletterControllerDecorator extends NewsletterController
 
     public function __construct(
         NewsletterSubscribePageLoader      $newsletterConfirmRegisterPageLoader,
-        EntityRepositoryInterface          $customerRepository,
+        EntityRepository          $customerRepository,
         AbstractNewsletterSubscribeRoute   $newsletterSubscribeRoute,
         AbstractNewsletterConfirmRoute     $newsletterConfirmRoute,
         AbstractNewsletterUnsubscribeRoute $newsletterUnsubscribeRoute,
