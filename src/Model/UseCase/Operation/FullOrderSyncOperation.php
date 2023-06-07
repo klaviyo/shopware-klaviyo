@@ -8,7 +8,8 @@ use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
 use Od\Scheduler\Model\Job\{GeneratingHandlerInterface, JobHandlerInterface, JobResult, Message};
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
-use Shopware\Core\Framework\DataAbstractionLayer\{EntityRepository, Search};
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Search;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerInterface
