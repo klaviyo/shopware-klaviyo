@@ -10,21 +10,21 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefi
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\{EntityRepositoryInterface, Search\Criteria};
+use Shopware\Core\Framework\DataAbstractionLayer\{EntityRepository, Search\Criteria};
 use Shopware\Core\System\StateMachine\Event\StateMachineStateChangeEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class OrderStateChangedEventListener implements EventSubscriberInterface
 {
     private EventsTrackerInterface $eventsTracker;
-    private EntityRepositoryInterface $orderRepository;
-    private EntityRepositoryInterface $orderTransactionRepository;
+    private EntityRepository $orderRepository;
+    private EntityRepository $orderTransactionRepository;
     private GetValidChannelConfig $getValidChannelConfig;
 
     public function __construct(
         EventsTrackerInterface $eventsTracker,
-        EntityRepositoryInterface $orderRepository,
-        EntityRepositoryInterface $orderTransactionRepository,
+        EntityRepository $orderRepository,
+        EntityRepository $orderTransactionRepository,
         GetValidChannelConfig $getValidChannelConfig
     ) {
         $this->eventsTracker = $eventsTracker;

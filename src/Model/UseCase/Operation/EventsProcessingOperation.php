@@ -11,7 +11,7 @@ use Od\Scheduler\Model\Job\GeneratingHandlerInterface;
 use Od\Scheduler\Model\Job\{JobHandlerInterface, JobResult, Message};
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
-use Shopware\Core\Framework\DataAbstractionLayer\{EntityCollection, EntityRepositoryInterface, Search\Filter\EqualsFilter};
+use Shopware\Core\Framework\DataAbstractionLayer\{EntityCollection, EntityRepository, Search\Filter\EqualsFilter};
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
@@ -21,16 +21,16 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
 {
     public const HANDLER_CODE = 'od-klaviyo-events-sync-handler';
 
-    private EntityRepositoryInterface $eventRepository;
-    private EntityRepositoryInterface $cartEventRequestRepository;
-    private EntityRepositoryInterface $subscriberRepository;
+    private EntityRepository $eventRepository;
+    private EntityRepository $cartEventRequestRepository;
+    private EntityRepository $subscriberRepository;
     private ScheduleBackgroundJob $scheduleBackgroundJob;
     private GetValidChannels $getValidChannels;
 
     public function __construct(
-        EntityRepositoryInterface $eventRepository,
-        EntityRepositoryInterface $cartEventRequestRepository,
-        EntityRepositoryInterface $subscriberRepository,
+        EntityRepository $eventRepository,
+        EntityRepository $cartEventRequestRepository,
+        EntityRepository $subscriberRepository,
         ScheduleBackgroundJob $scheduleBackgroundJob,
         GetValidChannels $getValidChannels
     ) {
