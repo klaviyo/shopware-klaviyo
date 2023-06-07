@@ -10,12 +10,6 @@ use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @RouteScope(scopes={"api"})
- * @Route(
- *     "/api/_action/klaviyo"
- * )
- */
 #[Route(defaults: ['_routeScope' => ['api']])]
 class JobController
 {
@@ -26,16 +20,7 @@ class JobController
         $this->scheduleBackgroundJob = $scheduleBackgroundJob;
     }
 
-    /**
-     * @Route(
-     *     "/historical-event-tracking/synchronization/schedule",
-     *     name="api.action.klaviyo.historical.event.tracking.synchronization.schedule",
-     *     methods={"POST"},
-     *     requirements={"version"="\d+"}
-     * )
-     * @return JsonResponse
-     */
-    #[Route(path:"/historical-event-tracking/synchronization/schedule", name:"api.action.klaviyo.historical.event.tracking.synchronization.schedule", requirements: ['version' => '\d+'], methods:["POST"])]
+    #[Route(path:"/api/_action/klaviyo/historical-event-tracking/synchronization/schedule", name:"api.action.klaviyo.historical.event.tracking.synchronization.schedule", requirements: ['version' => '\d+'], methods:["POST"])]
     public function scheduleHistoricalEventTrackingSynchronizationAction(Context $context)
     {
         return $this->doScheduleJob(function () use ($context) {
@@ -43,16 +28,7 @@ class JobController
         });
     }
 
-    /**
-     * @Route(
-     *     "/subscribers/synchronization/schedule",
-     *     name="api.action.klaviyo.subscribers.synchronization.schedule",
-     *     methods={"POST"},
-     *     requirements={"version"="\d+"}
-     * )
-     * @return JsonResponse
-     */
-    #[Route(path:"/subscribers/synchronization/schedule", name:"api.action.klaviyo.subscribers.synchronization.schedule", requirements: ['version' => '\d+'], methods:["POST"])]
+    #[Route(path:"/api/_action/klaviyo/subscribers/synchronization/schedule", name:"api.action.klaviyo.subscribers.synchronization.schedule", requirements: ['version' => '\d+'], methods:["POST"])]
     public function scheduleSubscribersSynchronizationAction(Context $context)
     {
         return $this->doScheduleJob(function () use ($context) {

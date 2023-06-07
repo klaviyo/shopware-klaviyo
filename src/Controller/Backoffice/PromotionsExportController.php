@@ -11,7 +11,6 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route(defaults: ['_routeScope' => ['api']])]
-#[Package('administration')]
 class PromotionsExportController
 {
     private PromotionsExporter $promotionsExporter;

@@ -25,8 +25,9 @@ class CartController extends StorefrontController
     }
 
     /**
-     * @Route("/od-restore-cart/{mappingId}", name="frontend.cart.od-restore-cart", options={"seo"=false}, methods={"GET"})
+     * @Route("", name="", options={"seo"=false}, methods={"GET"})
      */
+    #[Route(path: '/od-restore-cart/{mappingId}', name: 'frontend.cart.od-restore-cart', options: ['seo' => false], methods: ['POST'])]
     public function index(string $mappingId, SalesChannelContext $context): Response
     {
         $this->restorerService->restore($mappingId, $context);
