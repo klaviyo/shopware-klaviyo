@@ -36,9 +36,6 @@
         </service>
         <service id="Klaviyo\Integration\Controller\Backoffice\PromotionsExportController" public="true">
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Promotion\PromotionsExporter"/>
-            <call method="setContainer">
-                <argument type="service" id="service_container"/>
-            </call>
         </service>
         <service id="Klaviyo\Integration\Controller\Api\ValidationController" public="true">
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\ClientRegistry"/>
