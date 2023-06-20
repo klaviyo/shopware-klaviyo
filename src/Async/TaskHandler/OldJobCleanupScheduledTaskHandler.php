@@ -49,6 +49,7 @@ class OldJobCleanupScheduledTaskHandler extends ScheduledTaskHandler
             return ['id' => $id];
         }, $this->jobRepository->searchIds($criteria, $context)->getIds());
 
-        $this->jobRepository->delete($ids, $context);
+        $x = 3;
+//        $this->jobRepository->delete($ids, $context);
     }
 }

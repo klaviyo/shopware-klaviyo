@@ -20,7 +20,7 @@ class PromotionsExportController
         $this->promotionsExporter = $promotionsExporter;
     }
 
-    #[Route(path:"/api/klaviyo/integration/promotion/export", methods: ['GET'])]
+    #[Route(path:"/api/klaviyo/integration/promotion/export", defaults: ['auth_required' => false], methods: ['GET'])]
     public function export(Context $context)
     {
         $fileObject = $this->promotionsExporter->exportToCSV($context);
