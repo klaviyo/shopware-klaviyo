@@ -24,45 +24,25 @@ use function version_compare;
  */
 class NewsletterControllerDecorator extends NewsletterController
 {
-
     private GetValidChannelConfig $validChannelConfig;
 
+    /**
+     * @internal
+     */
     public function __construct(
-        NewsletterSubscribePageLoader      $newsletterConfirmRegisterPageLoader,
-        EntityRepository          $customerRepository,
-        AbstractNewsletterSubscribeRoute   $newsletterSubscribeRoute,
-        AbstractNewsletterConfirmRoute     $newsletterConfirmRoute,
-        AbstractNewsletterUnsubscribeRoute $newsletterUnsubscribeRoute,
-        NewsletterAccountPageletLoader     $newsletterAccountPageletLoader,
-        GetValidChannelConfig              $validChannelConfig,
-        SystemConfigService                $systemConfigService,
-        string                             $swVersion
-    )
-    {
+        NewsletterSubscribePageLoader $newsletterConfirmRegisterPageLoader,
+        AbstractNewsletterConfirmRoute $newsletterConfirmRoute,
+        NewsletterAccountPageletLoader $newsletterAccountPageletLoader,
+        GetValidChannelConfig $validChannelConfig
+    ) {
         $this->validChannelConfig = $validChannelConfig;
-        if (version_compare($swVersion, '6.4.18.1', '<')) {
-            // Before 6.4.18.1
-            parent::__construct(
-                $newsletterConfirmRegisterPageLoader,
-                $customerRepository,
-                $newsletterSubscribeRoute,
-                $newsletterConfirmRoute,
-                $newsletterUnsubscribeRoute,
-                $newsletterAccountPageletLoader
-            );
-        } else {
-            // From 6.4.18.1 (included)
-            parent::__construct(
-                $newsletterConfirmRegisterPageLoader,
-                $customerRepository,
-                $newsletterSubscribeRoute,
-                $newsletterConfirmRoute,
-                $newsletterUnsubscribeRoute,
-                $newsletterAccountPageletLoader,
-                $systemConfigService
-            );
-        }
+        parent::__construct(
+            $newsletterConfirmRegisterPageLoader,
+            $newsletterConfirmRoute,
+            $newsletterAccountPageletLoader
+        );
     }
+
 
     public function subscribeMail(SalesChannelContext $context, Request $request, QueryDataBag $queryDataBag): Response
     {
