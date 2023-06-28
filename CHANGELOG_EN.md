@@ -1,3 +1,6 @@
+# 1.0.19
+# Feature: Added ability to change order identification variable that will be sent to the klaviyo ( was before: order hash | now you can choose either: order hash OR order id )
+
 # 1.0.18
 # Fix: Fixed the issue where Back In Stock at Product Pate was not sending data to klaviyo
 

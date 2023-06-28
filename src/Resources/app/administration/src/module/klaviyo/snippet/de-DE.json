@@ -109,6 +109,12 @@
                 "helpText": "Wieder auf Lager Varianten Feldzuordnung",
                 "productId": "Produkt ID"
             },
+            "orderIdentification": {
+                "label": "Zuordnung der Bestellidentifikationsfelder",
+                "helpText": "Wählen Sie die Bestellidentifikationsvariable aus, die an Klaviyo gesendet wird",
+                "orderId": "Order ID",
+                "orderNumber": "Order Nummer"
+            },
             "cookieConsent": {
                 "label": "Cookie Consent",
                 "helpText": "Cookie Consent",

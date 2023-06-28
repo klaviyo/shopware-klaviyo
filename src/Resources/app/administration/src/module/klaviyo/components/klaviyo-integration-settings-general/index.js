@@ -74,6 +74,18 @@ Component.register('klaviyo-integration-settings-general', {
                 }
             ]
         },
+        createOrderIdentificationFieldOptions() {
+            return [
+                {
+                    label: this.$tc('klaviyo-integration-settings.configs.orderIdentification.orderId'),
+                    value: 'order-id'
+                },
+                {
+                    label: this.$tc('klaviyo-integration-settings.configs.orderIdentification.orderNumber'),
+                    value: 'order-number'
+                }
+            ]
+        },
         createCookieConsentOptions() {
             return [
                 {
@@ -102,6 +114,7 @@ Component.register('klaviyo-integration-settings-general', {
                 defaultConfigs = {
                     enabled: false,
                     bisVariantField: 'product-number',
+                    orderIdentification: 'order-id',
                     trackDeletedAccountOrders: false,
                     trackViewedProduct: true,
                     trackRecentlyViewedItems: true,
