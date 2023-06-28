@@ -109,6 +109,12 @@
                 "helpText": "Back in stock variant mapping",
                 "productId": "Product ID"
             },
+            "orderIdentification": {
+                "label": "Order identification field mapping",
+                "helpText": "Select order identification variable that will be send to Klaviyo",
+                "orderId": "Order ID",
+                "orderNumber": "Order Number"
+            },
             "cookieConsent": {
                 "label": "Cookie Consent",
                 "helpText": "Cookie Consent",
