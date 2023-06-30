@@ -123,6 +123,26 @@
                 </sw-inherit-wrapper>
             {% endblock %}
 
+            {% block klaviyo_integration_settings_general_order_identification %}
+                <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.orderIdentification']"
+                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.orderIdentification']"
+                                    :label="$tc('klaviyo-integration-settings.configs.orderIdentification.label')"
+                                    :help-text="$tc('klaviyo-integration-settings.configs.orderIdentification.helpText')">
+                    <template #content="props">
+                        <sw-single-select name="KlaviyoIntegrationPlugin.config.orderIdentification"
+                                          labelProperty="label"
+                                          valueProperty="value"
+                                          :options="createOrderIdentificationFieldOptions"
+                                          :isInherited="props.isInherited"
+                                          :disabled="props.isInherited"
+                                          show-clearable-button
+                                          :value="props.currentValue"
+                                          @change="props.updateCurrentValue">
+                        </sw-single-select>
+                    </template>
+                </sw-inherit-wrapper>
+            {% endblock %}
+
             {% block klaviyo_integration_settings_general_track_deleted_account_orders %}
                 <sw-inherit-wrapper
                         v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackDeletedAccountOrders']"

@@ -52,7 +52,7 @@ class ProductEventRequestTranslator
             $orderEntity->getCreatedAt(),
             $customerProperties,
             $lineItem->getUnitPrice(),
-            $lineItem->getOrderId(),
+            $context->orderIdentificationFlag == 'order-id' ? $lineItem->getOrderId() : $orderEntity->getOrderNumber(),
             $lineItem->getProductId() ?? '',
             $productNumber,
             $lineItem->getLabel(),
