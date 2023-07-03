@@ -49,21 +49,21 @@
                             <span class="info-counter">
                                 <span class="count" v-html="getMessagesCount(item, 'info')"></span>
                             </span>
-                                    <sw-icon :small="true" name="regular-info-circle" color="#3498db"></sw-icon>
+                                    <sw-icon :small="true" name="default-badge-info" color="#3498db"></sw-icon>
                                 </div>
 
                                 <div class="count-container" v-if="item.messages">
                             <span class="warning-counter">
                                 <span class="count" v-html="getMessagesCount(item, 'warning')"></span>
                             </span>
-                                    <sw-icon :small="true" name="regular-exclamation-triangle" color="#f39c12"></sw-icon>
+                                    <sw-icon :small="true" name="default-badge-warning" color="#f39c12"></sw-icon>
                                 </div>
 
                                 <div class="count-container" v-if="item.messages">
                             <span class="error-counter">
                                 <span class="count" v-html="getMessagesCount(item, 'error')"></span>
                             </span>
-                                    <sw-icon :small="true" name="regular-times-hexagon" color="#c0392b"></sw-icon>
+                                    <sw-icon :small="true" name="default-badge-error" color="#c0392b"></sw-icon>
                                 </div>
                             </div>
                             <sw-button v-if="item.messages.length > 0"
@@ -72,7 +72,7 @@
                                        variant="primary"
                                        :disabled="item.messages.length <= 0"
                                        @click="showMessageModal(item.messages)">
-                                <sw-icon name="regular-envelope" color="#fff" :small="true" :decorative="true"></sw-icon>
+                                <sw-icon name="default-communication-envelope" color="#fff" :small="true" :decorative="true"></sw-icon>
                                 {{ $tc('job-listing.actions.show-messages.button.label') }}
                             </sw-button>
                         {% endblock %}
