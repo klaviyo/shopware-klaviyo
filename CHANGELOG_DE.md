@@ -1,3 +1,6 @@
+# 2.0.2
+# Kompatibilitätsfreigabe mit Shopwrae 6.5^
+
 # 1.0.18
 # Fix: Das Problem wurde behoben, bei dem „Back In Stock at Product Pate“ keine Daten an klaviyo sendete
 

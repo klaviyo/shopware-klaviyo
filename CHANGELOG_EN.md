@@ -1,3 +1,6 @@
+# 2.0.2
+# Compatibility release with shopwrae 6.5^
+
 # 1.0.18
 # Fix: Fixed the issue where Back In Stock at Product Pate was not sending data to klaviyo
 
