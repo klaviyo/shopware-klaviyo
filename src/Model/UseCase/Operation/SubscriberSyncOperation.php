@@ -13,7 +13,7 @@ use Od\Scheduler\Model\Job\{JobHandlerInterface, JobResult, Message};
 use Shopware\Core\Content\Newsletter\Aggregate\NewsletterRecipient\NewsletterRecipientCollection;
 use Shopware\Core\Content\Newsletter\SalesChannel\NewsletterSubscribeRoute;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -25,14 +25,14 @@ class SubscriberSyncOperation implements JobHandlerInterface
 
     private KlaviyoGateway $klaviyoGateway;
     private ConfigurationRegistry $configurationRegistry;
-    private EntityRepositoryInterface $subscriberRepository;
+    private EntityRepository $subscriberRepository;
     private GetListIdByListNameInterface $listIdByListName;
     private GetValidChannels $getValidChannels;
 
     public function __construct(
         KlaviyoGateway $klaviyoGateway,
         ConfigurationRegistry $configurationRegistry,
-        EntityRepositoryInterface $subscriberRepository,
+        EntityRepository $subscriberRepository,
         GetListIdByListNameInterface $listIdByListName,
         GetValidChannels $getValidChannels
     ) {

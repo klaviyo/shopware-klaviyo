@@ -4,7 +4,7 @@ namespace Klaviyo\Integration\Utils;
 
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Lifecycle
 {
-    private EntityRepositoryInterface $systemConfigRepository;
+    private EntityRepository $systemConfigRepository;
     private Connection $connection;
     private ContainerInterface $container;
     private bool $hasOtherSchedulerDependency;
@@ -21,7 +21,7 @@ class Lifecycle
         ContainerInterface $container,
         bool $hasOtherSchedulerDependency
     ) {
-        /** @var EntityRepositoryInterface $systemConfigRepository */
+        /** @var EntityRepository $systemConfigRepository */
         $systemConfigRepository = $container->get('system_config.repository');
         /** @var Connection $connection */
         $connection = $container->get(Connection::class);

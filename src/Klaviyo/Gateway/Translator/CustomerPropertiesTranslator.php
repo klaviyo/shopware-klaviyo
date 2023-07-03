@@ -12,7 +12,7 @@ use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
@@ -20,12 +20,12 @@ class CustomerPropertiesTranslator
 {
     private AddressDataHelper $addressHelper;
     private ConfigurationRegistry $configurationRegistry;
-    private EntityRepositoryInterface $salesChannelRepository;
+    private EntityRepository $salesChannelRepository;
 
     public function __construct(
         AddressDataHelper $addressHelper,
         ConfigurationRegistry $configurationRegistry,
-        EntityRepositoryInterface $salesChannelRepository
+        EntityRepository $salesChannelRepository
     ) {
         $this->addressHelper = $addressHelper;
         $this->configurationRegistry = $configurationRegistry;

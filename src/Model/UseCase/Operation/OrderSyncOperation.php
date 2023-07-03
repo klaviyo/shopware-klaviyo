@@ -11,7 +11,7 @@ use Od\Scheduler\Model\Job\{JobHandlerInterface, JobResult, Message};
 use Shopware\Core\Checkout\Order\{OrderEntity, OrderStates};
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 
@@ -19,11 +19,11 @@ class OrderSyncOperation implements JobHandlerInterface
 {
     public const OPERATION_HANDLER_CODE = 'od-klaviyo-order-sync-handler';
 
-    private EntityRepositoryInterface $orderRepository;
+    private EntityRepository $orderRepository;
     private Tracker $eventsTracker;
 
     public function __construct(
-        EntityRepositoryInterface $orderRepository,
+        EntityRepository $orderRepository,
         Tracker $eventsTracker
     ) {
         $this->orderRepository = $orderRepository;

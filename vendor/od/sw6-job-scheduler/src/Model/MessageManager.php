@@ -4,7 +4,7 @@ namespace Od\Scheduler\Model;
 
 use Od\Scheduler\Model\Exception\JobException;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 
 class MessageManager
 {
@@ -12,9 +12,9 @@ class MessageManager
     public const TYPE_ERROR = 'error-message';
     public const TYPE_WARNING = 'warning-message';
 
-    private EntityRepositoryInterface $jobMessageRepository;
+    private EntityRepository $jobMessageRepository;
 
-    public function __construct(EntityRepositoryInterface $jobMessageRepository)
+    public function __construct(EntityRepository $jobMessageRepository)
     {
         $this->jobMessageRepository = $jobMessageRepository;
     }

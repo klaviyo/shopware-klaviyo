@@ -3,7 +3,7 @@
         {
             "name": "od/sw6-job-scheduler",
             "version": "1.0.3",
-            "version_normalized": "1.0.3.0",
+            "version_normalized": "2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://bitbucket.org/overdosedigital/shopware-job-scheduler.git",

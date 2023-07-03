@@ -9,7 +9,7 @@ use Klaviyo\Integration\System\Tracking\Event\Cart\CartEventRequestBag;
 use Klaviyo\Integration\System\Tracking\EventsTrackerInterface;
 use Od\Scheduler\Model\Job\{JobHandlerInterface, JobResult};
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 
@@ -18,12 +18,12 @@ class CartEventSyncOperation implements JobHandlerInterface
     public const OPERATION_HANDLER_CODE = 'od-klaviyo-cart-event-sync-handler';
 
     private EventsTrackerInterface $eventsTracker;
-    private EntityRepositoryInterface $cartEventRequestRepository;
+    private EntityRepository $cartEventRequestRepository;
     private CartRequestSerializer $cartRequestSerializer;
 
     public function __construct(
         EventsTrackerInterface $eventsTracker,
-        EntityRepositoryInterface $cartEventRequestRepository,
+        EntityRepository $cartEventRequestRepository,
         CartRequestSerializer $cartRequestSerializer
     ) {
         $this->eventsTracker = $eventsTracker;
