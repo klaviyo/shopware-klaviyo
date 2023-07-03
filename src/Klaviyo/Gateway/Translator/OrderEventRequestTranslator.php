@@ -324,7 +324,7 @@ class OrderEventRequestTranslator
             $eventHappenedDateTime,
             $customerProperties,
             $orderEntity->getAmountTotal(),
-            $orderEntity->getId(),
+            $context->orderIdentificationFlag == 'order-id' ? $orderEntity->getId() : $orderEntity->getOrderNumber(),
             $discounts,
             $products,
             $billingAddress,

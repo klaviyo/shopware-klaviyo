@@ -31,12 +31,15 @@ class EventsTracker implements EventsTrackerInterface
         $this->logger = $logger;
     }
 
+    // TODO: It's here!!! ?????
+
     public function trackPlacedOrders(Context $context, OrderTrackingEventsBag $trackingBag): OrderTrackingResult
     {
         $trackingResult = new OrderTrackingResult();
 
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
+            $context->orderIdentificationFlag = $configuration->getOrderIdentification();
             if ($configuration->isTrackPlacedOrder()) {
                 $placedOrderTrackingResult = $this->gateway->trackPlacedOrders($context, $channelId, $events);
                 $trackingResult->mergeWith($placedOrderTrackingResult);
@@ -52,6 +55,7 @@ class EventsTracker implements EventsTrackerInterface
 
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
+            $context->orderIdentificationFlag = $configuration->getOrderIdentification();
             if ($configuration->isTrackOrderedProduct()) {
                 $orderedProductTrackingResult = $this->gateway->trackOrderedProducts($context, $channelId, $events);
                 $trackingResult->mergeWith($orderedProductTrackingResult);
@@ -67,6 +71,7 @@ class EventsTracker implements EventsTrackerInterface
 
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
+            $context->orderIdentificationFlag = $configuration->getOrderIdentification();
             if (!$configuration->isTrackFulfilledOrder()) {
                 continue;
             }
@@ -84,6 +89,7 @@ class EventsTracker implements EventsTrackerInterface
 
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
+            $context->orderIdentificationFlag = $configuration->getOrderIdentification();
             if (!$configuration->isTrackCanceledOrder()) {
                 continue;
             }
@@ -101,6 +107,7 @@ class EventsTracker implements EventsTrackerInterface
 
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
+            $context->orderIdentificationFlag = $configuration->getOrderIdentification();
             if (!$configuration->isTrackRefundedOrder()) {
                 continue;
             }
@@ -143,6 +150,7 @@ class EventsTracker implements EventsTrackerInterface
 
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
+            $context->orderIdentificationFlag = $configuration->getOrderIdentification();
             // Added paid config or not
             if (!$configuration->isTrackPaidOrder()) {
                 continue;
