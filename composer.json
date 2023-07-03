@@ -25,7 +25,7 @@
         }
     ],
     "extra": {
-        "shopware-plugin-class": "Klaviyo\\Integration\\KlaviyoIntegrationPlugin",
+        "shopware-plugin-class": "Klaviyo\\Integration\\klavi_overd",
         "plugin-icon": "src/Resources/config/plugin.png",
         "label": {
             "de-DE": "Klaviyo: Email Marketing & SMS",

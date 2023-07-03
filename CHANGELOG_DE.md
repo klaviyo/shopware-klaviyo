@@ -1,6 +1,9 @@
 # 2.0.2
 # Kompatibilitätsfreigabe mit Shopwrae 6.5^
 
+# 1.0.19
+# Funktion: Möglichkeit hinzugefügt, die Bestellidentifikationsvariable zu ändern, die an das Klaviyo gesendet wird (war vorher: Bestell-Hash | jetzt können Sie entweder wählen: Bestell-Hash ODER Bestell-ID)
+
 # 1.0.18
 # Fix: Das Problem wurde behoben, bei dem „Back In Stock at Product Pate“ keine Daten an klaviyo sendete
 

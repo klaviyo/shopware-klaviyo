@@ -14,7 +14,7 @@ use Shopware\Core\Framework\Plugin\Util\AssetService;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 
-class KlaviyoIntegrationPlugin extends Plugin
+class klavi_overd extends Plugin
 {
     public function activate(ActivateContext $activateContext): void
     {
