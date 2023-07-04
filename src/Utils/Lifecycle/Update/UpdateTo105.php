@@ -14,9 +14,9 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 class UpdateTo105
 {
     private const CREDENTIALS_CONFIGS = [
-        'KlaviyoIntegrationPlugin.config.privateApiKey',
-        'KlaviyoIntegrationPlugin.config.publicApiKey',
-        'KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync',
+        'klavi_overd.config.privateApiKey',
+        'klavi_overd.config.publicApiKey',
+        'klavi_overd.config.klaviyoListForSubscribersSync',
     ];
 
     private SystemConfigService $systemConfigService;
@@ -55,7 +55,7 @@ class UpdateTo105
                     $this->systemConfigService->set($configName, $config, $channelId);
                 }
             }
-            $this->systemConfigService->set('KlaviyoIntegrationPlugin.config.enabled', $active, $channelId);
+            $this->systemConfigService->set('klavi_overd.config.enabled', $active, $channelId);
         }
 
         foreach (self::CREDENTIALS_CONFIGS as $configName) {
