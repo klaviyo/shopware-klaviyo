@@ -1,4 +1,4 @@
-# 2.0.3
+# 2.0.0
 # Kompatibilitätsfreigabe mit Shopwrae 6.5^
 # Fix: Verwendung entfernter Klassen und Dateien ersetzt.
 # Fix: Kleinere Änderungen an Erweiterungskonfigurationsklassen/-vorlagen (auf der Erweiterungskonfigurationsseite).

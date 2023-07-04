@@ -1,4 +1,4 @@
-# 2.0.3
+# 2.0.0
 # Compatibility release with shopwrae 6.5^
 # Fix: Replaced usage of removed classes & files.
 # Fix: Minor changes to extension configuration classes/templates ( at extension configuration page ).
