@@ -1,4 +1,4 @@
-# 2.0.2
+# 2.0.3
 # Compatibility release with shopwrae 6.5^
 
 # 1.0.19

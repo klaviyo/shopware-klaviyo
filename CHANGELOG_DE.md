@@ -1,4 +1,4 @@
-# 2.0.2
+# 2.0.3
 # Kompatibilitätsfreigabe mit Shopwrae 6.5^
 
 # 1.0.19
