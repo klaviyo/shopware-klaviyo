@@ -6,9 +6,9 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class KlaviyoBinaryFileResponse extends BinaryFileResponse
 {
-    public function setContent(?string $content)
+    public function setContent(?string $content): static
     {
         // Added to fix problem with CSRF logic for responses
-        return;
+        return parent::setContent($content);
     }
 }

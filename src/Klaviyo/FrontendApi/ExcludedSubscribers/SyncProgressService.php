@@ -5,7 +5,7 @@ namespace Klaviyo\Integration\Klaviyo\FrontendApi\ExcludedSubscribers;
 use Klaviyo\Integration\Entity\FlagStorage\FlagStorageEntity;
 use Klaviyo\Integration\Klaviyo\FrontendApi\DTO\SyncProgressInfo;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\{EqualsAnyFilter, EqualsFilter};
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Grouping\FieldGrouping;
@@ -17,9 +17,9 @@ class SyncProgressService
     public const UNSUB_PAGE = 'sync_unsub_page';
     public const UNSUB_PAGE_HASH = 'sync_unsub_page_hash';
 
-    private EntityRepositoryInterface $klaviyoFlagStorageRepository;
+    private EntityRepository $klaviyoFlagStorageRepository;
 
-    public function __construct(EntityRepositoryInterface $klaviyoFlagStorageRepository)
+    public function __construct(EntityRepository $klaviyoFlagStorageRepository)
     {
         $this->klaviyoFlagStorageRepository = $klaviyoFlagStorageRepository;
     }

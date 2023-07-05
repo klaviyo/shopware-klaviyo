@@ -1,3 +1,15 @@
+# 2.0.0
+# Kompatibilitätsfreigabe mit Shopwrae 6.5^
+# Fix: Verwendung entfernter Klassen und Dateien ersetzt.
+# Fix: Kleinere Änderungen an Erweiterungskonfigurationsklassen/-vorlagen (auf der Erweiterungskonfigurationsseite).
+# Neu: Job Scheduler Update – Kompatibilität mit Shopawre 6.5^-Versionen implementiert.
+# Neu: Job-Scheduler-Update – Job-Scheduler-Handler erweitern jetzt empfohlene Schnittstellen.
+# Neu: Controller-Routen verfügen jetzt über eine Annotationsdeklaration im neuen Format.
+# Neu: Einige vorgenommene Änderungen machen die Erweiterung abwärtsinkompatibel. Sie können die Abhängigkeiten in der Datei „composer.json“ sehen.
+
+# 1.0.19
+# Funktion: Möglichkeit hinzugefügt, die Bestellidentifikationsvariable zu ändern, die an das Klaviyo gesendet wird (war vorher: Bestell-Hash | jetzt können Sie entweder wählen: Bestell-Hash ODER Bestell-ID)
+
 # 1.0.18
 # Fix: Das Problem wurde behoben, bei dem „Back In Stock at Product Pate“ keine Daten an klaviyo sendete
 

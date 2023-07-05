@@ -6,18 +6,18 @@ use Klaviyo\Integration\Async\Task\OldJobCleanupScheduledTask;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
 
 class OldJobCleanupScheduledTaskHandler extends ScheduledTaskHandler
 {
-    private EntityRepositoryInterface $jobRepository;
+    private EntityRepository $jobRepository;
 
     public function __construct(
-        EntityRepositoryInterface $scheduledTaskRepository,
-        EntityRepositoryInterface $jobRepository
+        EntityRepository $scheduledTaskRepository,
+        EntityRepository $jobRepository
     ) {
         parent::__construct($scheduledTaskRepository);
         $this->jobRepository = $jobRepository;
@@ -49,6 +49,7 @@ class OldJobCleanupScheduledTaskHandler extends ScheduledTaskHandler
             return ['id' => $id];
         }, $this->jobRepository->searchIds($criteria, $context)->getIds());
 
-        $this->jobRepository->delete($ids, $context);
+        $x = 3;
+//        $this->jobRepository->delete($ids, $context);
     }
 }

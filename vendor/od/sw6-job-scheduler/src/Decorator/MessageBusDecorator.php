@@ -5,7 +5,7 @@ namespace Od\Scheduler\Decorator;
 use Od\Scheduler\Async\{JobMessageInterface, ParentAwareMessageInterface};
 use Od\Scheduler\Entity\Job\JobEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Write\Command\WriteTypeIntendException;
 use Symfony\Component\Messenger\{Envelope, MessageBusInterface};
 use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
@@ -14,7 +14,7 @@ class MessageBusDecorator implements MessageBusInterface
 {
     private MessageBusInterface $innerBus;
     private SerializerInterface $messageSerializer;
-    private EntityRepositoryInterface $jobRepository;
+    private EntityRepository $jobRepository;
 
     public function __construct(
         MessageBusInterface $innerBus,
@@ -56,7 +56,7 @@ class MessageBusDecorator implements MessageBusInterface
         $this->jobRepository->create([$jobData], Context::createDefaultContext());
     }
 
-    public function setJobRepository(EntityRepositoryInterface $jobRepository)
+    public function setJobRepository(EntityRepository $jobRepository)
     {
         $this->jobRepository = $jobRepository;
     }
