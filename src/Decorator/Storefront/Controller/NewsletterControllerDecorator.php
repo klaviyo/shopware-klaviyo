@@ -6,7 +6,7 @@ use Klaviyo\Integration\Model\Channel\GetValidChannelConfig;
 use Shopware\Core\Content\Newsletter\SalesChannel\AbstractNewsletterConfirmRoute;
 use Shopware\Core\Content\Newsletter\SalesChannel\AbstractNewsletterSubscribeRoute;
 use Shopware\Core\Content\Newsletter\SalesChannel\AbstractNewsletterUnsubscribeRoute;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Validation\DataBag\QueryDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -24,25 +24,44 @@ use function version_compare;
  */
 class NewsletterControllerDecorator extends NewsletterController
 {
+
     private GetValidChannelConfig $validChannelConfig;
 
-    /**
-     * @internal
-     */
     public function __construct(
-        NewsletterSubscribePageLoader $newsletterConfirmRegisterPageLoader,
-        AbstractNewsletterConfirmRoute $newsletterConfirmRoute,
-        NewsletterAccountPageletLoader $newsletterAccountPageletLoader,
-        GetValidChannelConfig $validChannelConfig
-    ) {
-        $this->validChannelConfig = $validChannelConfig;
-        parent::__construct(
-            $newsletterConfirmRegisterPageLoader,
-            $newsletterConfirmRoute,
-            $newsletterAccountPageletLoader
-        );
-    }
-
+       NewsletterSubscribePageLoader $newsletterConfirmRegisterPageLoader,
+       EntityRepositoryInterface $customerRepository,
+       AbstractNewsletterSubscribeRoute $newsletterSubscribeRoute,
+       AbstractNewsletterConfirmRoute $newsletterConfirmRoute,
+       AbstractNewsletterUnsubscribeRoute $newsletterUnsubscribeRoute,
+       NewsletterAccountPageletLoader $newsletterAccountPageletLoader,
+       GetValidChannelConfig $validChannelConfig,
+       SystemConfigService $systemConfigService,
+       string $swVersion
+   ) {
+       $this->validChannelConfig = $validChannelConfig;
+       if (version_compare($swVersion, '6.4.18.1', '<')) {
+           // Before 6.4.18.1
+           parent::__construct(
+               $newsletterConfirmRegisterPageLoader,
+               $customerRepository,
+               $newsletterSubscribeRoute,
+               $newsletterConfirmRoute,
+               $newsletterUnsubscribeRoute,
+               $newsletterAccountPageletLoader
+           );
+       } else {
+           // From 6.4.18.1 (included)
+           parent::__construct(
+               $newsletterConfirmRegisterPageLoader,
+               $customerRepository,
+               $newsletterSubscribeRoute,
+               $newsletterConfirmRoute,
+               $newsletterUnsubscribeRoute,
+               $newsletterAccountPageletLoader,
+               $systemConfigService
+           );
+       }
+   }
 
     public function subscribeMail(SalesChannelContext $context, Request $request, QueryDataBag $queryDataBag): Response
     {

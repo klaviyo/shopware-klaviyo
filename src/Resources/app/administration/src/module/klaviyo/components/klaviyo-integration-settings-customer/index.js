@@ -32,7 +32,7 @@ Component.register('klaviyo-integration-settings-customer', {
             isSomeMappingsNotFilled: false,
             systemCustomFields: null,
             // mappingErrorStates: {},
-            configPath: 'klavi_overd.config.customerFieldMapping'
+            configPath: 'KlaviyoIntegrationPlugin.config.customerFieldMapping'
         }
     },
 

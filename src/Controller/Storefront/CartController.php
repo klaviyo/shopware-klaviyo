@@ -14,7 +14,6 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @RouteScope(scopes={"storefront"})
  */
-#[Route(defaults: ['_routeScope' => ['api']])]
 class CartController extends StorefrontController
 {
     private RestorerServiceInterface $restorerService;
@@ -25,9 +24,8 @@ class CartController extends StorefrontController
     }
 
     /**
-     * @Route("", name="", options={"seo"=false}, methods={"GET"})
+     * @Route("/od-restore-cart/{mappingId}", name="frontend.cart.od-restore-cart", options={"seo"=false}, methods={"GET"})
      */
-    #[Route(path: '/od-restore-cart/{mappingId}', name: 'frontend.cart.od-restore-cart', options: ['seo' => false], methods: ['POST'])]
     public function index(string $mappingId, SalesChannelContext $context): Response
     {
         $this->restorerService->restore($mappingId, $context);

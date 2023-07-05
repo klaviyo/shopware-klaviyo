@@ -4,8 +4,9 @@ namespace Od\Scheduler\Async;
 
 use Od\Scheduler\Model\Job\JobRunner;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\MessageQueue\Handler\AbstractMessageHandler;
 
-class JobExecutionHandler implements \Symfony\Component\Messenger\Handler\MessageSubscriberInterface
+class JobExecutionHandler extends AbstractMessageHandler
 {
     private LoggerInterface $logger;
     private JobRunner $jobRunner;
@@ -18,15 +19,10 @@ class JobExecutionHandler implements \Symfony\Component\Messenger\Handler\Messag
         $this->jobRunner = $jobRunner;
     }
 
-    public function __invoke(JobMessageInterface $message)
-    {
-        $this->handle($message);
-    }
-
     /**
      * @param JobMessageInterface $message
      */
-    public function handle(\Od\Scheduler\Async\JobMessageInterface $message): void
+    public function handle($message): void
     {
         try {
             $this->jobRunner->execute($message);

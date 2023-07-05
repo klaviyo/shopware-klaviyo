@@ -7,7 +7,7 @@ use Klaviyo\Integration\System\Tracking\Event\Customer\ProfileEventsBag;
 use Klaviyo\Integration\System\Tracking\EventsTrackerInterface;
 use Shopware\Core\Checkout\Customer\CustomerCollection;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
@@ -17,12 +17,12 @@ use Shopware\Core\Checkout\Customer\CustomerEvents;
 class CustomerWrittenEventListener implements EventSubscriberInterface
 {
     private EventsTrackerInterface $eventsTracker;
-    private EntityRepository $customerRepository;
+    private EntityRepositoryInterface $customerRepository;
     private GetValidChannelConfig $getValidChannelConfig;
 
     public function __construct(
         EventsTrackerInterface $eventsTracker,
-        EntityRepository $customerRepository,
+        EntityRepositoryInterface $customerRepository,
         GetValidChannelConfig $getValidChannelConfig
     ) {
         $this->eventsTracker = $eventsTracker;

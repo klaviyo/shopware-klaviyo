@@ -9,9 +9,9 @@
                 } %}
 
             {% block klaviyo_back_in_stock_modal_open %}
-                <button class="btn btn-primary" data-bs-toggle="modal"
+                <button class="btn btn-primary" data-toggle="modal"
                         style="{% if extensionData.configuration.popUpOpenBtnColor %}color: {{ extensionData.configuration.popUpOpenBtnColor }};{% endif %}{% if extensionData.configuration.popUpOpenBtnBgColor %}background-color: {{ extensionData.configuration.popUpOpenBtnBgColor }}; border-color: {{ extensionData.configuration.popUpOpenBtnBgColor }};{% endif %}"
-                        data-bs-target="#back-in-stock-modal"> {{ "klaviyo.back-in-stock.modal.openBtnLabel"|trans }}
+                        data-target="#back-in-stock-modal"> {{ "klaviyo.back-in-stock.modal.openBtnLabel"|trans }}
                 </button>
             {% endblock %}
             {% block klaviyo_back_in_stock_modal_base %}
@@ -32,7 +32,8 @@
                                                     id="exampleModalLabel">{{ page.product.translated.name }}</h5>
                                             {% endblock %}
                                             {% block klaviyo_back_in_stock_modal_top_close %}
-                                                <button type="button" class="close btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
                                                 </button>
                                             {% endblock %}
                                         </div>
@@ -133,7 +134,7 @@
                                             {% block klaviyo_back_in_stock_modal_footer_close_button %}
                                                 <button type="button" class="btn btn-secondary"
                                                         style="{% if extensionData.configuration.popUpConfiguration.popUpCloseBtnColor %}color:{{ extensionData.configuration.popUpConfiguration.popUpCloseBtnColor }};{% endif %}{% if extensionData.configuration.popUpConfiguration.popUpCloseBtnBgColor %}background-color:{{ extensionData.configuration.popUpConfiguration.popUpCloseBtnBgColor }};{% endif %}"
-                                                        data-bs-dismiss="modal">{{ "klaviyo.back-in-stock.modal.closeBtnLabel"|trans }}</button>
+                                                        data-dismiss="modal">{{ "klaviyo.back-in-stock.modal.closeBtnLabel"|trans }}</button>
                                             {% endblock %}
                                         </div>
                                     {% endblock %}

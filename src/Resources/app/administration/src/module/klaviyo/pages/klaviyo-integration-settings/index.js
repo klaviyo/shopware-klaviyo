@@ -91,12 +91,12 @@ Component.register('klaviyo-integration-settings', {
         config: {
             handler() {
                 const channelId = this.$refs.configComponent.selectedSalesChannelId;
-                const accountEnabled = !!this.config['klavi_overd.config.enabled'];
+                const accountEnabled = !!this.config['KlaviyoIntegrationPlugin.config.enabled'];
 
                 if (channelId !== null && accountEnabled) {
-                    this.privateKeyFilled = !!this.config['klavi_overd.config.privateApiKey'];
-                    this.publicKeyFilled = !!this.config['klavi_overd.config.publicApiKey'];
-                    this.listNameFilled = !!this.config['klavi_overd.config.klaviyoListForSubscribersSync'];
+                    this.privateKeyFilled = !!this.config['KlaviyoIntegrationPlugin.config.privateApiKey'];
+                    this.publicKeyFilled = !!this.config['KlaviyoIntegrationPlugin.config.publicApiKey'];
+                    this.listNameFilled = !!this.config['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync'];
                 } else {
                     this.privateKeyFilled = this.publicKeyFilled = this.listNameFilled = true;
                 }

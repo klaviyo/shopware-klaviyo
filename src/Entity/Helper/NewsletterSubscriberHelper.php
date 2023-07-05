@@ -5,15 +5,15 @@ namespace Klaviyo\Integration\Entity\Helper;
 use Shopware\Core\Content\Newsletter\Aggregate\NewsletterRecipient\NewsletterRecipientEntity;
 use Shopware\Core\Content\Newsletter\SalesChannel\NewsletterSubscribeRoute;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 
 class NewsletterSubscriberHelper
 {
-    private EntityRepository $subscriberRepository;
+    private EntityRepositoryInterface $subscriberRepository;
 
-    public function __construct(EntityRepository $subscriberRepository)
+    public function __construct(EntityRepositoryInterface $subscriberRepository)
     {
         $this->subscriberRepository = $subscriberRepository;
     }

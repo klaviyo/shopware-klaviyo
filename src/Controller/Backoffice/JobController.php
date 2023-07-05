@@ -10,7 +10,12 @@ use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route(defaults: ['_routeScope' => ['api']])]
+/**
+ * @RouteScope(scopes={"api"})
+ * @Route(
+ *     "/api/_action/klaviyo"
+ * )
+ */
 class JobController
 {
     private ScheduleBackgroundJob $scheduleBackgroundJob;
@@ -20,7 +25,15 @@ class JobController
         $this->scheduleBackgroundJob = $scheduleBackgroundJob;
     }
 
-    #[Route(path:"/api/_action/klaviyo/historical-event-tracking/synchronization/schedule", name:"api.action.klaviyo.historical.event.tracking.synchronization.schedule", requirements: ['version' => '\d+'], methods:["POST"])]
+    /**
+     * @Route(
+     *     "/historical-event-tracking/synchronization/schedule",
+     *     name="api.action.klaviyo.historical.event.tracking.synchronization.schedule",
+     *     methods={"POST"},
+     *     requirements={"version"="\d+"}
+     * )
+     * @return JsonResponse
+     */
     public function scheduleHistoricalEventTrackingSynchronizationAction(Context $context)
     {
         return $this->doScheduleJob(function () use ($context) {
@@ -28,7 +41,15 @@ class JobController
         });
     }
 
-    #[Route(path:"/api/_action/klaviyo/subscribers/synchronization/schedule", name:"api.action.klaviyo.subscribers.synchronization.schedule", requirements: ['version' => '\d+'], methods:["POST"])]
+    /**
+     * @Route(
+     *     "/subscribers/synchronization/schedule",
+     *     name="api.action.klaviyo.subscribers.synchronization.schedule",
+     *     methods={"POST"},
+     *     requirements={"version"="\d+"}
+     * )
+     * @return JsonResponse
+     */
     public function scheduleSubscribersSynchronizationAction(Context $context)
     {
         return $this->doScheduleJob(function () use ($context) {

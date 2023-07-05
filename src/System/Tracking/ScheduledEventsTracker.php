@@ -9,18 +9,18 @@ use Klaviyo\Integration\System\Tracking\Event\Customer\ProfileEventsBag;
 use Klaviyo\Integration\System\Tracking\Event\Order\OrderTrackingEventsBag;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 class ScheduledEventsTracker implements EventsTrackerInterface
 {
-    private EntityRepository $eventRepository;
-    private EntityRepository $cartEventRequestRepository;
+    private EntityRepositoryInterface $eventRepository;
+    private EntityRepositoryInterface $cartEventRequestRepository;
     private CartRequestSerializer $cartRequestSerializer;
 
     public function __construct(
-        EntityRepository $eventRepository,
-        EntityRepository $cartEventRequestRepository,
+        EntityRepositoryInterface $eventRepository,
+        EntityRepositoryInterface $cartEventRequestRepository,
         CartRequestSerializer $cartRequestSerializer
     ) {
         $this->eventRepository = $eventRepository;

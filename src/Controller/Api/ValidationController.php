@@ -15,7 +15,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 
-#[Route(defaults: ['_routeScope' => ['api']])]
+/**
+ * @RouteScope(scopes={"api"})
+ */
 class ValidationController extends AbstractController
 {
     private ClientRegistry $clientRegistry;
@@ -25,7 +27,23 @@ class ValidationController extends AbstractController
         $this->clientRegistry = $clientRegistry;
     }
 
-    #[Route(path:"/api/_action/od-api-key-validate", name:"api.action.od_api_key_validate", defaults: ['auth_required' => false], methods:["POST"])]
+    /**
+     * @OA\Post(
+     *     path="/_action/od-api-key-validate",
+     *     summary="Validate api keys for Klavio",
+     *     description="Validates if the given api keys are valid for Klavio",
+     *     operationId="od-api-validate",
+     *     tags={"Admin API", "Od Validation"},
+     *     @OA\RequestBody(
+     *         required=true
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="Returns a json response file with validation info."
+     *     )
+     * )
+     * @Route("/api/_action/od-api-key-validate", name="api.action.od_api_key_validate", methods={"POST"}, defaults={"auth_required"=false})
+     */
     public function validate(RequestDataBag $post): JsonResponse
     {
         $publicKey = $post->get('publicKey');

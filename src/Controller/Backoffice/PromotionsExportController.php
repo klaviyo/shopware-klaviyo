@@ -5,12 +5,10 @@ namespace Klaviyo\Integration\Controller\Backoffice;
 use Klaviyo\Integration\Klaviyo\Promotion\PromotionsExporter;
 use Klaviyo\Integration\Model\Response\KlaviyoBinaryFileResponse;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route(defaults: ['_routeScope' => ['api']])]
 class PromotionsExportController
 {
     private PromotionsExporter $promotionsExporter;
@@ -20,7 +18,12 @@ class PromotionsExportController
         $this->promotionsExporter = $promotionsExporter;
     }
 
-    #[Route(path:"/api/klaviyo/integration/promotion/export", defaults: ['auth_required' => false], methods: ['GET'])]
+    /**
+     * @RouteScope(scopes={"administration"})
+     * @Route(
+     *     "/api/klaviyo/integration/promotion/export", defaults={"auth_required"=false}
+     * )
+     */
     public function export(Context $context)
     {
         $fileObject = $this->promotionsExporter->exportToCSV($context);

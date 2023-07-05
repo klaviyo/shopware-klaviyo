@@ -10,7 +10,7 @@ use Od\Scheduler\Model\Job\JobResult;
 use Od\Scheduler\Model\Job\Message\InfoMessage;
 use Shopware\Core\Checkout\Customer\CustomerCollection;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 
@@ -19,11 +19,11 @@ class CustomerProfileSyncOperation implements JobHandlerInterface
     public const OPERATION_HANDLER_CODE = 'od-klaviyo-customer-profile-sync-handler';
 
     private EventsTrackerInterface $eventsTracker;
-    private EntityRepository $customerRepository;
+    private EntityRepositoryInterface $customerRepository;
 
     public function __construct(
         EventsTrackerInterface $eventsTracker,
-        EntityRepository $customerRepository
+        EntityRepositoryInterface $customerRepository
     ) {
         $this->eventsTracker = $eventsTracker;
         $this->customerRepository = $customerRepository;

@@ -6,7 +6,7 @@ namespace Klaviyo\Integration\Utils\Lifecycle\Update;
 
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -14,17 +14,17 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 class UpdateTo105
 {
     private const CREDENTIALS_CONFIGS = [
-        'klavi_overd.config.privateApiKey',
-        'klavi_overd.config.publicApiKey',
-        'klavi_overd.config.klaviyoListForSubscribersSync',
+        'KlaviyoIntegrationPlugin.config.privateApiKey',
+        'KlaviyoIntegrationPlugin.config.publicApiKey',
+        'KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync',
     ];
 
     private SystemConfigService $systemConfigService;
-    private EntityRepository $salesChannelRepository;
+    private EntityRepositoryInterface $salesChannelRepository;
 
     public function __construct(
         SystemConfigService $systemConfigService,
-        EntityRepository $salesChannelRepository
+        EntityRepositoryInterface $salesChannelRepository
     ) {
         $this->systemConfigService = $systemConfigService;
         $this->salesChannelRepository = $salesChannelRepository;
@@ -55,7 +55,7 @@ class UpdateTo105
                     $this->systemConfigService->set($configName, $config, $channelId);
                 }
             }
-            $this->systemConfigService->set('klavi_overd.config.enabled', $active, $channelId);
+            $this->systemConfigService->set('KlaviyoIntegrationPlugin.config.enabled', $active, $channelId);
         }
 
         foreach (self::CREDENTIALS_CONFIGS as $configName) {

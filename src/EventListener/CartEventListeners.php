@@ -9,7 +9,7 @@ use Klaviyo\Integration\Utils\Logger\ContextHelper;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\Order\CartConvertedEvent;
 use Shopware\Core\Checkout\Order\OrderDefinition;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
@@ -20,11 +20,11 @@ use Throwable;
 class CartEventListeners implements EventSubscriberInterface
 {
 
-    private EntityRepository $mappingRepository;
+    private EntityRepositoryInterface $mappingRepository;
     private LoggerInterface $logger;
 
     public function __construct(
-        EntityRepository $mappingRepository,
+        EntityRepositoryInterface $mappingRepository,
         LoggerInterface $logger
     ) {
         $this->mappingRepository = $mappingRepository;

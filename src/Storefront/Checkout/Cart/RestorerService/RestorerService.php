@@ -12,22 +12,22 @@ use Shopware\Core\Checkout\Cart\Order\OrderConverter;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class RestorerService implements RestorerServiceInterface
 {
-    private EntityRepository $mappingRepository;
-    private EntityRepository $orderRepository;
+    private EntityRepositoryInterface $mappingRepository;
+    private EntityRepositoryInterface $orderRepository;
     private CartRuleLoader $cartRuleLoader;
     private CartService $cartService;
     private OrderConverter $orderConverter;
     private LoggerInterface $logger;
 
     public function __construct(
-        EntityRepository $mappingRepository,
-        EntityRepository $orderRepository,
+        EntityRepositoryInterface $mappingRepository,
+        EntityRepositoryInterface $orderRepository,
         CartRuleLoader $cartRuleLoader,
         CartService $cartService,
         OrderConverter $orderConverter,

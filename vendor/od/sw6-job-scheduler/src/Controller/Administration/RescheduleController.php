@@ -10,7 +10,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route(defaults: ['_routeScope' => ['api']])]
+/**
+ * @RouteScope(scopes={"api"})
+ */
 class RescheduleController extends AbstractController
 {
     private JobScheduler $jobScheduler;
@@ -20,7 +22,14 @@ class RescheduleController extends AbstractController
         $this->jobScheduler = $jobScheduler;
     }
 
-    #[Route(path:"/api/_action/od-job/reschedule", name:"api.od.scheduler.od.job.event.reschedule", options:["seo"=>"false"], methods:["POST"])]
+    /**
+     * @Route(
+     *     "/api/_action/od-job/reschedule",
+     *     name="api.od.scheduler.od.job.event.reschedule",
+     *     methods={"POST"}
+     * )
+     * @return JsonResponse
+     */
     public function rescheduleAction(Request $request)
     {
         $jobId = $request->request->get('params')['jobId'] ?? null;

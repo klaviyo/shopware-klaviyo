@@ -12,20 +12,20 @@ use Klaviyo\Integration\System\Scheduling\ExcludedSubscriberSync;
 use Od\Scheduler\Entity\Job\JobEntity;
 use Od\Scheduler\Model\JobScheduler;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\{AndFilter, EqualsAnyFilter, EqualsFilter};
 use Shopware\Core\Framework\Uuid\Uuid;
 
 class ScheduleBackgroundJob
 {
-    private EntityRepository $jobRepository;
+    private EntityRepositoryInterface $jobRepository;
     private JobScheduler $scheduler;
     private ExcludedSubscribersProvider $excludedSubscribersProvider;
     private SyncProgressService $progressService;
 
     public function __construct(
-        EntityRepository $jobRepository,
+        EntityRepositoryInterface $jobRepository,
         JobScheduler $scheduler,
         ExcludedSubscribersProvider $excludedSubscribersProvider,
         SyncProgressService $progressService

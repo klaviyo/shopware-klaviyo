@@ -7,21 +7,21 @@ use Od\Scheduler\Entity\Job\JobEntity;
 use Od\Scheduler\Model\Job\{HandlerPool, JobHelper};
 use Od\Scheduler\Model\Job\GeneratingHandlerInterface;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
 
 class JobScheduler
 {
-    private EntityRepository $jobRepository;
+    private EntityRepositoryInterface $jobRepository;
     private SerializerInterface $messageSerializer;
     private MessageBusInterface $messageBus;
     private HandlerPool $handlerPool;
     private JobHelper $jobHelper;
 
     public function __construct(
-        EntityRepository $jobRepository,
+        EntityRepositoryInterface $jobRepository,
         SerializerInterface $messageSerializer,
         MessageBusInterface $messageBus,
         HandlerPool $handlerPool,

@@ -8,14 +8,10 @@ use Klaviyo\Integration\Model\Channel\GetValidChannels;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
 use Klaviyo\Integration\System\Tracking\EventsTrackerInterface;
 use Od\Scheduler\Model\Job\GeneratingHandlerInterface;
-use Od\Scheduler\Model\Job\JobHandlerInterface;
-use Od\Scheduler\Model\Job\JobResult;
-use Od\Scheduler\Model\Job\Message;
+use Od\Scheduler\Model\Job\{JobHandlerInterface, JobResult, Message};
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\{EntityCollection, EntityRepositoryInterface, Search\Filter\EqualsFilter};
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
@@ -25,16 +21,16 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
 {
     public const HANDLER_CODE = 'od-klaviyo-events-sync-handler';
 
-    private EntityRepository $eventRepository;
-    private EntityRepository $cartEventRequestRepository;
-    private EntityRepository $subscriberRepository;
+    private EntityRepositoryInterface $eventRepository;
+    private EntityRepositoryInterface $cartEventRequestRepository;
+    private EntityRepositoryInterface $subscriberRepository;
     private ScheduleBackgroundJob $scheduleBackgroundJob;
     private GetValidChannels $getValidChannels;
 
     public function __construct(
-        EntityRepository $eventRepository,
-        EntityRepository $cartEventRequestRepository,
-        EntityRepository $subscriberRepository,
+        EntityRepositoryInterface $eventRepository,
+        EntityRepositoryInterface $cartEventRequestRepository,
+        EntityRepositoryInterface $subscriberRepository,
         ScheduleBackgroundJob $scheduleBackgroundJob,
         GetValidChannels $getValidChannels
     ) {

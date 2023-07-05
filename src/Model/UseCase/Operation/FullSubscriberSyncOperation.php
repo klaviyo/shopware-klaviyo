@@ -9,7 +9,7 @@ use Od\Scheduler\Model\Job\{GeneratingHandlerInterface, JobHandlerInterface, Job
 use Shopware\Core\Content\Newsletter\SalesChannel\NewsletterSubscribeRoute;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -21,12 +21,12 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
     private const SUBSCRIBER_BATCH_SIZE = 100;
 
     private ScheduleBackgroundJob $scheduleBackgroundJob;
-    private EntityRepository $subscriberRepository;
+    private EntityRepositoryInterface $subscriberRepository;
     private GetValidChannels $getValidChannels;
 
     public function __construct(
         ScheduleBackgroundJob $scheduleBackgroundJob,
-        EntityRepository $subscriberRepository,
+        EntityRepositoryInterface $subscriberRepository,
         GetValidChannels $getValidChannels
     ) {
         $this->scheduleBackgroundJob = $scheduleBackgroundJob;

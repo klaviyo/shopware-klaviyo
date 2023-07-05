@@ -25,7 +25,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
@@ -36,19 +36,19 @@ class OrderEventRequestTranslator
     private const ORDER_REFUND_REASON = 'Refund by shopware 6';
     private const ORDER_PAID_REASON = 'Paid by shopware 6';
 
-    private EntityRepository $productRepository;
-    private EntityRepository $orderAddressRepository;
-    private EntityRepository $orderDeliveryRepository;
-    private EntityRepository $orderLineItemRepository;
+    private EntityRepositoryInterface $productRepository;
+    private EntityRepositoryInterface $orderAddressRepository;
+    private EntityRepositoryInterface $orderDeliveryRepository;
+    private EntityRepositoryInterface $orderLineItemRepository;
     private AddressDataHelper $addressDataHelper;
     private CustomerPropertiesTranslator $orderCustomerPropertiesTranslator;
     private ProductDataHelper $productDataHelper;
 
     public function __construct(
-        EntityRepository $productRepository,
-        EntityRepository $orderAddressRepository,
-        EntityRepository $orderDeliveryRepository,
-        EntityRepository $orderLineItemRepository,
+        EntityRepositoryInterface $productRepository,
+        EntityRepositoryInterface $orderAddressRepository,
+        EntityRepositoryInterface $orderDeliveryRepository,
+        EntityRepositoryInterface $orderLineItemRepository,
         AddressDataHelper $addressDataHelper,
         ProductDataHelper $productDataHelper,
         CustomerPropertiesTranslator $orderCustomerPropertiesTranslator

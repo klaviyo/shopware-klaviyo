@@ -5,18 +5,18 @@ namespace Klaviyo\Integration\Model\Channel;
 use Klaviyo\Integration\Exception\InvalidConfigurationException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 class GetValidChannels
 {
     private GetValidChannelConfig $getValidChannelConfig;
-    private EntityRepository $salesChannelRepository;
+    private EntityRepositoryInterface $salesChannelRepository;
 
     public function __construct(
         GetValidChannelConfig $getValidChannelConfig,
-        EntityRepository $salesChannelRepository
+        EntityRepositoryInterface $salesChannelRepository
     ) {
         $this->getValidChannelConfig = $getValidChannelConfig;
         $this->salesChannelRepository = $salesChannelRepository;

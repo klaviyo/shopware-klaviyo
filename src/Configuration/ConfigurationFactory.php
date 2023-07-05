@@ -19,7 +19,7 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
     {
         $accountEnabled = $this->getBoolConfiguration('enabled', $salesChannelId);
         $privateApiKey = $this->systemConfigService
-            ->get('klavi_overd.config.privateApiKey', $salesChannelId);
+            ->get('KlaviyoIntegrationPlugin.config.privateApiKey', $salesChannelId);
         if (!$privateApiKey) {
             throw new InvalidConfigurationException(
                 'Klaviyo Integration Private Api Key configuration is not defined'
@@ -27,7 +27,7 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
         }
 
         $publicApiKey = $this->systemConfigService
-            ->get('klavi_overd.config.publicApiKey', $salesChannelId);
+            ->get('KlaviyoIntegrationPlugin.config.publicApiKey', $salesChannelId);
         if (!$publicApiKey) {
             throw new InvalidConfigurationException(
                 'Klaviyo Integration Public Api Key configuration is not defined'
@@ -35,15 +35,15 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
         }
 
         $listName = $this->systemConfigService
-            ->get('klavi_overd.config.klaviyoListForSubscribersSync', $salesChannelId);
+            ->get('KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync', $salesChannelId);
         if (!$listName) {
             throw new InvalidConfigurationException(
                 'Klaviyo Integration List For Subscribers configuration is not defined'
             );
         }
 
-        $bisVariantField = $this->systemConfigService->get('klavi_overd.config.bisVariantField', $salesChannelId) ?? 'product-number';
-        $orderIdentification = $this->systemConfigService->get('klavi_overd.config.orderIdentification', $salesChannelId) ?? 'order-id';
+        $bisVariantField = $this->systemConfigService->get('KlaviyoIntegrationPlugin.config.bisVariantField', $salesChannelId) ?? 'product-number';
+        $orderIdentification = $this->systemConfigService->get('KlaviyoIntegrationPlugin.config.orderIdentification', $salesChannelId) ?? 'order-id';
         $trackDeletedAccountOrders = $this->getBoolConfiguration('trackDeletedAccountOrders', $salesChannelId);
         $trackViewedProduct = $this->getBoolConfiguration('trackViewedProduct', $salesChannelId);
         $trackRecentlyViewedItems = $this->getBoolConfiguration('trackRecentlyViewedItems', $salesChannelId);
@@ -57,22 +57,22 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
         $trackPaidOrder = $this->getBoolConfiguration('trackPaidOrder', $salesChannelId);
 
         $trackSubscribedToBackInStock = $this->getBoolConfiguration('trackSubscribedToBackInStock', $salesChannelId);
-        $afterInteraction = $this->systemConfigService->getBool('klavi_overd.config.isInitializeKlaviyoAfterInteraction', $salesChannelId);
+        $afterInteraction = $this->systemConfigService->getBool('KlaviyoIntegrationPlugin.config.isInitializeKlaviyoAfterInteraction', $salesChannelId);
 
         $mapping = $this->systemConfigService
-                ->get('klavi_overd.config.customerFieldMapping', $salesChannelId) ?? [];
+                ->get('KlaviyoIntegrationPlugin.config.customerFieldMapping', $salesChannelId) ?? [];
 
         $popUpConfiguration = new PopUpConfiguration(
-            $this->systemConfigService->getString('klavi_overd.config.popUpOpenBtnColor', $salesChannelId),
-            $this->systemConfigService->getString('klavi_overd.config.popUpOpenBtnBgColor', $salesChannelId),
-            $this->systemConfigService->getString('klavi_overd.config.popUpCloseBtnColor', $salesChannelId),
-            $this->systemConfigService->getString('klavi_overd.config.popUpCloseBtnBgColor', $salesChannelId),
-            $this->systemConfigService->getString('klavi_overd.config.subscribeBtnColor', $salesChannelId),
-            $this->systemConfigService->getString('klavi_overd.config.subscribeBtnBgColor', $salesChannelId),
-            $this->systemConfigService->getString('klavi_overd.config.popUpAdditionalClasses', $salesChannelId)
+            $this->systemConfigService->getString('KlaviyoIntegrationPlugin.config.popUpOpenBtnColor', $salesChannelId),
+            $this->systemConfigService->getString('KlaviyoIntegrationPlugin.config.popUpOpenBtnBgColor', $salesChannelId),
+            $this->systemConfigService->getString('KlaviyoIntegrationPlugin.config.popUpCloseBtnColor', $salesChannelId),
+            $this->systemConfigService->getString('KlaviyoIntegrationPlugin.config.popUpCloseBtnBgColor', $salesChannelId),
+            $this->systemConfigService->getString('KlaviyoIntegrationPlugin.config.subscribeBtnColor', $salesChannelId),
+            $this->systemConfigService->getString('KlaviyoIntegrationPlugin.config.subscribeBtnBgColor', $salesChannelId),
+            $this->systemConfigService->getString('KlaviyoIntegrationPlugin.config.popUpAdditionalClasses', $salesChannelId)
         );
 
-        $cookieConsent = $this->systemConfigService->get('klavi_overd.config.cookieConsent', $salesChannelId) ?? 'shopware';
+        $cookieConsent = $this->systemConfigService->get('KlaviyoIntegrationPlugin.config.cookieConsent', $salesChannelId) ?? 'shopware';
 
         if (is_array($mapping)) {
             foreach ($mapping as $mappingId => $mappingAssociation) {
@@ -113,6 +113,6 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
     private function getBoolConfiguration(string $configurationName, ?string $salesChannelId): bool
     {
         return $this->systemConfigService
-            ->getBool("klavi_overd.config.{$configurationName}", $salesChannelId);
+            ->getBool("KlaviyoIntegrationPlugin.config.{$configurationName}", $salesChannelId);
     }
 }
