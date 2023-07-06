@@ -17,36 +17,35 @@ use Shopware\Storefront\Pagelet\Newsletter\Account\NewsletterAccountPageletLoade
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 use function version_compare;
 
-/**
- * @RouteScope(scopes={"storefront"})
- */
-class NewsletterControllerDecorator extends NewsletterController
+
+class NewsletterControllerDecorator
 {
     private GetValidChannelConfig $validChannelConfig;
+
+    private \Shopware\Storefront\Controller\NewsletterController $decoratedService;
 
     /**
      * @internal
      */
     public function __construct(
-        NewsletterSubscribePageLoader $newsletterConfirmRegisterPageLoader,
-        AbstractNewsletterConfirmRoute $newsletterConfirmRoute,
-        NewsletterAccountPageletLoader $newsletterAccountPageletLoader,
+        \Shopware\Storefront\Controller\NewsletterController $newsletterController,
         GetValidChannelConfig $validChannelConfig
     ) {
+        $this->decoratedService = $newsletterController;
         $this->validChannelConfig = $validChannelConfig;
-        parent::__construct(
-            $newsletterConfirmRegisterPageLoader,
-            $newsletterConfirmRoute,
-            $newsletterAccountPageletLoader
-        );
     }
 
+    public function getDecorated(): \Shopware\Storefront\Controller\NewsletterController
+    {
+        return $this->decoratedService;
+    }
 
     public function subscribeMail(SalesChannelContext $context, Request $request, QueryDataBag $queryDataBag): Response
     {
-        $response = parent::subscribeMail($context, $request, $queryDataBag);
+        $response = $this->getDecorated()->subscribeMail($context, $request, $queryDataBag);
 
         if (!$this->isCookieAllowed($context, $request)) {
             return $response;
