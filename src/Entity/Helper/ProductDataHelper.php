@@ -10,7 +10,7 @@ use Shopware\Core\Content\Product\Aggregate\ProductMedia\ProductMediaEntity;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -23,24 +23,24 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class ProductDataHelper
 {
     private UrlGeneratorInterface $urlGenerator;
-    private EntityRepositoryInterface $productRepository;
-    private EntityRepositoryInterface $productMediaRepository;
-    private EntityRepositoryInterface $categoriesRepository;
-    private EntityRepositoryInterface $productManufacturerRepository;
+    private EntityRepository $productRepository;
+    private EntityRepository $productMediaRepository;
+    private EntityRepository $categoriesRepository;
+    private EntityRepository $productManufacturerRepository;
     private SeoUrlPlaceholderHandlerInterface $seoUrlReplacer;
-    private EntityRepositoryInterface $salesChannelRepository;
+    private EntityRepository $salesChannelRepository;
     private AbstractSalesChannelContextFactory $salesChannelContextFactory;
     private RequestStack $requestStack;
     private array $contexts = [];
 
     public function __construct(
         UrlGeneratorInterface $urlGenerator,
-        EntityRepositoryInterface $productRepository,
-        EntityRepositoryInterface $productMediaRepository,
-        EntityRepositoryInterface $categoriesRepository,
-        EntityRepositoryInterface $productManufacturerRepository,
+        EntityRepository $productRepository,
+        EntityRepository $productMediaRepository,
+        EntityRepository $categoriesRepository,
+        EntityRepository $productManufacturerRepository,
         SeoUrlPlaceholderHandlerInterface $seoUrlReplacer,
-        EntityRepositoryInterface $salesChannelRepository,
+        EntityRepository $salesChannelRepository,
         AbstractSalesChannelContextFactory $salesChannelContextFactory,
         RequestStack $requestStack
     ) {

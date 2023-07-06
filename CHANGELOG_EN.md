@@ -1,3 +1,12 @@
+# 2.0.0
+# Compatibility release with shopwrae 6.5^
+# Fix: Replaced usage of removed classes & files.
+# Fix: Minor changes to extension configuration classes/templates ( at extension configuration page ).
+# New: Job Scheduler Update - implemented compatibility with Shopawre 6.5^ versions.
+# New: Job Scheduler Update - Job scheduler handlers now do extend recommended interfaces. 
+# New: Controller routes now have annotation declaration in new format.
+# New: Some changes that was made do make the extension backward-incompatible. You can see the dependencies in composer.json file.
+
 # 1.0.19
 # Feature: Added ability to change order identification variable that will be sent to the klaviyo ( was before: order hash | now you can choose either: order hash OR order id )
 

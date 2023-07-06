@@ -5,19 +5,19 @@ namespace Klaviyo\Integration\Entity\Helper;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;
 use Shopware\Core\System\Country\CountryEntity;
 
 class AddressDataHelper
 {
-    private EntityRepositoryInterface $stateRepository;
-    private EntityRepositoryInterface $countryRepository;
+    private EntityRepository $stateRepository;
+    private EntityRepository $countryRepository;
 
     public function __construct(
-        EntityRepositoryInterface $stateRepository,
-        EntityRepositoryInterface $countryRepository
+        EntityRepository $stateRepository,
+        EntityRepository $countryRepository
     ) {
         $this->stateRepository = $stateRepository;
         $this->countryRepository = $countryRepository;

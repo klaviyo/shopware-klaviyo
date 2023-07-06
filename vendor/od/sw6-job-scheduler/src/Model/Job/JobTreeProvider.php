@@ -3,15 +3,15 @@
 namespace Od\Scheduler\Model\Job;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\{EqualsAnyFilter, EqualsFilter, OrFilter};
 
 class JobTreeProvider
 {
-    public EntityRepositoryInterface $jobRepository;
+    public EntityRepository $jobRepository;
 
-    public function __construct(EntityRepositoryInterface $jobRepository)
+    public function __construct(EntityRepository $jobRepository)
     {
         $this->jobRepository = $jobRepository;
     }

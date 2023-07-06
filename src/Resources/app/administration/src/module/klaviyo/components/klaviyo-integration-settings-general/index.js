@@ -110,7 +110,7 @@ Component.register('klaviyo-integration-settings-general', {
 
     methods: {
         createdComponent() {
-            const configPrefix = 'KlaviyoIntegrationPlugin.config.',
+            const configPrefix = 'klavi_overd.config.',
                 defaultConfigs = {
                     enabled: false,
                     bisVariantField: 'product-number',
@@ -162,9 +162,9 @@ Component.register('klaviyo-integration-settings-general', {
 
         validateApiCredentials() {
             this.apiValidationInProgress = true;
-            const privateKey = this.actualConfigData['KlaviyoIntegrationPlugin.config.privateApiKey'];
-            const publicKey = this.actualConfigData['KlaviyoIntegrationPlugin.config.publicApiKey'];
-            const list = this.actualConfigData['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync'];
+            const privateKey = this.actualConfigData['klavi_overd.config.privateApiKey'];
+            const publicKey = this.actualConfigData['klavi_overd.config.publicApiKey'];
+            const list = this.actualConfigData['klavi_overd.config.klaviyoListForSubscribersSync'];
 
             if (!(this.credentialsEmptyValidation('privateApiKey', privateKey) * this.credentialsEmptyValidation('publicApiKey', publicKey) * this.credentialsEmptyValidation('klaviyoListForSubscribersSync', list))) {
                 this.apiValidationInProgress = false;

@@ -32,8 +32,8 @@ class RestartConsumerAfterPluginConfigChangedEventListener implements EventSubsc
     {
         try {
             $key = $systemConfigChangedEvent->getKey();
-            if (strpos($key, 'KlaviyoIntegrationPlugin.config') === 0) {
-                if ($key === 'KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync' && !$this->listCacheCleared) {
+            if (strpos($key, 'klavi_overd.config') === 0) {
+                if ($key === 'klavi_overd.config.klaviyoListForSubscribersSync' && !$this->listCacheCleared) {
                     $this->listCacheCleared = true;
                     $this->cachePool->deleteItem(
                         CachedGetListIdByListName::CACHE_PREFIX . $systemConfigChangedEvent->getSalesChannelId()

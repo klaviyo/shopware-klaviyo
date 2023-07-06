@@ -8,7 +8,8 @@ use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
 use Od\Scheduler\Model\Job\{GeneratingHandlerInterface, JobHandlerInterface, JobResult, Message};
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
-use Shopware\Core\Framework\DataAbstractionLayer\{EntityRepositoryInterface, Search};
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Search;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerInterface
@@ -17,12 +18,12 @@ class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerIn
     private const ORDER_BATCH_SIZE = 100;
 
     private ScheduleBackgroundJob $scheduleBackgroundJob;
-    private EntityRepositoryInterface $orderRepository;
+    private EntityRepository $orderRepository;
     private GetValidChannels $getValidChannels;
 
     public function __construct(
         ScheduleBackgroundJob $scheduleBackgroundJob,
-        EntityRepositoryInterface $orderRepository,
+        EntityRepository $orderRepository,
         GetValidChannels $getValidChannels
     ) {
         $this->scheduleBackgroundJob = $scheduleBackgroundJob;
