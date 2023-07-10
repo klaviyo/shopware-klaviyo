@@ -37,7 +37,7 @@
         }
     },
     "require": {
-        "od/sw6-job-scheduler": "2.0.3",
+        "od/sw6-job-scheduler": "^2.0.4",
         "php": "^7.4 || ^8.0",
         "shopware/administration": "^6.5.0.0",
         "shopware/core": "^6.5.0.0",
