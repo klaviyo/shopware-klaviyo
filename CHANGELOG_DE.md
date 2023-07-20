@@ -1,3 +1,6 @@
+# 2.0.1
+# Fix: Das Problem mit der Fehlermeldung in einigen Fällen beim Abonnieren des Newsletters wurde behoben.
+
 # 2.0.0
 # Kompatibilitätsfreigabe mit Shopwrae 6.5^
 # Fix: Verwendung entfernter Klassen und Dateien ersetzt.

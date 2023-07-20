@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "aef11b10d5cbbc42da3556d59cb7226e",
+    "content-hash": "79db5a90faebc66bffa4294dcd0a36d9",
     "packages": [
         {
             "name": "od/sw6-job-scheduler",
-            "version": "2.0.3",
+            "version": "2.0.4",
             "source": {
                 "type": "git",
                 "url": "https://bitbucket.org/overdosedigital/shopware-job-scheduler.git",
-                "reference": "1888e6f6afbe963313ed26b5062563f05576642a"
+                "reference": "e30a8b12a1a7135bd7052262a1e693df2dd30119"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://bitbucket.org/overdosedigital/shopware-job-scheduler/get/1888e6f6afbe963313ed26b5062563f05576642a.zip",
-                "reference": "1888e6f6afbe963313ed26b5062563f05576642a",
+                "url": "https://bitbucket.org/overdosedigital/shopware-job-scheduler/get/e30a8b12a1a7135bd7052262a1e693df2dd30119.zip",
+                "reference": "e30a8b12a1a7135bd7052262a1e693df2dd30119",
                 "shasum": ""
             },
             "require": {
@@ -36,9 +36,9 @@
             "description": "System library for async job scheduling for Shopware 6",
             "homepage": "https://bitbucket.org/overdosedigital/shopware-job-scheduler",
             "support": {
-                "source": "https://bitbucket.org/overdosedigital/shopware-job-scheduler/src/1888e6f6afbe963313ed26b5062563f05576642a/?at=2.0.3"
+                "source": "https://bitbucket.org/overdosedigital/shopware-job-scheduler/src/e30a8b12a1a7135bd7052262a1e693df2dd30119/?at=2.0.4"
             },
-            "time": "2023-07-05T09:59:19+00:00"
+            "time": "2023-07-10T11:58:39+00:00"
         }
     ],
     "packages-dev": [],
