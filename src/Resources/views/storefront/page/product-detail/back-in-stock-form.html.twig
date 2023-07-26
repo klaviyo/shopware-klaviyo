@@ -8,12 +8,6 @@
                     productID: page.product.parentId,
                 } %}
 
-            {% block klaviyo_back_in_stock_modal_open %}
-                <button class="btn btn-primary" data-toggle="modal"
-                        style="{% if extensionData.configuration.popUpOpenBtnColor %}color: {{ extensionData.configuration.popUpOpenBtnColor }};{% endif %}{% if extensionData.configuration.popUpOpenBtnBgColor %}background-color: {{ extensionData.configuration.popUpOpenBtnBgColor }}; border-color: {{ extensionData.configuration.popUpOpenBtnBgColor }};{% endif %}"
-                        data-target="#back-in-stock-modal"> {{ "klaviyo.back-in-stock.modal.openBtnLabel"|trans }}
-                </button>
-            {% endblock %}
             {% block klaviyo_back_in_stock_modal_base %}
                 <div class="klaviyo-back-in-stock-form-modal modal fade {% if extensionData.configuration.popUpConfiguration.popUpAdditionalClasses %}{{ extensionData.configuration.popUpConfiguration.popUpAdditionalClasses }}{% endif %} {% block klaviyo_back_in_stock_modal_additional_classes %}{% endblock %}"
                      id="back-in-stock-modal" tabindex="-1"
