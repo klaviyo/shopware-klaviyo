@@ -3,7 +3,15 @@
 {% block base_content %}
     {{ parent() }}
 
-    {% if page.hasExtension('klaviyoIntegrationPluginExtension') and page.getExtension('klaviyoIntegrationPluginExtension').configuration.trackViewedProduct %}
+    {% if page.getExtension('klaviyoIntegrationPluginExtension').configuration.trackSubscribedToBackInStock and
+        page.extensions.klaviyoIntegrationPluginExtension.backInStockData and not product.translated.customFields.klaviyo_back_in_stock_disabled %}
+
+        {% sw_include '@Storefront/storefront/page/product-detail/back-in-stock-form.html.twig' with {
+            extensionData: page.getExtension('klaviyoIntegrationPluginExtension')
+        } %}
+    {% endif %}
+
+    {% if page.hasExtension('klaviyoIntegrationPluginExtension') %}
         {% set extensionData =  page.getExtension('klaviyoIntegrationPluginExtension') %}
 
         {% set klaviyoComponentOptions = {
