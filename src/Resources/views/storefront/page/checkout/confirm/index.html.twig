@@ -3,8 +3,8 @@
 {% block page_checkout_main_content %}
     {{ parent() }}
 
-    {% if page.hasExtension('klaviyoIntegrationPluginExtension') %}
-        {% set extensionData =  page.getExtension('klaviyoIntegrationPluginExtension') %}
+    {% if page.hasExtension('klavi_overdExtension') %}
+        {% set extensionData =  page.getExtension('klavi_overdExtension') %}
             {% set klaviyoComponentOptions = {
                 'startedCheckoutEventTrackingRequest': extensionData.startedCheckoutEventTrackingRequest
             }

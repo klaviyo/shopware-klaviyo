@@ -36,8 +36,8 @@ server's command line. Please check detailed description below
   --------------------------- -------------------------------- --------- ----------------- ------------- ----------- -------- ------------- 
   Plugin                      Label                            Version   Upgrade version   Author        Installed   Active   Upgradeable  
  --------------------------- -------------------------------- --------- ----------------- ------------- ----------- -------- ------------- 
-  KlaviyoIntegrationPlugin     Klaviyo integration plugin      1.0.0                                     No          No       No           
+  klavi_overd     Klaviyo integration plugin      1.0.0                                     No          No       No           
       
 ```
-4. Execute next command `bin/console plugin:install --activate KlaviyoIntegrationPlugin` then continue from
+4. Execute next command `bin/console plugin:install --activate klavi_overd` then continue from
    the point 10 of the first approach description

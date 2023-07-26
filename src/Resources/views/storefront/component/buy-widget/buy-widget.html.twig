@@ -3,11 +3,11 @@
 {% block buy_widget %}
     {{ parent() }}
 
-    {% if page.getExtension('klaviyoIntegrationPluginExtension').configuration.trackSubscribedToBackInStock and
-        page.extensions.klaviyoIntegrationPluginExtension.backInStockData and not product.translated.customFields.klaviyo_back_in_stock_disabled %}
+    {% if page.getExtension('klavi_overdExtension').configuration.trackSubscribedToBackInStock and
+        page.extensions.klavi_overdExtension.backInStockData and not product.translated.customFields.klaviyo_back_in_stock_disabled %}
 
         {% sw_include '@Storefront/storefront/page/product-detail/back-in-stock-form.html.twig' with {
-            extensionData: page.getExtension('klaviyoIntegrationPluginExtension')
+            extensionData: page.getExtension('klavi_overdExtension')
         } %}
     {% endif %}
 {% endblock %}

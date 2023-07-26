@@ -2,8 +2,8 @@
 
 {% block base_main_inner %}
     {{ parent() }}
-    {% if page.hasExtension('klaviyoIntegrationPluginExtension') %}
-        {% set extensionData =  page.getExtension('klaviyoIntegrationPluginExtension') %}
+    {% if page.hasExtension('klavi_overdExtension') %}
+        {% set extensionData =  page.getExtension('klavi_overdExtension') %}
         {% set klaviyoComponentOptions = {
             'productInfo': extensionData.productInfo
         }

@@ -5,8 +5,8 @@
     {{ parent() }}
     {# Klaviyo script #}
     {% block base_body_script_klaviyo_integration %}
-        {% if page.hasExtension('klaviyoIntegrationPluginExtension') %}
-            {% set extensionData = page.getExtension('klaviyoIntegrationPluginExtension') %}
+        {% if page.hasExtension('klavi_overdExtension') %}
+            {% set extensionData = page.getExtension('klavi_overdExtension') %}
             {% set options = {'customerIdentityInfo': extensionData.customerIdentity } %}
             {% set configurationOptions = {
                 'afterInteraction': extensionData.configuration.afterInteraction,

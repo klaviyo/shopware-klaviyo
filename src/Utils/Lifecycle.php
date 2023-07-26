@@ -66,7 +66,7 @@ class Lifecycle
     public function removeConfigs(Context $context): void
     {
         $criteria = new Criteria();
-        $criteria->addFilter(new ContainsFilter('configurationKey', 'KlaviyoIntegrationPlugin'));
+        $criteria->addFilter(new ContainsFilter('configurationKey', 'klavi_overd'));
         $configIds = $this->systemConfigRepository->searchIds($criteria, $context)->getIds();
         $configIds = \array_map(static function ($id) {
             return ['id' => $id];

@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterface
 {
-    public const PDP_EXTENSION = 'klaviyoIntegrationPluginExtension';
+    public const PDP_EXTENSION = 'klavi_overdExtension';
 
     private GetValidChannelConfig $getValidChannelConfig;
     private CustomerPropertiesTranslator $customerPropertiesTranslator;

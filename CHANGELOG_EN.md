@@ -1,3 +1,6 @@
+# 2.0.2
+# Fix: Resolved the issue that some new plugins install may not receive Order placed and Ordered product events.
+
 # 2.0.1
 # Fix: Resolved the issue with error message upon subscription to newsletter in some cases.
 
