@@ -40,7 +40,7 @@ class AddedToCartEventTrackingRequestNormalizer extends AbstractNormalizer
         }
 
         $properties = [
-            '$value' => $object->getCartTotal(),
+            'AddedToCartValue' => $object->getCartTotal(),
             'AddedItemProductName' => $object->getAddedItemProductName(),
             'AddedItemProductID' => $object->getAddedItemProductId(),
             'AddedItemSKU' => $object->getAddedItemProductSKU(),
