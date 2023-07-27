@@ -66,8 +66,20 @@ class ConfigurableOrderEventTrackingRequestNormalizer extends AbstractNormalizer
         $billingAddress = $this->normalizeObject($object->getBillingAddress());
         $shippingAddress = $this->normalizeObject($object->getShippingAddress());
 
+        switch ($this->eventName) {
+            case 'Fulfilled Order': $orderTotalKey = 'FulfilledOrderValue';
+                break;
+            case 'Cancelled Order': $orderTotalKey = 'CancelledOrderValue';
+                break;
+            case 'Refunded Order': $orderTotalKey = 'RefundedOrderValue';
+                break;
+            case 'Paid Order': $orderTotalKey = 'PaidOrderValue';
+                break;
+            default: $orderTotalKey = 'PlacedOrderValue';
+        }
+
         $properties = [
-            '$value' => $object->getOrderTotal(),
+            $orderTotalKey => $object->getOrderTotal(),
             '$event_id' => $object->getEventId(),
             'OrderId' => $object->getOrderId(),
             'Categories' => array_unique($categories),
