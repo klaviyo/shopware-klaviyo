@@ -1,5 +1,7 @@
 # 2.0.2
 # Fix: Das Problem mit der Fehlermeldung in einigen Fällen beim Abonnieren des Newsletters wurde behoben.
+# Fix: Das Problem wurde behoben, wenn die Ereignisse „Bestellung aufgeben“ und „Bestelltes Produkt“ nicht synchronisiert wurden.
+# Fix: Das Problem wurde behoben, wenn deaktivierte Kontrollkästchen immer noch Daten mit Klaviyo synchronisierten
 
 # 2.0.1
 # Fix: Das Problem mit der Fehlermeldung in einigen Fällen beim Abonnieren des Newsletters wurde behoben.

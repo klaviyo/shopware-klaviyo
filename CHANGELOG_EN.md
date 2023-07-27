@@ -1,5 +1,7 @@
 # 2.0.2
 # Fix: Resolved the issue that some new plugins install may not receive Order placed and Ordered product events.
+# Fix: Resolved the issue when "Placer order and Ordered product" events were not synced.
+# Fix: Resolved the issue when disabled checkboxes were still synching data to Klaviyo 
 
 # 2.0.1
 # Fix: Resolved the issue with error message upon subscription to newsletter in some cases.
