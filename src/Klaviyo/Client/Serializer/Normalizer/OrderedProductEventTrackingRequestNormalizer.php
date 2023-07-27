@@ -21,7 +21,7 @@ class OrderedProductEventTrackingRequestNormalizer extends AbstractNormalizer
 
         $properties = [
             'ProductName' => $object->getProductName(),
-            '$value' => $object->getValue(),
+            'OrderedProductValue' => $object->getValue(),
             '$event_id' => $object->getProductId() . '_' . $now->getTimestamp(),
             'OrderId' => $object->getOrderId(),
             'ProductID' => $object->getProductId(),
