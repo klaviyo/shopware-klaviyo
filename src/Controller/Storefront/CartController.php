@@ -10,6 +10,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\StorefrontController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @RouteScope(scopes={"storefront"})
@@ -28,9 +29,13 @@ class CartController extends StorefrontController
      * @Route("", name="", options={"seo"=false}, methods={"GET"})
      */
     #[Route(path: '/od-restore-cart/{mappingId}', name: 'frontend.cart.od-restore-cart', options: ['seo' => false], methods: ['POST'])]
-    public function index(string $mappingId, SalesChannelContext $context): Response
+    public function index(string $mappingId, Request $request, SalesChannelContext $context): Response
     {
         $this->restorerService->restore($mappingId, $context);
+
+        if ($context->customerId) {
+            $request->getSession()->set('customerId', $context->customerId);
+        }
 
         return $this->redirectToRoute('frontend.checkout.confirm.page');
     }
