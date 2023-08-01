@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fdff9286e9b9f48186b57fb4e396b03b",
+    "content-hash": "893db3a9bdf5bd350fbf8489790e91a7",
     "packages": [
         {
             "name": "od/sw6-job-scheduler",
@@ -47,10 +47,7 @@
     "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": {
-        "php": "^7.4 || ^8.0",
-        "ext-json": "*"
-    },
+    "platform": [],
     "platform-dev": [],
     "plugin-api-version": "2.3.0"
 }
