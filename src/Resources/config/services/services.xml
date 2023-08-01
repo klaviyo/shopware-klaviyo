@@ -204,6 +204,11 @@
             <argument type="service" id="Shopware\Core\Checkout\Cart\Order\OrderConverter"/>
             <argument type="service" id="logger"/>
         </service>
+
+        <service id="Klaviyo\Integration\EventListener\CheckoutRegisterPageLoadedEventListener">
+            <argument type="service" id="customer.repository"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
     </services>
 
 </container>
