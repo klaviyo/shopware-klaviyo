@@ -93,11 +93,6 @@ class RestorerService implements RestorerServiceInterface
         if ($order == null) {
             return;
         }
-
-        if ($customerId = $order->getOrderCustomer()->getCustomer()->getId()) {
-            $context->assign(['customerId' => $customerId]);
-        }
-        
         $cart = $this->orderConverter->convertToCart($order, $context->getContext());
         $this->restoreByCart($cart, $context);
     }
