@@ -5,17 +5,13 @@ declare(strict_types=1);
 namespace Klaviyo\Integration\Controller\Storefront;
 
 use Klaviyo\Integration\Storefront\Checkout\Cart\RestorerService\RestorerServiceInterface;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\StorefrontController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 
-/**
- * @RouteScope(scopes={"storefront"})
- */
-#[Route(defaults: ['_routeScope' => ['api']])]
+#[Route(defaults: ['_routeScope' => ['storefront']])]
 class CartController extends StorefrontController
 {
     private RestorerServiceInterface $restorerService;
@@ -25,15 +21,13 @@ class CartController extends StorefrontController
         $this->restorerService = $restorerService;
     }
 
-    /**
-     * @Route("", name="", options={"seo"=false}, methods={"GET"})
-     */
-    #[Route(path: '/od-restore-cart/{mappingId}', name: 'frontend.cart.od-restore-cart', options: ['seo' => false], methods: ['POST'])]
+
+    #[Route(path: '/od-restore-cart/{mappingId}', name: 'frontend.cart.od-restore-cart', options: ['seo' => false], defaults: ['_routeScope' => ['storefront']], methods: ['GET'])]
     public function index(string $mappingId, Request $request, SalesChannelContext $context): Response
     {
         $this->restorerService->restore($mappingId, $context);
 
-        if ($context->customerId) {
+        if (isset($context->customerId)) {
             $request->getSession()->set('customerId', $context->customerId);
         }
 
