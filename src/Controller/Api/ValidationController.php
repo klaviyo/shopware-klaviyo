@@ -64,4 +64,36 @@ class ValidationController extends AbstractController
 
         return new JsonResponse(['incorrect_list' => true], Response::HTTP_OK);
     }
+
+    #[Route(path:"/api/_action/od-get-subscriber-lists", name:"api.action.od_get_subscriber_lists", defaults: ['auth_required' => false], methods:["POST"])]
+    public function getSubscriberListsAvailable(RequestDataBag $post)
+    {
+        $publicKey = $post->get('publicKey');
+        $privateKey = $post->get('privateKey');
+
+//        if (empty($publicKey) || empty($privateKey)) {
+//            return new JsonResponse(['invalid_parameters' => true], Response::HTTP_OK);
+//        }
+
+//        $client = $this->clientRegistry->getClientByKeys($privateKey, $publicKey);
+//        $request = new GetProfilesListsRequest();
+//        $responses = $client->sendRequests([$request]);
+
+        return new JsonResponse(['success' => true, 'data' =>
+            [
+                [
+                    'name'=> 'wowo',
+                    'label'=>'wowo'
+                ],
+                [
+                    'name'=> 'popo',
+                    'label'=>'popo'
+                ],
+                [
+                    'name'=>'orderSync',
+                    'label'=>'orderSync'
+                ]
+            ]
+        ], Response::HTTP_OK);
+    }
 }

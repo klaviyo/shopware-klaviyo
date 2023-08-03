@@ -91,16 +91,32 @@
             {% endblock %}
 
             {% block klaviyo_integration_settings_general_klaviyo_list_for_subscribers_sync %}
-                <sw-field
-                        v-model="actualConfigData['klavi_overd.config.klaviyoListForSubscribersSync']"
-                        name="klavi_overd.config.privateApiKey"
-                        type="text"
-                        :label="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.label')"
-                        :helpText="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.helpText')"
-                        :disabled="selectedSalesChannelId === null"
-                        :error="listNameErrorState"
-                        required>
-                </sw-field>
+{#                <sw-field#}
+{#                        v-model="actualConfigData['klavi_overd.config.klaviyoListForSubscribersSync']"#}
+{#                        name="klavi_overd.config.privateApiKey"#}
+{#                        type="text"#}
+{#                        :label="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.label')"#}
+{#                        :helpText="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.helpText')"#}
+{#                        :disabled="selectedSalesChannelId === null"#}
+{#                        :error="listNameErrorState"#}
+{#                        required>#}
+{#                </sw-field>#}
+                <sw-inherit-wrapper v-model="actualConfigData['klavi_overd.config.klaviyoListForSubscribersSync']"
+                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['klavi_overd.config.klaviyoListForSubscribersSync']"
+                                    :label="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.label')"
+                                    :helpText="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.helpText')">
+                    <template #content="props">
+                        <sw-single-select name="klavi_overd.config.klaviyoListForSubscribersSync"
+                                          labelProperty="label"
+                                          valueProperty="value"
+                                          :options="subscriptionListOptions"
+                                          :selected="selectedSubsList"
+                                          :isInherited="props.isInherited"
+                                          :disabled="selectedSalesChannelId === null"
+                                          :value="props.currentValue">
+                        </sw-single-select>
+                    </template>
+                </sw-inherit-wrapper>
             {% endblock %}
 
             {% block klaviyo_integration_settings_general_varian_for_bis %}

@@ -13,6 +13,15 @@ class KlaviyoApiKeyValidatorService extends ApiService {
                 "privateKey": privateKey, "publicKey": publicKey, "listName": listName
             }, {headers});
     }
+
+    getList(privateKey, publicKey) {
+        const headers = this.getBasicHeaders();
+
+        return this.httpClient
+            .post('/_action/od-get-subscriber-lists', {
+                "privateKey": privateKey, "publicKey": publicKey
+            }, {headers});
+    }
 }
 
 export default KlaviyoApiKeyValidatorService;

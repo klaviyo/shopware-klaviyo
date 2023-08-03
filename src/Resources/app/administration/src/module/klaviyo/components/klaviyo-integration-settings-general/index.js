@@ -42,6 +42,8 @@ Component.register('klaviyo-integration-settings-general', {
 
     data() {
         return {
+            subscriptionListOptions: [],
+            selectedSubsList: null,
             isLoading: false,
             apiValidationInProgress: false,
             cookieConsentOptions: [
@@ -148,6 +150,29 @@ Component.register('klaviyo-integration-settings-general', {
             }
         },
 
+        setSubscriptionListOptions: function () {
+            console.log("Function start triggered");
+            const privateKey = this.actualConfigData['klavi_overd.config.privateApiKey'];
+            const publicKey = this.actualConfigData['klavi_overd.config.publicApiKey'];
+
+            console.log(this.actualConfigData['klavi_overd.config.klaviyoListForSubscribersSync']);
+
+            this.klaviyoApiKeyValidatorService.getList(privateKey, publicKey).then((response) => {
+                console.log(response.data);
+                // this.subscriptionListOptions = response.data.data;
+                console.log(this.subscriptionListOptions, ' | Start Subscription options');
+                this.subscriptionListOptions = [{}];
+                for (let i = 0; i < response.data.data.length; i++) {
+                    this.subscriptionListOptions.push(response.data.data[i]);
+                }
+                if (this.actualConfigData['klavi_overd.config.klaviyoListForSubscribersSync']) {
+                    this.selectedSubsList = this.actualConfigData['klavi_overd.config.klaviyoListForSubscribersSync'];
+                }
+                console.log(this.subscriptionListOptions, ' | Start v2 Subscription options');
+            }).catch(() => {
+            });
+        },
+
         checkTextFieldInheritance(value) {
             if (typeof value !== 'string') {
                 return true;
@@ -206,6 +231,8 @@ Component.register('klaviyo-integration-settings-general', {
             }).finally(() => {
                 this.apiValidationInProgress = false;
             });
+            // TODO: ?????
+            this.setSubscriptionListOptions();
         },
 
         credentialsEmptyValidation(key, value) {
@@ -216,6 +243,11 @@ Component.register('klaviyo-integration-settings-general', {
                 return false
             }
             return true;
+        },
+
+        updateCurrentValue(val) {
+            console.log(val);
+            console.log('Good, update here');
         }
     },
 });
