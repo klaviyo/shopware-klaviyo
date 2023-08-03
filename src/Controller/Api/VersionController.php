@@ -17,7 +17,7 @@ use Shopware\Core\Framework\Plugin\PluginEntity;
 #[Route(defaults: ['_routeScope' => ['api']])]
 class VersionController extends AbstractController
 {
-    private $pluginRepository;
+    private EntityRepository $pluginRepository;
 
     public function __construct(
         EntityRepository $pluginRepository
@@ -41,6 +41,6 @@ class VersionController extends AbstractController
 
         $pluginVersion = $plugin->getVersion();
 
-        return new JsonResponse(['Current Klaviyo Version' => $pluginVersion], Response::HTTP_OK);
+        return new JsonResponse(['version' => $pluginVersion], Response::HTTP_OK);
     }
 }
