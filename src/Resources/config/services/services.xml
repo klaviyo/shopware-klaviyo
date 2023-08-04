@@ -204,6 +204,13 @@
             <argument type="service" id="Shopware\Core\Checkout\Cart\Order\OrderConverter"/>
             <argument type="service" id="logger"/>
         </service>
+
+        <service id="Klaviyo\Integration\Controller\Api\VersionController" public="true">
+            <argument type="service" id="plugin.repository"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
     </services>
 
 </container>
