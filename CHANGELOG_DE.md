@@ -1,3 +1,9 @@
+# 1.1.0
+# Fix: Die Synchronisierung von Klaviyo-Ereignissen wurde behoben, wenn die Tracking-Kontrollkästchen im Admin-Bereich deaktiviert waren.
+# Fix: Korrektur der Synchronisierung historischer Datenauftragsstatus.
+# Fix: Ein Problem mit dem Modal „Wieder auf Lager“ wurde behoben.
+# Neu: Ein neuer Endpunkt wurde hinzugefügt, dank dem Sie die aktuelle Version des installierten Klaviyo-Plugins herausfinden können.
+
 # 1.0.19
 # Funktion: Möglichkeit hinzugefügt, die Bestellidentifikationsvariable zu ändern, die an das Klaviyo gesendet wird (war vorher: Bestell-Hash | jetzt können Sie entweder wählen: Bestell-Hash ODER Bestell-ID)
 
