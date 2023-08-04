@@ -1,3 +1,9 @@
+# 2.1.0
+# Fix: Die Synchronisierung von Klaviyo-Ereignissen wurde behoben, wenn die Tracking-Kontrollkästchen im Admin-Bereich deaktiviert waren.
+# Fix: Korrektur der Synchronisierung historischer Datenauftragsstatus.
+# Fix: Ein Problem mit dem Modal „Wieder auf Lager“ wurde behoben.
+# Neu: Ein neuer Endpunkt wurde hinzugefügt, dank dem Sie die aktuelle Version des installierten Klaviyo-Plugins herausfinden können.
+
 # 2.0.1
 # Fix: Das Problem mit der Fehlermeldung in einigen Fällen beim Abonnieren des Newsletters wurde behoben.
 
