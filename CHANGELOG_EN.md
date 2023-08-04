@@ -1,3 +1,9 @@
+# 1.1.0
+# Fix: Fixed Klaviyo event sync when tracking checkboxes are unchecked in the admin panel.
+# Fix: Correction of historical data order statuses synchronization.
+# Fix: Resolved an issue with the "Back in stock" modal.
+# New: A new endpoint has been added, thanks to which you can find out the current version of the installed Klaviyo plugin.
+
 # 1.0.19
 # Feature: Added ability to change order identification variable that will be sent to the klaviyo ( was before: order hash | now you can choose either: order hash OR order id )
 

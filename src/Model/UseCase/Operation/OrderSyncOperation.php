@@ -44,6 +44,7 @@ class OrderSyncOperation implements JobHandlerInterface
             Tracker::ORDER_EVENT_REFUNDED => new OrderTrackingEventsBag(),
             Tracker::ORDER_EVENT_CANCELED => new OrderTrackingEventsBag(),
             Tracker::ORDER_EVENT_FULFILLED => new OrderTrackingEventsBag(),
+            Tracker::ORDER_EVENT_PAID => new OrderTrackingEventsBag()
         ];
 
         $orderCriteria = new Criteria();
@@ -58,6 +59,7 @@ class OrderSyncOperation implements JobHandlerInterface
         foreach ($orderCollection as $order) {
             $eventsBags[Tracker::ORDER_EVENT_PLACED]->add(new OrderEvent($order, $order->getCreatedAt()));
             $eventsBags[Tracker::ORDER_EVENT_ORDERED_PRODUCT]->add(new OrderEvent($order, $order->getCreatedAt()));
+            $eventsBags[Tracker::ORDER_EVENT_PAID]->add(new OrderEvent($order, $order->getCreatedAt()));
 
             if ($order->getStateMachineState()->getTechnicalName() === OrderStates::STATE_COMPLETED) {
                 $happenedAt = $order->getStateMachineState()->getCreatedAt();
@@ -125,6 +127,9 @@ class OrderSyncOperation implements JobHandlerInterface
                 break;
             case Tracker::ORDER_EVENT_FULFILLED:
                 $trackingResult = $this->eventsTracker->trackFulfilledOrders($context, $eventsBag);
+                break;
+            case Tracker::ORDER_EVENT_PAID:
+                $trackingResult = $this->eventsTracker->trackPaiedOrders($context, $eventsBag);
                 break;
             default:
                 $trackingResult = new OrderTrackingResult();
