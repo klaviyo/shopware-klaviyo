@@ -32,6 +32,17 @@ class CartController extends StorefrontController
 
         if (isset($context->customerId)) {
             $request->getSession()->set('customerId', $context->customerId);
+            $data = $this->restorerService->registerCustomerByRestoreCartLink($context);
+
+            try {
+                $this->registerRoute->register(
+                    $data->toRequestDataBag(),
+                    $context,
+                    false
+                );
+            } catch (\Exception $exception) {
+                $this->logger->error($exception->getMessage());
+            }
         }
 
         return $this->redirectToRoute('frontend.checkout.confirm.page');
