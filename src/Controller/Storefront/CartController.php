@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Shopware\Core\Checkout\Customer\SalesChannel\AbstractRegisterRoute;
+use Psr\Log\LoggerInterface;
 
 /**
  * @Route(defaults={"_routeScope"={"storefront"}})
