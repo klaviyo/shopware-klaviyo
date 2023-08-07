@@ -1,3 +1,9 @@
+# 2.1.0
+# Fix: Fixed Klaviyo event sync when tracking checkboxes are unchecked in the admin panel.
+# Fix: Correction of historical data order statuses synchronization.
+# Fix: Resolved an issue with the "Back in stock" modal.
+# New: A new endpoint has been added, thanks to which you can find out the current version of the installed Klaviyo plugin.
+
 # 2.0.1
 # Fix: Resolved the issue with error message upon subscription to newsletter in some cases.
 
