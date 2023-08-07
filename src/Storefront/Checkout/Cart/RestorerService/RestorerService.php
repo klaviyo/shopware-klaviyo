@@ -15,6 +15,8 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 
 class RestorerService implements RestorerServiceInterface
 {
@@ -59,6 +61,35 @@ class RestorerService implements RestorerServiceInterface
                 ContextHelper::createContextFromException($throwable)
             );
         }
+    }
+
+    public function registerCustomerByRestoreCartLink(SalesChannelContext $context): RequestDataBag
+    {
+        $data = new RequestDataBag();
+        $customer = $context->customerObject;
+
+        $customerShippingAddress = $customer->getDefaultShippingAddress();
+        $customerBillingAddress = $customer->getDefaultBillingAddress();
+
+        $data->set('salutationId', $customerBillingAddress->getSalutationId());
+        $data->set('firstName', $customerBillingAddress->getFirstName());
+        $data->set('lastName', $customerBillingAddress->getLastName());
+        $data->set('email', $customer->getEmail());
+
+        $data->set('redirectTo', "frontend.checkout.confirm.page");
+        $data->set('redirectParameters', "");
+        $data->set('errorRoute', "frontend.checkout.register.page");
+        $data->set('accountType', "");
+        $data->set('shopware_surname_confirm', "");
+        $data->set('guest', true);
+
+        $billingData = $this->preparingAddressData($customerBillingAddress);
+        $shippingData = $this->preparingAddressData($customerShippingAddress);
+
+        $data->set('shippingAddress', $shippingData);
+        $data->set('billingAddress', $billingData);
+
+        return $data;
     }
 
     protected function loadMapping(string $mappingId, Context $context): ?CheckoutMappingEntity
@@ -115,5 +146,22 @@ class RestorerService implements RestorerServiceInterface
 
         return $this->orderRepository->search($criteria, $context)
             ->get($orderId);
+    }
+
+    private function preparingAddressData(CustomerAddressEntity $addressData): RequestDataBag
+    {
+        $resultData = new RequestDataBag();
+
+        foreach($addressData->getVars() as $key => $value) {
+            if (in_array($key, ['customerId', '_uniqueIdentifier'])) {
+                continue;
+            }
+
+            if (!is_object($value) && !is_array($value)) {
+                $resultData->set($key, $value);
+            }
+        }
+
+        return $resultData;
     }
 }
