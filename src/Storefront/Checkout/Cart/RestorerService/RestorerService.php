@@ -17,6 +17,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
+use Shopware\Core\Checkout\Customer\CustomerEntity;
+use Throwable;
 
 class RestorerService implements RestorerServiceInterface
 {
@@ -26,6 +28,7 @@ class RestorerService implements RestorerServiceInterface
     private CartService $cartService;
     private OrderConverter $orderConverter;
     private LoggerInterface $logger;
+    private EntityRepository $customerRepository;
 
     public function __construct(
         EntityRepository $mappingRepository,
@@ -33,7 +36,8 @@ class RestorerService implements RestorerServiceInterface
         CartRuleLoader $cartRuleLoader,
         CartService $cartService,
         OrderConverter $orderConverter,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        EntityRepository $customerRepository
     ) {
         $this->mappingRepository = $mappingRepository;
         $this->orderRepository = $orderRepository;
@@ -41,6 +45,7 @@ class RestorerService implements RestorerServiceInterface
         $this->cartService = $cartService;
         $this->orderConverter = $orderConverter;
         $this->logger = $logger;
+        $this->customerRepository = $customerRepository;
     }
 
     public function restore(string $mappingId, SalesChannelContext $context): void
@@ -66,6 +71,11 @@ class RestorerService implements RestorerServiceInterface
     public function registerCustomerByRestoreCartLink(SalesChannelContext $context): RequestDataBag
     {
         $data = new RequestDataBag();
+
+        if (!isset($context->customerObject)) {
+            return $data;
+        }
+        
         $customer = $context->customerObject;
 
         $customerShippingAddress = $customer->getDefaultShippingAddress();
@@ -127,6 +137,19 @@ class RestorerService implements RestorerServiceInterface
 
         if ($customerId = $order->getOrderCustomer()->getCustomer()->getId()) {
             $context->assign(['customerId' => $customerId]);
+
+            $criteria = new Criteria();
+            $criteria->addAssociation('addresses');
+            $criteria->addAssociation('defaultBillingAddress');
+            $criteria->addAssociation('defaultShippingAddress');
+            $criteria->addFilter(new EqualsFilter('id', $customerId));
+
+            /** @var CustomerEntity|null $customer */
+            $customer = $this->customerRepository->search($criteria, $context->getContext())->first();
+
+            if ($customer !== null) {
+                $context->assign(['customerObject' => $customer]);
+            }
         }
         
         $cart = $this->orderConverter->convertToCart($order, $context->getContext());
