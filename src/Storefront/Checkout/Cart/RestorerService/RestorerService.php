@@ -18,6 +18,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Throwable;
 
 class RestorerService implements RestorerServiceInterface
@@ -75,7 +76,7 @@ class RestorerService implements RestorerServiceInterface
         if (!isset($context->customerObject)) {
             return $data;
         }
-        
+
         $customer = $context->customerObject;
 
         $customerShippingAddress = $customer->getDefaultShippingAddress();
