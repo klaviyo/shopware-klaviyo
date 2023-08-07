@@ -10,6 +10,7 @@ use Shopware\Storefront\Controller\StorefrontController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
+use Shopware\Core\Checkout\Customer\SalesChannel\AbstractRegisterRoute;
 
 /**
  * @Route(defaults={"_routeScope"={"storefront"}})
@@ -17,10 +18,17 @@ use Symfony\Component\HttpFoundation\Request;
 class CartController extends StorefrontController
 {
     private RestorerServiceInterface $restorerService;
+    private AbstractRegisterRoute $registerRoute;
+    private LoggerInterface $logger;
 
-    public function __construct(RestorerServiceInterface $restorerService)
-    {
+    public function __construct(
+        RestorerServiceInterface $restorerService,
+        AbstractRegisterRoute $registerRoute,
+        LoggerInterface $logger
+    ) {
         $this->restorerService = $restorerService;
+        $this->registerRoute = $registerRoute;
+        $this->logger = $logger;
     }
 
     /**
@@ -34,14 +42,16 @@ class CartController extends StorefrontController
             $request->getSession()->set('customerId', $context->customerId);
             $data = $this->restorerService->registerCustomerByRestoreCartLink($context);
 
-            try {
-                $this->registerRoute->register(
-                    $data->toRequestDataBag(),
-                    $context,
-                    false
-                );
-            } catch (\Exception $exception) {
-                $this->logger->error($exception->getMessage());
+            if ($data->count() > 0) {
+                try {
+                    $this->registerRoute->register(
+                        $data->toRequestDataBag(),
+                        $context,
+                        false
+                    );
+                } catch (\Exception $exception) {
+                    $this->logger->error($exception->getMessage());
+                }
             }
         }
 
