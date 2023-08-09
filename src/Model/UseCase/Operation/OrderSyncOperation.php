@@ -53,6 +53,8 @@ class OrderSyncOperation implements JobHandlerInterface
         $orderCriteria->addAssociation('lineItems.product');
         $orderCriteria->addAssociation('orderCustomer.customer.defaultBillingAddress');
         $orderCriteria->addAssociation('orderCustomer.customer.defaultShippingAddress');
+        $orderCriteria->addAssociation('deliveries');
+        $orderCriteria->addAssociation('transactions');
         $orderCollection = $this->orderRepository->search($orderCriteria, $message->getContext());
 
         /** @var OrderEntity $order */
@@ -62,17 +64,17 @@ class OrderSyncOperation implements JobHandlerInterface
             $eventsBags[Tracker::ORDER_EVENT_PAID]->add(new OrderEvent($order, $order->getCreatedAt()));
 
             if ($order->getStateMachineState()->getTechnicalName() === OrderStates::STATE_COMPLETED) {
-                $happenedAt = $order->getStateMachineState()->getCreatedAt();
+                $happenedAt = $order->getUpdatedAt();
                 $eventsBags[Tracker::ORDER_EVENT_FULFILLED]->add(new OrderEvent($order, $happenedAt));
             }
 
             if ($order->getStateMachineState()->getTechnicalName() === OrderStates::STATE_CANCELLED) {
-                $happenedAt = $order->getStateMachineState()->getCreatedAt();
+                $happenedAt = $order->getTransactions()->last()->getUpdatedAt();
                 $eventsBags[Tracker::ORDER_EVENT_CANCELED]->add(new OrderEvent($order, $happenedAt));
             }
 
             if ($order->getStateMachineState()->getTechnicalName() === OrderTransactionStates::STATE_REFUNDED) {
-                $happenedAt = $order->getStateMachineState()->getCreatedAt();
+                $happenedAt = $order->getDeliveries()->last()->getUpdatedAt();
                 $eventsBags[Tracker::ORDER_EVENT_REFUNDED]->add(new OrderEvent($order, $happenedAt));
             }
         }
