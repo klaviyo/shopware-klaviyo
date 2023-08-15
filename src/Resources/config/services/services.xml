@@ -45,6 +45,8 @@
         </service>
         <service id="Klaviyo\Integration\Controller\Storefront\CartController" public="true">
             <argument type="service" id="Klaviyo\Integration\Storefront\Checkout\Cart\RestorerService\RestorerService"/>
+            <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute"/>
+            <argument type="service" id="logger"/>
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
@@ -191,6 +193,12 @@
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\Order\OrderConverter"/>
             <argument type="service" id="logger"/>
+            <argument type="service" id="customer.repository"/>
+        </service>
+
+        <service id="Klaviyo\Integration\EventListener\CheckoutRegisterPageLoadedEventListener">
+            <argument type="service" id="customer.repository"/>
+            <tag name="kernel.event_subscriber"/>
         </service>
 
         <service id="Klaviyo\Integration\Controller\Api\VersionController" public="true">
