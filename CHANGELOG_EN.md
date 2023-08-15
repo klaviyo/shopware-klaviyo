@@ -1,3 +1,7 @@
+# 1.1.1
+# Fix: Fixed the issue where some customers may see incorrect dates of the events passed to Klaviyo service ( fulfilled order events etc... ).
+
+
 # 1.1.0
 # Fix: Fixed Klaviyo event sync when tracking checkboxes are unchecked in the admin panel.
 # Fix: Correction of historical data order statuses synchronization.
