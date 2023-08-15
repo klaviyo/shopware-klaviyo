@@ -1,3 +1,7 @@
+# 2.1.1
+# New: Cart restore link now fills up the address data that customer has provided before abandoning the cart ( if applicable ). 
+# Fix: Fixed the issue where some customers may see incorrect dates of the events passed to Klaviyo service ( fulfilled order events etc... ).
+
 # 2.1.0
 # Fix: Fixed Klaviyo event sync when tracking checkboxes are unchecked in the admin panel.
 # Fix: Correction of historical data order statuses synchronization.
