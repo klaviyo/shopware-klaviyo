@@ -1,3 +1,7 @@
+# 2.1.1
+# Neu: Der Link zur Warenkorb-Wiederherstellung füllt jetzt die Adressdaten aus, die der Kunde vor dem Verlassen des Warenkorbs angegeben hat (falls zutreffend).
+# Fix: Das Problem wurde behoben, bei dem einige Kunden möglicherweise falsche Daten der an den Klaviyo-Service übergebenen Ereignisse sehen (Ereignisse für erfüllte Bestellungen usw.).
+
 # 2.1.0
 # Fix: Die Synchronisierung von Klaviyo-Ereignissen wurde behoben, wenn die Tracking-Kontrollkästchen im Admin-Bereich deaktiviert waren.
 # Fix: Korrektur der Synchronisierung historischer Datenauftragsstatus.
