@@ -1,3 +1,6 @@
+# 1.1.1
+# Fix: Das Problem wurde behoben, bei dem einige Kunden möglicherweise falsche Daten der an den Klaviyo-Service übergebenen Ereignisse sehen (Ereignisse für erfüllte Bestellungen usw.).
+
 # 1.1.0
 # Fix: Die Synchronisierung von Klaviyo-Ereignissen wurde behoben, wenn die Tracking-Kontrollkästchen im Admin-Bereich deaktiviert waren.
 # Fix: Korrektur der Synchronisierung historischer Datenauftragsstatus.
