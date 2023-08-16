@@ -61,8 +61,12 @@ class OrderSyncOperation implements JobHandlerInterface
         /** @var OrderEntity $order */
         foreach ($orderCollection as $order) {
             $eventsBags[Tracker::ORDER_EVENT_PLACED]->add(new OrderEvent($order, $order->getCreatedAt()));
-            $eventsBags[Tracker::ORDER_EVENT_ORDERED_PRODUCT]->add(new OrderEvent($order, $order->getCreatedAt()));
             $eventsBags[Tracker::ORDER_EVENT_PAID]->add(new OrderEvent($order, $order->getCreatedAt()));
+
+            if ($order->getStateMachineState()->getTechnicalName() === OrderStates::STATE_OPEN) {
+                $happenedAt = $order->getCreatedAt();
+                $eventsBags[Tracker::ORDER_EVENT_ORDERED_PRODUCT]->add(new OrderEvent($order, $happenedAt));
+            }
 
             if ($order->getStateMachineState()->getTechnicalName() === OrderStates::STATE_COMPLETED) {
                 $happenedAt = $order->getUpdatedAt();
