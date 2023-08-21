@@ -15,6 +15,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
+use Shopware\Core\System\StateMachine\Aggregation\StateMachineTransition\StateMachineTransitionActions as StateActions;
 
 class OrderSyncOperation implements JobHandlerInterface
 {
@@ -57,11 +58,16 @@ class OrderSyncOperation implements JobHandlerInterface
         /** @var OrderEntity $order */
         foreach ($orderCollection as $order) {
             $eventsBags[Tracker::ORDER_EVENT_PLACED]->add(new OrderEvent($order, $order->getCreatedAt()));
-            $eventsBags[Tracker::ORDER_EVENT_PAID]->add(new OrderEvent($order, $order->getCreatedAt()));
 
-            if (OrderStates::STATE_OPEN === $order->getStateMachineState()->getTechnicalName()) {
-                $happenedAt = $order->getCreatedAt();
-                $eventsBags[Tracker::ORDER_EVENT_ORDERED_PRODUCT]->add(new OrderEvent($order, $happenedAt));
+            $lastTransaction = $order->getTransactions()->last();
+            $transactionStateName = $lastTransaction->getStateMachineState()->getTechnicalName();
+
+            if (
+                (StateActions::ACTION_PAID === $transactionStateName)
+                || (StateActions::ACTION_PAID_PARTIALLY === $transactionStateName)
+            ) {
+                $happenedAt = $lastTransaction->getUpdatedAt();
+                $eventsBags[Tracker::ORDER_EVENT_PAID]->add(new OrderEvent($order, $happenedAt));
             }
 
             if (OrderStates::STATE_COMPLETED === $order->getStateMachineState()->getTechnicalName()) {
@@ -70,7 +76,7 @@ class OrderSyncOperation implements JobHandlerInterface
             }
 
             if (OrderStates::STATE_CANCELLED === $order->getStateMachineState()->getTechnicalName()) {
-                $happenedAt = $order->getTransactions()->last()->getUpdatedAt();
+                $happenedAt = $lastTransaction->getUpdatedAt();
                 $eventsBags[Tracker::ORDER_EVENT_CANCELED]->add(new OrderEvent($order, $happenedAt));
             }
 
