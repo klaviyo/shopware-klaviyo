@@ -6,9 +6,15 @@ namespace Klaviyo\Integration\Controller\Api;
 
 use Exception;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetLists\GetProfilesListsRequest;
+use Klaviyo\Integration\Klaviyo\Client\ClientResult;
 use Klaviyo\Integration\Klaviyo\Gateway\ClientRegistry;
+use Klaviyo\Integration\Klaviyo\Gateway\Exception\ProfilesListNotFoundException;
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Shopware\Core\Test\TestDefaults;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -71,29 +77,37 @@ class ValidationController extends AbstractController
         $publicKey = $post->get('publicKey');
         $privateKey = $post->get('privateKey');
 
-//        if (empty($publicKey) || empty($privateKey)) {
-//            return new JsonResponse(['invalid_parameters' => true], Response::HTTP_OK);
-//        }
+        if (empty($publicKey) || empty($privateKey)) {
+            return new JsonResponse(['invalid_parameters' => true], Response::HTTP_OK);
+        }
 
-//        $client = $this->clientRegistry->getClientByKeys($privateKey, $publicKey);
-//        $request = new GetProfilesListsRequest();
-//        $responses = $client->sendRequests([$request]);
+        $client = $this->clientRegistry->getClientByKeys($privateKey, $publicKey);
+        $request = new GetProfilesListsRequest();
+        $clientResult = $client->sendRequests([$request]);
+        $result = $clientResult->getRequestResponse($request);
+
+        $data = $this->parseListNamesFromResponse($result);
+
+        if (empty($data)) {
+            return new JsonResponse(['incorrect_list' => true], Response::HTTP_OK);
+        }
 
         return new JsonResponse(['success' => true, 'data' =>
-            [
-                [
-                    'name'=> 'wowo',
-                    'label'=>'wowo'
-                ],
-                [
-                    'name'=> 'popo',
-                    'label'=>'popo'
-                ],
-                [
-                    'name'=>'orderSync',
-                    'label'=>'orderSync'
-                ]
-            ]
+            $data
         ], Response::HTTP_OK);
+    }
+
+    private function parseListNamesFromResponse($response): array
+    {
+        $data = [];
+
+        foreach ($response->getLists()->getElements() as $e) {
+            $data[] = [
+                'value' => $e->getName(),
+                'label' => $e->getName()
+            ];
+        }
+
+        return $data;
     }
 }

@@ -40,10 +40,27 @@ Component.register('klaviyo-integration-settings-general', {
         },
     },
 
+    watch: {
+        selectedSalesChannelId: {
+            deep: true,
+            immediate: true,
+            handler: function(v) {
+                this.salesChannelSwitched(v);
+            }
+        },
+        actualConfigData: {
+            deep: true,
+            immediate: true,
+            handler: function(v) {
+                this.bringSubscribersList(v);
+            },
+        }
+    },
+
     data() {
         return {
+            selectedSubscriptionList: null,
             subscriptionListOptions: [],
-            selectedSubsList: null,
             isLoading: false,
             apiValidationInProgress: false,
             cookieConsentOptions: [
@@ -111,6 +128,18 @@ Component.register('klaviyo-integration-settings-general', {
     },
 
     methods: {
+        salesChannelSwitched(v) {
+            if (v) {
+                this.bringSubscribersList();
+            } else {
+                this.selectedSubscriptionList = null;
+            }
+        },
+
+        bringSubscribersList(v) {
+            this.setSubscriptionListOptions();
+        },
+
         createdComponent() {
             const configPrefix = 'klavi_overd.config.',
                 defaultConfigs = {
@@ -151,24 +180,24 @@ Component.register('klaviyo-integration-settings-general', {
         },
 
         setSubscriptionListOptions: function () {
-            console.log("Function start triggered");
             const privateKey = this.actualConfigData['klavi_overd.config.privateApiKey'];
             const publicKey = this.actualConfigData['klavi_overd.config.publicApiKey'];
 
-            console.log(this.actualConfigData['klavi_overd.config.klaviyoListForSubscribersSync']);
-
             this.klaviyoApiKeyValidatorService.getList(privateKey, publicKey).then((response) => {
-                console.log(response.data);
-                // this.subscriptionListOptions = response.data.data;
-                console.log(this.subscriptionListOptions, ' | Start Subscription options');
-                this.subscriptionListOptions = [{}];
+
+                if (response.data.incorrect_list) {
+                    this.createNotificationWarning({
+                        message: this.$tc('klaviyo-integration-settings.configs.apiValidation.listNotExistMessage'),
+                    });
+                }
+
+                let options = [];
                 for (let i = 0; i < response.data.data.length; i++) {
-                    this.subscriptionListOptions.push(response.data.data[i]);
+                    options.push(response.data.data[i]);
                 }
-                if (this.actualConfigData['klavi_overd.config.klaviyoListForSubscribersSync']) {
-                    this.selectedSubsList = this.actualConfigData['klavi_overd.config.klaviyoListForSubscribersSync'];
-                }
-                console.log(this.subscriptionListOptions, ' | Start v2 Subscription options');
+                this.subscriptionListOptions = options;
+                this.selectedSubscriptionList = this.actualConfigData['klavi_overd.config.klaviyoListForSubscribersSync'];
+
             }).catch(() => {
             });
         },
@@ -191,7 +220,7 @@ Component.register('klaviyo-integration-settings-general', {
             const publicKey = this.actualConfigData['klavi_overd.config.publicApiKey'];
             const list = this.actualConfigData['klavi_overd.config.klaviyoListForSubscribersSync'];
 
-            if (!(this.credentialsEmptyValidation('privateApiKey', privateKey) * this.credentialsEmptyValidation('publicApiKey', publicKey) * this.credentialsEmptyValidation('klaviyoListForSubscribersSync', list))) {
+            if (!(this.credentialsEmptyValidation('privateApiKey', privateKey) * this.credentialsEmptyValidation('publicApiKey', publicKey))) {
                 this.apiValidationInProgress = false;
                 return;
             }
@@ -214,15 +243,13 @@ Component.register('klaviyo-integration-settings-general', {
                     this.createNotificationError({
                         message: this.$tc('klaviyo-integration-settings.configs.apiValidation.generalErrorMessage'),
                     });
+                    this.storeSelectedListValue(null);
                 } else if (data.incorrect_credentials) {
                     this.createNotificationError({
                         title: this.$tc('klaviyo-integration-settings.configs.apiValidation.incorrectCredentialsTitle'),
                         message: data.incorrect_credentials_message,
                     });
-                } else if (data.incorrect_list) {
-                    this.createNotificationWarning({
-                        message: this.$tc('klaviyo-integration-settings.configs.apiValidation.listNotExistMessage'),
-                    });
+                    this.storeSelectedListValue(null);
                 }
             }).catch(() => {
                 this.createNotificationError({
@@ -231,8 +258,6 @@ Component.register('klaviyo-integration-settings-general', {
             }).finally(() => {
                 this.apiValidationInProgress = false;
             });
-            // TODO: ?????
-            this.setSubscriptionListOptions();
         },
 
         credentialsEmptyValidation(key, value) {
@@ -245,9 +270,11 @@ Component.register('klaviyo-integration-settings-general', {
             return true;
         },
 
-        updateCurrentValue(val) {
-            console.log(val);
-            console.log('Good, update here');
+        storeSelectedListValue(val) {
+            this.selectedSubscriptionList = val;
+            if (val) {
+                this.actualConfigData['klavi_overd.config.klaviyoListForSubscribersSync'] = val;
+            }
         }
     },
 });
