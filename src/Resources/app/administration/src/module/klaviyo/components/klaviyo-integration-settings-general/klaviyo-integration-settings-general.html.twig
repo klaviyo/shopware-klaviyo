@@ -91,16 +91,6 @@
             {% endblock %}
 
             {% block klaviyo_integration_settings_general_klaviyo_list_for_subscribers_sync %}
-{#                <sw-field#}
-{#                        v-model="actualConfigData['klavi_overd.config.klaviyoListForSubscribersSync']"#}
-{#                        name="klavi_overd.config.privateApiKey"#}
-{#                        type="text"#}
-{#                        :label="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.label')"#}
-{#                        :helpText="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.helpText')"#}
-{#                        :disabled="selectedSalesChannelId === null"#}
-{#                        :error="listNameErrorState"#}
-{#                        required>#}
-{#                </sw-field>#}
                 <sw-inherit-wrapper v-model="actualConfigData[selectedSubscriptionList]"
                                     :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['klavi_overd.config.klaviyoListForSubscribersSync']"
                                     :label="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.label')"
