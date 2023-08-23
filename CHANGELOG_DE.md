@@ -1,3 +1,10 @@
+# 2.3.0
+# Fix: Das Ereignis „Bezahlte Bestellung“ wurde nach der historischen Synchronisierung nicht für nicht bezahlte Bestellungen angezeigt
+# Fix: Das Problem wurde behoben, wenn Ereignisse nach jeder historischen Synchronisierung in den Aktivitätsprotokollen des Profils dupliziert wurden
+# Fix: Aufrufmethode „dump(extensionData)“ in der Twig-Datei entfernt
+# Fix: Beim Hinzufügen von „Echtzeit“-Benutzern zu Klaviyo wird jetzt die API „Liste abonnieren“ verwendet
+# Fix: Die Admin-Konfigurationsoption „Abonnentenliste“ ist kein Auswahl-/Dropdown-Menü mit Werten, die vom Klaviyo-Dienst abgerufen werden (wenn die API-Anmeldeinformationen gültig sind).
+
 # 2.2.0
 # Neu: Der Link zur Warenkorb-Wiederherstellung füllt jetzt die Adressdaten aus, die der Kunde vor dem Verlassen des Warenkorbs angegeben hat (falls zutreffend).
 # Fix: Das Problem wurde behoben, bei dem einige Kunden möglicherweise falsche Daten der an den Klaviyo-Service übergebenen Ereignisse sehen (Ereignisse für erfüllte Bestellungen usw.).
