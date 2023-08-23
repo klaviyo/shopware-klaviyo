@@ -2,7 +2,6 @@
 
 namespace Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer;
 
-
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderedProductEvent\OrderedProductEventTrackingRequest;
 
 class OrderedProductEventTrackingRequestNormalizer extends AbstractNormalizer
@@ -22,7 +21,7 @@ class OrderedProductEventTrackingRequestNormalizer extends AbstractNormalizer
         $properties = [
             'ProductName' => $object->getProductName(),
             '$value' => $object->getValue(),
-            '$event_id' => $object->getProductId() . '_' . $now->getTimestamp(),
+            '$event_id' => $object->getProductId() . '_' . $object->getOrderId() . '_' . $object->getQuantity(),
             'OrderId' => $object->getOrderId(),
             'ProductID' => $object->getProductId(),
             'SKU' => $object->getSku(),
