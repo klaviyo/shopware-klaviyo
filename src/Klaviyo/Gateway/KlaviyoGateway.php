@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Klaviyo\Gateway;
 
@@ -7,6 +9,7 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\AddMembersTo
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Common\ProfileContactInfoCollection;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfilesFromList\RemoveProfilesFromListRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfilesFromList\RemoveProfilesFromListResponse;
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\SubscribeCustomersToList\SubscribeToListResponse;
 use Klaviyo\Integration\Klaviyo\Client\ClientResult;
 use Klaviyo\Integration\Klaviyo\Gateway\Domain\Profile\Search\ProfileIdSearchResult;
 use Klaviyo\Integration\Klaviyo\Gateway\Domain\Profile\Search\Strategy\SearchStrategyInterface;
@@ -26,6 +29,7 @@ use Shopware\Core\Content\Newsletter\Aggregate\NewsletterRecipient\NewsletterRec
 use Shopware\Core\Content\Newsletter\Aggregate\NewsletterRecipient\NewsletterRecipientEntity as Recipient;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
+use Klaviyo\Integration\Klaviyo\Gateway\Translator\RealSubscribersToKlaviyoRequestsTranslator;
 
 class KlaviyoGateway
 {
@@ -38,6 +42,7 @@ class KlaviyoGateway
     private SearchStrategyInterface $profileIdSearchStrategy;
     private UpdateProfileRequestTranslator $updateProfileRequestTranslator;
     private LoggerInterface $logger;
+    private RealSubscribersToKlaviyoRequestsTranslator $realSubscribersTranslator;
 
     public function __construct(
         ClientRegistry $clientRegistry,
@@ -48,7 +53,8 @@ class KlaviyoGateway
         IdentifyProfileRequestTranslator $identifyProfileRequestTranslator,
         SearchStrategyInterface $profileIdSearchStrategy,
         UpdateProfileRequestTranslator $updateProfileRequestTranslator,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        RealSubscribersToKlaviyoRequestsTranslator $realSubscribersTranslator
     ) {
         $this->clientRegistry = $clientRegistry;
         $this->orderEventRequestTranslator = $placedOrderEventRequestTranslator;
@@ -59,8 +65,15 @@ class KlaviyoGateway
         $this->profileIdSearchStrategy = $profileIdSearchStrategy;
         $this->updateProfileRequestTranslator = $updateProfileRequestTranslator;
         $this->logger = $logger;
+        $this->realSubscribersTranslator = $realSubscribersTranslator;
     }
 
+    /**
+     * @param Context $context
+     * @param string $channelId
+     * @param array $orderEvents
+     * @return OrderTrackingResult
+     */
     public function trackPlacedOrders(Context $context, string $channelId, array $orderEvents): OrderTrackingResult
     {
         $requestOrderIdMap = $requests = [];
@@ -86,6 +99,12 @@ class KlaviyoGateway
         );
     }
 
+    /**
+     * @param Context $context
+     * @param string $channelId
+     * @param array $orderEvents
+     * @return OrderTrackingResult
+     */
     public function trackOrderedProducts(Context $context, string $channelId, array $orderEvents): OrderTrackingResult
     {
         $result = new OrderTrackingResult();
@@ -94,7 +113,7 @@ class KlaviyoGateway
         /** @var OrderEventInterface $event */
         foreach ($orderEvents as $event) {
             foreach ($event->getOrder()->getLineItems() ?? [] as $lineItem) {
-                if ($lineItem->getType() !== 'product') {
+                if ('product' !== $lineItem->getType()) {
                     continue;
                 }
 
@@ -116,6 +135,12 @@ class KlaviyoGateway
         );
     }
 
+    /**
+     * @param Context $context
+     * @param string $channelId
+     * @param array $orderEvents
+     * @return OrderTrackingResult
+     */
     public function trackFulfilledOrders(Context $context, string $channelId, array $orderEvents): OrderTrackingResult
     {
         $requestOrderIdMap = $requests = [];
@@ -143,6 +168,12 @@ class KlaviyoGateway
         );
     }
 
+    /**
+     * @param Context $context
+     * @param string $channelId
+     * @param array $orderEvents
+     * @return OrderTrackingResult
+     */
     public function trackCancelledOrders(Context $context, string $channelId, array $orderEvents): OrderTrackingResult
     {
         $requestOrderIdMap = $requests = [];
@@ -170,7 +201,12 @@ class KlaviyoGateway
         );
     }
 
-
+    /**
+     * @param Context $context
+     * @param string $channelId
+     * @param array $orderEvents
+     * @return OrderTrackingResult
+     */
     public function trackPaiedOrders(Context $context, string $channelId, array $orderEvents): OrderTrackingResult
     {
         $requestOrderIdMap = $requests = [];
@@ -198,6 +234,12 @@ class KlaviyoGateway
         );
     }
 
+    /**
+     * @param Context $context
+     * @param string $channelId
+     * @param array $orderEvents
+     * @return OrderTrackingResult
+     */
     public function trackRefundedOrders(Context $context, string $channelId, array $orderEvents): OrderTrackingResult
     {
         $requestOrderIdMap = $requests = [];
@@ -225,19 +267,32 @@ class KlaviyoGateway
         );
     }
 
-    public function upsertCustomerProfiles(Context $context, string $channelId, CustomerCollection $customers)
-    {
+    /**
+     * @param Context $context
+     * @param string $channelId
+     * @param CustomerCollection $customers
+     * @return ClientResult
+     */
+    public function upsertCustomerProfiles(
+        Context $context,
+        string $channelId,
+        CustomerCollection $customers
+    ): ClientResult {
         $updateRequests = $createRequests = [];
         $profileIdSearchResult = $this->searchProfileIds($context, $channelId, $customers);
 
-        /** First of all - update existing customer's sensitive fields - id, email, and phone_number  */
+        /* First of all - update existing customer's sensitive fields - id, email, and phone_number */
         foreach ($profileIdSearchResult->getMapping() as $personId => $customerId) {
             $customer = $customers->get($customerId);
-            $updateRequests[] = $this->updateProfileRequestTranslator->translateToProfileRequest($context, $customer, $personId);
+            $updateRequests[] = $this->updateProfileRequestTranslator->translateToProfileRequest(
+                $context,
+                $customer,
+                $personId
+            );
         }
         $this->trackEvents($channelId, $updateRequests);
 
-        /** Update/create customer profiles  */
+        /* Update/create customer profiles */
         foreach ($customers as $customer) {
             $createRequests[] = $this->identifyProfileRequestTranslator->translateToProfileRequest($context, $customer);
         }
@@ -245,6 +300,12 @@ class KlaviyoGateway
         return $this->trackEvents($channelId, $createRequests);
     }
 
+    /**
+     * @param Context $context
+     * @param string $channelId
+     * @param CustomerCollection $customers
+     * @return ProfileIdSearchResult
+     */
     public function searchProfileIds(
         Context $context,
         string $channelId,
@@ -258,6 +319,12 @@ class KlaviyoGateway
         return $this->trackEvents($channelId, $cartRequests);
     }
 
+    /**
+     * @param SalesChannelEntity $salesChannelEntity
+     * @param NewsletterRecipientCollection $recipientCollection
+     * @param string $profilesListId
+     * @return array
+     */
     public function addToKlaviyoProfilesList(
         SalesChannelEntity $salesChannelEntity,
         NewsletterRecipientCollection $recipientCollection,
@@ -273,6 +340,7 @@ class KlaviyoGateway
 
             /** @var AddProfilesToListResponse $result */
             $result = $clientResult->getRequestResponse($request);
+
             if (!$result->isSuccess()) {
                 $error = new \Exception(\sprintf(
                     'Could not add Shopware subscribers to Klaviyo profiles list, reason: %s',
@@ -280,8 +348,11 @@ class KlaviyoGateway
                 ));
                 $errors[] = $error;
                 $this->logger->error($error->getMessage());
-                $failedEmail = str_replace( ' is not a valid email.', '', $result->getErrorDetails());
-                $newCollection = $recipientCollection->filter(fn(Recipient $recipient) => $recipient->getEmail() !== $failedEmail);
+                $failedEmail = str_replace(' is not a valid email.', '', $result->getErrorDetails());
+                $newCollection = $recipientCollection->filter(
+                    fn (Recipient $recipient) => $recipient->getEmail() !== $failedEmail
+                );
+
                 if ($newCollection->count()) {
                     $errors = array_merge(
                         $errors,
@@ -304,6 +375,72 @@ class KlaviyoGateway
         }
     }
 
+    /**
+     * @param SalesChannelEntity $salesChannelEntity
+     * @param NewsletterRecipientCollection $recipientCollection
+     * @param string $profilesListId
+     * @return array
+     */
+    public function subscribeToKlaviyoList(
+        SalesChannelEntity $salesChannelEntity,
+        NewsletterRecipientCollection $recipientCollection,
+        string $profilesListId
+    ): array {
+        try {
+            $errors = [];
+            $request = $this->realSubscribersTranslator
+                ->translateToSubscribeRequest($recipientCollection, $profilesListId);
+
+            $clientResult = $this->clientRegistry
+                ->getClient($salesChannelEntity->getId())
+                ->sendRequests([$request]);
+
+            /** @var SubscribeToListResponse $result */
+            $result = $clientResult->getRequestResponse($request);
+
+            if (!$result->isSuccess()) {
+                $error = new \Exception(\sprintf(
+                    'Failed to send subscribers to the Klaviyo list, reason: %s',
+                    $result->getErrorDetails()
+                ));
+
+                $errors[] = $error;
+
+                $this->logger->error($error->getMessage());
+
+                $failedEmail = str_replace(' is not a valid email.', '', $result->getErrorDetails());
+                $newCollection = $recipientCollection->filter(
+                    fn (Recipient $recipient) => $recipient->getEmail() !== $failedEmail
+                );
+
+                if ($newCollection->count()) {
+                    $errors = array_merge(
+                        $errors,
+                        $this->subscribeToKlaviyoList($salesChannelEntity, $newCollection, $profilesListId)
+                    );
+                }
+            }
+
+            return $errors;
+        } catch (\Throwable $exception) {
+            $this->logger->error(
+                \sprintf(
+                    'Failed to send subscribers to the Klaviyo list, reason: %s',
+                    $exception->getMessage()
+                ),
+                ContextHelper::createContextFromException($exception)
+            );
+
+            return $errors;
+        }
+    }
+
+    /**
+     * @param SalesChannelEntity $salesChannelEntity
+     * @param ProfileContactInfoCollection $profileInfoCollection
+     * @param string $profilesListId
+     * @return bool
+     */
     public function removeKlaviyoSubscribersFromList(
         SalesChannelEntity $salesChannelEntity,
         ProfileContactInfoCollection $profileInfoCollection,
@@ -342,8 +479,7 @@ class KlaviyoGateway
 
     /**
      * @param string $channelId
-     * @param object[] $requests
-     *
+     * @param array $requests
      * @return ClientResult
      */
     private function trackEvents(string $channelId, array $requests): ClientResult
@@ -353,6 +489,12 @@ class KlaviyoGateway
         return $client->sendRequests($requests);
     }
 
+    /**
+     * @param ClientResult $result
+     * @param array $requestOrderIdMap
+     * @param string $eventType
+     * @return OrderTrackingResult
+     */
     protected function handleClientTrackingResult(
         ClientResult $result,
         array $requestOrderIdMap,
@@ -384,7 +526,6 @@ class KlaviyoGateway
      * @param string $channelId
      * @param int $count
      * @param int $page
-     *
      * @return GetExcludedSubscribers\Response
      * @throws \Exception
      */

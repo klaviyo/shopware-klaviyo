@@ -24,6 +24,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandlerInterface
 {
     public const HANDLER_CODE = 'od-klaviyo-events-sync-handler';
+    public const REALTIME_SUBSCRIBERS_OPERATION_LABEL = 'real-time-subscribers-sync-operation';
 
     private EntityRepository $eventRepository;
     private EntityRepository $cartEventRequestRepository;
@@ -55,7 +56,9 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
     {
         $result = new JobResult();
         $context = $message->getContext();
-        $channelIds = $this->getValidChannels->execute($context)->map(fn(SalesChannelEntity $channel) => $channel->getId());
+        $channelIds = $this->getValidChannels->execute($context)->map(
+            fn (SalesChannelEntity $channel) => $channel->getId()
+        );
         $channelIds = \array_values($channelIds);
 
         if (empty($channelIds)) {
@@ -81,8 +84,12 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
 
         $result->addMessage(new Message\InfoMessage(\sprintf('Total %s order events was scheduled.', $orderTotal)));
         $result->addMessage(new Message\InfoMessage(\sprintf('Total %s cart events was scheduled.', $cartTotal)));
-        $result->addMessage(new Message\InfoMessage(\sprintf('Total %s customer events was scheduled.', $customerTotal)));
-        $result->addMessage(new Message\InfoMessage(\sprintf('Total %s subscriber events was scheduled.', $subscriberTotal)));
+        $result->addMessage(
+            new Message\InfoMessage(\sprintf('Total %s customer events was scheduled.', $customerTotal))
+        );
+        $result->addMessage(
+            new Message\InfoMessage(\sprintf('Total %s subscriber events was scheduled.', $subscriberTotal))
+        );
 
         foreach ($schedulingResult->getErrors() as $error) {
             $result->addError($error);
@@ -94,7 +101,11 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
     private function processCustomerProfileEvents(Context $context, string $parentJobId, array $channelIds): int
     {
         $total = 0;
-        $iterator = $this->getEventRepoIterator($context, [EventsTrackerInterface::CUSTOMER_WRITTEN_EVENT], $channelIds);
+        $iterator = $this->getEventRepoIterator(
+            $context,
+            [EventsTrackerInterface::CUSTOMER_WRITTEN_EVENT],
+            $channelIds
+        );
 
         while (($events = $iterator->fetch()) !== null) {
             $customerIds = $events->map(fn(EventEntity $event) => $event->getEntityId());
@@ -127,7 +138,11 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
     private function processOrderEvents(Context $context, string $parentJobId, array $channelIds): int
     {
         $total = 0;
-        $iterator = $this->getEventRepoIterator($context, \array_keys(EventsTrackerInterface::ORDER_EVENTS), $channelIds);
+        $iterator = $this->getEventRepoIterator(
+            $context,
+            \array_keys(EventsTrackerInterface::ORDER_EVENTS),
+            $channelIds
+        );
 
         while (($eventIds = $iterator->fetchIds()) !== null) {
             $total += \count($eventIds);
@@ -163,10 +178,15 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
         $iterator = $this->getEventRepoIterator($context, EventsTrackerInterface::SUBSCRIBER_EVENTS, $channelIds);
 
         while (($events = $iterator->fetch()) !== null) {
-            $subscriberIds = $events->map(fn(EventEntity $event) => $event->getEntityId());
+            $subscriberIds = $events->map(fn (EventEntity $event) => $event->getEntityId());
             $subscriberIds = \array_values(\array_diff($subscriberIds, $excludedSubscriberIds));
             $total += \count($subscriberIds);
-            $this->scheduleBackgroundJob->scheduleSubscriberSyncJob($subscriberIds, $parentJobId, $context);
+            $this->scheduleBackgroundJob->scheduleSubscriberSyncJob(
+                $subscriberIds,
+                $parentJobId,
+                $context,
+                self::REALTIME_SUBSCRIBERS_OPERATION_LABEL
+            );
             $this->deleteProcessedEvents($context, $events->getEntities());
         }
 
