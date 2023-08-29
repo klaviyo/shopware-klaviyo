@@ -1,3 +1,6 @@
+# 2.3.1
+# Fix: Ereignisreihenfolge „Bestelltes Produkt“ nach historischer Synchronisierung
+
 # 2.3.0
 # Fix: Das Ereignis „Bezahlte Bestellung“ wurde nach der historischen Synchronisierung nicht für nicht bezahlte Bestellungen angezeigt
 # Fix: Das Problem wurde behoben, wenn Ereignisse nach jeder historischen Synchronisierung in den Aktivitätsprotokollen des Profils dupliziert wurden

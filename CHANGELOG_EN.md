@@ -1,3 +1,6 @@
+# 2.3.1
+# Fix: "Ordered Product" event order after historical synchronization
+
 # 2.3.0
 # Fix: "Paid Order" event was not displayed for non-paid order after historical synchronization
 # Fix: Resolved the issue when events are duplicated in the profile Activity Logs after each historical synchronization
