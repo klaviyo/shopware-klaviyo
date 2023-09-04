@@ -1,4 +1,14 @@
-# 2.1.1
+# 2.3.1
+# Fix: "Ordered Product" event order after historical synchronization
+
+# 2.3.0
+# Fix: "Paid Order" event was not displayed for non-paid order after historical synchronization
+# Fix: Resolved the issue when events are duplicated in the profile Activity Logs after each historical synchronization
+# Fix: Removed dump(extensionData) call method in twig file
+# Fix: When adding "real time" users to Klaviyo "Subscribe to List" api is now used
+# Fix: "Subscribers list" admin configuration option is not a select/dropdown with values pulled from Klaviyo service ( if api credentials are valid )
+
+# 2.2.0
 # New: Cart restore link now fills up the address data that customer has provided before abandoning the cart ( if applicable ). 
 # Fix: Fixed the issue where some customers may see incorrect dates of the events passed to Klaviyo service ( fulfilled order events etc... ).
 

@@ -18,16 +18,18 @@ use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\AddedToCartEventTra
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\AddProfilesToListRequestsNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\AddressNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\CanceledOrderEventTrackingRequestNormalizer;
+use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\ConfigurableOrderEventTrackingRequestNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\CustomerPropertiesNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\IdentifyProfileRequestNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\OrderedProductEventTrackingRequestNormalizer;
-use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\ConfigurableOrderEventTrackingRequestNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\PaidOrderEventTrackingRequestNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\RefundedOrderEventTrackingRequestNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\RemoveProfilesFromListRequestNormalizer;
+use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\SubscribeToListRequestNormalizer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
+use Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer\SubscribeToListResponseDenormalizer;
 
 class SerializerFactory
 {
@@ -38,15 +40,25 @@ class SerializerFactory
                 new CustomerPropertiesNormalizer(),
                 new AddressNormalizer(),
                 new OrderedProductEventTrackingRequestNormalizer($configuration),
-                new ConfigurableOrderEventTrackingRequestNormalizer($configuration, PlacedOrderEventTrackingRequest::class, 'Placed Order'),
-                new ConfigurableOrderEventTrackingRequestNormalizer($configuration, FulfilledOrderEventTrackingRequest::class, 'Fulfilled Order'),
+                new ConfigurableOrderEventTrackingRequestNormalizer(
+                    $configuration,
+                    PlacedOrderEventTrackingRequest::class,
+                    'Placed Order'
+                ),
+                new ConfigurableOrderEventTrackingRequestNormalizer(
+                    $configuration,
+                    FulfilledOrderEventTrackingRequest::class,
+                    'Fulfilled Order'
+                ),
                 new CanceledOrderEventTrackingRequestNormalizer($configuration),
                 new RefundedOrderEventTrackingRequestNormalizer($configuration),
                 new PaidOrderEventTrackingRequestNormalizer($configuration),
                 new AddedToCartEventTrackingRequestNormalizer($configuration),
                 new AddProfilesToListRequestsNormalizer($configuration),
+                new SubscribeToListRequestNormalizer($configuration),
                 new RemoveProfilesFromListRequestNormalizer($configuration),
                 new AddProfilesToListResponseDenormalizer(),
+                new SubscribeToListResponseDenormalizer(),
                 new GetProfilesListsResponseDenormalizer(),
                 new ProfileInfoDenormalizer(),
                 new GetListProfilesResponseDenormalizer(),
@@ -55,10 +67,10 @@ class SerializerFactory
                 new IdentifyProfileRequestNormalizer($configuration),
                 new GetExcludedSubscribersResponseDenormalizer(),
                 new GetProfileIdResponseDenormalizer(),
-                new UpdateProfileResponseDenormalizer()
+                new UpdateProfileResponseDenormalizer(),
             ],
             [
-                new JsonEncoder()
+                new JsonEncoder(),
             ]
         );
     }

@@ -13,6 +13,7 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator\Profiles\Search\Se
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator\Profiles\Update\UpdateProdileApiTransferTranslator;
 use Klaviyo\Integration\Klaviyo\Client\Configuration\ConfigurationInterface;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\SerializerFactory;
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\SubscribeCustomersToList\SubscribeToListRequest;
 
 class TranslatorsRegistryFactory
 {
@@ -56,6 +57,9 @@ class TranslatorsRegistryFactory
         );
         $registry->addTranslator(
             new AddProfilesToListApiTransferTranslator($serializer, $configuration)
+        );
+        $registry->addTranslator(
+            new RealtimeProfilesSubscribeToListApiTransferTranslator($serializer, $configuration)
         );
         $registry->addTranslator(
             new RemoveProfilesFromListApiTransferTranslator($serializer, $configuration)
