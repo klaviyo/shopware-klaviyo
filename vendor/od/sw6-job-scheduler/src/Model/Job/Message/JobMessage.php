@@ -5,7 +5,7 @@ namespace Od\Scheduler\Model\Job\Message;
 use Od\Scheduler\Model\Job\JobRuntimeMessageInterface;
 use Od\Scheduler\Model\MessageManager;
 
-Class JobMessage implements JobRuntimeMessageInterface
+class JobMessage implements JobRuntimeMessageInterface
 {
     private string $message;
 
