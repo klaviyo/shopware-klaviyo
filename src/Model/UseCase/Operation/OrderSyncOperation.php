@@ -81,8 +81,8 @@ class OrderSyncOperation implements JobHandlerInterface
                 $eventsBags[Tracker::ORDER_EVENT_CANCELED]->add(new OrderEvent($order, $happenedAt));
             }
 
-            if (OrderTransactionStates::STATE_REFUNDED === $order->getStateMachineState()->getTechnicalName()) {
-                $happenedAt = $order->getDeliveries()->last()->getUpdatedAt();
+            if (OrderTransactionStates::STATE_REFUNDED === $transactionStateName) {
+                $happenedAt = $lastTransaction->getUpdatedAt();
                 $eventsBags[Tracker::ORDER_EVENT_REFUNDED]->add(new OrderEvent($order, $happenedAt));
             }
         }
