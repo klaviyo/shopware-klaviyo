@@ -1,3 +1,6 @@
+# 2.3.2
+# Fix: The "Refunded Order" event is now displayed after clicking the "Synchronized historical events" button 
+
 # 2.3.1
 # Fix: "Ordered Product" event order after historical synchronization
 
