@@ -1,3 +1,6 @@
+# 1.1.3
+# Fix: Das Ereignis „Rückerstattete Bestellung" wird jetzt angezeigt, nachdem auf die Schaltfläche „Historische Ereignisse synchronisiert" geklickt wurde
+
 # 1.1.2
 # Fix: Das Ereignis „Bezahlte Bestellung“ wurde nach der historischen Synchronisierung nicht für nicht bezahlte Bestellungen angezeigt
 # Fix: Das Problem wurde behoben, wenn Ereignisse nach jeder historischen Synchronisierung in den Aktivitätsprotokollen des Profils dupliziert wurden

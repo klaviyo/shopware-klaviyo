@@ -1,3 +1,6 @@
+# 1.1.3
+# Fix: The "Refunded Order" event is now displayed after clicking the "Synchronized historical events" button
+
 # 1.1.2
 # Fix: "Paid Order" event was not displayed for non-paid order after historical synchronization
 # Fix: Resolved the issue when events are duplicated in the profile Activity Logs after each historical synchronization
