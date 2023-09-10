@@ -15,7 +15,7 @@ function setCookieConsentManagerAllowed() {
     })
 }
 
-function setCookieOnDecline() {console.log('decline0');
+function setCookieOnDecline() {
     Iterator.iterate(PluginManager.getPluginInstances('KlaviyoTracking'), (plugin) => {
         plugin.cookiebotOnDecline();
     })
