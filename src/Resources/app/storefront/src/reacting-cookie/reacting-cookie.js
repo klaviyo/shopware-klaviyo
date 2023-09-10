@@ -3,22 +3,34 @@ import Iterator from 'src/helper/iterator.helper';
 
 document.$emitter.subscribe(COOKIE_CONFIGURATION_UPDATE, eventCallback);
 
-function eventCallback(updatedCookies) {
-    if (updatedCookies.detail['od-klaviyo-track-allow']) {
-        Iterator.iterate(PluginManager.getPluginInstances('KlaviyoTracking'), (plugin) => {
-            plugin.onKlaviyoCookieConsentAllowed();
-        })
-    }
-}
-
-window.addEventListener('CookiebotOnAccept', () => {
+function setCookieConsentAllowed() {
     Iterator.iterate(PluginManager.getPluginInstances('KlaviyoTracking'), (plugin) => {
         plugin.onKlaviyoCookieConsentAllowed();
     })
-});
+}
 
-window.addEventListener('CookiebotOnDecline', () => {
+function setCookieConsentManagerAllowed() {
+    Iterator.iterate(PluginManager.getPluginInstances('KlaviyoTracking'), (plugin) => {
+        plugin.onKlaviyoCookieConsentManagerAllowed();
+    })
+}
+
+function setCookieOnDecline() {console.log('decline0');
     Iterator.iterate(PluginManager.getPluginInstances('KlaviyoTracking'), (plugin) => {
         plugin.cookiebotOnDecline();
     })
-});
+}
+
+function eventCallback(updatedCookies) {
+    if (updatedCookies.detail['od-klaviyo-track-allow']) {
+        setCookieConsentAllowed();
+    }
+}
+
+window.addEventListener('CookiebotOnAccept', setCookieConsentAllowed);
+window.addEventListener('CookiebotOnDecline', setCookieOnDecline);
+
+if(window.cmp_id) {
+    __cmp("addEventListener", ["consentrejected", setCookieOnDecline, false], null);
+    __cmp("addEventListener", ["consentapproved", setCookieConsentManagerAllowed, false], null);
+}
