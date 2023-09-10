@@ -70,6 +70,7 @@ class NewsletterControllerDecorator
         $cookieType = $this->validChannelConfig->execute($context->getSalesChannelId())->getCookieConsent();
         switch ($cookieType) {
             case 'shopware':
+            case 'consentmanager':
                 return $request->cookies->get('od-klaviyo-track-allow');
             case 'cookiebot':
                 return $this->isCookieBotAllowed($request);
