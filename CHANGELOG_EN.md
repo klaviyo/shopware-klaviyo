@@ -1,5 +1,6 @@
 # 1.1.3
 # Fix: The "Refunded Order" event is now displayed after clicking the "Synchronized historical events" button
+# Fix: Resolving the issue where task manager can come to a standstill/stop.
 
 # 1.1.2
 # Fix: "Paid Order" event was not displayed for non-paid order after historical synchronization
