@@ -59,6 +59,8 @@ class OrderSyncOperation implements JobHandlerInterface
 
         $orderCollection = $this->orderRepository->search($orderCriteria, $message->getContext());
 
+        dd($orderCollection);
+
         /** @var OrderEntity $order */
         foreach ($orderCollection as $order) {
             $eventsBags[Tracker::ORDER_EVENT_PLACED]->add(new OrderEvent($order, $order->getCreatedAt()));
