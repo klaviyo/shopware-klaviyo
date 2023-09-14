@@ -1,3 +1,7 @@
+# 2.3.2
+# Fix: Das Ereignis „Rückerstattete Bestellung“ wird jetzt angezeigt, nachdem auf die Schaltfläche „Historische Ereignisse synchronisiert“ geklickt wurde
+# Fix: Behebung des Problems, bei dem der Task-Manager zum Stillstand kommen/stoppen kann.
+
 # 2.3.1
 # Fix: Ereignisreihenfolge „Bestelltes Produkt“ nach historischer Synchronisierung
 
