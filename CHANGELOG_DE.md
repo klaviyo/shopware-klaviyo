@@ -1,3 +1,12 @@
+# 1.1.3
+# Fix: Das Ereignis „Rückerstattete Bestellung" wird jetzt angezeigt, nachdem auf die Schaltfläche „Historische Ereignisse synchronisiert" geklickt wurde
+# Fix: Behebung des Problems, bei dem der Task-Manager zum Stillstand kommen/stoppen kann.
+
+# 1.1.2
+# Fix: Das Ereignis „Bezahlte Bestellung“ wurde nach der historischen Synchronisierung nicht für nicht bezahlte Bestellungen angezeigt
+# Fix: Das Problem wurde behoben, wenn Ereignisse nach jeder historischen Synchronisierung in den Aktivitätsprotokollen des Profils dupliziert wurden
+# Fix: Aufrufmethode „dump(extensionData)“ in der Twig-Datei entfernt
+
 # 1.1.1
 # Fix: Das Problem wurde behoben, bei dem einige Kunden möglicherweise falsche Daten der an den Klaviyo-Service übergebenen Ereignisse sehen (Ereignisse für erfüllte Bestellungen usw.).
 

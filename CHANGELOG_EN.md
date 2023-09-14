@@ -1,3 +1,12 @@
+# 1.1.3
+# Fix: The "Refunded Order" event is now displayed after clicking the "Synchronized historical events" button
+# Fix: Resolving the issue where task manager can come to a standstill/stop.
+
+# 1.1.2
+# Fix: "Paid Order" event was not displayed for non-paid order after historical synchronization
+# Fix: Resolved the issue when events are duplicated in the profile Activity Logs after each historical synchronization
+# Fix: Removed dump(extensionData) call method in twig file
+
 # 1.1.1
 # Fix: Fixed the issue where some customers may see incorrect dates of the events passed to Klaviyo service ( fulfilled order events etc... ).
 
