@@ -2,7 +2,10 @@
 
 namespace Klaviyo\Integration\Klaviyo\FrontendApi\DTO;
 
-class StartedCheckoutEventTrackingRequest implements \JsonSerializable
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\Common\CustomerProperties;
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\Common\EventTrackingRequest;
+
+class StartedCheckoutEventTrackingRequest extends EventTrackingRequest implements \JsonSerializable
 {
     private string $eventId;
     private string $checkoutUrl;
@@ -13,8 +16,12 @@ class StartedCheckoutEventTrackingRequest implements \JsonSerializable
         string $eventId,
         string $checkoutUrl,
         string $checkoutTotal,
-        CheckoutLineItemInfoCollection $lineItemInfoCollection
+        CheckoutLineItemInfoCollection $lineItemInfoCollection,
+        \DateTimeInterface $time,
+        ?CustomerProperties $customerProperties,
     ) {
+        parent::__construct($eventId, $time, $customerProperties);
+
         $this->eventId = $eventId;
         $this->checkoutUrl = $checkoutUrl;
         $this->checkoutTotal = $checkoutTotal;
@@ -41,7 +48,7 @@ class StartedCheckoutEventTrackingRequest implements \JsonSerializable
         return $this->lineItemInfoCollection;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         $categories = [];
         $itemNames = [];
@@ -51,15 +58,18 @@ class StartedCheckoutEventTrackingRequest implements \JsonSerializable
             $itemNames[] = $lineItem->getName();
         }
         $categories = array_unique($categories);
-        $now = new \DateTime('now', new \DateTimeZone('UTC'));
 
         return [
-            '$event_id' => $this->getEventId() . '_' . $now->getTimestamp(),
-            '$value' => $this->getCheckoutTotal(),
-            'CheckoutURL' => $this->getCheckoutUrl(),
-            'ItemNames' => $itemNames,
-            'Categories' => $categories,
-            'Items' => $this->getLineItemInfoCollection()->getElements()
+            '$event_id' => $this->getEventId() . '_' . $this->getTime()->getTimestamp(),
+            'event' => 'Started Checkout',
+            'properties' => [
+                'startedCheckoutValue' => $this->getCheckoutTotal(),
+                'CheckoutURL' => $this->getCheckoutUrl(),
+                'ItemNames' => $itemNames,
+                'Categories' => $categories,
+                'Items' => $this->getLineItemInfoCollection()->getElements(),
+            ],
+            'customer_properties' => ['$email' => $this->getCustomerProperties()->getEmail()],
         ];
     }
 }

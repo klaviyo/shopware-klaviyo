@@ -13,7 +13,7 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator\Profiles\Search\Se
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator\Profiles\Update\UpdateProdileApiTransferTranslator;
 use Klaviyo\Integration\Klaviyo\Client\Configuration\ConfigurationInterface;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\SerializerFactory;
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\SubscribeCustomersToList\SubscribeToListRequest;
+use Klaviyo\Integration\Klaviyo\FrontendApi\DTO\StartedCheckoutEventTrackingRequest;
 
 class TranslatorsRegistryFactory
 {
@@ -54,6 +54,9 @@ class TranslatorsRegistryFactory
         );
         $registry->addTranslator(
             new GenericEventTrackingApiTransferTranslator($serializer, $configuration, AddedToCartEventTrackingRequest::class)
+        );
+        $registry->addTranslator(
+            new GenericEventTrackingApiTransferTranslator($serializer, $configuration, StartedCheckoutEventTrackingRequest::class)
         );
         $registry->addTranslator(
             new AddProfilesToListApiTransferTranslator($serializer, $configuration)

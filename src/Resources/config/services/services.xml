@@ -96,6 +96,7 @@
             <argument type="service"
                       id="Klaviyo\Integration\Klaviyo\Gateway\Translator\NewsletterSubscriberPropertiesTranslator"/>
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\CachedGetListIdByListName"/>
+            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway"/>
             <tag name="kernel.event_subscriber"/>
         </service>
         <service id="Klaviyo\Integration\EventListener\AddedToCartEventListener">
@@ -141,6 +142,7 @@
             <argument type="service"
                       id="Klaviyo\Integration\Storefront\Checkout\Cart\RestoreUrlService\RestoreUrlService"/>
             <argument type="service" id="Klaviyo\Integration\Entity\Helper\ProductDataHelper"/>
+            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CustomerPropertiesTranslator"/>
         </service>
         <service id="Klaviyo\Integration\Klaviyo\Promotion\PromotionsExporter">
             <argument type="service" id="promotion.repository"/>
