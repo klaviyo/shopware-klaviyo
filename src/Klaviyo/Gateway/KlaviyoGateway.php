@@ -340,6 +340,11 @@ class KlaviyoGateway
         }
     }
 
+    public function trackStartedCheckoutRequests(string $channelId, array $checkoutRequests): ClientResult
+    {
+        return $this->trackEvents($channelId, $checkoutRequests);
+    }
+
     /**
      * @param string $channelId
      * @param object[] $requests
