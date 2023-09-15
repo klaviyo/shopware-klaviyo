@@ -28,6 +28,7 @@ use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\RemoveProfilesFromL
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
+use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\StartedCheckoutEventTrackingRequestNormalizer;
 
 class SerializerFactory
 {
@@ -55,7 +56,8 @@ class SerializerFactory
                 new IdentifyProfileRequestNormalizer($configuration),
                 new GetExcludedSubscribersResponseDenormalizer(),
                 new GetProfileIdResponseDenormalizer(),
-                new UpdateProfileResponseDenormalizer()
+                new UpdateProfileResponseDenormalizer(),
+                new StartedCheckoutEventTrackingRequestNormalizer($configuration)
             ],
             [
                 new JsonEncoder()
