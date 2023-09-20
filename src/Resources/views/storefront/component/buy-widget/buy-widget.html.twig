@@ -8,9 +8,9 @@
 
         {% if page.product.isCloseout and page.product.availableStock < page.product.minPurchase %}
             {% block klaviyo_back_in_stock_modal_open %}
-                <button class="btn btn-primary" data-bs-toggle="modal"
+                <button class="btn btn-primary" data-toggle="modal"
                         style="{% if extensionData.configuration.popUpOpenBtnColor %}color: {{ extensionData.configuration.popUpOpenBtnColor }};{% endif %}{% if extensionData.configuration.popUpOpenBtnBgColor %}background-color: {{ extensionData.configuration.popUpOpenBtnBgColor }}; border-color: {{ extensionData.configuration.popUpOpenBtnBgColor }};{% endif %}"
-                        data-bs-target="#back-in-stock-modal"> {{ "klaviyo.back-in-stock.modal.openBtnLabel"|trans }}
+                        data-target="#back-in-stock-modal"> {{ "klaviyo.back-in-stock.modal.openBtnLabel"|trans }}
                 </button>
             {% endblock %}
         {% endif %}

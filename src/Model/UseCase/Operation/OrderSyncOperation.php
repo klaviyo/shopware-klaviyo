@@ -14,6 +14,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
+use Shopware\Core\System\StateMachine\Aggregation\StateMachineTransition\StateMachineTransitionActions as StateActions;
 
 class OrderSyncOperation implements JobHandlerInterface
 {
@@ -64,7 +65,17 @@ class OrderSyncOperation implements JobHandlerInterface
         foreach ($orderCollection as $order) {
             $eventsBags[Tracker::ORDER_EVENT_PLACED]->add(new OrderEvent($order, $order->getCreatedAt()));
             $eventsBags[Tracker::ORDER_EVENT_ORDERED_PRODUCT]->add(new OrderEvent($order, $order->getCreatedAt()));
-            $eventsBags[Tracker::ORDER_EVENT_PAID]->add(new OrderEvent($order, $order->getCreatedAt()));
+
+            $lastTransaction = $order->getTransactions()->last();
+            $transactionStateName = $lastTransaction->getStateMachineState()->getTechnicalName();
+
+            if (
+                (StateActions::ACTION_PAID === $transactionStateName)
+                || (StateActions::ACTION_PAID_PARTIALLY === $transactionStateName)
+            ) {
+                $happenedAt = $lastTransaction->getUpdatedAt();
+                $eventsBags[Tracker::ORDER_EVENT_PAID]->add(new OrderEvent($order, $happenedAt));
+            }
 
             if ($order->getStateMachineState()->getTechnicalName() === OrderStates::STATE_COMPLETED) {
                 $happenedAt = $order->getUpdatedAt();
@@ -72,12 +83,12 @@ class OrderSyncOperation implements JobHandlerInterface
             }
 
             if ($order->getStateMachineState()->getTechnicalName() === OrderStates::STATE_CANCELLED) {
-                $happenedAt = $order->getTransactions()->last()->getUpdatedAt();
+                $happenedAt = $order->getUpdatedAt();
                 $eventsBags[Tracker::ORDER_EVENT_CANCELED]->add(new OrderEvent($order, $happenedAt));
             }
 
-            if ($order->getStateMachineState()->getTechnicalName() === OrderTransactionStates::STATE_REFUNDED) {
-                $happenedAt = $order->getDeliveries()->last()->getUpdatedAt();
+            if ($transactionStateName === OrderTransactionStates::STATE_REFUNDED) {
+                $happenedAt = $lastTransaction->getUpdatedAt();
                 $eventsBags[Tracker::ORDER_EVENT_REFUNDED]->add(new OrderEvent($order, $happenedAt));
             }
         }
