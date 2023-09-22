@@ -59,10 +59,13 @@ class OrderSyncOperation implements JobHandlerInterface
 
         $orderCollection = $this->orderRepository->search($orderCriteria, $message->getContext());
 
-        dd($orderCollection);
+
 
         /** @var OrderEntity $order */
         foreach ($orderCollection as $order) {
+
+            dd($order->getDeliveries()->first()->getStateMachineState()->getName());
+
             $eventsBags[Tracker::ORDER_EVENT_PLACED]->add(new OrderEvent($order, $order->getCreatedAt()));
             $eventsBags[Tracker::ORDER_EVENT_ORDERED_PRODUCT]->add(new OrderEvent($order, $order->getCreatedAt()));
 
@@ -91,6 +94,7 @@ class OrderSyncOperation implements JobHandlerInterface
                 $happenedAt = $lastTransaction->getUpdatedAt();
                 $eventsBags[Tracker::ORDER_EVENT_REFUNDED]->add(new OrderEvent($order, $happenedAt));
             }
+
         }
 
         if ($orderCollection->count() !== 0) {

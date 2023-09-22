@@ -9,6 +9,9 @@ use Shopware\Core\Checkout\Order\{OrderDefinition, OrderEntity, OrderStates};
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
+use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryDefinition;
+use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryStates;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\{EntityRepositoryInterface, Search\Criteria};
 use Shopware\Core\System\StateMachine\Event\StateMachineStateChangeEvent;
@@ -37,6 +40,7 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
     {
         return [
             'state_machine.order.state_changed' => 'onStateChange',
+            'state_machine.order_delivery.state_changed' => 'onOrderDeliveryStateChange',
             'state_machine.order_transaction.state_changed' => 'onTransactionStateChanged'
         ];
     }
@@ -60,7 +64,8 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
             OrderStates::STATE_COMPLETED => $configuration->isTrackFulfilledOrder(),
             OrderStates::STATE_CANCELLED => $configuration->isTrackCanceledOrder(),
             OrderTransactionStates::STATE_REFUNDED => $configuration->isTrackRefundedOrder(),
-            OrderTransactionStates::STATE_PAID => $configuration->isTrackPaidOrder()
+            OrderTransactionStates::STATE_PAID => $configuration->isTrackPaidOrder(),
+            OrderDeliveryStates::STATE_SHIPPED => $configuration->isTrackShippedOrder()
         ];
 
         $state = $event->getNextState();
@@ -71,7 +76,6 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
             $this->trackEvent($event->getContext(), $order, $state->getTechnicalName());
         }
     }
-
     // TODO: check do we actually need this method?
     public function onTransactionStateChanged(StateMachineStateChangeEvent $event)
     {
@@ -125,6 +129,9 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
                 return;
             case OrderTransactionStates::STATE_PAID:
                 $this->eventsTracker->trackPaiedOrders($context, $eventsBag);
+                return;
+            case OrderDeliveryStates::STATE_SHIPPED:
+                $this->eventsTracker->trackShippedOrder($context, $eventsBag);
                 return;
         }
     }
