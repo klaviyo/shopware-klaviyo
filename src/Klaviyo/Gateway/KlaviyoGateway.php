@@ -200,6 +200,36 @@ class KlaviyoGateway
             $this->handleClientTrackingResult($clientResult, $requestOrderIdMap, 'CancelledOrder')
         );
     }
+    
+    /**
+     * @param Context $context
+     * @param string $channelId
+     * @param array $orderEvents
+     * @return OrderTrackingResult
+     */
+    public function trackShippedOrders(Context $context, string $channelId, array $orderEvents): OrderTrackingResult
+    {
+        $requestOrderIdMap = $requests = [];
+        $result = new OrderTrackingResult();
+        /** @var OrderEventInterface $orderEvent */
+        foreach ($orderEvents as $orderEvent) {
+            try {
+                $request = $this->orderEventRequestTranslator->translateToShippedOrderEventRequest(
+                    $context,
+                    $orderEvent->getOrder(),
+                    $orderEvent->getEventDateTime()
+                );
+                $requestOrderIdMap[spl_object_id($request)] = $orderEvent->getOrder()->getId();
+                $requests[] = $request;
+            } catch (\Throwable $e) {
+                $result->addFailedOrder($orderEvent->getOrder()->getId(), $e);
+            }
+        }
+        $clientResult = $this->trackEvents($channelId, $requests);
+        return $result->mergeWith(
+            $this->handleClientTrackingResult($clientResult, $requestOrderIdMap, 'ShippedOrder')
+        );
+    }
 
     /**
      * @param Context $context

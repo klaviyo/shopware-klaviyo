@@ -8,6 +8,8 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEv
 
 class ShippedOrderEventTrackingRequest extends AbstractOrderEventTrackingRequest
 {
+    private string $reason;
+
     public function __construct(
         string $eventId,
         \DateTimeInterface $time,
@@ -17,9 +19,17 @@ class ShippedOrderEventTrackingRequest extends AbstractOrderEventTrackingRequest
         DiscountInfoCollection $discounts,
         OrderProductItemInfoCollection $products,
         ?Address $billingAddress,
-        ?Address $shippingAddress
+        ?Address $shippingAddress,
+        string $reason
     ) {
         parent::__construct($eventId, $time, $customerProperties, $orderTotal, $orderId, $discounts, $products,
             $billingAddress, $shippingAddress);
+
+        $this->reason = $reason;
+    }
+
+    public function getReason(): string
+    {
+        return $this->reason;
     }
 }
