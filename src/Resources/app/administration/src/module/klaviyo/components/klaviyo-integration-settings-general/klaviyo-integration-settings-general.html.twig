@@ -270,51 +270,6 @@
 
                     <sw-container>
 
-                        {% block klaviyo_integration_settings_general_track_done_order %}
-                            <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackDoneOrder']"
-                                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackDoneOrder']"
-                                                :customInheritationCheckFunction="checkBoolFieldInheritance">
-                                <template #content="props">
-                                    <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackDoneOrder"
-                                                     :mapInheritance="props"
-                                                     :label="$tc('klaviyo-integration-settings.configs.trackDoneOrder.label')"
-                                                     :helpText="$tc('klaviyo-integration-settings.configs.trackDoneOrder.helpText')"
-                                                     :disabled="props.isInherited"
-                                                     :value="props.currentValue"
-                                                     @change="props.updateCurrentValue">
-                                    </sw-switch-field>
-                                </template>
-                            </sw-inherit-wrapper>
-                        {% endblock %}
-
-                        {% block klaviyo_integration_settings_general_track_returned_order %}
-                            <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackCancelOrder']"
-                                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackCancelOrder']"
-                                                :customInheritationCheckFunction="checkBoolFieldInheritance">
-                                <template #content="props">
-                                    <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackCancelOrder"
-                                                     :mapInheritance="props"
-                                                     :label="$tc('klaviyo-integration-settings.configs.trackCancelOrder.label')"
-                                                     :helpText="$tc('klaviyo-integration-settings.configs.trackCancelOrder.helpText')"
-                                                     :disabled="props.isInherited"
-                                                     :value="props.currentValue"
-                                                     @change="props.updateCurrentValue">
-                                    </sw-switch-field>
-                                </template>
-                            </sw-inherit-wrapper>
-                        {% endblock %}
-
-                    </sw-container>
-
-                </fieldset>
-            {% endblock %}
-
-            {% block klaviyo_integration_settings_general_order_payment_track %}
-                <fieldset>
-                    <legend>Order payment status</legend>
-
-                    <sw-container>
-
                         {% block klaviyo_integration_settings_general_track_fulfilled_order %}
                             <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackFulfilledOrder']"
                                                 :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackFulfilledOrder']"
@@ -348,6 +303,17 @@
                                 </template>
                             </sw-inherit-wrapper>
                         {% endblock %}
+
+                    </sw-container>
+
+                </fieldset>
+            {% endblock %}
+
+            {% block klaviyo_integration_settings_general_order_payment_track %}
+                <fieldset>
+                    <legend>Order payment status</legend>
+
+                    <sw-container>
 
                         {% block klaviyo_integration_settings_general_track_refunded_order %}
                             <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackRefundedOrder']"
@@ -410,39 +376,39 @@
                             </sw-inherit-wrapper>
                         {% endblock %}
 
-                        {% block klaviyo_integration_settings_general_track_shipping_cancelled_order %}
-                            <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackShippingCancelledOrder']"
-                                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackShippingCancelledOrder']"
-                                                :customInheritationCheckFunction="checkBoolFieldInheritance">
-                                <template #content="props">
-                                    <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackShippingCancelledOrder"
-                                                     :mapInheritance="props"
-                                                     :label="$tc('klaviyo-integration-settings.configs.trackShippingCancelledOrder.label')"
-                                                     :helpText="$tc('klaviyo-integration-settings.configs.trackShippingCancelledOrder.helpText')"
-                                                     :disabled="props.isInherited"
-                                                     :value="props.currentValue"
-                                                     @change="props.updateCurrentValue">
-                                    </sw-switch-field>
-                                </template>
-                            </sw-inherit-wrapper>
-                        {% endblock %}
+{#                        {% block klaviyo_integration_settings_general_track_shipping_cancelled_order %}#}
+{#                            <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackShippingCancelledOrder']"#}
+{#                                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackShippingCancelledOrder']"#}
+{#                                                :customInheritationCheckFunction="checkBoolFieldInheritance">#}
+{#                                <template #content="props">#}
+{#                                    <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackShippingCancelledOrder"#}
+{#                                                     :mapInheritance="props"#}
+{#                                                     :label="$tc('klaviyo-integration-settings.configs.trackShippingCancelledOrder.label')"#}
+{#                                                     :helpText="$tc('klaviyo-integration-settings.configs.trackShippingCancelledOrder.helpText')"#}
+{#                                                     :disabled="props.isInherited"#}
+{#                                                     :value="props.currentValue"#}
+{#                                                     @change="props.updateCurrentValue">#}
+{#                                    </sw-switch-field>#}
+{#                                </template>#}
+{#                            </sw-inherit-wrapper>#}
+{#                        {% endblock %}#}
 
-                        {% block klaviyo_integration_settings_general_track_returned_order %}
-                            <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackReturnedOrder']"
-                                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackReturnedOrder']"
-                                                :customInheritationCheckFunction="checkBoolFieldInheritance">
-                                <template #content="props">
-                                    <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackReturnedOrder"
-                                                     :mapInheritance="props"
-                                                     :label="$tc('klaviyo-integration-settings.configs.trackReturnedOrder.label')"
-                                                     :helpText="$tc('klaviyo-integration-settings.configs.trackReturnedOrder.helpText')"
-                                                     :disabled="props.isInherited"
-                                                     :value="props.currentValue"
-                                                     @change="props.updateCurrentValue">
-                                    </sw-switch-field>
-                                </template>
-                            </sw-inherit-wrapper>
-                        {% endblock %}
+{#                        {% block klaviyo_integration_settings_general_track_returned_order %}#}
+{#                            <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackReturnedOrder']"#}
+{#                                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackReturnedOrder']"#}
+{#                                                :customInheritationCheckFunction="checkBoolFieldInheritance">#}
+{#                                <template #content="props">#}
+{#                                    <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackReturnedOrder"#}
+{#                                                     :mapInheritance="props"#}
+{#                                                     :label="$tc('klaviyo-integration-settings.configs.trackReturnedOrder.label')"#}
+{#                                                     :helpText="$tc('klaviyo-integration-settings.configs.trackReturnedOrder.helpText')"#}
+{#                                                     :disabled="props.isInherited"#}
+{#                                                     :value="props.currentValue"#}
+{#                                                     @change="props.updateCurrentValue">#}
+{#                                    </sw-switch-field>#}
+{#                                </template>#}
+{#                            </sw-inherit-wrapper>#}
+{#                        {% endblock %}#}
 
                     </sw-container>
 
