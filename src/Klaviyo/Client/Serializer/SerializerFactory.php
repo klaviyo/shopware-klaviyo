@@ -23,6 +23,7 @@ use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\CustomerPropertiesN
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\IdentifyProfileRequestNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\OrderedProductEventTrackingRequestNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\PaidOrderEventTrackingRequestNormalizer;
+use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\ShippedOrderEventTrackingRequestNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\RefundedOrderEventTrackingRequestNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\RemoveProfilesFromListRequestNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\SubscribeToListRequestNormalizer;
@@ -53,6 +54,7 @@ class SerializerFactory
                 new CanceledOrderEventTrackingRequestNormalizer($configuration),
                 new RefundedOrderEventTrackingRequestNormalizer($configuration),
                 new PaidOrderEventTrackingRequestNormalizer($configuration),
+                new ShippedOrderEventTrackingRequestNormalizer($configuration),
                 new AddedToCartEventTrackingRequestNormalizer($configuration),
                 new AddProfilesToListRequestsNormalizer($configuration),
                 new SubscribeToListRequestNormalizer($configuration),

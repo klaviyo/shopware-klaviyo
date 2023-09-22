@@ -28,6 +28,8 @@ interface ConfigurationInterface
 
     public function isTrackPaidOrder(): bool;
 
+    public function isTrackShippedOrder(): bool;
+
     public function getPublicApiKey(): string;
 
     public function getSubscribersListName(): string;
