@@ -165,6 +165,7 @@ Component.register('klaviyo-integration-settings-general', {
                     trackCancelledOrder: true,
                     trackRefundedOrder: true,
                     trackPaidOrder: false,
+                    trackShippedOrder: false,
                     trackSubscribedToBackInStock: true,
                     isInitializeKlaviyoAfterInteraction: true,
                     popUpOpenBtnColor: '',

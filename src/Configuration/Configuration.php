@@ -23,6 +23,7 @@ class Configuration implements ConfigurationInterface
     private bool $trackCanceledOrder;
     private bool $trackRefundedOrder;
     private bool $trackPaidOrder;
+    private bool $trackShippedOrder;
     private array $customFieldMapping;
     private bool $afterInteraction;
     private bool $trackSubscribedToBackInStock;
@@ -47,6 +48,7 @@ class Configuration implements ConfigurationInterface
         bool $trackCanceledOrder,
         bool $trackRefundedOrder,
         bool $trackPaidOrder,
+        bool $trackShippedOrder,
         array $customFieldMapping,
         bool $afterInteraction,
         bool $trackSubscribedToBackInStock,
@@ -70,6 +72,7 @@ class Configuration implements ConfigurationInterface
         $this->trackCanceledOrder = $trackCanceledOrder;
         $this->trackRefundedOrder = $trackRefundedOrder;
         $this->trackPaidOrder = $trackPaidOrder;
+        $this->trackShippedOrder = $trackShippedOrder;
         $this->customFieldMapping = $customFieldMapping;
         $this->afterInteraction = $afterInteraction;
         $this->trackSubscribedToBackInStock = $trackSubscribedToBackInStock;
@@ -150,6 +153,11 @@ class Configuration implements ConfigurationInterface
     public function isTrackPaidOrder(): bool
     {
         return $this->trackPaidOrder;
+    }
+
+    public function isTrackShippedOrder(): bool
+    {
+        return $this->trackShippedOrder;
     }
 
     public function getCustomerCustomFieldMapping(): array
