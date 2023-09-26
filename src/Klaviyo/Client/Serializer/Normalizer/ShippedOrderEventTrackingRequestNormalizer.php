@@ -25,7 +25,7 @@ class ShippedOrderEventTrackingRequestNormalizer extends ConfigurableOrderEventT
     {
         $normalizedData = parent::normalize($object);
 
-        //$normalizedData['properties']['Reason'] = $object->getReason();
+        $normalizedData['properties']['Reason'] = $object->getReason();
 
         return $normalizedData;
     }

@@ -41,7 +41,7 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
     {
         return [
             'state_machine.order.state_changed' => 'onStateChange',
-            'state_machine.order_delivery.state_changed' => 'onOrderDeliveryStateChange',
+            'state_machine.order_delivery.state_changed' => 'onStateChange',
             'state_machine.order_transaction.state_changed' => 'onTransactionStateChanged'
         ];
     }
@@ -60,6 +60,7 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
         if ($configuration === null) {
             return;
         }
+        var_dump("stex-mtav");
 
         $supportedStates = [
             OrderStates::STATE_COMPLETED => $configuration->isTrackFulfilledOrder(),
