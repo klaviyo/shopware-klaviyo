@@ -8,7 +8,7 @@ use Klaviyo\Integration\Klaviyo\Gateway\Result\OrderTrackingResult;
 use Klaviyo\Integration\System\Tracking\Event\Order\{OrderEvent, OrderTrackingEventsBag};
 use Klaviyo\Integration\System\Tracking\EventsTrackerInterface as Tracker;
 use Od\Scheduler\Model\Job\{JobHandlerInterface, JobResult, Message};
-use Shopware\Core\Checkout\Order\{OrderEntity, OrderStates};
+use Shopware\Core\Checkout\Order\{Aggregate\OrderDelivery\OrderDeliveryStates, OrderEntity, OrderStates};
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -45,7 +45,8 @@ class OrderSyncOperation implements JobHandlerInterface
             Tracker::ORDER_EVENT_REFUNDED => new OrderTrackingEventsBag(),
             Tracker::ORDER_EVENT_CANCELED => new OrderTrackingEventsBag(),
             Tracker::ORDER_EVENT_FULFILLED => new OrderTrackingEventsBag(),
-            Tracker::ORDER_EVENT_PAID => new OrderTrackingEventsBag()
+            Tracker::ORDER_EVENT_PAID => new OrderTrackingEventsBag(),
+            Tracker::ORDER_EVENT_SHIPPED => new OrderTrackingEventsBag()
         ];
 
         $orderCriteria = new Criteria();
@@ -64,8 +65,6 @@ class OrderSyncOperation implements JobHandlerInterface
         /** @var OrderEntity $order */
         foreach ($orderCollection as $order) {
 
-            dd($order->getDeliveries()->first()->getStateMachineState()->getName());
-
             $eventsBags[Tracker::ORDER_EVENT_PLACED]->add(new OrderEvent($order, $order->getCreatedAt()));
             $eventsBags[Tracker::ORDER_EVENT_ORDERED_PRODUCT]->add(new OrderEvent($order, $order->getCreatedAt()));
 
@@ -78,6 +77,24 @@ class OrderSyncOperation implements JobHandlerInterface
             ) {
                 $happenedAt = $lastTransaction->getUpdatedAt();
                 $eventsBags[Tracker::ORDER_EVENT_PAID]->add(new OrderEvent($order, $happenedAt));
+            }
+
+            $lastDelivery = $order->getDeliveries()->last();
+            $deliveryStateName = $lastDelivery->getStateMachineState()->getTechnicalName();
+
+            var_dump("````````````");
+             var_dump($deliveryStateName);
+             var_dump($transactionStateName);
+             var_dump(OrderDeliveryStates::STATE_SHIPPED);
+             var_dump("------------");
+
+            if ($deliveryStateName === OrderDeliveryStates::STATE_SHIPPED)
+            {
+                var_dump("````````!!!!````");
+                $happenedAt = $lastDelivery->getUpdatedAt();
+                var_dump($happenedAt);
+                $eventsBags[Tracker::ORDER_EVENT_SHIPPED]->add(new OrderEvent($order, $happenedAt));
+                var_dump("-------!!!!!-----");
             }
 
             if ($order->getStateMachineState()->getTechnicalName() === OrderStates::STATE_COMPLETED) {
@@ -96,6 +113,7 @@ class OrderSyncOperation implements JobHandlerInterface
             }
 
         }
+
 
         if ($orderCollection->count() !== 0) {
             $result->addMessage(new Message\InfoMessage('Start sending tracking requests...'));
@@ -150,6 +168,9 @@ class OrderSyncOperation implements JobHandlerInterface
                 break;
             case Tracker::ORDER_EVENT_PAID:
                 $trackingResult = $this->eventsTracker->trackPaiedOrders($context, $eventsBag);
+                break;
+            case Tracker::ORDER_EVENT_SHIPPED:
+                $trackingResult = $this->eventsTracker->trackShippedOrder($context, $eventsBag);
                 break;
             default:
                 $trackingResult = new OrderTrackingResult();
