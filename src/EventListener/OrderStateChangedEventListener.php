@@ -59,7 +59,6 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
         if ($configuration === null) {
             return;
         }
-        var_dump("stex-mtav");
 
         $supportedStates = [
             OrderStates::STATE_COMPLETED => $configuration->isTrackFulfilledOrder(),
