@@ -82,19 +82,10 @@ class OrderSyncOperation implements JobHandlerInterface
             $lastDelivery = $order->getDeliveries()->last();
             $deliveryStateName = $lastDelivery->getStateMachineState()->getTechnicalName();
 
-            var_dump("````````````");
-             var_dump($deliveryStateName);
-             var_dump($transactionStateName);
-             var_dump(OrderDeliveryStates::STATE_SHIPPED);
-             var_dump("------------");
-
             if ($deliveryStateName === OrderDeliveryStates::STATE_SHIPPED)
             {
-                var_dump("````````!!!!````");
                 $happenedAt = $lastDelivery->getUpdatedAt();
-                var_dump($happenedAt);
                 $eventsBags[Tracker::ORDER_EVENT_SHIPPED]->add(new OrderEvent($order, $happenedAt));
-                var_dump("-------!!!!!-----");
             }
 
             if ($order->getStateMachineState()->getTechnicalName() === OrderStates::STATE_COMPLETED) {
