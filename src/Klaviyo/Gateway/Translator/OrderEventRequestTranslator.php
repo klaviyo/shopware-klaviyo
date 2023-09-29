@@ -13,6 +13,7 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEv
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\DTO\OrderProductItemInfoCollection;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\FulfilledOrderEventTrackingRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\PaidOrderEventTrackingRequest;
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\ShippedOrderEventTrackingRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\PlacedOrderEventTrackingRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\RefundedOrderEventTrackingRequest;
 use Klaviyo\Integration\Klaviyo\Client\Exception\OrderItemProductNotFound;
@@ -35,6 +36,7 @@ class OrderEventRequestTranslator
     private const ORDER_CANCELLED_REASON = 'Cancelled by shopware 6';
     private const ORDER_REFUND_REASON = 'Refund by shopware 6';
     private const ORDER_PAID_REASON = 'Paid by shopware 6';
+    private const ORDER_SHIPPED_REASON = 'Paid by shopware 6';
 
     private EntityRepositoryInterface $productRepository;
     private EntityRepositoryInterface $orderAddressRepository;
@@ -279,6 +281,22 @@ class OrderEventRequestTranslator
         $result = $this->translateToOrderEventTrackingRequest(
             $context,
             FulfilledOrderEventTrackingRequest::class,
+            $orderEntity,
+            $eventHappenedDateTime
+        );
+
+        return $result;
+    }
+
+    public function translateToShippedOrderEventRequest(
+        Context $context,
+        OrderEntity $orderEntity,
+        \DateTimeInterface $eventHappenedDateTime
+    ): ShippedOrderEventTrackingRequest {
+        /** @var ShippedOrderEventTrackingRequest $result */
+        $result = $this->translateToOrderEventTrackingRequest(
+            $context,
+            ShippedOrderEventTrackingRequest::class,
             $orderEntity,
             $eventHappenedDateTime
         );

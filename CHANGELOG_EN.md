@@ -1,3 +1,25 @@
+# 1.1.3
+# Fix: The "Refunded Order" event is now displayed after clicking the "Synchronized historical events" button
+# Fix: Resolving the issue where task manager can come to a standstill/stop.
+
+# 1.1.2
+# Fix: "Paid Order" event was not displayed for non-paid order after historical synchronization
+# Fix: Resolved the issue when events are duplicated in the profile Activity Logs after each historical synchronization
+# Fix: Removed dump(extensionData) call method in twig file
+
+# 1.1.1
+# Fix: Fixed the issue where some customers may see incorrect dates of the events passed to Klaviyo service ( fulfilled order events etc... ).
+
+
+# 1.1.0
+# Fix: Fixed Klaviyo event sync when tracking checkboxes are unchecked in the admin panel.
+# Fix: Correction of historical data order statuses synchronization.
+# Fix: Resolved an issue with the "Back in stock" modal.
+# New: A new endpoint has been added, thanks to which you can find out the current version of the installed Klaviyo plugin.
+
+# 1.0.19
+# Feature: Added ability to change order identification variable that will be sent to the klaviyo ( was before: order hash | now you can choose either: order hash OR order id )
+
 # 1.0.18
 # Fix: Fixed the issue where Back In Stock at Product Pate was not sending data to klaviyo
 
