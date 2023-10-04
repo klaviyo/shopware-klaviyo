@@ -120,7 +120,8 @@
                 "helpText": "Cookie Consent",
                 "nothingLabel": "Nothing",
                 "shopwareLabel": "Shopware Default",
-                "cookieBotLabel": "CookieBot"
+                "cookieBotLabel": "CookieBot",
+                "consentManagerLabel": "Consent Manager"
             },
             "trackDeletedAccountOrders": {
                 "label": "Übersicht über die Bestellungen eines gelöschten Kontos",
