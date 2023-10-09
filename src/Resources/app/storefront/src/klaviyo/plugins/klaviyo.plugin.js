@@ -90,19 +90,29 @@ export default class KlaviyoTracking extends Plugin {
         }
     }
 
-    isAllowToTrack() {
-        if (this.options.cookieConsent === 'nothing') {
-            // In this config, always loading klaviyo cookies
-            return true;
-        } else if (this.options.cookieConsent && this.options.cookieConsent === 'shopware') {
-            // In this config, shopware default cookies is checked
-            return KlaviyoCookie.getCookie('od-klaviyo-track-allow');
-        } else if (this.options.cookieConsent && this.options.cookieConsent === 'cookiebot') {
-            // In this config, cookiebot cookies is checked
-            return Cookiebot.consent.marketing && Cookiebot.consent && Cookiebot.consent.marketing
+    onKlaviyoCookieConsentManagerAllowed() {
+        if (KlaviyoCookie.getCookie('od-klaviyo-track-allow') === null) {
+            KlaviyoCookie.setCookie('od-klaviyo-track-allow', 1, 30);
         }
 
-        return false;
+        this.onKlaviyoCookieConsentAllowed();
+    }
+
+    isAllowToTrack() {
+        switch (this.options.cookieConsent) {
+            case 'nothing':
+                // In this config, always loading klaviyo cookies
+                return true;
+            case 'shopware':
+            case 'consentmanager':
+                // In this config, shopware default cookies is checked
+                return KlaviyoCookie.getCookie('od-klaviyo-track-allow');
+            case 'cookiebot':
+                // In this config, cookiebot cookies is checked
+                return Cookiebot.consent.marketing && Cookiebot.consent && Cookiebot.consent.marketing;
+            default:
+                return false;
+        }
     }
 
     isPageInteractionRequired() {
