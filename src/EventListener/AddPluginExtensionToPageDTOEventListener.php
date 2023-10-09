@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\EventListener;
 
@@ -6,6 +8,7 @@ use Klaviyo\Integration\Configuration\Configuration;
 use Klaviyo\Integration\Entity\Helper\NewsletterSubscriberHelper;
 use Klaviyo\Integration\Klaviyo\FrontendApi\Translator;
 use Klaviyo\Integration\Klaviyo\Gateway\GetListIdByListNameInterface;
+use Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\CustomerPropertiesTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\NewsletterSubscriberPropertiesTranslator;
 use Klaviyo\Integration\Model\Channel\GetValidChannelConfig;
@@ -32,6 +35,7 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
     private RequestStack $requestStack;
     private NewsletterSubscriberPropertiesTranslator $newsletterSubscriberPropertiesTranslator;
     private GetListIdByListNameInterface $getListIdByListName;
+    private KlaviyoGateway $klaviyoGateway;
 
     // TODO: make some args as proxy
     public function __construct(
@@ -43,7 +47,8 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
         NewsletterSubscriberHelper $newsletterSubscriberHelper,
         RequestStack $requestStack,
         NewsletterSubscriberPropertiesTranslator $newsletterSubscriberPropertiesTranslator,
-        GetListIdByListNameInterface $getListIdByListName
+        GetListIdByListNameInterface $getListIdByListName,
+        KlaviyoGateway $klaviyoGateway
     ) {
         $this->getValidChannelConfig = $getValidChannelConfig;
         $this->customerPropertiesTranslator = $customerPropertiesTranslator;
@@ -54,6 +59,7 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
         $this->requestStack = $requestStack;
         $this->newsletterSubscriberPropertiesTranslator = $newsletterSubscriberPropertiesTranslator;
         $this->getListIdByListName = $getListIdByListName;
+        $this->klaviyoGateway = $klaviyoGateway;
     }
 
     public static function getSubscribedEvents(): array
@@ -61,7 +67,7 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
         return [
             GenericPageLoadedEvent::class => 'onPageLoaded',
             ProductPageLoadedEvent::class => 'onProductPageLoaded',
-            CheckoutConfirmPageLoadedEvent::class => 'onCheckoutPageLoaded'
+            CheckoutConfirmPageLoadedEvent::class => 'onCheckoutPageLoaded',
         ];
     }
 
@@ -70,13 +76,13 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
         try {
             $salesChannelContext = $event->getSalesChannelContext();
             $configuration = $this->getValidChannelConfig->execute($salesChannelContext->getSalesChannel()->getId());
-            if ($configuration === null) {
+            if (null === $configuration) {
                 return;
             }
 
             $event->getPage()->addExtension(self::PDP_EXTENSION, new ArrayStruct([
                 'configuration' => $configuration,
-                'customerIdentity' => $this->getCustomerIdentity($salesChannelContext)
+                'customerIdentity' => $this->getCustomerIdentity($salesChannelContext),
             ]));
         } catch (\Throwable $throwable) {
             $this->logger->error(
@@ -108,7 +114,7 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
                 'listId' => $this->getListIdByListName->execute(
                     $event->getSalesChannelContext()->getSalesChannel(),
                     $configuration->getSubscribersListName()
-                )
+                ),
             ];
         } catch (\Throwable $throwable) {
             $this->logger->error(
@@ -121,19 +127,25 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
         }
     }
 
-    public function onCheckoutPageLoaded(CheckoutConfirmPageLoadedEvent $event)
+    public function onCheckoutPageLoaded(CheckoutConfirmPageLoadedEvent $event): void
     {
+        $config = $this->getValidChannelConfig->execute($event->getSalesChannelContext()->getSalesChannelId());
+
+        if (null === $config || !$config->isTrackStartedCheckout()) {
+            return;
+        }
+
         if (!$event->getPage()->hasExtension(self::PDP_EXTENSION)) {
             return;
         }
 
         try {
             $context = $event->getSalesChannelContext();
+            $salesChannelContext = $event->getSalesChannelContext();
             $cart = $event->getPage()->getCart();
 
-            $extensionData = $event->getPage()->getExtension(self::PDP_EXTENSION);
             $eventDTO = $this->startedCheckoutEventTrackingRequestTranslator->translate($context, $cart);
-            $extensionData['startedCheckoutEventTrackingRequest'] = $eventDTO;
+            $this->klaviyoGateway->trackStartedCheckoutRequests($salesChannelContext->getSalesChannelId(), [$eventDTO]);
         } catch (\Throwable $throwable) {
             $this->logger->error(
                 'Could not track Checkout started event after the item qty updated',
@@ -153,9 +165,12 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
                 $customer
             );
         } elseif ($subscriberId) {
-            $subscriber = $this->newsletterSubscriberHelper->getSubscriber($subscriberId, $channelContext->getContext());
+            $subscriber = $this->newsletterSubscriberHelper->getSubscriber(
+                $subscriberId,
+                $channelContext->getContext()
+            );
 
-            if ($subscriber !== null) {
+            if (null !== $subscriber) {
                 $customerIdentity = $this->newsletterSubscriberPropertiesTranslator->translateSubscriber($subscriber);
             }
         }
