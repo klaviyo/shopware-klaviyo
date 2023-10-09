@@ -1,3 +1,8 @@
+# 1.2.0
+# Feature: Kompatibilität mit „Consentmanager“ von Consentmanager.net hinzugefügt
+# Verbesserung: Die Implementierung des Ereignisses „Checkout gestartet“ im Plugin wurde für eine bessere Kompatibilität mit Checkout-Anpassungen und Plugins (z. B. 1-Schritt-Checkout und andere) überarbeitet.
+# HINWEIS: Wenn Sie beim Auschecken umfangreiche Anpassungen der Plugin-Dateien vorgenommen haben, empfehlen wir Ihnen, die Anpassungen auf Ihrer Seite zu überprüfen und zu überprüfen.   
+
 # 1.1.3
 # Fix: Das Ereignis „Rückerstattete Bestellung" wird jetzt angezeigt, nachdem auf die Schaltfläche „Historische Ereignisse synchronisiert" geklickt wurde
 # Fix: Behebung des Problems, bei dem der Task-Manager zum Stillstand kommen/stoppen kann.

@@ -1,3 +1,8 @@
+# 1.2.0
+# Feature: Added compatibility with "Consentmanager" from consentmanager.net
+# Improvement: Re-factored "checkout started" event implementation in plugin for better compatibility with Checkout customizations and plugins ( like 1 step checkout and others ).
+# NOTE: If you have extensive customizations of plugin files at checkout we recommend you review and verify customizations on your side.
+
 # 1.1.3
 # Fix: The "Refunded Order" event is now displayed after clicking the "Synchronized historical events" button
 # Fix: Resolving the issue where task manager can come to a standstill/stop.
