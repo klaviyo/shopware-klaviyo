@@ -6,7 +6,6 @@ use Klaviyo\Integration\Async\Message\FullOrderSyncMessage;
 use Klaviyo\Integration\Model\Channel\GetValidChannels;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
 use Od\Scheduler\Model\Job\{GeneratingHandlerInterface, JobHandlerInterface, JobResult, Message};
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\{EntityRepositoryInterface, Search};
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
