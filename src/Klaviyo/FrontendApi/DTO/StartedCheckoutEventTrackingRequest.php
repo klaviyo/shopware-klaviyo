@@ -18,7 +18,7 @@ class StartedCheckoutEventTrackingRequest extends EventTrackingRequest implement
         string $checkoutTotal,
         CheckoutLineItemInfoCollection $lineItemInfoCollection,
         \DateTimeInterface $time,
-        ?CustomerProperties $customerProperties,
+        ?CustomerProperties $customerProperties
     ) {
         parent::__construct($eventId, $time, $customerProperties);
 
