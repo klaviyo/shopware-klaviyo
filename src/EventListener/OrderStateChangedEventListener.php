@@ -13,34 +13,37 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryDefinition
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryStates;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\{EntityRepositoryInterface, Search\Criteria};
+use Shopware\Core\Framework\DataAbstractionLayer\{EntityRepository, Search\Criteria};
 use Shopware\Core\System\StateMachine\Event\StateMachineStateChangeEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class OrderStateChangedEventListener implements EventSubscriberInterface
 {
     private EventsTrackerInterface $eventsTracker;
-    private EntityRepositoryInterface $orderRepository;
-    private EntityRepositoryInterface $orderTransactionRepository;
+    private EntityRepository $orderRepository;
+    private EntityRepository $orderTransactionRepository;
     private GetValidChannelConfig $getValidChannelConfig;
+    private EntityRepository $orderDeliveryRepository;
 
     public function __construct(
         EventsTrackerInterface $eventsTracker,
-        EntityRepositoryInterface $orderRepository,
-        EntityRepositoryInterface $orderTransactionRepository,
-        GetValidChannelConfig $getValidChannelConfig
+        EntityRepository $orderRepository,
+        EntityRepository $orderTransactionRepository,
+        GetValidChannelConfig $getValidChannelConfig,
+        EntityRepository $orderDeliveryRepository
     ) {
         $this->eventsTracker = $eventsTracker;
         $this->orderRepository = $orderRepository;
         $this->orderTransactionRepository = $orderTransactionRepository;
         $this->getValidChannelConfig = $getValidChannelConfig;
+        $this->orderDeliveryRepository = $orderDeliveryRepository;
     }
 
     public static function getSubscribedEvents()
     {
         return [
             'state_machine.order.state_changed' => 'onStateChange',
-            'state_machine.order_delivery.state_changed' => 'onStateChange',
+            'state_machine.order_delivery.state_changed' => 'onDeliveryStateChanged',
             'state_machine.order_transaction.state_changed' => 'onTransactionStateChanged'
         ];
     }
@@ -76,7 +79,7 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
             $this->trackEvent($event->getContext(), $order, $state->getTechnicalName());
         }
     }
-    // TODO: check do we actually need this method?
+
     public function onTransactionStateChanged(StateMachineStateChangeEvent $event)
     {
         $orderTransactionCriteria = new Criteria([$event->getTransition()->getEntityId()]);
@@ -106,6 +109,42 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
                 ($state->getTechnicalName() === OrderTransactionStates::STATE_REFUNDED && $configuration->isTrackRefundedOrder()) ||
                 ($state->getTechnicalName() === OrderTransactionStates::STATE_PAID && $configuration->isTrackPaidOrder())
             )
+        ) {
+            $this->trackEvent($event->getContext(), $order, $state->getTechnicalName());
+        }
+    }
+
+    public function onDeliveryStateChanged(StateMachineStateChangeEvent $event)
+    {
+        $orderDeliveryCriteria = new Criteria([$event->getTransition()->getEntityId()]);
+        $orderDeliveryCriteria->addAssociation('order');
+
+        /** @var OrderDeliveryEntity $orderDelivery */
+        $orderDelivery = $this->orderDeliveryRepository
+            ->search($orderDeliveryCriteria, $event->getContext())
+            ->first();
+
+        if(!($orderDelivery instanceof OrderDeliveryEntity)) {
+            return;
+        }
+
+        $order = $orderDelivery->getOrder();
+
+        if (!($order instanceof OrderEntity)) {
+            return;
+        }
+
+        $configuration = $this->getValidChannelConfig->execute($order->getSalesChannelId());
+
+        if ($configuration === null) {
+            return;
+        }
+
+        $state = $event->getNextState();
+
+        if ($event->getTransitionSide() === StateMachineStateChangeEvent::STATE_MACHINE_TRANSITION_SIDE_ENTER
+            && $event->getTransition()->getEntityName() === OrderDeliveryDefinition::ENTITY_NAME
+            && ($state->getTechnicalName() === OrderDeliveryStates::STATE_SHIPPED && $configuration->isTrackShippedOrder())
         ) {
             $this->trackEvent($event->getContext(), $order, $state->getTechnicalName());
         }
