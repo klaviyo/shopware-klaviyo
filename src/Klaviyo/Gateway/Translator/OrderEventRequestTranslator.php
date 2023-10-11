@@ -36,7 +36,6 @@ class OrderEventRequestTranslator
     private const ORDER_CANCELLED_REASON = 'Cancelled by shopware 6';
     private const ORDER_REFUND_REASON = 'Refund by shopware 6';
     private const ORDER_PAID_REASON = 'Paid by shopware 6';
-    private const ORDER_SHIPPED_REASON = 'Paid by shopware 6';
 
     private EntityRepository $productRepository;
     private EntityRepository $orderAddressRepository;
