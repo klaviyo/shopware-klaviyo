@@ -12,7 +12,7 @@ use Shopware\Core\Checkout\Cart\Order\OrderConverter;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -23,8 +23,8 @@ use Throwable;
 
 class RestorerService implements RestorerServiceInterface
 {
-    private EntityRepositoryInterface $mappingRepository;
-    private EntityRepositoryInterface $orderRepository;
+    private EntityRepository $mappingRepository;
+    private EntityRepository $orderRepository;
     private CartRuleLoader $cartRuleLoader;
     private CartService $cartService;
     private OrderConverter $orderConverter;
@@ -32,8 +32,8 @@ class RestorerService implements RestorerServiceInterface
     private EntityRepository $customerRepository;
 
     public function __construct(
-        EntityRepositoryInterface $mappingRepository,
-        EntityRepositoryInterface $orderRepository,
+        EntityRepository $mappingRepository,
+        EntityRepository $orderRepository,
         CartRuleLoader $cartRuleLoader,
         CartService $cartService,
         OrderConverter $orderConverter,
@@ -152,7 +152,7 @@ class RestorerService implements RestorerServiceInterface
                 $context->assign(['customerObject' => $customer]);
             }
         }
-        
+
         $cart = $this->orderConverter->convertToCart($order, $context->getContext());
         $this->restoreByCart($cart, $context);
     }
