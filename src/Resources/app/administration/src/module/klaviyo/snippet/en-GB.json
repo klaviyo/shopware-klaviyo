@@ -167,6 +167,10 @@
                 "label": "Track Paid Order",
                 "helpText": "Do we need to send \"Paid Order Event\" to Klaviyo?\nDecision will also affect Synchronization of the historical events"
             },
+            "trackShippedOrder": {
+                "label": "Track Shipped Order",
+                "helpText": "Do we need to send \"Shipped Order Event\" to Klaviyo?\nDecision will also affect Synchronization of the historical events"
+            },
             "trackSubscribedToBackInStock": {
                 "label": "Track Back In Stock",
                 "helpText": "Do we need to send \"Back In Stock Event\" to Klaviyo?\n"
