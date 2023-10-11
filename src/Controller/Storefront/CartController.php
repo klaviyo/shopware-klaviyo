@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Klaviyo\Integration\Controller\Storefront;
 
 use Klaviyo\Integration\Storefront\Checkout\Cart\RestorerService\RestorerServiceInterface;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\StorefrontController;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * @RouteScope(scopes={"storefront"})
+ * @Route(defaults={"_routeScope"={"storefront"}})
  */
 class CartController extends StorefrontController
 {
@@ -31,7 +30,7 @@ class CartController extends StorefrontController
     {
         $this->restorerService->restore($mappingId, $context);
 
-        if ($context->customerId) {
+        if (isset($context->customerId)) {
             $request->getSession()->set('customerId', $context->customerId);
         }
 
