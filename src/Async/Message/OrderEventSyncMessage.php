@@ -16,8 +16,8 @@ class OrderEventSyncMessage extends AbstractBasicMessage implements ParentAwareM
         string $jobId,
         string $parentJobId,
         array $eventIds,
-        ?Context $context,
-        ?string $name = null
+        ?string $name = null,
+        ?Context $context = null
     ) {
         parent::__construct($jobId, $name, $context);
         $this->eventIds = $eventIds;
