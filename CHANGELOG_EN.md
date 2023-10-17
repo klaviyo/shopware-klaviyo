@@ -1,3 +1,7 @@
+# 1.3.0
+# New: Cart restore link now fills up the address data that customer has provided before abandoning the cart ( if applicable ).
+# New: Added option to select the mapping for their order as well as delivery status as a mandatory field in a dropdown menu so that this status also arrives in Klaviyo.
+
 # 1.2.0
 # Feature: Added compatibility with "Consentmanager" from consentmanager.net
 # Improvement: Re-factored "checkout started" event implementation in plugin for better compatibility with Checkout customizations and plugins ( like 1 step checkout and others ).
