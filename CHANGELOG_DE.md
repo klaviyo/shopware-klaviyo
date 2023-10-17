@@ -1,3 +1,6 @@
+# 2.5.0
+# Neu: Option hinzugefügt, um die Zuordnung für ihre Bestellung sowie den Lieferstatus als Pflichtfeld in einem Dropdown-Menü auszuwählen, damit dieser Status auch in Klaviyo ankommt.
+
 # 2.4.0
 # Feature: Kompatibilität mit „Consentmanager“ von Consentmanager.net hinzugefügt
 # Verbesserung: Die Implementierung des Ereignisses „Checkout gestartet“ im Plugin wurde für eine bessere Kompatibilität mit Checkout-Anpassungen und Plugins (z. B. 1-Schritt-Checkout und andere) überarbeitet.
