@@ -7,6 +7,7 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEv
 use Klaviyo\Integration\Klaviyo\Client\Configuration\ConfigurationInterface;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer\AddProfilesToListResponseDenormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer\CollectionDenormalizer;
+use Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer\GetAccountDenormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer\GetExcludedSubscribersResponseDenormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer\GetListProfilesResponseDenormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer\GetProfileIdResponseDenormalizer;
@@ -23,13 +24,13 @@ use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\IdentifyProfileRequ
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\OrderedProductEventTrackingRequestNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\ConfigurableOrderEventTrackingRequestNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\PaidOrderEventTrackingRequestNormalizer;
-use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\ShippedOrderEventTrackingRequestNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\RefundedOrderEventTrackingRequestNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\RemoveProfilesFromListRequestNormalizer;
+use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\ShippedOrderEventTrackingRequestNormalizer;
+use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\StartedCheckoutEventTrackingRequestNormalizer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
-use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\StartedCheckoutEventTrackingRequestNormalizer;
 
 class SerializerFactory
 {
@@ -59,7 +60,8 @@ class SerializerFactory
                 new GetExcludedSubscribersResponseDenormalizer(),
                 new GetProfileIdResponseDenormalizer(),
                 new UpdateProfileResponseDenormalizer(),
-                new StartedCheckoutEventTrackingRequestNormalizer($configuration)
+                new StartedCheckoutEventTrackingRequestNormalizer($configuration),
+                new GetAccountDenormalizer()
             ],
             [
                 new JsonEncoder()
