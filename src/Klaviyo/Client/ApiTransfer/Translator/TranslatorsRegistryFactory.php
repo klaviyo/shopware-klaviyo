@@ -86,6 +86,9 @@ class TranslatorsRegistryFactory
         $registry->addTranslator(
             new UpdateProdileApiTransferTranslator($serializer, $configuration)
         );
+        $registry->addTranslator(
+            new GetAccountApiTransferTranslator($serializer, $configuration)
+        );
 
         return $registry;
     }
