@@ -56,6 +56,10 @@ Component.register('klaviyo-integration-settings-general', {
                 {
                     name: 'CookieBot',
                     value: 'cookiebot'
+                },
+                {
+                    name: 'ConsentManager',
+                    value: 'consentmanager'
                 }
             ]
         };
@@ -99,6 +103,10 @@ Component.register('klaviyo-integration-settings-general', {
                 {
                     label: this.$tc('klaviyo-integration-settings.configs.cookieConsent.cookieBotLabel'),
                     value: 'cookiebot'
+                },
+                {
+                    label: this.$tc('klaviyo-integration-settings.configs.cookieConsent.consentManagerLabel'),
+                    value: 'consentmanager'
                 }
             ]
         }
@@ -126,6 +134,7 @@ Component.register('klaviyo-integration-settings-general', {
                     trackCancelledOrder: true,
                     trackRefundedOrder: true,
                     trackPaidOrder: false,
+                    trackShippedOrder: false,
                     trackSubscribedToBackInStock: true,
                     isInitializeKlaviyoAfterInteraction: true,
                     popUpOpenBtnColor: '',

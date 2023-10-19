@@ -1,3 +1,12 @@
+# 1.3.0
+# Neu: Der Link zur Warenkorb-Wiederherstellung füllt jetzt die Adressdaten aus, die der Kunde vor dem Verlassen des Warenkorbs angegeben hat (falls zutreffend).
+# Neu: Option hinzugefügt, um die Zuordnung für ihre Bestellung sowie den Lieferstatus als Pflichtfeld in einem Dropdown-Menü auszuwählen, damit dieser Status auch in Klaviyo ankommt.
+
+# 1.2.0
+# Feature: Kompatibilität mit „Consentmanager“ von Consentmanager.net hinzugefügt
+# Verbesserung: Die Implementierung des Ereignisses „Checkout gestartet“ im Plugin wurde für eine bessere Kompatibilität mit Checkout-Anpassungen und Plugins (z. B. 1-Schritt-Checkout und andere) überarbeitet.
+# HINWEIS: Wenn Sie beim Auschecken umfangreiche Anpassungen der Plugin-Dateien vorgenommen haben, empfehlen wir Ihnen, die Anpassungen auf Ihrer Seite zu überprüfen und zu überprüfen.   
+
 # 1.1.3
 # Fix: Das Ereignis „Rückerstattete Bestellung" wird jetzt angezeigt, nachdem auf die Schaltfläche „Historische Ereignisse synchronisiert" geklickt wurde
 # Fix: Behebung des Problems, bei dem der Task-Manager zum Stillstand kommen/stoppen kann.

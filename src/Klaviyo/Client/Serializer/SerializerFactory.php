@@ -23,11 +23,13 @@ use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\IdentifyProfileRequ
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\OrderedProductEventTrackingRequestNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\ConfigurableOrderEventTrackingRequestNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\PaidOrderEventTrackingRequestNormalizer;
+use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\ShippedOrderEventTrackingRequestNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\RefundedOrderEventTrackingRequestNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\RemoveProfilesFromListRequestNormalizer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
+use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\StartedCheckoutEventTrackingRequestNormalizer;
 
 class SerializerFactory
 {
@@ -43,6 +45,7 @@ class SerializerFactory
                 new CanceledOrderEventTrackingRequestNormalizer($configuration),
                 new RefundedOrderEventTrackingRequestNormalizer($configuration),
                 new PaidOrderEventTrackingRequestNormalizer($configuration),
+                new ShippedOrderEventTrackingRequestNormalizer($configuration),
                 new AddedToCartEventTrackingRequestNormalizer($configuration),
                 new AddProfilesToListRequestsNormalizer($configuration),
                 new RemoveProfilesFromListRequestNormalizer($configuration),
@@ -55,7 +58,8 @@ class SerializerFactory
                 new IdentifyProfileRequestNormalizer($configuration),
                 new GetExcludedSubscribersResponseDenormalizer(),
                 new GetProfileIdResponseDenormalizer(),
-                new UpdateProfileResponseDenormalizer()
+                new UpdateProfileResponseDenormalizer(),
+                new StartedCheckoutEventTrackingRequestNormalizer($configuration)
             ],
             [
                 new JsonEncoder()

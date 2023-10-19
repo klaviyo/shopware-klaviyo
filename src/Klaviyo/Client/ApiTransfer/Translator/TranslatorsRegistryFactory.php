@@ -7,12 +7,14 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\Ordered
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\CanceledOrderEventTrackingRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\FulfilledOrderEventTrackingRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\PaidOrderEventTrackingRequest;
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\ShippedOrderEventTrackingRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\PlacedOrderEventTrackingRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\RefundedOrderEventTrackingRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator\Profiles\Search\SearchProfileIdApiTransferTranslator;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator\Profiles\Update\UpdateProdileApiTransferTranslator;
 use Klaviyo\Integration\Klaviyo\Client\Configuration\ConfigurationInterface;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\SerializerFactory;
+use Klaviyo\Integration\Klaviyo\FrontendApi\DTO\StartedCheckoutEventTrackingRequest;
 
 class TranslatorsRegistryFactory
 {
@@ -52,7 +54,13 @@ class TranslatorsRegistryFactory
             new GenericEventTrackingApiTransferTranslator($serializer, $configuration, PaidOrderEventTrackingRequest::class)
         );
         $registry->addTranslator(
+            new GenericEventTrackingApiTransferTranslator($serializer, $configuration, ShippedOrderEventTrackingRequest::class)
+        );
+        $registry->addTranslator(
             new GenericEventTrackingApiTransferTranslator($serializer, $configuration, AddedToCartEventTrackingRequest::class)
+        );
+        $registry->addTranslator(
+            new GenericEventTrackingApiTransferTranslator($serializer, $configuration, StartedCheckoutEventTrackingRequest::class)
         );
         $registry->addTranslator(
             new AddProfilesToListApiTransferTranslator($serializer, $configuration)

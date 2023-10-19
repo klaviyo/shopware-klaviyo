@@ -120,7 +120,8 @@
                 "helpText": "Cookie Consent",
                 "nothingLabel": "Nothing",
                 "shopwareLabel": "Shopware Default",
-                "cookieBotLabel": "CookieBot"
+                "cookieBotLabel": "CookieBot",
+                "consentManagerLabel": "Consent Manager"
             },
             "trackDeletedAccountOrders": {
                 "label": "Übersicht über die Bestellungen eines gelöschten Kontos",
@@ -165,6 +166,10 @@
             "trackRefundedOrder": {
                 "label": "Bezahlt Bestellung tracken",
                 "helpText": "Soll das \"Paid Order Event\" zu Klaviyo übertragen werden?\nDas beeinflusst auch histoirische Events."
+            },
+            "trackShippedOrder": {
+                "label": "Ausgeliefert Bestellung tracken",
+                "helpText": "Soll das \"Shipped Order Event\" zu Klaviyo übertragen werden?\nDas beeinflusst auch histoirische Events."
             },
             "trackSubscribedToBackInStock": {
                 "label": "Wieder auf Lager tracken",

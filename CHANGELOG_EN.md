@@ -1,3 +1,12 @@
+# 1.3.0
+# New: Cart restore link now fills up the address data that customer has provided before abandoning the cart ( if applicable ).
+# New: Added option to select the mapping for their order as well as delivery status as a mandatory field in a dropdown menu so that this status also arrives in Klaviyo.
+
+# 1.2.0
+# Feature: Added compatibility with "Consentmanager" from consentmanager.net
+# Improvement: Re-factored "checkout started" event implementation in plugin for better compatibility with Checkout customizations and plugins ( like 1 step checkout and others ).
+# NOTE: If you have extensive customizations of plugin files at checkout we recommend you review and verify customizations on your side.
+
 # 1.1.3
 # Fix: The "Refunded Order" event is now displayed after clicking the "Synchronized historical events" button
 # Fix: Resolving the issue where task manager can come to a standstill/stop.

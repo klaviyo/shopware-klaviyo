@@ -12,26 +12,33 @@ use Shopware\Core\Checkout\Cart\Order\OrderConverter;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
+use Shopware\Core\Checkout\Customer\CustomerEntity;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Throwable;
 
 class RestorerService implements RestorerServiceInterface
 {
-    private EntityRepositoryInterface $mappingRepository;
-    private EntityRepositoryInterface $orderRepository;
+    private EntityRepository $mappingRepository;
+    private EntityRepository $orderRepository;
     private CartRuleLoader $cartRuleLoader;
     private CartService $cartService;
     private OrderConverter $orderConverter;
     private LoggerInterface $logger;
+    private EntityRepository $customerRepository;
 
     public function __construct(
-        EntityRepositoryInterface $mappingRepository,
-        EntityRepositoryInterface $orderRepository,
+        EntityRepository $mappingRepository,
+        EntityRepository $orderRepository,
         CartRuleLoader $cartRuleLoader,
         CartService $cartService,
         OrderConverter $orderConverter,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        EntityRepository $customerRepository
     ) {
         $this->mappingRepository = $mappingRepository;
         $this->orderRepository = $orderRepository;
@@ -39,6 +46,7 @@ class RestorerService implements RestorerServiceInterface
         $this->cartService = $cartService;
         $this->orderConverter = $orderConverter;
         $this->logger = $logger;
+        $this->customerRepository = $customerRepository;
     }
 
     public function restore(string $mappingId, SalesChannelContext $context): void
@@ -59,6 +67,40 @@ class RestorerService implements RestorerServiceInterface
                 ContextHelper::createContextFromException($throwable)
             );
         }
+    }
+
+    public function registerCustomerByRestoreCartLink(SalesChannelContext $context): RequestDataBag
+    {
+        $data = new RequestDataBag();
+
+        if (!isset($context->customerObject)) {
+            return $data;
+        }
+
+        $customer = $context->customerObject;
+
+        $customerShippingAddress = $customer->getDefaultShippingAddress();
+        $customerBillingAddress = $customer->getDefaultBillingAddress();
+
+        $data->set('salutationId', $customerBillingAddress->getSalutationId());
+        $data->set('firstName', $customerBillingAddress->getFirstName());
+        $data->set('lastName', $customerBillingAddress->getLastName());
+        $data->set('email', $customer->getEmail());
+
+        $data->set('redirectTo', "frontend.checkout.confirm.page");
+        $data->set('redirectParameters', "");
+        $data->set('errorRoute', "frontend.checkout.register.page");
+        $data->set('accountType', "");
+        $data->set('shopware_surname_confirm', "");
+        $data->set('guest', true);
+
+        $billingData = $this->preparingAddressData($customerBillingAddress);
+        $shippingData = $this->preparingAddressData($customerShippingAddress);
+
+        $data->set('shippingAddress', $shippingData);
+        $data->set('billingAddress', $billingData);
+
+        return $data;
     }
 
     protected function loadMapping(string $mappingId, Context $context): ?CheckoutMappingEntity
@@ -93,6 +135,24 @@ class RestorerService implements RestorerServiceInterface
         if ($order == null) {
             return;
         }
+
+        if ($customerId = $order->getOrderCustomer()->getCustomer()->getId()) {
+            $context->assign(['customerId' => $customerId]);
+
+            $criteria = new Criteria();
+            $criteria->addAssociation('addresses');
+            $criteria->addAssociation('defaultBillingAddress');
+            $criteria->addAssociation('defaultShippingAddress');
+            $criteria->addFilter(new EqualsFilter('id', $customerId));
+
+            /** @var CustomerEntity|null $customer */
+            $customer = $this->customerRepository->search($criteria, $context->getContext())->first();
+
+            if ($customer !== null) {
+                $context->assign(['customerObject' => $customer]);
+            }
+        }
+
         $cart = $this->orderConverter->convertToCart($order, $context->getContext());
         $this->restoreByCart($cart, $context);
     }
@@ -110,5 +170,22 @@ class RestorerService implements RestorerServiceInterface
 
         return $this->orderRepository->search($criteria, $context)
             ->get($orderId);
+    }
+
+    private function preparingAddressData(CustomerAddressEntity $addressData): RequestDataBag
+    {
+        $resultData = new RequestDataBag();
+
+        foreach($addressData->getVars() as $key => $value) {
+            if (in_array($key, ['customerId', '_uniqueIdentifier'])) {
+                continue;
+            }
+
+            if (!is_object($value) && !is_array($value)) {
+                $resultData->set($key, $value);
+            }
+        }
+
+        return $resultData;
     }
 }

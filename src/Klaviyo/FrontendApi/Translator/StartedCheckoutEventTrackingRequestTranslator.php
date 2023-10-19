@@ -7,33 +7,53 @@ use Klaviyo\Integration\Klaviyo\FrontendApi\DTO\CheckoutLineItemInfo;
 use Klaviyo\Integration\Klaviyo\FrontendApi\DTO\CheckoutLineItemInfoCollection;
 use Klaviyo\Integration\Klaviyo\FrontendApi\DTO\StartedCheckoutEventTrackingRequest;
 use Klaviyo\Integration\Klaviyo\Gateway\Exception\TranslationException;
+use Klaviyo\Integration\Klaviyo\Gateway\Translator\CustomerPropertiesTranslator;
 use Klaviyo\Integration\Storefront\Checkout\Cart\RestoreUrlService\RestoreUrlServiceInterface;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class StartedCheckoutEventTrackingRequestTranslator
 {
     private RestoreUrlServiceInterface $urlGenerator;
     private ProductDataHelper $productDataHelper;
+    private CustomerPropertiesTranslator $customerPropertiesTranslator;
 
-    public function __construct(RestoreUrlServiceInterface $urlGenerator, ProductDataHelper $productDataHelper)
-    {
+    public function __construct(
+        RestoreUrlServiceInterface $urlGenerator,
+        ProductDataHelper $productDataHelper,
+        CustomerPropertiesTranslator $customerPropertiesTranslator
+    ) {
         $this->urlGenerator = $urlGenerator;
         $this->productDataHelper = $productDataHelper;
+        $this->customerPropertiesTranslator = $customerPropertiesTranslator;
     }
 
+    /**
+     * @throws \Exception
+     */
     public function translate(SalesChannelContext $context, Cart $cart): StartedCheckoutEventTrackingRequest
     {
         $checkoutUrl = $this->urlGenerator->getCurrentRestoreUrl($context);
         $lineItems = $this->translateToCheckoutLineItems($context, $cart);
+        $now = new \DateTime('now', new \DateTimeZone('UTC'));
+
+        if ($context->getCustomer()) {
+            $customerProperties = $this->customerPropertiesTranslator->translateCustomer(
+                $context->getContext(),
+                $context->getCustomer()
+            );
+        } else {
+            throw new \Exception('No customer identification data.');
+        }
 
         return new StartedCheckoutEventTrackingRequest(
             $cart->getToken(),
             $checkoutUrl,
             $cart->getPrice()->getTotalPrice(),
-            $lineItems
+            $lineItems,
+            $now,
+            $customerProperties
         );
     }
 
@@ -44,7 +64,7 @@ class StartedCheckoutEventTrackingRequestTranslator
         $collection = new CheckoutLineItemInfoCollection();
 
         foreach ($cart->getLineItems() as $lineItem) {
-            if ($lineItem->getType() !== 'product') {
+            if ('product' !== $lineItem->getType()) {
                 continue;
             }
 
@@ -58,10 +78,9 @@ class StartedCheckoutEventTrackingRequestTranslator
     private function translateLineItem(SalesChannelContext $context, LineItem $lineItem): CheckoutLineItemInfo
     {
         $product = $this->productDataHelper->getProductById($context->getContext(), $lineItem->getReferencedId());
+
         if (!$product) {
-            throw new TranslationException(
-                \sprintf('Product[id: %s] was not found', $lineItem->getReferencedId())
-            );
+            throw new TranslationException(\sprintf('Product[id: %s] was not found', $lineItem->getReferencedId()));
         }
 
         $imageUrl = $this->productDataHelper->getCoverImageUrl($context->getContext(), $product);

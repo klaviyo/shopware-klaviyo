@@ -144,6 +144,25 @@ class EventsTracker implements EventsTrackerInterface
         }
     }
 
+    public function trackShippedOrder(Context $context, OrderTrackingEventsBag $trackingBag): OrderTrackingResult
+    {
+        $trackingResult = new OrderTrackingResult();
+
+        foreach ($trackingBag->all() as $channelId => $events) {
+            $configuration = $this->configurationRegistry->getConfiguration($channelId);
+            $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+
+            if (!$configuration->isTrackShippedOrder()) {
+                continue;
+            }
+
+            $channelTrackingResult = $this->gateway->trackShippedOrders($context, $channelId, $events);
+            $trackingResult->mergeWith($channelTrackingResult);
+        }
+
+        return $trackingResult;
+    }
+
     public function trackPaiedOrders(Context $context, OrderTrackingEventsBag $trackingBag): OrderTrackingResult
     {
         $trackingResult = new OrderTrackingResult();
