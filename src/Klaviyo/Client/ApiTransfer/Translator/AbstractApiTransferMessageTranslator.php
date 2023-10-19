@@ -45,7 +45,10 @@ abstract class AbstractApiTransferMessageTranslator implements ApiTransferMessag
         $responseContentTypes = $response->getHeader('Content-Type');
         $isJsonResponse = false;
         foreach ($responseContentTypes as $responseContentType) {
-            if (stripos($responseContentType, 'application/json') !== false) {
+            if (
+                (false !== stripos($responseContentType, 'application/json'))
+                || (false !== stripos($responseContentType, 'application/vnd.api+json'))
+            ) {
                 $isJsonResponse = true;
             }
         }
