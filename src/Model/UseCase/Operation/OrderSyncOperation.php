@@ -9,7 +9,7 @@ use Klaviyo\Integration\Klaviyo\Gateway\Result\OrderTrackingResult;
 use Klaviyo\Integration\System\Tracking\Event\Order\{OrderEvent, OrderTrackingEventsBag};
 use Klaviyo\Integration\System\Tracking\EventsTrackerInterface as Tracker;
 use Od\Scheduler\Model\Job\{JobHandlerInterface, JobResult, Message};
-use Shopware\Core\Checkout\Order\{OrderEntity, OrderStates};
+use Shopware\Core\Checkout\Order\{Aggregate\OrderDelivery\OrderDeliveryStates, OrderEntity, OrderStates};
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -42,6 +42,7 @@ class OrderSyncOperation implements JobHandlerInterface
             Tracker::ORDER_EVENT_CANCELED => new OrderTrackingEventsBag(),
             Tracker::ORDER_EVENT_FULFILLED => new OrderTrackingEventsBag(),
             Tracker::ORDER_EVENT_PAID => new OrderTrackingEventsBag(),
+            Tracker::ORDER_EVENT_SHIPPED => new OrderTrackingEventsBag()
         ];
 
         $orderCriteria = new Criteria();
@@ -70,6 +71,16 @@ class OrderSyncOperation implements JobHandlerInterface
                 $happenedAt = $lastTransaction->getUpdatedAt();
                 $eventsBags[Tracker::ORDER_EVENT_PAID]->add(new OrderEvent($order, $happenedAt));
             }
+
+            $lastDelivery = $order->getDeliveries()->last();
+            $deliveryStateName = $lastDelivery->getStateMachineState()->getTechnicalName();
+
+            if ($deliveryStateName === OrderDeliveryStates::STATE_SHIPPED)
+            {
+                $happenedAt = $lastDelivery->getUpdatedAt();
+                $eventsBags[Tracker::ORDER_EVENT_SHIPPED]->add(new OrderEvent($order, $happenedAt));
+            }
+
 
             if (OrderStates::STATE_COMPLETED === $order->getStateMachineState()->getTechnicalName()) {
                 $happenedAt = $order->getUpdatedAt();
@@ -117,12 +128,6 @@ class OrderSyncOperation implements JobHandlerInterface
         return $result;
     }
 
-    /**
-     * @param Context $context
-     * @param OrderTrackingEventsBag $eventsBag
-     * @param string $type
-     * @return OrderTrackingResult
-     */
     private function trackEventBagByType(
         Context $context,
         OrderTrackingEventsBag $eventsBag,
@@ -135,6 +140,7 @@ class OrderSyncOperation implements JobHandlerInterface
             Tracker::ORDER_EVENT_REFUNDED => $this->eventsTracker->trackRefundOrders($context, $eventsBag),
             Tracker::ORDER_EVENT_FULFILLED => $this->eventsTracker->trackFulfilledOrders($context, $eventsBag),
             Tracker::ORDER_EVENT_PAID => $this->eventsTracker->trackPaiedOrders($context, $eventsBag),
+            Tracker::ORDER_EVENT_SHIPPED => $this->eventsTracker->trackShippedOrder($context, $eventsBag),
             default => new OrderTrackingResult(),
         };
     }

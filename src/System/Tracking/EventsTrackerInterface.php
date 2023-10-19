@@ -24,6 +24,7 @@ interface EventsTrackerInterface
     public const ORDER_EVENT_CANCELED = 'od-klaviyo-order-canceled';
     public const ORDER_EVENT_REFUNDED = 'od-klaviyo-order-refunded';
     public const ORDER_EVENT_PAID = 'od-klaviyo-order-paid';
+    public const ORDER_EVENT_SHIPPED = 'od-klaviyo-order-shipped';
     public const ORDER_EVENT_FULFILLED = 'od-klaviyo-order-fulfilled';
     public const ORDER_EVENTS = [
         self::ORDER_EVENT_PLACED => 'Order Placed',
@@ -32,6 +33,7 @@ interface EventsTrackerInterface
         self::ORDER_EVENT_REFUNDED => 'Order Refunded',
         self::ORDER_EVENT_FULFILLED => 'Order Fulfilled',
         self::ORDER_EVENT_PAID => 'Order Paid',
+        self::ORDER_EVENT_SHIPPED => 'Order Shipped',
     ];
 
     public function trackPlacedOrders(Context $context, OrderTrackingEventsBag $trackingBag): OrderTrackingResult;
@@ -45,6 +47,8 @@ interface EventsTrackerInterface
     public function trackRefundOrders(Context $context, OrderTrackingEventsBag $trackingBag): OrderTrackingResult;
 
     public function trackPaiedOrders(Context $context, OrderTrackingEventsBag $trackingBag): OrderTrackingResult;
+
+    public function trackShippedOrder(Context $context, OrderTrackingEventsBag $trackingBag): OrderTrackingResult;
 
     public function trackAddedToCart(Context $context, CartEventRequestBag $requestBag);
 
