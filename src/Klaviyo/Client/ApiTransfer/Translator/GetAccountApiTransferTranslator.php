@@ -73,7 +73,7 @@ class GetAccountApiTransferTranslator extends AbstractApiTransferMessageTranslat
             [
                 'Authorization' => $authorizationValue,
                 'Accept' => 'application/json',
-                'revision' => ClientConfigurationFactory::API_REVISION_DATE,
+                'revision' => ClientConfigurationFactory::API_REVISION_DATE
             ]
         );
     }
