@@ -92,10 +92,6 @@ class ValidationController extends AbstractController
             }
         }
 
-        if ($accountResponse->getAccountIdFromKlaviyo() === $publicKey) {
-            return new JsonResponse(['success' => true], Response::HTTP_OK);
-        }
-
         return new JsonResponse(['incorrect_list' => true], Response::HTTP_OK);
     }
 }
