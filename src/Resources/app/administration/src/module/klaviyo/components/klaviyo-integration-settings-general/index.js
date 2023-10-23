@@ -189,8 +189,8 @@ Component.register('klaviyo-integration-settings-general', {
         },
 
         setSubscriptionListOptions: function () {
-            const privateKey = this.actualConfigData['klavi_overd.config.privateApiKey'];
-            const publicKey = this.actualConfigData['klavi_overd.config.publicApiKey'];
+            const privateKey = this.actualConfigData['KlaviyoIntegrationPlugin.config.privateApiKey'];
+            const publicKey = this.actualConfigData['KlaviyoIntegrationPlugin.config.publicApiKey'];
 
             this.klaviyoApiKeyValidatorService.getList(privateKey, publicKey).then((response) => {
 
@@ -205,7 +205,7 @@ Component.register('klaviyo-integration-settings-general', {
                     options.push(response.data.data[i]);
                 }
                 this.subscriptionListOptions = options;
-                this.selectedSubscriptionList = this.actualConfigData['klavi_overd.config.klaviyoListForSubscribersSync'];
+                this.selectedSubscriptionList = this.actualConfigData['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync'];
 
             }).catch(() => {
             });
@@ -282,7 +282,7 @@ Component.register('klaviyo-integration-settings-general', {
         storeSelectedListValue(val) {
             this.selectedSubscriptionList = val;
             if (val) {
-                this.actualConfigData['klavi_overd.config.klaviyoListForSubscribersSync'] = val;
+                this.actualConfigData['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync'] = val;
             }
         }
     },
