@@ -1,3 +1,6 @@
+# 2.5.1
+# Fix: Resolved the issue where Klaviyo Public API key validation was not working as intended.
+
 # 2.5.0
 # New: Added option to select the mapping for their order as well as delivery status as a mandatory field in a dropdown menu so that this status also arrives in Klaviyo.
 
