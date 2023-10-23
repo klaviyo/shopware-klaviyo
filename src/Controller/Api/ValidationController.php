@@ -99,7 +99,7 @@ class ValidationController extends AbstractController
     /**
      * @Route("/api/_action/od-get-subscriber-lists", name="api.action.od_get_subscriber_lists", methods={"POST"}, defaults={"auth_required"=false})
      *
-     * @throws Exception
+     * @throws /Exception
      */
     public function getSubscriberListsAvailable(RequestDataBag $post): JsonResponse
     {
