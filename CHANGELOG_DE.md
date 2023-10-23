@@ -1,3 +1,6 @@
+# 1.3.1
+# Fix: Das Problem wurde behoben, bei dem die Validierung des öffentlichen API-Schlüssels von Klaviyo nicht wie vorgesehen funktionierte
+
 # 1.3.0
 # Neu: Der Link zur Warenkorb-Wiederherstellung füllt jetzt die Adressdaten aus, die der Kunde vor dem Verlassen des Warenkorbs angegeben hat (falls zutreffend).
 # Neu: Option hinzugefügt, um die Zuordnung für ihre Bestellung sowie den Lieferstatus als Pflichtfeld in einem Dropdown-Menü auszuwählen, damit dieser Status auch in Klaviyo ankommt.
