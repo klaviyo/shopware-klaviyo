@@ -1,3 +1,7 @@
+# 1.4.0
+# Fix: Issue where Shopware Users which are doing the Double Opt In in Shopware system were not transfered to Klaviyo but with "NOT SUBSCRIBED".
+# Fix: Added selector to Klaviyo List name for subscribers.
+
 # 1.3.1
 # Fix: Resolved the issue where Klaviyo Public API key validation was not working as intended.
 
