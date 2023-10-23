@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Klaviyo\Integration\Controller\Api;
 
-use Exception;
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Account\GetAccountRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetLists\GetProfilesListsRequest;
 use Klaviyo\Integration\Klaviyo\Gateway\ClientRegistry;
 use OpenApi\Annotations as OA;
@@ -13,10 +13,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 
 /**
- * @RouteScope(scopes={"api"})
+ * @Route(scopes={"api"})
  */
 class ValidationController extends AbstractController
 {
@@ -56,20 +55,33 @@ class ValidationController extends AbstractController
 
         $client = $this->clientRegistry->getClientByKeys($privateKey, $publicKey);
         $request = new GetProfilesListsRequest();
-        $responses = $client->sendRequests([$request]);
+        $accountRequest = new GetAccountRequest($publicKey);
+        $responses = $client->sendRequests([$request, $accountRequest]);
+
         if (!empty($responses->getRequestErrors())) {
             return new JsonResponse(['general_error' => true], Response::HTTP_OK);
         }
 
         try {
             $response = $responses->getRequestResponse($request);
-        } catch (Exception $e) {
+            $accountResponse = $responses->getRequestResponse($accountRequest);
+        } catch (\Exception $e) {
             return new JsonResponse(['general_error' => true], Response::HTTP_OK);
         }
 
         if (!$response->isSuccess()) {
             return new JsonResponse(
                 ['incorrect_credentials' => true, 'incorrect_credentials_message' => $response->getErrorDetails()],
+                Response::HTTP_OK
+            );
+        }
+
+        if (!$accountResponse->isSuccess()) {
+            return new JsonResponse(
+                [
+                    'incorrect_credentials' => true,
+                    'incorrect_credentials_message' => $accountResponse->getErrorDetails(),
+                ],
                 Response::HTTP_OK
             );
         }

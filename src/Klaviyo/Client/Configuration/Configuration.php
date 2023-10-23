@@ -12,6 +12,7 @@ class Configuration implements ConfigurationInterface
     private int $requestTimeout;
     private int $connectionTimeout;
     private string $globalExclusionsEndpointUrl;
+    private string $globalNewEndpointUrl;
 
     public function __construct(
         string $apiKey,
@@ -21,7 +22,8 @@ class Configuration implements ConfigurationInterface
         string $listAndSegmentsApiEndpointUrl,
         int $requestTimeout,
         int $connectionTimeout,
-        string $globalExclusionsEndpointUrl
+        string $globalExclusionsEndpointUrl,
+        string $globalNewEndpointUrl
     ) {
         $this->apiKey = $apiKey;
         $this->publicApiKey = $publicApiKey;
@@ -31,6 +33,7 @@ class Configuration implements ConfigurationInterface
         $this->requestTimeout = $requestTimeout;
         $this->connectionTimeout = $connectionTimeout;
         $this->globalExclusionsEndpointUrl = $globalExclusionsEndpointUrl;
+        $this->globalNewEndpointUrl = $globalNewEndpointUrl;
     }
 
     public function getApiKey(): string
@@ -71,5 +74,10 @@ class Configuration implements ConfigurationInterface
     public function getGlobalExclusionsEndpointUrl(): string
     {
         return $this->globalExclusionsEndpointUrl;
+    }
+
+    public function getGlobalNewEndpointUrl(): string
+    {
+        return $this->globalNewEndpointUrl;
     }
 }
