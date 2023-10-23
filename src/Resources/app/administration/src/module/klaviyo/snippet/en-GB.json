@@ -181,7 +181,7 @@
                 "generalErrorMessage": "Unable to validate API-keys",
                 "incorrectCredentialsTitle": "Incorrect Credentials",
                 "correctApiMessage": "API-keys are valid",
-                "listNotExistMessage": "The specified list is not in the Klaviyo account"
+                "listNotExistMessage": "No Lists found in Klaviyo"
             }
         },
         "customer": {
