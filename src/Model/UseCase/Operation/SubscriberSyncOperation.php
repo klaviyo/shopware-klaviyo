@@ -100,7 +100,15 @@ class SubscriberSyncOperation implements JobHandlerInterface
             );
 
             if ($subscribersCollection->count() !== 0) {
-                $result = $this->klaviyoGateway->addToKlaviyoProfilesList($channel, $subscribersCollection, $listId);
+                if (EventsProcessingOperation::REALTIME_SUBSCRIBERS_OPERATION_LABEL === $message->getJobName()) {
+                    $result = $this->klaviyoGateway->subscribeToKlaviyoList($channel, $subscribersCollection, $listId);
+                } else {
+                    $result = $this->klaviyoGateway->addToKlaviyoProfilesList(
+                        $channel,
+                        $subscribersCollection,
+                        $listId
+                    );
+                }
             }
 
             if ($unsubscribedRecipients->count() !== 0) {

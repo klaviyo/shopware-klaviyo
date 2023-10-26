@@ -60,13 +60,17 @@ class ScheduleBackgroundJob
         }
     }
 
-    public function scheduleSubscriberSyncJob(array $subscriberIds, string $parentJobId, Context $context)
-    {
+    public function scheduleSubscriberSyncJob(
+        array $subscriberIds,
+        string $parentJobId,
+        Context $context,
+        string $name = null
+    ) {
         $jobMessage = new Message\SubscriberSyncMessage(
             Uuid::randomHex(),
             $parentJobId,
             $subscriberIds,
-            null,
+            $name,
             $context
         );
 
