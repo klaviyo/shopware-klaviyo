@@ -90,6 +90,12 @@
                 </sw-field>
             {% endblock %}
 
+            {% block klaviyo_integration_settings_general_double_opt_in_alert %}
+                <sw-alert v-if="selectedSalesChannelId === null" variant="warning">
+                    {{ $t('klaviyo-integration-settings.general.doubleoptinAlert') }}
+                </sw-alert>
+            {% endblock %}
+
             {% block klaviyo_integration_settings_general_klaviyo_list_for_subscribers_sync %}
                 <sw-field
                         v-model="actualConfigData['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync']"
