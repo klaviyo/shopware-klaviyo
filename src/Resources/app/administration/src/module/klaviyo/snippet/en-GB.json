@@ -183,6 +183,14 @@
                 "incorrectCredentialsTitle": "Incorrect Credentials",
                 "correctApiMessage": "API-keys are valid",
                 "listNotExistMessage": "No Lists found in Klaviyo"
+            },
+            "enableDailySynchronization": {
+                "label": "Enable Daily Subscribers Synchronization",
+                "helpText": "This option allows you to enable daily scheduled synchronization of subscribers"
+            },
+            "timeDailySynchronization": {
+                "label": "Time for Daily Subscribers Synchronization",
+                "helpText": "The option specifies at which time to sync daily subscribers synchronization"
             }
         },
         "customer": {
