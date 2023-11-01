@@ -43,4 +43,8 @@ interface ConfigurationInterface
     public function getPopUpConfiguration(): object;
 
     public function getCookieConsent(): string;
+
+    public function isDailySubscribersSynchronization(): bool;
+
+    public function getDailySubscribersSyncTime(): string;
 }
