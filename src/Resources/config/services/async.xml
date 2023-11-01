@@ -32,6 +32,9 @@
             <argument type="service" id="newsletter_recipient.repository"/>
             <argument type="service" id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob"/>
             <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannels"/>
+            <argument type="service" id="Klaviyo\Integration\Configuration\ConfigurationRegistry"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="logger"/>
             <tag name="od.job_handler" code="od-klaviyo-events-sync-handler"/>
         </service>
         <service id="Klaviyo\Integration\Model\UseCase\Operation\CartEventSyncOperation">
