@@ -94,4 +94,48 @@ class ValidationController extends AbstractController
 
         return new JsonResponse(['incorrect_list' => true], Response::HTTP_OK);
     }
+
+    /**
+     * @Route("/api/_action/od-get-subscriber-lists", name="api.action.od_get_subscriber_lists", methods={"POST"}, defaults={"auth_required"=false})
+     *
+     * @throws /Exception
+     */
+    public function getSubscriberListsAvailable(RequestDataBag $post): JsonResponse
+    {
+        $publicKey = $post->get('publicKey');
+        $privateKey = $post->get('privateKey');
+
+        if (empty($publicKey) || empty($privateKey)) {
+            return new JsonResponse(['invalid_parameters' => true], Response::HTTP_OK);
+        }
+
+        $client = $this->clientRegistry->getClientByKeys($privateKey, $publicKey);
+        $request = new GetProfilesListsRequest();
+        $clientResult = $client->sendRequests([$request]);
+        $result = $clientResult->getRequestResponse($request);
+
+        $data = $this->parseListNamesFromResponse($result);
+
+        if (empty($data)) {
+            return new JsonResponse(['incorrect_list' => true], Response::HTTP_OK);
+        }
+
+        return new JsonResponse(['success' => true, 'data' =>
+            $data
+        ], Response::HTTP_OK);
+    }
+
+    private function parseListNamesFromResponse($response): array
+    {
+        $data = [];
+
+        foreach ($response->getLists()->getElements() as $e) {
+            $data[] = [
+                'value' => $e->getName(),
+                'label' => $e->getName()
+            ];
+        }
+
+        return $data;
+    }
 }
