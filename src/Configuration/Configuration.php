@@ -29,6 +29,7 @@ class Configuration implements ConfigurationInterface
     private bool $trackSubscribedToBackInStock;
     private PopUpConfiguration $popUpConfiguration;
     private string $cookieConsent;
+    private bool $isDailySubscribersSynchronization;
 
     public function __construct(
         bool $accountEnabled,
@@ -53,7 +54,9 @@ class Configuration implements ConfigurationInterface
         bool $afterInteraction,
         bool $trackSubscribedToBackInStock,
         PopUpConfiguration $popUpConfiguration,
-        string $cookieConsent
+        string $cookieConsent,
+        bool $isDailySubscribersSynchronization,
+        string $dailySubscribersSyncTime
     ) {
         $this->accountEnabled = $accountEnabled;
         $this->privateApiKey = $privateApiKey;
@@ -78,6 +81,8 @@ class Configuration implements ConfigurationInterface
         $this->trackSubscribedToBackInStock = $trackSubscribedToBackInStock;
         $this->popUpConfiguration = $popUpConfiguration;
         $this->cookieConsent = $cookieConsent;
+        $this->isDailySubscribersSynchronization = $isDailySubscribersSynchronization;
+        $this->dailySubscribersSyncTime = $dailySubscribersSyncTime;
     }
 
     public function isAccountEnabled(): bool
@@ -193,5 +198,15 @@ class Configuration implements ConfigurationInterface
     public function getCookieConsent(): string
     {
         return $this->cookieConsent;
+    }
+
+    public function isDailySubscribersSynchronization(): bool
+    {
+        return $this->isDailySubscribersSynchronization;
+    }
+
+    public function getDailySubscribersSyncTime(): string
+    {
+        return $this->dailySubscribersSyncTime;
     }
 }

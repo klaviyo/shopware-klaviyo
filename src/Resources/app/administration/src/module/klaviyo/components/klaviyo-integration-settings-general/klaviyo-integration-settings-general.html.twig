@@ -409,6 +409,42 @@
                     </template>
                 </sw-inherit-wrapper>
             {% endblock %}
+
+            {% block klaviyo_integration_settings_general_daily_synchronization_flag %}
+                <sw-inherit-wrapper v-if="selectedSalesChannelId === null"
+                                    v-model="actualConfigData['KlaviyoIntegrationPlugin.config.dailySynchronization']"
+                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.dailySynchronization']">
+                    <template #content="props">
+                        <sw-switch-field
+                                :map-inheritance="props"
+                                :label="$tc('klaviyo-integration-settings.configs.enableDailySynchronization.label')"
+                                :help-text="$tc('klaviyo-integration-settings.configs.enableDailySynchronization.helpText')"
+                                :disabled="props.isInherited"
+                                :value="props.currentValue"
+                                @change="props.updateCurrentValue"
+                        />
+                    </template>
+                </sw-inherit-wrapper>
+            {% endblock %}
+
+            {% block klaviyo_integration_settings_general_daily_synchronization_time %}
+                <sw-inherit-wrapper v-if="selectedSalesChannelId === null && actualConfigData['KlaviyoIntegrationPlugin.config.dailySynchronization']"
+                                    v-model="actualConfigData['KlaviyoIntegrationPlugin.config.dailySynchronizationTime']"
+                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.dailySynchronizationTime']">
+                    <template #content="props">
+                        <sw-datepicker
+                                :map-inheritance="props"
+                                :value="props.currentValue"
+                                :disabled="props.isInherited"
+                                date-type="time"
+                                :label="$tc('klaviyo-integration-settings.configs.timeDailySynchronization.label')"
+                                :help-text="$tc('klaviyo-integration-settings.configs.timeDailySynchronization.helpText')"
+                                @input="props.updateCurrentValue"
+                                @change="props.updateCurrentValue"
+                        />
+                    </template>
+                </sw-inherit-wrapper>
+            {% endblock %}
         </sw-card>
         <sw-card
                 :title="$tc('klaviyo-integration-settings.pop-up.title')"
