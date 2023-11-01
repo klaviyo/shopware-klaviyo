@@ -30,6 +30,7 @@ class Configuration implements ConfigurationInterface
     private PopUpConfiguration $popUpConfiguration;
     private string $cookieConsent;
     private bool $isDailySubscribersSynchronization;
+    private string $dailySubscribersSyncTime;
 
     public function __construct(
         bool $accountEnabled,
