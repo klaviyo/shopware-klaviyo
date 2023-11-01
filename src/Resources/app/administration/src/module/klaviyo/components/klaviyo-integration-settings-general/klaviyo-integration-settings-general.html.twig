@@ -409,6 +409,42 @@
                     </template>
                 </sw-inherit-wrapper>
             {% endblock %}
+
+            {% block klaviyo_integration_settings_general_daily_synchronization_flag %}
+                <sw-inherit-wrapper v-if="selectedSalesChannelId === null"
+                                    v-model="actualConfigData['klavi_overd.config.dailySynchronization']"
+                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['klavi_overd.config.dailySynchronization']">
+                    <template #content="props">
+                        <sw-switch-field
+                                :map-inheritance="props"
+                                :label="$tc('klaviyo-integration-settings.configs.enableDailySynchronization.label')"
+                                :help-text="$tc('klaviyo-integration-settings.configs.enableDailySynchronization.helpText')"
+                                :disabled="props.isInherited"
+                                :value="props.currentValue"
+                                @change="props.updateCurrentValue"
+                        />
+                    </template>
+                </sw-inherit-wrapper>
+            {% endblock %}
+
+            {% block klaviyo_integration_settings_general_daily_synchronization_time %}
+                <sw-inherit-wrapper v-if="selectedSalesChannelId === null && actualConfigData['klavi_overd.config.dailySynchronization']"
+                                    v-model="actualConfigData['klavi_overd.config.dailySynchronizationTime']"
+                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['klavi_overd.config.dailySynchronizationTime']">
+                    <template #content="props">
+                        <sw-datepicker
+                                :map-inheritance="props"
+                                :value="props.currentValue"
+                                :disabled="props.isInherited"
+                                date-type="time"
+                                :label="$tc('klaviyo-integration-settings.configs.timeDailySynchronization.label')"
+                                :help-text="$tc('klaviyo-integration-settings.configs.timeDailySynchronization.helpText')"
+                                @input="props.updateCurrentValue"
+                                @change="props.updateCurrentValue"
+                        />
+                    </template>
+                </sw-inherit-wrapper>
+            {% endblock %}
         </sw-card>
         <sw-card
                 :title="$tc('klaviyo-integration-settings.pop-up.title')"
@@ -429,7 +465,8 @@
                                         :value="props.currentValue"
                                         :disabled="props.isInherited"
                                         name="klavi_overd.config.popUpOpenBtnColor"
-                                        @input="props.updateCurrentValue"></sw-field>
+                                        @input="props.updateCurrentValue">
+                                </sw-field>
                             </template>
                         </sw-inherit-wrapper>
                     {% endblock %}
@@ -437,8 +474,7 @@
                     {% block klaviyo_integration_settings_pop_up_show_button_bg %}
                         <sw-inherit-wrapper
                                 v-model="actualConfigData['klavi_overd.config.popUpOpenBtnBgColor']"
-                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['klavi_overd.config.popUpOpenBtnBgColor']"
-                        >
+                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['klavi_overd.config.popUpOpenBtnBgColor']">
                             <template #content="props">
                                 <sw-field
                                         :label="$tc('klaviyo-integration-settings.pop-up.backgroundLabel')"
@@ -447,7 +483,9 @@
                                         :value="props.currentValue"
                                         :disabled="props.isInherited"
                                         name="klavi_overd.config.popUpOpenBtnBgColor"
-                                        @input="props.updateCurrentValue"></sw-field>
+                                        @input="props.updateCurrentValue">
+
+                                </sw-field>
                             </template>
                         </sw-inherit-wrapper>
                     {% endblock %}
@@ -470,7 +508,9 @@
                                         :value="props.currentValue"
                                         :disabled="props.isInherited"
                                         name="klavi_overd.config.popUpCloseBtnColor"
-                                        @input="props.updateCurrentValue"></sw-field>
+                                        @input="props.updateCurrentValue">
+
+                                </sw-field>
                             </template>
                         </sw-inherit-wrapper>
                     {% endblock %}
@@ -478,8 +518,7 @@
                     {% block klaviyo_integration_settings_pop_up_hide_button_bg %}
                         <sw-inherit-wrapper
                                 v-model="actualConfigData['klavi_overd.config.popUpCloseBtnBgColor']"
-                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['klavi_overd.config.popUpCloseBtnBgColor']"
-                        >
+                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['klavi_overd.config.popUpCloseBtnBgColor']">
                             <template #content="props">
                                 <sw-field
                                         :label="$tc('klaviyo-integration-settings.pop-up.backgroundLabel')"
@@ -488,7 +527,9 @@
                                         :value="props.currentValue"
                                         :disabled="props.isInherited"
                                         name="klavi_overd.config.popUpCloseBtnBgColor"
-                                        @input="props.updateCurrentValue"></sw-field>
+                                        @input="props.updateCurrentValue">
+
+                                </sw-field>
                             </template>
                         </sw-inherit-wrapper>
                     {% endblock %}
@@ -511,7 +552,9 @@
                                         :value="props.currentValue"
                                         :disabled="props.isInherited"
                                         name="klavi_overd.config.subscribeBtnColor"
-                                        @input="props.updateCurrentValue"></sw-field>
+                                        @input="props.updateCurrentValue">
+
+                                </sw-field>
                             </template>
                         </sw-inherit-wrapper>
                     {% endblock %}
@@ -529,7 +572,9 @@
                                         :value="props.currentValue"
                                         :disabled="props.isInherited"
                                         name="klavi_overd.config.subscribeBtnBgColor"
-                                        @input="props.updateCurrentValue"></sw-field>
+                                        @input="props.updateCurrentValue">
+
+                                </sw-field>
                             </template>
                         </sw-inherit-wrapper>
                     {% endblock %}
@@ -619,7 +664,9 @@
                                         :value="props.currentValue"
                                         :disabled="props.isInherited"
                                         name="klavi_overd.config.popUpAdditionalClasses"
-                                        @input="props.updateCurrentValue"></sw-field>
+                                        @input="props.updateCurrentValue">
+
+                                </sw-field>
                             </template>
                         </sw-inherit-wrapper>
                     {% endblock %}

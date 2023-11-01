@@ -175,7 +175,8 @@ Component.register('klaviyo-integration-settings-general', {
                     subscribeBtnColor: '',
                     subscribeBtnBgColor: '',
                     popUpAdditionalClasses: '',
-                    cookieConsent: 'shopware'
+                    cookieConsent: 'shopware',
+                    dailySynchronizationTime: false
                 };
 
             /**
