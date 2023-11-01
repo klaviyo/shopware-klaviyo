@@ -1,3 +1,6 @@
+# 2.5.2
+# Fix: Fixed the issue where selector was not displayed in the "Klaviyo List Name for subscribers" configuration.
+
 # 2.5.1
 # Fix: Resolved the issue where Klaviyo Public API key validation was not working as intended.
 

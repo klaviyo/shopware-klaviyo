@@ -1,3 +1,6 @@
+# 2.5.2
+# Fix: Das Problem wurde behoben, bei dem der Selektor in der Konfiguration „Klaviyo-Listenname für Abonnenten“ nicht angezeigt wurde.
+
 # 2.5.1
 # Fix: Das Problem wurde behoben, bei dem die Validierung des öffentlichen API-Schlüssels von Klaviyo nicht wie vorgesehen funktionierte
 
