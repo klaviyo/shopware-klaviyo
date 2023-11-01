@@ -1,8 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Model\UseCase\Operation;
 
 use Klaviyo\Integration\Async\Message\EventsProcessingMessage;
+use Klaviyo\Integration\Configuration\ConfigurationRegistry;
 use Klaviyo\Integration\Entity\Event\EventEntity;
 use Klaviyo\Integration\Model\Channel\GetValidChannels;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
@@ -12,34 +15,48 @@ use Od\Scheduler\Model\Job\{JobHandlerInterface, JobResult, Message};
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\{EntityCollection, EntityRepositoryInterface, Search\Filter\EqualsFilter};
+use Psr\Log\LoggerInterface;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandlerInterface
 {
     public const HANDLER_CODE = 'od-klaviyo-events-sync-handler';
     public const REALTIME_SUBSCRIBERS_OPERATION_LABEL = 'real-time-subscribers-sync-operation';
+    private const LAST_EXECUTION_TIME_CONFIG = 'KlaviyoIntegrationPlugin.config.dailySyncLastTime';
+    private const DATE_FORMAT = 'Y-m-d';
 
     private EntityRepositoryInterface $eventRepository;
     private EntityRepositoryInterface $cartEventRequestRepository;
     private EntityRepositoryInterface $subscriberRepository;
     private ScheduleBackgroundJob $scheduleBackgroundJob;
     private GetValidChannels $getValidChannels;
+    private ConfigurationRegistry $configurationRegistry;
+    private SystemConfigService $systemConfigService;
+    private LoggerInterface $logger;
 
     public function __construct(
         EntityRepositoryInterface $eventRepository,
         EntityRepositoryInterface $cartEventRequestRepository,
         EntityRepositoryInterface $subscriberRepository,
         ScheduleBackgroundJob $scheduleBackgroundJob,
-        GetValidChannels $getValidChannels
+        GetValidChannels $getValidChannels,
+        ConfigurationRegistry $configurationRegistry,
+        SystemConfigService $systemConfigService,
+        LoggerInterface $logger
     ) {
         $this->eventRepository = $eventRepository;
         $this->cartEventRequestRepository = $cartEventRequestRepository;
         $this->subscriberRepository = $subscriberRepository;
         $this->scheduleBackgroundJob = $scheduleBackgroundJob;
         $this->getValidChannels = $getValidChannels;
+        $this->configurationRegistry = $configurationRegistry;
+        $this->systemConfigService = $systemConfigService;
+        $this->logger = $logger;
     }
 
     /**
@@ -76,10 +93,18 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
             $schedulingResult->all()
         );
 
+        $fullSubscribersSync = $this->processFullSubscriberSyncByTimeEvent($context, $channelIds);
+
         $result->addMessage(new Message\InfoMessage(\sprintf('Total %s order events was scheduled.', $orderTotal)));
         $result->addMessage(new Message\InfoMessage(\sprintf('Total %s cart events was scheduled.', $cartTotal)));
         $result->addMessage(new Message\InfoMessage(\sprintf('Total %s customer events was scheduled.', $customerTotal)));
         $result->addMessage(new Message\InfoMessage(\sprintf('Total %s subscriber events was scheduled.', $subscriberTotal)));
+
+        if ($fullSubscribersSync) {
+            $result->addMessage(
+                new Message\InfoMessage('Full subscribers sync event was scheduled.')
+            );
+        }
 
         foreach ($schedulingResult->getErrors() as $error) {
             $result->addError($error);
@@ -94,7 +119,7 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
         $iterator = $this->getEventRepoIterator($context, [EventsTrackerInterface::CUSTOMER_WRITTEN_EVENT], $channelIds);
 
         while (($events = $iterator->fetch()) !== null) {
-            $customerIds = $events->map(fn(EventEntity $event) => $event->getEntityId());
+            $customerIds = $events->map(fn (EventEntity $event) => $event->getEntityId());
             $customerIds = array_values(array_unique($customerIds));
             $total += \count($customerIds);
             $this->scheduleBackgroundJob->scheduleCustomerProfilesSyncJob($customerIds, $parentJobId, $context);
@@ -144,7 +169,7 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
         /**
          * Ensure we will not process unsubscribed customers from backlog.
          * Additionally prepare unsubscribed recipient ids using channel_id to cover cases when there are more than one
-         * recipient with same email across multiple channels (including different Klaviyo lists)
+         * recipient with same email across multiple channels (including different Klaviyo lists).
          */
         $excludedSubscriberIds = [];
         foreach ($excludedEmailsMap as $channelId => $emails) {
@@ -177,7 +202,7 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
         return $total;
     }
 
-    private function deleteProcessedEvents(Context $context, EntityCollection $events)
+    private function deleteProcessedEvents(Context $context, EntityCollection $events): void
     {
         $deleteDataSet = array_map(function ($id) {
             return ['id' => $id];
@@ -185,7 +210,7 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
         $this->eventRepository->delete($deleteDataSet, $context);
     }
 
-    private function getEventRepoIterator(Context $context, array $eventTypes, array $channelIds)
+    private function getEventRepoIterator(Context $context, array $eventTypes, array $channelIds): RepositoryIterator
     {
         $criteria = new Criteria();
         $criteria->addFilter(
@@ -196,5 +221,69 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
         $criteria->setLimit(100);
 
         return new RepositoryIterator($this->eventRepository, $context, $criteria);
+    }
+
+    private function processFullSubscriberSyncByTimeEvent(Context $context, array $channelIds): bool
+    {
+        $isJobStarted = false;
+
+        try {
+            foreach ($channelIds as $channelId) {
+                if ($this->isTimeToRunJob($channelId)) {
+                    $isJobStarted = true;
+                    $this->scheduleBackgroundJob->scheduleFullSubscriberSyncJob($context);
+
+                    $this->systemConfigService->set(
+                        self::LAST_EXECUTION_TIME_CONFIG,
+                        (new \DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT)
+                    );
+                }
+            }
+        } catch (\Exception $e) {
+            $this->logger->error('Unable to sync job, the reason is:' . $e->getMessage());
+        }
+
+        return $isJobStarted;
+    }
+
+    private function isTimeToRunJob(string $channelId = null): bool
+    {
+        $configuration = $this->configurationRegistry->getConfiguration($channelId);
+
+        if (!$configuration->isDailySubscribersSynchronization()) {
+            return false;
+        }
+
+        if ($this->isTodayAlreadyRun($channelId)) {
+            return false;
+        }
+
+        try {
+            $executionTime = new \DateTime($configuration->getDailySubscribersSyncTime());
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        return $executionTime <= new \DateTime();
+    }
+
+    private function isTodayAlreadyRun(string $channelId = null): bool
+    {
+        $lastSyncTime = $this->systemConfigService->get(
+            self::LAST_EXECUTION_TIME_CONFIG,
+            $channelId
+        );
+
+        if (empty($lastSyncTime)) {
+            return false;
+        }
+
+        try {
+            $lastSyncTimeObject = new \DateTime($lastSyncTime);
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        return $lastSyncTimeObject->format(self::DATE_FORMAT) === (new \DateTime())->format(self::DATE_FORMAT);
     }
 }
