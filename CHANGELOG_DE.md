@@ -1,6 +1,7 @@
 # 1.4.0
 # Fix: Problem, bei dem Shopware-Benutzer, die das Double Opt In im Shopware-System durchführen, nicht zu Klaviyo weitergeleitet wurden, sondern mit „NOT SUBSCRIBED“.
 # Fix: Selektor zum Namen der Klaviyo-Liste für Abonnenten hinzugefügt.
+# Fix: Jetzt ist Double-Opt in der Nachrichtenübermittlung auf der Konfigurationsseite in allen Konfigurationsbereichen/Vertriebskanälen sichtbar.
 
 # 1.3.1
 # Fix: Das Problem wurde behoben, bei dem die Validierung des öffentlichen API-Schlüssels von Klaviyo nicht wie vorgesehen funktionierte
