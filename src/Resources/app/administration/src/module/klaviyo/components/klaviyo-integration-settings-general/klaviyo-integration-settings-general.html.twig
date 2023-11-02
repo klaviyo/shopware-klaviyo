@@ -90,6 +90,12 @@
                 </sw-field>
             {% endblock %}
 
+            {% block klaviyo_integration_settings_general_double_opt_in_alert %}
+                <sw-alert variant="warning">
+                    {{ $t('klaviyo-integration-settings.general.doubleoptinAlert') }}
+                </sw-alert>
+            {% endblock %}
+
             {% block klaviyo_integration_settings_general_klaviyo_list_for_subscribers_sync %}
                 <sw-inherit-wrapper v-model="actualConfigData[selectedSubscriptionList]"
                                     :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['klavi_overd.config.klaviyoListForSubscribersSync']"
