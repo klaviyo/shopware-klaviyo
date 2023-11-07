@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer;
 
@@ -17,15 +19,31 @@ class GetExcludedSubscribersResponseDenormalizer extends AbstractDenormalizer
         array $context = []
     ): Response {
         $emails = [];
+
+        if (empty($data)) {
+            throw new DeserializationException(
+                'For some reason, the data in the response from Klaviyo was not received'
+            );
+        }
+
+        if (!is_array($data) || !isset($data['data'])) {
+            throw new DeserializationException(
+                'For some reason, the data in the response from Klaviyo was not correct structure'
+            );
+        }
+
         foreach ($data['data'] as $row) {
             $this->assertResultRow($row);
             $emails[] = $row['email'];
         }
 
+        $page = isset($data['page']) ? $data['page'] : 0;
+        $total = isset($data['total']) ? $data['total'] : count($emails);
+
         return new Response(
             $emails,
-            (int)$data['page'],
-            (int)$data['total']
+            (int)$page,
+            (int)$total
         );
     }
 
