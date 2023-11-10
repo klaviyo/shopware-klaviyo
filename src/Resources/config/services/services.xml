@@ -113,6 +113,16 @@
             <argument type="service" id="logger"/>
             <tag name="kernel.event_subscriber"/>
         </service>
+
+        <service id="Klaviyo\Integration\EventListener\NewsletterSubscribePageLoadedEventListener">
+            <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannelConfig"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Klaviyo\Integration\EventListener\PagesResponseListener">
+            <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannelConfig"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
         <!-- /Listeners -->
 
         <service id="Klaviyo\Integration\Entity\Helper\AddressDataHelper">
@@ -169,13 +179,6 @@
         </service>
 
         <!-- Decorators -->
-        <service id="Klaviyo\Integration\Decorator\Storefront\Controller\NewsletterControllerDecorator"
-                 public="true"
-                 decorates="Shopware\Storefront\Controller\NewsletterController">
-            <argument type="service" id="Klaviyo\Integration\Decorator\Storefront\Controller\NewsletterControllerDecorator.inner"/>
-            <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannelConfig"/>
-        </service>
-
         <service id="Klaviyo\Integration\Decorator\Storefront\Framework\Cookie\KlaviyoCookieProvider"
                  decorates="Shopware\Storefront\Framework\Cookie\CookieProviderInterface">
             <argument type="service"
