@@ -6,17 +6,17 @@ namespace Klaviyo\Integration\Utils\Lifecycle\Update;
 
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Defaults;
-use League\Flysystem\FilesystemInterface;
+use League\Flysystem\Filesystem;
 
 class UpdateOldTemplate
 {
     private const MD5_HASH_OLD_TEMPLATE = "e89d84423f5f4f8cdc575f49ef5d3933";
 
     private Connection $connection;
-    private FilesystemInterface $filesystem;
+    private Filesystem $filesystem;
 
     public function __construct(
-        FilesystemInterface $filesystem,
+        Filesystem $filesystem,
         Connection $connection
     ) {
         $this->connection = $connection;
@@ -42,8 +42,7 @@ class UpdateOldTemplate
         $query->setParameter('templateHash', self::MD5_HASH_OLD_TEMPLATE);
         $query->setParameter('template', $template);
         $query->setParameter('updatedAt', (new \DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT));
-        $results = $query->execute();
 
-        return $results;
+        return $query->execute();
     }
 }
