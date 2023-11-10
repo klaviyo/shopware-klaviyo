@@ -14,7 +14,7 @@
         <service id="Klaviyo\Integration\System\Tracking\EventsTracker">
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway"/>
             <argument type="service" id="Klaviyo\Integration\Configuration\ConfigurationRegistry"/>
-            <argument type="service" id="logger"/>
+            <argument type="service" id="monolog.logger.od_klaviyo"/>
         </service>
         <service id="Klaviyo\Integration\System\Tracking\ScheduledEventsTracker">
             <argument type="service" id="klaviyo_job_event.repository"/>
@@ -32,7 +32,7 @@
         <!-- Controllers -->
         <service id="Klaviyo\Integration\Controller\Backoffice\JobController" public="true">
             <argument type="service" id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob"/>
-            <argument type="service" id="logger"/>
+            <argument type="service" id="monolog.logger.od_klaviyo"/>
         </service>
         <service id="Klaviyo\Integration\Controller\Backoffice\PromotionsExportController" public="true">
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Promotion\PromotionsExporter"/>
@@ -46,7 +46,7 @@
         <service id="Klaviyo\Integration\Controller\Storefront\CartController" public="true">
             <argument type="service" id="Klaviyo\Integration\Storefront\Checkout\Cart\RestorerService\RestorerService"/>
             <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute"/>
-            <argument type="service" id="logger"/>
+            <argument type="service" id="monolog.logger.od_klaviyo"/>
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
@@ -81,7 +81,7 @@
         <service id="Klaviyo\Integration\EventListener\RestartConsumerAfterPluginConfigChangedEventListener">
             <argument type="service" id="cache.messenger.restart_workers_signal"/>
             <argument type="service" id="cache.object"/>
-            <argument type="service" id="logger"/>
+            <argument type="service" id="monolog.logger.od_klaviyo"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 
@@ -91,7 +91,7 @@
             <argument type="service" id="Klaviyo\Integration\Klaviyo\FrontendApi\Translator\ProductTranslator"/>
             <argument type="service"
                       id="Klaviyo\Integration\Klaviyo\FrontendApi\Translator\StartedCheckoutEventTrackingRequestTranslator"/>
-            <argument type="service" id="logger"/>
+            <argument type="service" id="monolog.logger.od_klaviyo"/>
             <argument type="service" id="Klaviyo\Integration\Entity\Helper\NewsletterSubscriberHelper"/>
             <argument type="service" id="request_stack"/>
             <argument type="service"
@@ -103,14 +103,14 @@
         <service id="Klaviyo\Integration\EventListener\AddedToCartEventListener">
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator"/>
             <argument type="service" id="Klaviyo\Integration\System\Tracking\ScheduledEventsTracker"/>
-            <argument type="service" id="logger"/>
+            <argument type="service" id="monolog.logger.od_klaviyo"/>
             <argument type="service" id="request_stack"/>
             <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannelConfig"/>
             <tag name="kernel.event_subscriber"/>
         </service>
         <service id="Klaviyo\Integration\EventListener\CartEventListeners">
             <argument type="service" id="klaviyo_checkout_mapping.repository"/>
-            <argument type="service" id="logger"/>
+            <argument type="service" id="monolog.logger.od_klaviyo"/>
             <tag name="kernel.event_subscriber"/>
         </service>
         <!-- /Listeners -->
@@ -195,7 +195,7 @@
             <argument type="service" id="Shopware\Core\Checkout\Cart\CartRuleLoader"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\Order\OrderConverter"/>
-            <argument type="service" id="logger"/>
+            <argument type="service" id="monolog.logger.od_klaviyo"/>
             <argument type="service" id="customer.repository"/>
         </service>
 
