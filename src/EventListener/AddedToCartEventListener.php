@@ -101,7 +101,6 @@ class AddedToCartEventListener implements EventSubscriberInterface
 
             $requestBag = new CartEventRequestBag();
 
-            /** @var LineItem $lineItem */
             foreach ($event->getItems() as $itemData) {
                 $requestBag->add(
                     $this->cartEventRequestTranslator->translateToAddedToCartEventRequest(

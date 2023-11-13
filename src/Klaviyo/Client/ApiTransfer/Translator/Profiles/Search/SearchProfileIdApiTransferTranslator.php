@@ -47,7 +47,7 @@ class SearchProfileIdApiTransferTranslator extends AbstractApiTransferMessageTra
 
     private function assertStatusCode(ResponseInterface $response)
     {
-        if ($response->getStatusCode() !== 200 || $response->getStatusCode() !== 404) {
+        if ($response->getStatusCode() !== 200 && $response->getStatusCode() !== 404) {
             throw new TranslationException(
                 $response,
                 \sprintf('Invalid profile search API response status code: %s', $response->getStatusCode())

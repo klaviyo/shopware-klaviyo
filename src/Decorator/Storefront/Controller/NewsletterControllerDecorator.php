@@ -42,6 +42,7 @@ class NewsletterControllerDecorator extends NewsletterController
         $this->validChannelConfig = $validChannelConfig;
         if (version_compare($swVersion, '6.4.18.1', '<')) {
             // Before 6.4.18.1
+            // @phpstan-ignore-next-line
             parent::__construct(
                 $newsletterConfirmRegisterPageLoader,
                 $customerRepository,
