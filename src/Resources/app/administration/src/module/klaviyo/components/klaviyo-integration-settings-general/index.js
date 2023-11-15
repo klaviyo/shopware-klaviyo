@@ -128,6 +128,23 @@ Component.register('klaviyo-integration-settings-general', {
                     value: 'consentmanager'
                 }
             ]
+        },
+        createOldJobCleanupPeriodOptions() {
+            let dayPeriods = [5, 10, 15, 20, 30, 60, 90];
+            let options = [];
+
+            for (let dayPeriodsKey in dayPeriods) {
+                options.push(
+                    {
+                        label: this.$tc('klaviyo-integration-settings.configs.oldJobCleanupPeriod.after') + ' ' +
+                            dayPeriods[dayPeriodsKey] + ' ' +
+                            this.$tc('klaviyo-integration-settings.configs.oldJobCleanupPeriod.days'),
+                        value: dayPeriods[dayPeriodsKey]
+                    }
+                )
+            }
+
+            return options;
         }
     },
 
@@ -176,7 +193,8 @@ Component.register('klaviyo-integration-settings-general', {
                     subscribeBtnBgColor: '',
                     popUpAdditionalClasses: '',
                     cookieConsent: 'shopware',
-                    dailySynchronizationTime: false
+                    dailySynchronizationTime: false,
+                    oldJobCleanupPeriod: 5
                 };
 
             /**
