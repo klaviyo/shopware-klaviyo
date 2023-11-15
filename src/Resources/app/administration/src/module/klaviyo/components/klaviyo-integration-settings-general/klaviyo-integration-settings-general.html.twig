@@ -451,6 +451,42 @@
                     </template>
                 </sw-inherit-wrapper>
             {% endblock %}
+
+            {% block klaviyo_integration_settings_general_old_job_cleanup_flag %}
+                <sw-inherit-wrapper v-if="selectedSalesChannelId === null"
+                                    v-model="actualConfigData['klavi_overd.config.oldJobCleanup']"
+                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['klavi_overd.config.oldJobCleanup']">
+                    <template #content="props">
+                        <sw-switch-field
+                            :map-inheritance="props"
+                            :label="$tc('klaviyo-integration-settings.configs.oldJobCleanup.label')"
+                            :help-text="$tc('klaviyo-integration-settings.configs.oldJobCleanup.helpText')"
+                            :disabled="props.isInherited"
+                            :value="props.currentValue"
+                            @change="props.updateCurrentValue"
+                            />
+                    </template>
+                </sw-inherit-wrapper>
+            {% endblock %}
+
+            {% block klaviyo_integration_settings_general_old_job_cleanup_period %}
+                <sw-inherit-wrapper v-if="selectedSalesChannelId === null && actualConfigData['klavi_overd.config.oldJobCleanup']"
+                                    v-model="actualConfigData['klavi_overd.config.oldJobCleanupPeriod']"
+                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['klavi_overd.config.oldJobCleanupPeriod']">
+                    <template #content="props">
+                        <sw-single-select name="klavi_overd.config.oldJobCleanupPeriod"
+                                          labelProperty="label"
+                                          valueProperty="value"
+                                          :options="createOldJobCleanupPeriodOptions"
+                                          :isInherited="props.isInherited"
+                                          :disabled="props.isInherited"
+                                          show-clearable-button
+                                          :value="props.currentValue"
+                                          @change="props.updateCurrentValue">
+                        </sw-single-select>
+                    </template>
+                </sw-inherit-wrapper>
+            {% endblock %}
         </sw-card>
         <sw-card
                 :title="$tc('klaviyo-integration-settings.pop-up.title')"
