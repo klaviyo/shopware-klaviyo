@@ -10,20 +10,24 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Psr\Log\LoggerInterface;
 
 class OldJobCleanupScheduledTaskHandler extends ScheduledTaskHandler
 {
     private EntityRepositoryInterface $jobRepository;
     private LoggerInterface $logger;
+    private SystemConfigService $systemConfigService;
 
     public function __construct(
         EntityRepositoryInterface $scheduledTaskRepository,
         EntityRepositoryInterface $jobRepository,
+        SystemConfigService $systemConfigService,
         LoggerInterface $logger
     ) {
         parent::__construct($scheduledTaskRepository);
         $this->jobRepository = $jobRepository;
+        $this->systemConfigService = $systemConfigService;
         $this->logger = $logger;
     }
 
@@ -35,26 +39,30 @@ class OldJobCleanupScheduledTaskHandler extends ScheduledTaskHandler
     public function run(): void
     {
         try {
-            // TODO: make it configurable from plugin settings in future
-            $numberOfDaysBeforeToday = new \DateTime(' - 5 day');
-            // Here we have context less task
-            $context = new Context(new SystemSource());
-            $criteria = new Criteria();
-            $criteria->addFilter(new Filter\AndFilter([
-                new Filter\RangeFilter(
-                    'createdAt',
-                    ['lt' => $numberOfDaysBeforeToday->format(Defaults::STORAGE_DATE_FORMAT)]
-                ),
-                new Filter\ContainsFilter('type', 'od-klaviyo'),
-                new Filter\EqualsFilter('parentId', null)
-            ]));
+            $isJobCleanupEnabled = $this->systemConfigService->getInt('KlaviyoIntegrationPlugin.config.oldJobCleanup');
+            $dayPeriod = $this->systemConfigService->getInt('KlaviyoIntegrationPlugin.config.oldJobCleanupPeriod');
 
-            // Formatting IDs array and deleting config keys
-            $ids = \array_map(static function ($id) {
-                return ['id' => $id];
-            }, $this->jobRepository->searchIds($criteria, $context)->getIds());
+            if ($isJobCleanupEnabled && $dayPeriod) {
+                $numberOfDaysBeforeToday = new \DateTime(' - ' . $dayPeriod . ' day');
+                // Here we have context less task
+                $context = new Context(new SystemSource());
+                $criteria = new Criteria();
+                $criteria->addFilter(new Filter\AndFilter([
+                    new Filter\RangeFilter(
+                        'createdAt',
+                        ['lt' => $numberOfDaysBeforeToday->format(Defaults::STORAGE_DATE_FORMAT)]
+                    ),
+                    new Filter\ContainsFilter('type', 'od-klaviyo'),
+                    new Filter\EqualsFilter('parentId', null)
+                ]));
 
-            $this->jobRepository->delete($ids, $context);
+                // Formatting IDs array and deleting config keys
+                $ids = \array_map(static function ($id) {
+                    return ['id' => $id];
+                }, $this->jobRepository->searchIds($criteria, $context)->getIds());
+
+                $this->jobRepository->delete($ids, $context);
+            }
         } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
         }
