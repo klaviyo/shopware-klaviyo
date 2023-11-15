@@ -20,6 +20,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandlerInterface
 {
     public const HANDLER_CODE = 'od-klaviyo-events-sync-handler';
+    public const REALTIME_SUBSCRIBERS_OPERATION_LABEL = 'real-time-subscribers-sync-operation';
 
     private EntityRepositoryInterface $eventRepository;
     private EntityRepositoryInterface $cartEventRequestRepository;
@@ -162,7 +163,14 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
             $subscriberIds = $events->map(fn(EventEntity $event) => $event->getEntityId());
             $subscriberIds = \array_values(\array_diff($subscriberIds, $excludedSubscriberIds));
             $total += \count($subscriberIds);
-            $this->scheduleBackgroundJob->scheduleSubscriberSyncJob($subscriberIds, $parentJobId, $context);
+
+            $this->scheduleBackgroundJob->scheduleSubscriberSyncJob(
+                $subscriberIds,
+                $parentJobId,
+                $context,
+                self::REALTIME_SUBSCRIBERS_OPERATION_LABEL
+            );
+
             $this->deleteProcessedEvents($context, $events->getEntities());
         }
 

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Klaviyo\Gateway;
 
@@ -26,6 +28,8 @@ use Shopware\Core\Content\Newsletter\Aggregate\NewsletterRecipient\NewsletterRec
 use Shopware\Core\Content\Newsletter\Aggregate\NewsletterRecipient\NewsletterRecipientEntity as Recipient;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\SubscribeCustomersToList\SubscribeToListResponse;
+use Klaviyo\Integration\Klaviyo\Gateway\Translator\RealSubscribersToKlaviyoRequestsTranslator;
 
 class KlaviyoGateway
 {
@@ -38,6 +42,7 @@ class KlaviyoGateway
     private SearchStrategyInterface $profileIdSearchStrategy;
     private UpdateProfileRequestTranslator $updateProfileRequestTranslator;
     private LoggerInterface $logger;
+    private RealSubscribersToKlaviyoRequestsTranslator $realSubscribersTranslator;
 
     public function __construct(
         ClientRegistry $clientRegistry,
@@ -48,7 +53,8 @@ class KlaviyoGateway
         IdentifyProfileRequestTranslator $identifyProfileRequestTranslator,
         SearchStrategyInterface $profileIdSearchStrategy,
         UpdateProfileRequestTranslator $updateProfileRequestTranslator,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        RealSubscribersToKlaviyoRequestsTranslator $realSubscribersTranslator
     ) {
         $this->clientRegistry = $clientRegistry;
         $this->orderEventRequestTranslator = $placedOrderEventRequestTranslator;
@@ -59,6 +65,7 @@ class KlaviyoGateway
         $this->profileIdSearchStrategy = $profileIdSearchStrategy;
         $this->updateProfileRequestTranslator = $updateProfileRequestTranslator;
         $this->logger = $logger;
+        $this->realSubscribersTranslator = $realSubscribersTranslator;
     }
 
     public function trackPlacedOrders(Context $context, string $channelId, array $orderEvents): OrderTrackingResult
@@ -436,5 +443,56 @@ class KlaviyoGateway
         }
 
         return $result;
+    }
+
+    /**
+     * @param SalesChannelEntity $salesChannelEntity
+     * @param NewsletterRecipientCollection $recipientCollection
+     * @param string $profilesListId
+     * @return array
+     */
+    public function subscribeToKlaviyoList(
+        SalesChannelEntity $salesChannelEntity,
+        NewsletterRecipientCollection $recipientCollection,
+        string $profilesListId
+    ): array {
+        try {
+            $errors = [];
+            $request = $this->realSubscribersTranslator
+                ->translateToSubscribeRequest($recipientCollection, $profilesListId);
+            $clientResult = $this->clientRegistry
+                ->getClient($salesChannelEntity->getId())
+                ->sendRequests([$request]);
+            /** @var SubscribeToListResponse $result */
+            $result = $clientResult->getRequestResponse($request);
+            if (!$result->isSuccess()) {
+                $error = new \Exception(\sprintf(
+                    'Failed to send subscribers to the Klaviyo list, reason: %s',
+                    $result->getErrorDetails()
+                ));
+                $errors[] = $error;
+                $this->logger->error($error->getMessage());
+                $failedEmail = str_replace(' is not a valid email.', '', $result->getErrorDetails());
+                $newCollection = $recipientCollection->filter(
+                    fn (Recipient $recipient) => $recipient->getEmail() !== $failedEmail
+                );
+                if ($newCollection->count()) {
+                    $errors = array_merge(
+                        $errors,
+                        $this->subscribeToKlaviyoList($salesChannelEntity, $newCollection, $profilesListId)
+                    );
+                }
+            }
+            return $errors;
+        } catch (\Throwable $exception) {
+            $this->logger->error(
+                \sprintf(
+                    'Failed to send subscribers to the Klaviyo list, reason: %s',
+                    $exception->getMessage()
+                ),
+                ContextHelper::createContextFromException($exception)
+            );
+            return $errors;
+        }
     }
 }

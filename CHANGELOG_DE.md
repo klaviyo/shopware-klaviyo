@@ -1,3 +1,11 @@
+# 1.4.0
+# Fix: Problem, bei dem Shopware-Benutzer, die das Double Opt In im Shopware-System durchführen, nicht zu Klaviyo weitergeleitet wurden, sondern mit „NOT SUBSCRIBED“.
+# Fix: Selektor zum Namen der Klaviyo-Liste für Abonnenten hinzugefügt.
+# Fix: Jetzt ist Double-Opt in der Nachrichtenübermittlung auf der Konfigurationsseite in allen Konfigurationsbereichen/Vertriebskanälen sichtbar.
+
+# 1.3.1
+# Fix: Das Problem wurde behoben, bei dem die Validierung des öffentlichen API-Schlüssels von Klaviyo nicht wie vorgesehen funktionierte
+
 # 1.3.0
 # Neu: Der Link zur Warenkorb-Wiederherstellung füllt jetzt die Adressdaten aus, die der Kunde vor dem Verlassen des Warenkorbs angegeben hat (falls zutreffend).
 # Neu: Option hinzugefügt, um die Zuordnung für ihre Bestellung sowie den Lieferstatus als Pflichtfeld in einem Dropdown-Menü auszuwählen, damit dieser Status auch in Klaviyo ankommt.

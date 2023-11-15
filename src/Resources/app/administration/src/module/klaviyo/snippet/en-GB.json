@@ -58,6 +58,7 @@
         "general": {
             "title": "General",
             "credentialsAlert": "All credentials must be configured on sales channel level.",
+            "doubleoptinAlert": "Lists are set to double opt-in by default in all Klaviyo accounts. Be careful that you do not have double opt-in enabled in Shopware and Klaviyo at the same time!",
             "initialization": {
                 "label": "Initialize Klaviyo After First Interaction With Page.",
                 "general-label": "Interaction settings",
@@ -181,7 +182,7 @@
                 "generalErrorMessage": "Unable to validate API-keys",
                 "incorrectCredentialsTitle": "Incorrect Credentials",
                 "correctApiMessage": "API-keys are valid",
-                "listNotExistMessage": "The specified list is not in the Klaviyo account"
+                "listNotExistMessage": "No Lists found in Klaviyo"
             }
         },
         "customer": {

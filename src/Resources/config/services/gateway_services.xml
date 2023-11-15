@@ -37,6 +37,7 @@
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Domain\Profile\Search\Strategy\CompositeSearchStrategy"/>
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\UpdateProfileRequestTranslator"/>
             <argument type="service" id="logger"/>
+            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\RealSubscribersToKlaviyoRequestsTranslator"/>
         </service>
         <service id="Klaviyo\Integration\Klaviyo\Gateway\Translator\OrderEventRequestTranslator">
             <argument type="service" id="product.repository"/>
@@ -73,6 +74,7 @@
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CustomerPropertiesTranslator"/>
         </service>
         <service id="Klaviyo\Integration\Klaviyo\Gateway\Translator\SubscribersToKlaviyoRequestsTranslator"/>
+        <service id="Klaviyo\Integration\Klaviyo\Gateway\Translator\RealSubscribersToKlaviyoRequestsTranslator"/>
     </services>
 
 </container>

@@ -1,3 +1,11 @@
+# 1.4.0
+# Fix: Issue where Shopware Users which are doing the Double Opt In in Shopware system were not transfered to Klaviyo but with "NOT SUBSCRIBED".
+# Fix: Added selector to Klaviyo List name for subscribers.
+# Fix: Now Double-Opt in messaging at configuration page is visible in all configuration scopes/sales channels.
+
+# 1.3.1
+# Fix: Resolved the issue where Klaviyo Public API key validation was not working as intended.
+
 # 1.3.0
 # New: Cart restore link now fills up the address data that customer has provided before abandoning the cart ( if applicable ).
 # New: Added option to select the mapping for their order as well as delivery status as a mandatory field in a dropdown menu so that this status also arrives in Klaviyo.

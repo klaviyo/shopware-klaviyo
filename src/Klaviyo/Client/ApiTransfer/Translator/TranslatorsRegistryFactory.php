@@ -15,6 +15,7 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator\Profiles\Update\Up
 use Klaviyo\Integration\Klaviyo\Client\Configuration\ConfigurationInterface;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\SerializerFactory;
 use Klaviyo\Integration\Klaviyo\FrontendApi\DTO\StartedCheckoutEventTrackingRequest;
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\SubscribeCustomersToList\SubscribeToListRequest;
 
 class TranslatorsRegistryFactory
 {
@@ -85,6 +86,12 @@ class TranslatorsRegistryFactory
         );
         $registry->addTranslator(
             new UpdateProdileApiTransferTranslator($serializer, $configuration)
+        );
+        $registry->addTranslator(
+            new GetAccountApiTransferTranslator($serializer, $configuration)
+        );
+        $registry->addTranslator(
+            new RealtimeProfilesSubscribeToListApiTransferTranslator($serializer, $configuration)
         );
 
         return $registry;

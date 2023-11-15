@@ -7,6 +7,7 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEv
 use Klaviyo\Integration\Klaviyo\Client\Configuration\ConfigurationInterface;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer\AddProfilesToListResponseDenormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer\CollectionDenormalizer;
+use Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer\GetAccountDenormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer\GetExcludedSubscribersResponseDenormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer\GetListProfilesResponseDenormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer\GetProfileIdResponseDenormalizer;
@@ -23,13 +24,16 @@ use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\IdentifyProfileRequ
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\OrderedProductEventTrackingRequestNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\ConfigurableOrderEventTrackingRequestNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\PaidOrderEventTrackingRequestNormalizer;
-use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\ShippedOrderEventTrackingRequestNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\RefundedOrderEventTrackingRequestNormalizer;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\RemoveProfilesFromListRequestNormalizer;
+use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\ShippedOrderEventTrackingRequestNormalizer;
+use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\StartedCheckoutEventTrackingRequestNormalizer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
-use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\StartedCheckoutEventTrackingRequestNormalizer;
+use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\SubscribeToListRequestNormalizer;
+use Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer\SubscribeToListResponseDenormalizer;
+
 
 class SerializerFactory
 {
@@ -40,8 +44,16 @@ class SerializerFactory
                 new CustomerPropertiesNormalizer(),
                 new AddressNormalizer(),
                 new OrderedProductEventTrackingRequestNormalizer($configuration),
-                new ConfigurableOrderEventTrackingRequestNormalizer($configuration, PlacedOrderEventTrackingRequest::class, 'Placed Order'),
-                new ConfigurableOrderEventTrackingRequestNormalizer($configuration, FulfilledOrderEventTrackingRequest::class, 'Fulfilled Order'),
+                new ConfigurableOrderEventTrackingRequestNormalizer(
+                    $configuration,
+                    PlacedOrderEventTrackingRequest::class,
+                    'Placed Order'
+                ),
+                new ConfigurableOrderEventTrackingRequestNormalizer(
+                    $configuration,
+                    FulfilledOrderEventTrackingRequest::class,
+                    'Fulfilled Order'
+                ),
                 new CanceledOrderEventTrackingRequestNormalizer($configuration),
                 new RefundedOrderEventTrackingRequestNormalizer($configuration),
                 new PaidOrderEventTrackingRequestNormalizer($configuration),
@@ -59,7 +71,10 @@ class SerializerFactory
                 new GetExcludedSubscribersResponseDenormalizer(),
                 new GetProfileIdResponseDenormalizer(),
                 new UpdateProfileResponseDenormalizer(),
-                new StartedCheckoutEventTrackingRequestNormalizer($configuration)
+                new StartedCheckoutEventTrackingRequestNormalizer($configuration),
+                new GetAccountDenormalizer(),
+                new SubscribeToListRequestNormalizer($configuration),
+                new SubscribeToListResponseDenormalizer()
             ],
             [
                 new JsonEncoder()
