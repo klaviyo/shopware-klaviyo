@@ -21,6 +21,7 @@
         <service id="Klaviyo\Integration\Async\TaskHandler\OldJobCleanupScheduledTaskHandler">
             <argument type="service" id="scheduled_task.repository"/>
             <argument type="service" id="od_scheduler_job.repository"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="logger"/>
             <tag name="messenger.message_handler"/>
         </service>
