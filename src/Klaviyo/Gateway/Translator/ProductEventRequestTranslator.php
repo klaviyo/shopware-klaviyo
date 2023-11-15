@@ -16,17 +16,19 @@ class ProductEventRequestTranslator
 
     public function __construct(
         CustomerPropertiesTranslator $translator,
-        ProductDataHelper $productDataHelper
-    ) {
+        ProductDataHelper            $productDataHelper
+    )
+    {
         $this->translator = $translator;
         $this->productDataHelper = $productDataHelper;
     }
 
     public function translateToOrderedProductEventRequest(
-        Context $context,
+        Context             $context,
         OrderLineItemEntity $lineItem,
-        OrderEntity $orderEntity
-    ): OrderedProductEventTrackingRequest {
+        OrderEntity         $orderEntity
+    ): OrderedProductEventTrackingRequest
+    {
         try {
             $product = $this->productDataHelper->getLineItemProduct($context, $lineItem);
             $productUrl = $this->productDataHelper->getProductViewPageUrlByChannelId(
@@ -47,12 +49,14 @@ class ProductEventRequestTranslator
 
         $customerProperties = $this->translator->translateOrder($context, $orderEntity);
 
+        $orderIdentificationFlag = $context->orderIdentificationFlag ?? null;
+
         return new OrderedProductEventTrackingRequest(
             $lineItem->getId(),
             $orderEntity->getCreatedAt(),
             $customerProperties,
             $lineItem->getUnitPrice(),
-            $context->orderIdentificationFlag == 'order-id' ? $lineItem->getOrderId() : $orderEntity->getOrderNumber(),
+            $orderIdentificationFlag == 'order-id' ? $lineItem->getOrderId() : $orderEntity->getOrderNumber(),
             $lineItem->getProductId() ?? '',
             $productNumber,
             $lineItem->getLabel(),

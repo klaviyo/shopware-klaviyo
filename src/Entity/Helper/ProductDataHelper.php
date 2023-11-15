@@ -217,7 +217,14 @@ class ProductDataHelper
         )->first();
     }
 
-    public function getProductById(Context $context, string $productId): ProductEntity
+    /**
+     * @param Context $context
+     * @param string $productId
+     *
+     * @return ProductEntity|null
+     */
+
+    public function getProductById(Context $context, string $productId): ?ProductEntity
     {
         return $this->productRepository->search(new Criteria([$productId]), $context)->first();
     }

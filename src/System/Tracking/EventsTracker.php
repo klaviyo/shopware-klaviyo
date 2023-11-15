@@ -19,16 +19,13 @@ class EventsTracker implements EventsTrackerInterface
 {
     private KlaviyoGateway $gateway;
     private ConfigurationRegistry $configurationRegistry;
-    private LoggerInterface $logger;
 
     public function __construct(
         KlaviyoGateway $gateway,
-        ConfigurationRegistry $configurationRegistry,
-        LoggerInterface $logger
+        ConfigurationRegistry $configurationRegistry
     ) {
         $this->gateway = $gateway;
         $this->configurationRegistry = $configurationRegistry;
-        $this->logger = $logger;
     }
 
     // TODO: It's here!!! ?????
@@ -39,6 +36,8 @@ class EventsTracker implements EventsTrackerInterface
 
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
+            /** @var \Klaviyo\Integration\Configuration\Configuration $configuration */
+
             $context->orderIdentificationFlag = $configuration->getOrderIdentification();
             if ($configuration->isTrackPlacedOrder()) {
                 $placedOrderTrackingResult = $this->gateway->trackPlacedOrders($context, $channelId, $events);
@@ -55,6 +54,8 @@ class EventsTracker implements EventsTrackerInterface
 
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
+            /** @var \Klaviyo\Integration\Configuration\Configuration $configuration */
+
             $context->orderIdentificationFlag = $configuration->getOrderIdentification();
             if ($configuration->isTrackOrderedProduct()) {
                 $orderedProductTrackingResult = $this->gateway->trackOrderedProducts($context, $channelId, $events);
@@ -71,6 +72,8 @@ class EventsTracker implements EventsTrackerInterface
 
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
+            /** @var \Klaviyo\Integration\Configuration\Configuration $configuration */
+
             $context->orderIdentificationFlag = $configuration->getOrderIdentification();
             if (!$configuration->isTrackFulfilledOrder()) {
                 continue;
@@ -89,6 +92,8 @@ class EventsTracker implements EventsTrackerInterface
 
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
+            /** @var \Klaviyo\Integration\Configuration\Configuration $configuration */
+
             $context->orderIdentificationFlag = $configuration->getOrderIdentification();
             if (!$configuration->isTrackCanceledOrder()) {
                 continue;
@@ -107,6 +112,8 @@ class EventsTracker implements EventsTrackerInterface
 
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
+            /** @var \Klaviyo\Integration\Configuration\Configuration $configuration */
+
             $context->orderIdentificationFlag = $configuration->getOrderIdentification();
             if (!$configuration->isTrackRefundedOrder()) {
                 continue;
@@ -150,6 +157,8 @@ class EventsTracker implements EventsTrackerInterface
 
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
+            /** @var \Klaviyo\Integration\Configuration\Configuration $configuration */
+
             $context->orderIdentificationFlag = $configuration->getOrderIdentification();
 
             if (!$configuration->isTrackShippedOrder()) {
@@ -169,6 +178,8 @@ class EventsTracker implements EventsTrackerInterface
 
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
+            /** @var \Klaviyo\Integration\Configuration\Configuration $configuration */
+
             $context->orderIdentificationFlag = $configuration->getOrderIdentification();
             // Added paid config or not
             if (!$configuration->isTrackPaidOrder()) {

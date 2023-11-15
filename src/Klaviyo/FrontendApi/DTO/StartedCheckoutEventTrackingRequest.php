@@ -9,13 +9,13 @@ class StartedCheckoutEventTrackingRequest extends EventTrackingRequest implement
 {
     private string $eventId;
     private string $checkoutUrl;
-    private string $checkoutTotal;
+    private float $checkoutTotal;
     private CheckoutLineItemInfoCollection $lineItemInfoCollection;
 
     public function __construct(
         string $eventId,
         string $checkoutUrl,
-        string $checkoutTotal,
+        float $checkoutTotal,
         CheckoutLineItemInfoCollection $lineItemInfoCollection,
         \DateTimeInterface $time,
         ?CustomerProperties $customerProperties
@@ -38,7 +38,7 @@ class StartedCheckoutEventTrackingRequest extends EventTrackingRequest implement
         return $this->checkoutUrl;
     }
 
-    public function getCheckoutTotal(): string
+    public function getCheckoutTotal(): float
     {
         return $this->checkoutTotal;
     }

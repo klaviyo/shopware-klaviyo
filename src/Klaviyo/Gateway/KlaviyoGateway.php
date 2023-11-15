@@ -32,7 +32,6 @@ class KlaviyoGateway
     private ClientRegistry $clientRegistry;
     private OrderEventRequestTranslator $orderEventRequestTranslator;
     private ProductEventRequestTranslator $productEventTranslator;
-    private CartEventRequestTranslator $cartEventRequestTranslator;
     private SubscribersToKlaviyoRequestsTranslator $subscribersTranslator;
     private IdentifyProfileRequestTranslator $identifyProfileRequestTranslator;
     private SearchStrategyInterface $profileIdSearchStrategy;
@@ -43,7 +42,6 @@ class KlaviyoGateway
         ClientRegistry $clientRegistry,
         OrderEventRequestTranslator $placedOrderEventRequestTranslator,
         ProductEventRequestTranslator $productEventTranslator,
-        CartEventRequestTranslator $cartEventRequestTranslator,
         SubscribersToKlaviyoRequestsTranslator $subscribersTranslator,
         IdentifyProfileRequestTranslator $identifyProfileRequestTranslator,
         SearchStrategyInterface $profileIdSearchStrategy,
@@ -53,7 +51,6 @@ class KlaviyoGateway
         $this->clientRegistry = $clientRegistry;
         $this->orderEventRequestTranslator = $placedOrderEventRequestTranslator;
         $this->productEventTranslator = $productEventTranslator;
-        $this->cartEventRequestTranslator = $cartEventRequestTranslator;
         $this->subscribersTranslator = $subscribersTranslator;
         $this->identifyProfileRequestTranslator = $identifyProfileRequestTranslator;
         $this->profileIdSearchStrategy = $profileIdSearchStrategy;

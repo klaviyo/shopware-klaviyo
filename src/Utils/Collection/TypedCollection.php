@@ -17,7 +17,8 @@ abstract class TypedCollection extends Collection
     {
         $chunks = array_chunk($this->elements, $size);
         foreach ($chunks as &$chunk) {
-            $chunk = new static($chunk);
+            $className = get_called_class();
+            $chunk = new $className($chunk);
         }
 
         return $chunks;
