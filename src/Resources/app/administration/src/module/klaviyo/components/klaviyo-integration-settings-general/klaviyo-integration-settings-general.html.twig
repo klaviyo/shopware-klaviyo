@@ -90,17 +90,32 @@
                 </sw-field>
             {% endblock %}
 
+            {% block klaviyo_integration_settings_general_double_opt_in_alert %}
+                <sw-alert variant="warning">
+                    {{ $t('klaviyo-integration-settings.general.doubleoptinAlert') }}
+                </sw-alert>
+            {% endblock %}
+
             {% block klaviyo_integration_settings_general_klaviyo_list_for_subscribers_sync %}
-                <sw-field
-                        v-model="actualConfigData['klavi_overd.config.klaviyoListForSubscribersSync']"
-                        name="klavi_overd.config.privateApiKey"
-                        type="text"
-                        :label="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.label')"
-                        :helpText="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.helpText')"
-                        :disabled="selectedSalesChannelId === null"
-                        :error="listNameErrorState"
-                        required>
-                </sw-field>
+                <sw-inherit-wrapper v-model="actualConfigData[selectedSubscriptionList]"
+                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['klavi_overd.config.klaviyoListForSubscribersSync']"
+                                    :label="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.label')"
+                                    required
+                                    :helpText="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.helpText')">
+                    <template #content="props">
+                        <sw-single-select name="klavi_overd.config.klaviyoListForSubscribersSync"
+                                          labelProperty="label"
+                                          valueProperty="value"
+                                          required
+                                          :options="subscriptionListOptions"
+                                          :selected="selectedSubscriptionList"
+                                          :isInherited="props.isInherited"
+                                          :disabled="selectedSalesChannelId === null"
+                                          :value="selectedSubscriptionList"
+                                          @change="storeSelectedListValue">
+                        </sw-single-select>
+                    </template>
+                </sw-inherit-wrapper>
             {% endblock %}
 
             {% block klaviyo_integration_settings_general_varian_for_bis %}

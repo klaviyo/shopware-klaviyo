@@ -1,3 +1,12 @@
+# 2.6.0
+# Feature: Now Double-Opt in messaging at configuration page is visible in all configuration scopes/sales channels.
+
+# 2.5.2
+# Fix: Fixed the issue where selector was not displayed in the "Klaviyo List Name for subscribers" configuration.
+
+# 2.5.1
+# Fix: Resolved the issue where Klaviyo Public API key validation was not working as intended.
+
 # 2.5.0
 # New: Added option to select the mapping for their order as well as delivery status as a mandatory field in a dropdown menu so that this status also arrives in Klaviyo.
 
