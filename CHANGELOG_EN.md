@@ -1,3 +1,10 @@
+# 1.5.0
+# Fix: Fixed an error that occurred when confirming receipt of a newsletter.
+# Fix: Added fixes for stable work with cookies manager - CookieBot.
+# Fix: Added fixes when synchronizing subscribers.
+# Feature: The 'Daily Subscribers Synchronization' configuration is added.
+# Feature: The 'Enable cleanup of old jobs' configuration is added.
+
 # 1.4.0
 # Fix: Issue where Shopware Users which are doing the Double Opt In in Shopware system were not transfered to Klaviyo but with "NOT SUBSCRIBED".
 # Fix: Added selector to Klaviyo List name for subscribers.
