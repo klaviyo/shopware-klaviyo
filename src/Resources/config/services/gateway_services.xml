@@ -29,7 +29,6 @@
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\ClientRegistry"/>
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\OrderEventRequestTranslator"/>
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\ProductEventRequestTranslator"/>
-            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator"/>
             <argument type="service"
                       id="Klaviyo\Integration\Klaviyo\Gateway\Translator\SubscribersToKlaviyoRequestsTranslator"/>
             <argument type="service"
@@ -39,7 +38,6 @@
             <argument type="service" id="logger"/>
         </service>
         <service id="Klaviyo\Integration\Klaviyo\Gateway\Translator\OrderEventRequestTranslator">
-            <argument type="service" id="product.repository"/>
             <argument type="service" id="order_address.repository"/>
             <argument type="service" id="order_delivery.repository"/>
             <argument type="service" id="order_line_item.repository"/>

@@ -12,7 +12,6 @@ use Klaviyo\Integration\Klaviyo\Gateway\Domain\Profile\Search\ProfileIdSearchRes
 use Klaviyo\Integration\Klaviyo\Gateway\Domain\Profile\Search\Strategy\SearchStrategyInterface;
 use Klaviyo\Integration\Klaviyo\Gateway\Exception\ProfilesListNotFoundException;
 use Klaviyo\Integration\Klaviyo\Gateway\Result\OrderTrackingResult;
-use Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\IdentifyProfileRequestTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\OrderEventRequestTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\ProductEventRequestTranslator;

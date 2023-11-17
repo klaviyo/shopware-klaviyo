@@ -14,7 +14,6 @@ class Lifecycle
 {
     private EntityRepositoryInterface $systemConfigRepository;
     private Connection $connection;
-    private ContainerInterface $container;
     private bool $hasOtherSchedulerDependency;
 
     public function __construct(
@@ -25,8 +24,6 @@ class Lifecycle
         $systemConfigRepository = $container->get('system_config.repository');
         /** @var Connection $connection */
         $connection = $container->get(Connection::class);
-
-        $this->container = $container;
         $this->hasOtherSchedulerDependency = $hasOtherSchedulerDependency;
 
         $this->systemConfigRepository = $systemConfigRepository;

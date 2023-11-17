@@ -38,7 +38,7 @@ class EventsTracker implements EventsTrackerInterface
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
             /** @var \Klaviyo\Integration\Configuration\Configuration $configuration */
 
-            $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+            $context->assign(['orderIdentificationFlag' => $configuration->getOrderIdentification()]);
             if ($configuration->isTrackPlacedOrder()) {
                 $placedOrderTrackingResult = $this->gateway->trackPlacedOrders($context, $channelId, $events);
                 $trackingResult->mergeWith($placedOrderTrackingResult);
@@ -56,7 +56,8 @@ class EventsTracker implements EventsTrackerInterface
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
             /** @var \Klaviyo\Integration\Configuration\Configuration $configuration */
 
-            $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+            $context->assign(['orderIdentificationFlag' => $configuration->getOrderIdentification()]);
+
             if ($configuration->isTrackOrderedProduct()) {
                 $orderedProductTrackingResult = $this->gateway->trackOrderedProducts($context, $channelId, $events);
                 $trackingResult->mergeWith($orderedProductTrackingResult);
@@ -74,7 +75,7 @@ class EventsTracker implements EventsTrackerInterface
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
             /** @var \Klaviyo\Integration\Configuration\Configuration $configuration */
 
-            $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+            $context->assign(['orderIdentificationFlag' => $configuration->getOrderIdentification()]);
             if (!$configuration->isTrackFulfilledOrder()) {
                 continue;
             }
@@ -94,7 +95,7 @@ class EventsTracker implements EventsTrackerInterface
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
             /** @var \Klaviyo\Integration\Configuration\Configuration $configuration */
 
-            $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+            $context->assign(['orderIdentificationFlag' => $configuration->getOrderIdentification()]);
             if (!$configuration->isTrackCanceledOrder()) {
                 continue;
             }
@@ -114,7 +115,7 @@ class EventsTracker implements EventsTrackerInterface
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
             /** @var \Klaviyo\Integration\Configuration\Configuration $configuration */
 
-            $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+            $context->assign(['orderIdentificationFlag' => $configuration->getOrderIdentification()]);
             if (!$configuration->isTrackRefundedOrder()) {
                 continue;
             }
@@ -159,7 +160,7 @@ class EventsTracker implements EventsTrackerInterface
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
             /** @var \Klaviyo\Integration\Configuration\Configuration $configuration */
 
-            $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+            $context->assign(['orderIdentificationFlag' => $configuration->getOrderIdentification()]);
 
             if (!$configuration->isTrackShippedOrder()) {
                 continue;
@@ -180,7 +181,7 @@ class EventsTracker implements EventsTrackerInterface
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
             /** @var \Klaviyo\Integration\Configuration\Configuration $configuration */
 
-            $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+            $context->assign(['orderIdentificationFlag' => $configuration->getOrderIdentification()]);
             // Added paid config or not
             if (!$configuration->isTrackPaidOrder()) {
                 continue;
