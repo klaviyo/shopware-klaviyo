@@ -1,3 +1,9 @@
+# 2.7.0
+# Fix: Korrekturen für eine stabile Arbeit mit dem Cookie-Manager – CookieBot – hinzugefügt.
+# Fix: Korrekturen beim Synchronisieren von Abonnenten hinzugefügt.
+# Neu: Die Konfiguration „Tägliche Abonnentensynchronisierung“ wurde hinzugefügt.
+# Neu: Die Konfiguration „Bereinigung alter Jobs aktivieren“ wurde hinzugefügt.
+
 # 2.6.0
 # Funktion: Jetzt ist Double-Opt in der Nachrichtenübermittlung auf der Konfigurationsseite in allen Konfigurationsbereichen/Vertriebskanälen sichtbar.
 
