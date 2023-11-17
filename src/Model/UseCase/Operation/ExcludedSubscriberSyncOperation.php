@@ -47,6 +47,7 @@ class ExcludedSubscriberSyncOperation implements JobHandlerInterface
         }
 
         $subscriberData = array_values(array_map(function ($subscriber) {
+            /** @var \Shopware\Core\Content\Newsletter\Aggregate\NewsletterRecipient\NewsletterRecipientEntity $subscriber */
             return [
                 'id' => $subscriber->getId(),
                 'email' => $subscriber->getEmail(),

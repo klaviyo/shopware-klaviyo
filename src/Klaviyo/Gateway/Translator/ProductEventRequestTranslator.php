@@ -47,12 +47,14 @@ class ProductEventRequestTranslator
 
         $customerProperties = $this->translator->translateOrder($context, $orderEntity);
 
+        $orderIdentificationFlag = $context->orderIdentificationFlag ?? null;
+
         return new OrderedProductEventTrackingRequest(
             $lineItem->getId(),
             $orderEntity->getCreatedAt(),
             $customerProperties,
             $lineItem->getUnitPrice(),
-            $context->orderIdentificationFlag == 'order-id' ? $lineItem->getOrderId() : $orderEntity->getOrderNumber(),
+            $orderIdentificationFlag == 'order-id' ? $lineItem->getOrderId() : $orderEntity->getOrderNumber(),
             $lineItem->getProductId() ?? '',
             $productNumber,
             $lineItem->getLabel(),

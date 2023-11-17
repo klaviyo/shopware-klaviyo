@@ -45,7 +45,7 @@ class EventEntity extends Entity
     }
 
     /**
-     * @param string $type
+     * @param string $metadata
      */
     public function setMetadata(string $metadata): void
     {

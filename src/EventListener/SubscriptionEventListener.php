@@ -49,7 +49,6 @@ class SubscriptionEventListener implements EventSubscriberInterface
                 EventsTrackerInterface::SUBSCRIBER_EVENT_SUB
             );
         } catch (\Throwable $e) {
-            null;
         }
     }
 
@@ -66,7 +65,6 @@ class SubscriptionEventListener implements EventSubscriberInterface
                 EventsTrackerInterface::SUBSCRIBER_EVENT_UNSUB
             );
         } catch (\Throwable $e) {
-            null;
         }
     }
 

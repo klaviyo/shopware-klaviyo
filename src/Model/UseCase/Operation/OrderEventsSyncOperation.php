@@ -61,7 +61,13 @@ class OrderEventsSyncOperation implements JobHandlerInterface
 
             $eventTypeName = Tracker::ORDER_EVENTS[$eventType] ?? 'Undefined type';
             $eventsBag = new OrderTrackingEventsBag();
-            $eventTypeOrderIds = array_map(fn(EventEntity $event) => $event->getEntityId(), $events);
+            $eventTypeOrderIds = array_map(
+                function ($event) {
+                    /** @var EventEntity $event */
+                    return $event->getEntityId();
+                },
+                $events
+            );
             $orderCriteria = new Criteria();
             $orderCriteria->addFilter(new EqualsAnyFilter('id', $eventTypeOrderIds));
             $orderCriteria->addAssociation('lineItems');
@@ -75,8 +81,12 @@ class OrderEventsSyncOperation implements JobHandlerInterface
 
             /** @var EventEntity $deferredEvent */
             foreach ($events as $deferredEvent) {
-                if (isset($orders[$deferredEvent->getEntityId()])) {
-                    $orderEvent = new OrderEvent($orders[$deferredEvent->getEntityId()], $deferredEvent->getHappenedAt());
+                $orderId = $deferredEvent->getEntityId();
+
+                if (isset($orders[$orderId])) {
+                    $orderEntity = $orders[$orderId];
+                    /** @var \Shopware\Core\Checkout\Order\OrderEntity $orderEntity */
+                    $orderEvent = new OrderEvent($orderEntity, $deferredEvent->getHappenedAt());
                     $eventsBag->add($orderEvent);
                 }
             }
@@ -108,9 +118,13 @@ class OrderEventsSyncOperation implements JobHandlerInterface
                     break;
             }
 
-            $deleteDataSet = array_map(function (EventEntity $event) {
-                return ['id' => $event->getId()];
-                }, array_values($events));
+            $deleteDataSet = array_map(
+                function ($event) {
+                    /** @var EventEntity $event */
+                    return ['id' => $event->getId()];
+                },
+                array_values($events)
+            );
             $this->eventsRepository->delete($deleteDataSet, $context);
 
             foreach ($trackingResult->getFailedOrdersErrors() as $orderId => $orderErrors) {

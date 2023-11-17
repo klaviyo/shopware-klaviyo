@@ -68,7 +68,7 @@ class ProductDataHelper
             );
         }
 
-        if ($salesChannelContext->getSalesChannel() && $salesChannelContext->getSalesChannel()->getDomains()) {
+        if ($salesChannelContext->getSalesChannel()->getDomains()) {
             return $this->seoUrlReplacer->replace($raw, $salesChannelContext->getSalesChannel()->getDomains()->first()->getUrl(), $salesChannelContext);
         }
 
@@ -217,7 +217,7 @@ class ProductDataHelper
         )->first();
     }
 
-    public function getProductById(Context $context, string $productId): ProductEntity
+    public function getProductById(Context $context, string $productId): ?ProductEntity
     {
         return $this->productRepository->search(new Criteria([$productId]), $context)->first();
     }

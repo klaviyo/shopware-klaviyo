@@ -37,7 +37,6 @@ class OrderEventRequestTranslator
     private const ORDER_REFUND_REASON = 'Refund by shopware 6';
     private const ORDER_PAID_REASON = 'Paid by shopware 6';
 
-    private EntityRepository $productRepository;
     private EntityRepository $orderAddressRepository;
     private EntityRepository $orderDeliveryRepository;
     private EntityRepository $orderLineItemRepository;
@@ -46,7 +45,6 @@ class OrderEventRequestTranslator
     private ProductDataHelper $productDataHelper;
 
     public function __construct(
-        EntityRepository $productRepository,
         EntityRepository $orderAddressRepository,
         EntityRepository $orderDeliveryRepository,
         EntityRepository $orderLineItemRepository,
@@ -54,7 +52,6 @@ class OrderEventRequestTranslator
         ProductDataHelper $productDataHelper,
         CustomerPropertiesTranslator $orderCustomerPropertiesTranslator
     ) {
-        $this->productRepository = $productRepository;
         $this->orderAddressRepository = $orderAddressRepository;
         $this->orderDeliveryRepository = $orderDeliveryRepository;
         $this->orderLineItemRepository = $orderLineItemRepository;
@@ -334,6 +331,7 @@ class OrderEventRequestTranslator
         } else {
             $shippingAddress = $billingAddress;
         }
+        $orderIdentificationFlag = $context->orderIdentificationFlag ?? null;
 
         /** @var AbstractOrderEventTrackingRequest $request */
         $request = new $className(
@@ -341,7 +339,7 @@ class OrderEventRequestTranslator
             $eventHappenedDateTime,
             $customerProperties,
             $orderEntity->getAmountTotal(),
-            $context->orderIdentificationFlag == 'order-id' ? $orderEntity->getId() : $orderEntity->getOrderNumber(),
+            $orderIdentificationFlag == 'order-id' ? $orderEntity->getId() : $orderEntity->getOrderNumber(),
             $discounts,
             $products,
             $billingAddress,

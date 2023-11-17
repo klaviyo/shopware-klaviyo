@@ -30,7 +30,7 @@ class CompositeSearchStrategy implements SearchStrategyInterface
             });
 
             $strategySearchResult = $searchStrategy->searchProfilesIds($context, $channelId, $customerSearchCollection);
-            $foundCustomerIds = array_merge(array_values($strategySearchResult->getMapping()), $foundCustomerIds) ?? [];
+            $foundCustomerIds = array_merge(array_values($strategySearchResult->getMapping()), $foundCustomerIds);
 
             foreach ($strategySearchResult->getMapping() as $profileId => $customerId) {
                 $searchResult->addMapping($profileId, $customerId);

@@ -106,7 +106,6 @@ class ScheduledEventsTracker implements EventsTrackerInterface
         try {
             $this->eventRepository->create($scheduledEvents, $context);
         } catch (\Throwable $e) {
-            null;
         }
 
         return $result;

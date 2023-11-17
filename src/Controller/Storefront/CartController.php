@@ -38,7 +38,10 @@ class CartController extends StorefrontController
 
         if (isset($context->customerId)) {
             $request->getSession()->set('customerId', $context->customerId);
-            $data = $this->restorerService->registerCustomerByRestoreCartLink($context);
+            $restorerService =  $this->restorerService;
+            /** @var \Klaviyo\Integration\Storefront\Checkout\Cart\RestorerService\RestorerService $restorerService */
+            $data = $restorerService->registerCustomerByRestoreCartLink($context);
+
 
             if ($data->count() > 0) {
                 try {

@@ -50,8 +50,9 @@ class ScheduleBackgroundJob
             new EqualsFilter('type', $type),
             new EqualsAnyFilter('status', [JobEntity::TYPE_PENDING, JobEntity::TYPE_RUNNING])
         ]));
-        /** @var JobEntity $job */
+
         if ($job = $this->jobRepository->search($criteria, $context)->first()) {
+            /** @var JobEntity $job */
             if ($job->getStatus() === JobEntity::TYPE_PENDING) {
                 throw new JobAlreadyScheduledException('Job is already scheduled.');
             } else {

@@ -157,7 +157,7 @@ class RestorerService implements RestorerServiceInterface
         $this->restoreByCart($cart, $context);
     }
 
-    private function getOrderById(string $orderId, Context $context): ?OrderEntity
+    private function getOrderById(string $orderId, Context $context): OrderEntity
     {
         $criteria = (new Criteria([$orderId]))
             ->addAssociation('lineItems')
@@ -168,6 +168,7 @@ class RestorerService implements RestorerServiceInterface
             ->addAssociation('billingAddress')
             ->addAssociation('transactions');
 
+        /** @var OrderEntity */
         return $this->orderRepository->search($criteria, $context)
             ->get($orderId);
     }
