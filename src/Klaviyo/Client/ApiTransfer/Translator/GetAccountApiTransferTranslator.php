@@ -17,9 +17,11 @@ class GetAccountApiTransferTranslator extends AbstractApiTransferMessageTranslat
 
     public function translateRequest(object $request): Request
     {
+        $configuration = $this->configuration;
+        /** @var \Klaviyo\Integration\Klaviyo\Client\Configuration $configuration */
         $url = \sprintf(
             '%s/accounts/%s/',
-            $this->configuration->getGlobalNewEndpointUrl(),
+            $configuration->getGlobalNewEndpointUrl(),
             $request->getAccountId()
         );
 

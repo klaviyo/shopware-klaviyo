@@ -14,17 +14,12 @@ use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
 
 class OldJobCleanupScheduledTaskHandler extends ScheduledTaskHandler
 {
-    private EntityRepository $jobRepository;
-    private LoggerInterface $logger;
+
 
     public function __construct(
-        EntityRepository $scheduledTaskRepository,
-        EntityRepository $jobRepository,
-        LoggerInterface $logger
+        EntityRepository $scheduledTaskRepository
     ) {
         parent::__construct($scheduledTaskRepository);
-        $this->jobRepository = $jobRepository;
-        $this->logger = $logger;
     }
 
     public static function getHandledMessages(): iterable

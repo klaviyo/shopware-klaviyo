@@ -88,7 +88,7 @@ class AsyncClient implements ClientInterface
             try {
                 $guzzleRequest = $translator->translateRequest($request);
 
-                yield function () use ($guzzleRequest, $guzzleRequestOptions, $translator) {
+                yield function () use ($guzzleRequest, $guzzleRequestOptions) {
                     return $this->guzzleClient->sendAsync($guzzleRequest, $guzzleRequestOptions);
                 };
             } catch (\Throwable $e) {
