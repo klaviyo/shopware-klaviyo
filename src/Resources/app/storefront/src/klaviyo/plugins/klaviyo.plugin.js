@@ -107,7 +107,12 @@ export default class KlaviyoTracking extends Plugin {
                 return KlaviyoCookie.getCookie('od-klaviyo-track-allow');
             case 'cookiebot':
                 // In this config, cookiebot cookies is checked
-                return Cookiebot.consent && Cookiebot.consent.marketing;
+                try {
+                    return Cookiebot.consent && Cookiebot.consent.marketing;
+                } catch (e) {
+                    console.log('Cookiebot variable is not defined.');
+                    return false;
+                }
             default:
                 return false;
         }
