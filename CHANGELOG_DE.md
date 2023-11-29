@@ -1,3 +1,10 @@
+# 1.5.0
+# Fix: Es wurde ein Fehler behoben, der beim Bestätigen des Erhalts eines Newsletters auftrat.
+# Fix: Korrekturen für eine stabile Arbeit mit dem Cookie-Manager – CookieBot – hinzugefügt.
+# Fix: Korrekturen beim Synchronisieren von Abonnenten hinzugefügt.
+# Neu: Die Konfiguration „Tägliche Abonnentensynchronisierung“ wurde hinzugefügt.
+# Neu: Die Konfiguration „Bereinigung alter Jobs aktivieren“ wurde hinzugefügt.
+
 # 1.4.0
 # Fix: Problem, bei dem Shopware-Benutzer, die das Double Opt In im Shopware-System durchführen, nicht zu Klaviyo weitergeleitet wurden, sondern mit „NOT SUBSCRIBED“.
 # Fix: Selektor zum Namen der Klaviyo-Liste für Abonnenten hinzugefügt.
