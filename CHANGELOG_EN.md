@@ -1,3 +1,7 @@
+# 1.5.1
+# Fix: Fixed an error/issue with Cookiebot that was thrown in browser console when "Use Default Cookie Notification" was set to yes.
+# Fix: Fixed an issue where Order ID was displayed incorrectly ( Order ID was displayed instead of Order Number even though it was set to Order Number in plugin configuration ) in the refunded order Events.
+
 # 1.5.0
 # Fix: Fixed an error that occurred when confirming receipt of a newsletter.
 # Fix: Added fixes for stable work with cookies manager - CookieBot.

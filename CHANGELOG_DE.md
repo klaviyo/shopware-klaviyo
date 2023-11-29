@@ -1,3 +1,7 @@
+# 1.5.1.
+# Fix: Ein Fehler/Problem mit Cookiebot wurde behoben, das in der Browserkonsole ausgegeben wurde, wenn „Standard-Cookie-Benachrichtigung verwenden" auf „Ja" gesetzt war.
+# Fix: Es wurde ein Problem behoben, bei dem die Bestell-ID in den Ereignissen zu rückerstatteten Bestellungen falsch angezeigt wurde (die Bestell-ID wurde anstelle der Bestellnummer angezeigt, obwohl sie in der Plugin-Konfiguration auf Bestellnummer eingestellt war).
+
 # 1.5.0
 # Fix: Es wurde ein Fehler behoben, der beim Bestätigen des Erhalts eines Newsletters auftrat.
 # Fix: Korrekturen für eine stabile Arbeit mit dem Cookie-Manager – CookieBot – hinzugefügt.
