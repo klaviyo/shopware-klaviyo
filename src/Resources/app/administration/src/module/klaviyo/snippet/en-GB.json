@@ -176,6 +176,14 @@
                 "label": "Track Back In Stock",
                 "helpText": "Do we need to send \"Back In Stock Event\" to Klaviyo?\n"
             },
+            "oldJobCleanup": {
+                "label": "Enable cleanup of old jobs",
+                "helpText": "Enables cleaning up old jobs in the Klaviyo job listing"
+            },
+            "oldJobCleanupPeriod": {
+                "after": "After",
+                "days": "days"
+            },
             "apiValidation": {
                 "buttonLabel": "API-key test",
                 "emptyErrorMessage": "\"{entityName}\" should not be blank!",
@@ -183,6 +191,14 @@
                 "incorrectCredentialsTitle": "Incorrect Credentials",
                 "correctApiMessage": "API-keys are valid",
                 "listNotExistMessage": "No Lists found in Klaviyo"
+            },
+            "enableDailySynchronization": {
+                "label": "Enable Daily Subscribers Synchronization",
+                "helpText": "This option allows you to enable daily scheduled synchronization of subscribers"
+            },
+            "timeDailySynchronization": {
+                "label": "Time for Daily Subscribers Synchronization",
+                "helpText": "The option specifies at which time to sync daily subscribers synchronization"
             }
         },
         "customer": {

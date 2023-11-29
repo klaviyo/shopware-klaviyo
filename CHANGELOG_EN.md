@@ -1,3 +1,9 @@
+# 2.7.0
+# Fix: Added fixes for stable work with cookies manager - CookieBot.
+# Fix: Added fixes when synchronizing subscribers.
+# Feature: The 'Daily Subscribers Synchronization' configuration is added.
+# Feature: The 'Enable cleanup of old jobs' configuration is added.
+
 # 2.6.0
 # Feature: Now Double-Opt in messaging at configuration page is visible in all configuration scopes/sales channels.
 
