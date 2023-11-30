@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Model\UseCase\Operation;
 
@@ -40,7 +42,10 @@ class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerIn
         $result->addMessage(new Message\InfoMessage('Starting Full Order Sync Operation...'));
         $subOperationCount = 0;
 
-        $channelIds = $this->getValidChannels->execute($message->getContext())->map(fn(SalesChannelEntity $channel) => $channel->getId());
+        $channelIds = $this->getValidChannels->execute(
+            $message->getContext())->map(fn(SalesChannelEntity $channel) => $channel->getId()
+        );
+
         if (empty($channelIds)) {
             $result->addMessage(new Message\WarningMessage('There are no configured channels - skipping.'));
 

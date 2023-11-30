@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\EventListener;
 
@@ -20,9 +22,10 @@ class CheckoutOrderPlacedEventListener implements EventSubscriberInterface
         $this->getValidChannelConfig = $getValidChannelConfig;
     }
 
-    public function onOrderPlaced(CheckoutOrderPlacedEvent $event)
+    public function onOrderPlaced(CheckoutOrderPlacedEvent $event): void
     {
         $config = $this->getValidChannelConfig->execute($event->getSalesChannelId());
+
         if ($config === null || !$config->isTrackPlacedOrder()) {
             return;
         }

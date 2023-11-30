@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\System\Tracking\Event\Cart;
 
@@ -8,7 +10,7 @@ class CartEventRequestBag
 {
     private array $channelRequestMap = [];
 
-    public function add(EventTrackingRequest $request, string $channelId)
+    public function add(EventTrackingRequest $request, string $channelId): void
     {
         $this->channelRequestMap[$channelId][] = $request;
     }

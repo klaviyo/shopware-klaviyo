@@ -1,11 +1,12 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Model\UseCase\Operation;
 
 use Klaviyo\Integration\Async\Message\ExcludedSubscriberSyncMessage;
 use Od\Scheduler\Model\Job\{JobHandlerInterface, JobResult, Message\InfoMessage};
 use Shopware\Core\Content\Newsletter\SalesChannel\NewsletterSubscribeRoute;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\{EqualsAnyFilter, EqualsFilter};
@@ -35,7 +36,10 @@ class ExcludedSubscriberSyncOperation implements JobHandlerInterface
         $criteria->addFilter(new EqualsFilter('salesChannelId', $message->getSalesChannelId()));
         $subscribers = $this->newsletterRepository->search($criteria, $context);
 
-        $result->addMessage(new InfoMessage(\sprintf('Total %s customers was unsubscribed.', \count($message->getEmails()))));
+        $result->addMessage(
+            new InfoMessage(\sprintf('Total %s customers was unsubscribed.', \count($message->getEmails())))
+        );
+
         if (!empty($message->getEmails())) {
             $result->addMessage(new InfoMessage(
                 \sprintf(

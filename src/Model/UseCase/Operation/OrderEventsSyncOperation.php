@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Model\UseCase\Operation;
 
@@ -10,7 +12,6 @@ use Klaviyo\Integration\System\Tracking\Event\Order\OrderEvent;
 use Klaviyo\Integration\System\Tracking\Event\Order\OrderTrackingEventsBag;
 use Klaviyo\Integration\System\Tracking\EventsTrackerInterface as Tracker;
 use Od\Scheduler\Model\Job\{JobHandlerInterface, JobResult, Message};
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
@@ -76,7 +77,10 @@ class OrderEventsSyncOperation implements JobHandlerInterface
             /** @var EventEntity $deferredEvent */
             foreach ($events as $deferredEvent) {
                 if (isset($orders[$deferredEvent->getEntityId()])) {
-                    $orderEvent = new OrderEvent($orders[$deferredEvent->getEntityId()], $deferredEvent->getHappenedAt());
+                    $orderEvent = new OrderEvent(
+                        $orders[$deferredEvent->getEntityId()],
+                        $deferredEvent->getHappenedAt()
+                    );
                     $eventsBag->add($orderEvent);
                 }
             }
