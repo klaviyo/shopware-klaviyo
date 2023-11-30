@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Klaviyo\Gateway\Translator;
 
@@ -15,8 +17,11 @@ class UpdateProfileRequestTranslator
         $this->customerPropertiesTranslator = $customerPropertiesTranslator;
     }
 
-    public function translateToProfileRequest(Context $context, CustomerEntity $customer, string $profileId)
-    {
+    public function translateToProfileRequest(
+        Context $context,
+        CustomerEntity $customer,
+        string $profileId
+    ): UpdateProfileRequest {
         $customerProperties = $this->customerPropertiesTranslator->translateCustomer($context, $customer);
 
         return new UpdateProfileRequest($profileId, $customerProperties);

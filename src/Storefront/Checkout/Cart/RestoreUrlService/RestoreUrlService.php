@@ -5,20 +5,13 @@ namespace Klaviyo\Integration\Storefront\Checkout\Cart\RestoreUrlService;
 use Klaviyo\Integration\Entity\CheckoutMapping\CheckoutMappingDefinition;
 use Klaviyo\Integration\Entity\CheckoutMapping\CheckoutMappingEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityLoadedEventFactory;
-use Shopware\Core\Framework\DataAbstractionLayer\Read\EntityReaderInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\EntityAggregatorInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearcherInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
-use Shopware\Core\Framework\DataAbstractionLayer\VersionManager;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Framework\Routing\RequestTransformer;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -62,12 +55,12 @@ class RestoreUrlService implements RestoreUrlServiceInterface
     private function generate(string $id): string
     {
         return $this->requestStack->getCurrentRequest()->attributes->get(
-                RequestTransformer::STOREFRONT_URL
-            ).$this->urlGenerator->generate(
-                'frontend.cart.od-restore-cart',
-                ['mappingId' => $id],
-                UrlGeneratorInterface::ABSOLUTE_PATH
-            );
+            RequestTransformer::STOREFRONT_URL
+        ) . $this->urlGenerator->generate(
+            'frontend.cart.od-restore-cart',
+            ['mappingId' => $id],
+            UrlGeneratorInterface::ABSOLUTE_PATH
+        );
     }
 
     protected function createNew(string $token, Context $context): string

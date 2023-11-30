@@ -8,5 +8,9 @@ use Shopware\Core\Framework\Context;
 
 interface SearchStrategyInterface
 {
-    public function searchProfilesIds(Context $context, string $channelId, CustomerCollection $customers): ProfileIdSearchResult;
+    public function searchProfilesIds(
+        Context $context,
+        string $channelId,
+        CustomerCollection $customers
+    ): ProfileIdSearchResult;
 }

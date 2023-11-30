@@ -193,7 +193,7 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
         return $total;
     }
 
-    private function deleteProcessedEvents(Context $context, EntityCollection $events)
+    private function deleteProcessedEvents(Context $context, EntityCollection $events): void
     {
         $deleteDataSet = array_map(function ($id) {
             return ['id' => $id];
@@ -201,7 +201,7 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
         $this->eventRepository->delete($deleteDataSet, $context);
     }
 
-    private function getEventRepoIterator(Context $context, array $eventTypes, array $channelIds)
+    private function getEventRepoIterator(Context $context, array $eventTypes, array $channelIds): RepositoryIterator
     {
         $criteria = new Criteria();
         $criteria->addFilter(

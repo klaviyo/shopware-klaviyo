@@ -71,11 +71,12 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
         ];
     }
 
-    public function onPageLoaded(GenericPageLoadedEvent $event)
+    public function onPageLoaded(GenericPageLoadedEvent $event): void
     {
         try {
             $salesChannelContext = $event->getSalesChannelContext();
             $configuration = $this->getValidChannelConfig->execute($salesChannelContext->getSalesChannel()->getId());
+
             if (null === $configuration) {
                 return;
             }
@@ -95,7 +96,7 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
         }
     }
 
-    public function onProductPageLoaded(ProductPageLoadedEvent $event)
+    public function onProductPageLoaded(ProductPageLoadedEvent $event): void
     {
         try {
             if (!$event->getPage()->hasExtension(self::PDP_EXTENSION)) {

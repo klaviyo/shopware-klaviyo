@@ -38,6 +38,7 @@
             <argument type="service" id="Klaviyo\Integration\System\Tracking\EventsTracker"/>
             <argument type="service" id="klaviyo_job_cart_request.repository"/>
             <argument type="service" id="Klaviyo\Integration\Model\CartRequestSerializer"/>
+            <argument type="service" id="monolog.logger.od_klaviyo"/>
             <tag name="od.job_handler" code="od-klaviyo-cart-event-sync-handler"/>
         </service>
         <service id="Klaviyo\Integration\Model\UseCase\Operation\CustomerProfileSyncOperation">

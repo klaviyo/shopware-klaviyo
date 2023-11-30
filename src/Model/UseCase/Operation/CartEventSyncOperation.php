@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Model\UseCase\Operation;
 
@@ -8,10 +10,10 @@ use Klaviyo\Integration\Model\CartRequestSerializer;
 use Klaviyo\Integration\System\Tracking\Event\Cart\CartEventRequestBag;
 use Klaviyo\Integration\System\Tracking\EventsTrackerInterface;
 use Od\Scheduler\Model\Job\{JobHandlerInterface, JobResult};
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
+use Psr\Log\LoggerInterface;
 
 class CartEventSyncOperation implements JobHandlerInterface
 {
@@ -20,15 +22,18 @@ class CartEventSyncOperation implements JobHandlerInterface
     private EventsTrackerInterface $eventsTracker;
     private EntityRepository $cartEventRequestRepository;
     private CartRequestSerializer $cartRequestSerializer;
+    private LoggerInterface $logger;
 
     public function __construct(
         EventsTrackerInterface $eventsTracker,
         EntityRepository $cartEventRequestRepository,
-        CartRequestSerializer $cartRequestSerializer
+        CartRequestSerializer $cartRequestSerializer,
+        LoggerInterface $logger
     ) {
         $this->eventsTracker = $eventsTracker;
         $this->cartEventRequestRepository = $cartEventRequestRepository;
         $this->cartRequestSerializer = $cartRequestSerializer;
+        $this->logger = $logger;
     }
 
     /**
@@ -52,12 +57,15 @@ class CartEventSyncOperation implements JobHandlerInterface
                     $cartEvent->getSalesChannelId()
                 );
             } catch (\Throwable $e) {
-                $result->addError($e);
+                $this->logger->error($e->getMessage());
+                $result->addError(
+                    new \Exception('Cart event sync failed. See the logs for detailed information')
+                );
                 continue;
             }
         }
 
-        //TODO: add result
+        // TODO: add result
         $this->eventsTracker->trackAddedToCart($context, $requestBag);
         $deleteDataSet = array_map(function ($id) {
             return ['id' => $id];
