@@ -1,3 +1,13 @@
+# 2.7.1
+# Fix: Ein Fehler/Problem mit Cookiebot wurde behoben, das in der Browserkonsole ausgegeben wurde, wenn „Standard-Cookie-Benachrichtigung verwenden“ auf „Ja“ gesetzt war.
+# Fix: Es wurde ein Problem behoben, bei dem die Bestell-ID in den Ereignissen zu rückerstatteten Bestellungen falsch angezeigt wurde (die Bestell-ID wurde anstelle der Bestellnummer angezeigt, obwohl sie in der Plugin-Konfiguration auf Bestellnummer eingestellt war).
+
+# 2.7.0
+# Fix: Korrekturen für eine stabile Arbeit mit dem Cookie-Manager – CookieBot – hinzugefügt.
+# Fix: Korrekturen beim Synchronisieren von Abonnenten hinzugefügt.
+# Neu: Die Konfiguration „Tägliche Abonnentensynchronisierung“ wurde hinzugefügt.
+# Neu: Die Konfiguration „Bereinigung alter Jobs aktivieren“ wurde hinzugefügt.
+
 # 2.6.0
 # Funktion: Jetzt ist Double-Opt in der Nachrichtenübermittlung auf der Konfigurationsseite in allen Konfigurationsbereichen/Vertriebskanälen sichtbar.
 

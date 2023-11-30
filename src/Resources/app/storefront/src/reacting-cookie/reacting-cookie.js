@@ -22,7 +22,7 @@ function setCookieOnDecline() {
 }
 
 function eventCallback(updatedCookies) {
-    if (updatedCookies.detail['od-klaviyo-track-allow']) {
+    if (updatedCookies && updatedCookies.detail['od-klaviyo-track-allow']) {
         setCookieConsentAllowed();
     }
 }
@@ -30,7 +30,7 @@ function eventCallback(updatedCookies) {
 window.addEventListener('CookiebotOnAccept', setCookieConsentAllowed);
 window.addEventListener('CookiebotOnDecline', setCookieOnDecline);
 
-if(window.cmp_id) {
+if (window.cmp_id) {
     __cmp("addEventListener", ["consentrejected", setCookieOnDecline, false], null);
     __cmp("addEventListener", ["consentapproved", setCookieConsentManagerAllowed, false], null);
 }

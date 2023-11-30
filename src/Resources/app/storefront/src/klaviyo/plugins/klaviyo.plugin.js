@@ -87,14 +87,12 @@ export default class KlaviyoTracking extends Plugin {
 
         if (this.canInitializeKlaviyoScript()) {
             this.initKlaviyoScript();
+            this.addKlaviyoCookie();
         }
     }
 
     onKlaviyoCookieConsentManagerAllowed() {
-        if (KlaviyoCookie.getCookie('od-klaviyo-track-allow') === null) {
-            KlaviyoCookie.setCookie('od-klaviyo-track-allow', 1, 30);
-        }
-
+        this.addKlaviyoCookie();
         this.onKlaviyoCookieConsentAllowed();
     }
 
@@ -109,7 +107,12 @@ export default class KlaviyoTracking extends Plugin {
                 return KlaviyoCookie.getCookie('od-klaviyo-track-allow');
             case 'cookiebot':
                 // In this config, cookiebot cookies is checked
-                return Cookiebot.consent.marketing && Cookiebot.consent && Cookiebot.consent.marketing;
+                try {
+                    return Cookiebot.consent && Cookiebot.consent.marketing;
+                } catch (e) {
+                    console.log('Cookiebot variable is not defined.');
+                    return false;
+                }
             default:
                 return false;
         }
@@ -139,5 +142,11 @@ export default class KlaviyoTracking extends Plugin {
         }.bind(this)
 
         initializer();
+    }
+
+    addKlaviyoCookie() {
+        if (KlaviyoCookie.getCookie('od-klaviyo-track-allow') === null) {
+            KlaviyoCookie.setCookie('od-klaviyo-track-allow', 1, 30);
+        }
     }
 }
