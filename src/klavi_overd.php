@@ -4,12 +4,8 @@ namespace Klaviyo\Integration;
 
 use Composer\Autoload\ClassLoader;
 use Doctrine\DBAL\Connection;
-use Klaviyo\Integration\Utils\Lifecycle;
-use Klaviyo\Integration\Utils\Lifecycle\Update\UpdateOldTemplate;
-use Klaviyo\Integration\Utils\Lifecycle\Update\UpdateTo105;
-use Klaviyo\Integration\Utils\MigrationHelper;
-use League\Flysystem\Filesystem;
-use League\Flysystem\Local\LocalFilesystemAdapter;
+use Klaviyo\Integration\Utils\{Lifecycle, Lifecycle\Update\UpdateOldTemplate, Lifecycle\Update\UpdateTo105, MigrationHelper};
+use League\Flysystem\{Adapter\Local, Filesystem};
 use Od\Scheduler\OdScheduler;
 use Shopware\Core\Framework\Parameter\AdditionalBundleParameters;
 use Shopware\Core\Framework\Plugin;
@@ -51,7 +47,7 @@ class klavi_overd extends Plugin
         }
 
         if (\version_compare($updateContext->getCurrentPluginVersion(), '1.0.6', '<=')) {
-            $adapter = new LocalFilesystemAdapter(__DIR__);
+            $adapter = new Local(__DIR__);
             $filesystem = new Filesystem($adapter);
             $connection = $this->container->get(Connection::class);
             (new UpdateOldTemplate($filesystem, $connection))->updateTemplateByMD5hash();
@@ -113,7 +109,7 @@ class klavi_overd extends Plugin
         }
 
         $classLoader->unregister();
-        $classLoader->register(false);
+        $classLoader->register();
     }
 
     public function build(ContainerBuilder $container): void
@@ -125,7 +121,7 @@ class klavi_overd extends Plugin
         $resolver = new LoaderResolver([
             new YamlFileLoader($container, $locator),
             new GlobFileLoader($container, $locator),
-            new DirectoryLoader($container, $locator),
+            new DirectoryLoader($container, $locator)
         ]);
 
         $configLoader = new DelegatingLoader($resolver);
@@ -137,7 +133,7 @@ class klavi_overd extends Plugin
     private function getDependencyBundles(): array
     {
         return [
-            new OdScheduler(),
+            new OdScheduler()
         ];
     }
 }
