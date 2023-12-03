@@ -20,6 +20,7 @@
             <argument type="service" id="klaviyo_job_event.repository"/>
             <argument type="service" id="klaviyo_job_cart_request.repository"/>
             <argument type="service" id="Klaviyo\Integration\Model\CartRequestSerializer"/>
+            <argument type="service" id="monolog.logger.od_klaviyo"/>
         </service>
         <service id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob">
             <argument type="service" id="od_scheduler_job.repository"/>
@@ -27,6 +28,7 @@
             <argument type="service" id="Klaviyo\Integration\Entity\Helper\ExcludedSubscribersProvider"/>
             <argument type="service"
                       id="Klaviyo\Integration\Klaviyo\FrontendApi\ExcludedSubscribers\SyncProgressService"/>
+            <argument type="service" id="monolog.logger.od_klaviyo"/>
         </service>
 
         <!-- Controllers -->
@@ -76,6 +78,7 @@
         <service id="Klaviyo\Integration\EventListener\SubscriptionEventListener">
             <argument type="service" id="klaviyo_job_event.repository"/>
             <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannelConfig"/>
+            <argument type="service" id="monolog.logger.od_klaviyo"/>
             <tag name="kernel.event_subscriber"/>
         </service>
         <service id="Klaviyo\Integration\EventListener\RestartConsumerAfterPluginConfigChangedEventListener">

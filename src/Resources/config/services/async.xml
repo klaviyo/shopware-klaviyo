@@ -36,7 +36,7 @@
             <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannels"/>
             <argument type="service" id="Klaviyo\Integration\Configuration\ConfigurationRegistry"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
-            <argument type="service" id="logger"/>
+            <argument type="service" id="monolog.logger.od_klaviyo"/>
             <tag name="od.job_handler" code="od-klaviyo-events-sync-handler"/>
         </service>
         <service id="Klaviyo\Integration\Model\UseCase\Operation\CartEventSyncOperation">
@@ -44,6 +44,7 @@
             <argument type="service" id="Klaviyo\Integration\System\Tracking\EventsTracker"/>
             <argument type="service" id="klaviyo_job_cart_request.repository"/>
             <argument type="service" id="Klaviyo\Integration\Model\CartRequestSerializer"/>
+            <argument type="service" id="monolog.logger.od_klaviyo"/>
         </service>
         <service id="Klaviyo\Integration\Model\UseCase\Operation\CustomerProfileSyncOperation">
             <tag name="od.job_handler" code="od-klaviyo-customer-profile-sync-handler"/>

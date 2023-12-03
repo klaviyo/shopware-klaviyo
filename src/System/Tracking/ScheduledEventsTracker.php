@@ -11,21 +11,26 @@ use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Klaviyo\Integration\Klaviyo\Gateway\Exception\TranslationException;
+use Psr\Log\LoggerInterface;
 
 class ScheduledEventsTracker implements EventsTrackerInterface
 {
     private EntityRepositoryInterface $eventRepository;
     private EntityRepositoryInterface $cartEventRequestRepository;
     private CartRequestSerializer $cartRequestSerializer;
+    private LoggerInterface $logger;
 
     public function __construct(
         EntityRepositoryInterface $eventRepository,
         EntityRepositoryInterface $cartEventRequestRepository,
-        CartRequestSerializer $cartRequestSerializer
+        CartRequestSerializer $cartRequestSerializer,
+        LoggerInterface $logger
     ) {
         $this->eventRepository = $eventRepository;
         $this->cartEventRequestRepository = $cartEventRequestRepository;
         $this->cartRequestSerializer = $cartRequestSerializer;
+        $this->logger = $logger;
     }
 
     public function trackPlacedOrders(Context $context, OrderTrackingEventsBag $trackingBag): OrderTrackingResult
@@ -106,7 +111,7 @@ class ScheduledEventsTracker implements EventsTrackerInterface
         try {
             $this->eventRepository->create($scheduledEvents, $context);
         } catch (\Throwable $e) {
-            null;
+            $this->logger->error($e->getMessage());
         }
 
         return $result;
@@ -138,7 +143,10 @@ class ScheduledEventsTracker implements EventsTrackerInterface
             $this->eventRepository->create($scheduledEvents, $context);
         } catch (\Throwable $e) {
             // TODO: add possibility to add simple (not order related) errors to OrderTrackingResult
-            $result->addFailedOrder('0', $e);
+            $result->addFailedOrder(
+                '0',
+                new TranslationException('Something is wrong with the creation of the track order event')
+            );
         }
 
         return $result;
