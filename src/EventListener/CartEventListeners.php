@@ -14,8 +14,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Throwable;
-
 
 class CartEventListeners implements EventSubscriberInterface
 {
@@ -62,7 +60,7 @@ class CartEventListeners implements EventSubscriberInterface
                     $event->getContext()
                 );
             }
-        } catch (Throwable $throwable) {
+        } catch (\Throwable $throwable) {
             $this->logger->error(
                 'Unable to convert od checkout mapping',
                 ContextHelper::createContextFromException($throwable)

@@ -87,7 +87,6 @@ class ContextHelper
 
     private static function convertResponseToSerializable(Response $response): array
     {
-
         return [];
     }
 }
