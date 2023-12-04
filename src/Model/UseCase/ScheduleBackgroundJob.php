@@ -16,6 +16,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\{AndFilter, EqualsAnyFilter, EqualsFilter};
 use Shopware\Core\Framework\Uuid\Uuid;
+use Psr\Log\LoggerInterface;
 
 class ScheduleBackgroundJob
 {
@@ -23,17 +24,20 @@ class ScheduleBackgroundJob
     private JobScheduler $scheduler;
     private ExcludedSubscribersProvider $excludedSubscribersProvider;
     private SyncProgressService $progressService;
+    private LoggerInterface $logger;
 
     public function __construct(
         EntityRepositoryInterface $jobRepository,
         JobScheduler $scheduler,
         ExcludedSubscribersProvider $excludedSubscribersProvider,
-        SyncProgressService $progressService
+        SyncProgressService $progressService,
+        LoggerInterface $logger
     ) {
         $this->jobRepository = $jobRepository;
         $this->scheduler = $scheduler;
         $this->excludedSubscribersProvider = $excludedSubscribersProvider;
         $this->progressService = $progressService;
+        $this->logger = $logger;
     }
 
     public function scheduleFullSubscriberSyncJob(Context $context)
@@ -159,7 +163,10 @@ class ScheduleBackgroundJob
                     $this->progressService->save($context, $syncInfo);
                 }
             } catch (\Exception $e) {
-                $schedulingResult->addError($e);
+                $this->logger->error($e->getMessage());
+                $schedulingResult->addError(
+                    new \Exception('Something wrong with the excluded subscribers sync event')
+                );
             }
         }
 
