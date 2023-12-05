@@ -288,7 +288,7 @@ class KlaviyoGateway
                 $result->addFailedOrder(
                     $orderEvent->getOrder()->getId(),
                     throw new TranslationException(
-                        'Something went wrong with the track of paied orders'
+                        'Something went wrong with the track of paid orders'
                     )
                 );
             }
