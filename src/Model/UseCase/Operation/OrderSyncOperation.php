@@ -63,7 +63,7 @@ class OrderSyncOperation implements JobHandlerInterface
             $eventsBags[Tracker::ORDER_EVENT_ORDERED_PRODUCT]->add(new OrderEvent($order, $order->getCreatedAt()));
 
             $lastTransaction = $order->getTransactions()->last();
-            $transactionStateName = $lastTransaction->getStateMachineState()->getTechnicalName();
+            $transactionStateName = $lastTransaction->getStateMachineState()->getTechnicalName() ?: null;
 
             if (
                 (StateActions::ACTION_PAID === $transactionStateName)
@@ -74,7 +74,7 @@ class OrderSyncOperation implements JobHandlerInterface
             }
 
             $lastDelivery = $order->getDeliveries()->last();
-            $deliveryStateName = $lastDelivery->getStateMachineState()->getTechnicalName();
+            $deliveryStateName = $lastDelivery->getStateMachineState()->getTechnicalName() ?: null;
 
             if ($deliveryStateName === OrderDeliveryStates::STATE_SHIPPED) {
                 $happenedAt = $lastDelivery->getUpdatedAt();
