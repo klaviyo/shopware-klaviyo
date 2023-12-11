@@ -8,6 +8,13 @@ Shopware.Component.override('sw-promotion-v2-list', {
             const basePath = Shopware.Context.api.apiPath;
 
             return basePath + '/klaviyo/integration/promotion/export';
+        },
+
+        sendPromotionToExport(promotionId) {
+            if (!promotionId) {
+                return;
+            }
+            window.location.href = this.getExportUrl() + '?id=' + promotionId;
         }
     }
 });

@@ -7,6 +7,7 @@ use Klaviyo\Integration\Model\Response\KlaviyoBinaryFileResponse;
 use Shopware\Core\Framework\Context;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Request;
 
 #[Route(defaults: ['_routeScope' => ['api']])]
 class PromotionsExportController
@@ -20,9 +21,10 @@ class PromotionsExportController
     }
 
     #[Route(path: '/api/klaviyo/integration/promotion/export', defaults: ['auth_required' => false], methods: ['GET'])]
-    public function export(Context $context): KlaviyoBinaryFileResponse
+    public function export(Context $context, Request $request): KlaviyoBinaryFileResponse
     {
-        $fileObject = $this->promotionsExporter->exportToCSV($context);
+        $promotionId = $request->query->get('id');
+        $fileObject = $this->promotionsExporter->exportToCSV($context, null, $promotionId);
 
         $response = new KlaviyoBinaryFileResponse($fileObject);
         $response->deleteFileAfterSend(true);

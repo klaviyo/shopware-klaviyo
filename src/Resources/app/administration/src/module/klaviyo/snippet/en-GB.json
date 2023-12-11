@@ -250,7 +250,10 @@
             }
         },
         "promotion": {
-            "exportInKlaviyoFormatButtonLabel": "Export in Klaviyo Format"
+            "exportInKlaviyoFormatButtonLabel": "Export in Klaviyo Format",
+            "notification": {
+                "notificationExportErrorMessage": "An error occurred while exporting the promotion \"{entityName}\"."
+            }
         },
         "productComparison": {
             "templates": {
