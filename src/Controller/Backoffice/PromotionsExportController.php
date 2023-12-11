@@ -8,6 +8,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Request;
 
 class PromotionsExportController
 {
@@ -24,15 +25,16 @@ class PromotionsExportController
      *     "/api/klaviyo/integration/promotion/export", defaults={"auth_required"=false}
      * )
      */
-    public function export(Context $context)
+    public function export(Context $context, Request $request): KlaviyoBinaryFileResponse
     {
-        $fileObject = $this->promotionsExporter->exportToCSV($context);
+        $promotionId = $request->query->get('id');
+        $fileObject = $this->promotionsExporter->exportToCSV($context, null, $promotionId);
 
         $response = new KlaviyoBinaryFileResponse($fileObject);
         $response->deleteFileAfterSend(true);
 
         $response->headers->set('Content-Type', 'text/csv');
-        $response->headers->set('Cache-Control','private');
+        $response->headers->set('Cache-Control', 'private');
 
         // Set content disposition inline of the file
         $response->setContentDisposition(

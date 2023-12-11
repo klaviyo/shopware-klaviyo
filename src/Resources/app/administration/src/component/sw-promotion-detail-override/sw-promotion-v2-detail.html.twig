@@ -1,0 +1,12 @@
+{% block sw_promotion_v2_detail_actions_save %}
+    <sw-button
+            :disabled="promotion !== null && promotion.isLoading"
+            @click="sendPromotionToExport"
+    >
+        {{ $tc('klaviyo_integration_plugin.promotion.exportInKlaviyoFormatButtonLabel') }}
+    </sw-button>
+
+    {% parent %}
+{% endblock %}
+
+
