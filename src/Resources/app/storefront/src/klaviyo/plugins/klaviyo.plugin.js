@@ -87,8 +87,9 @@ export default class KlaviyoTracking extends Plugin {
 
         if (this.canInitializeKlaviyoScript()) {
             this.initKlaviyoScript();
-            this.addKlaviyoCookie();
         }
+
+        this.addKlaviyoCookie();
     }
 
     onKlaviyoCookieConsentManagerAllowed() {
