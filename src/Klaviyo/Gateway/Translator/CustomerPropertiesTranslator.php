@@ -61,7 +61,7 @@ class CustomerPropertiesTranslator
         $customFields = $this->prepareCustomFields($customer, $orderEntity->getSalesChannelId());
         $birthday = $customer ? $customer->getBirthday() : null;
 
-        $localeCode = $this->localeCodeProducer->getLocaleCodeFromContext($context);
+        $localeCode = $this->localeCodeProducer->getLocaleCodeFromContext($customer->getLanguageId(), $context);
 
         return new CustomerProperties(
             $customer ? $customer->getEmail() : $orderCustomer->getEmail(),
@@ -155,7 +155,8 @@ class CustomerPropertiesTranslator
         $country = $this->addressHelper->getAddressCountry($context, $customerAddress);
         $birthday = $customerEntity->getBirthday();
         $customFields = $this->prepareCustomFields($customerEntity, $customerEntity->getSalesChannelId());
-        $localeCode = $this->localeCodeProducer->getLocaleCodeFromContext($context);
+
+        $localeCode = $this->localeCodeProducer->getLocaleCodeFromContext($customerEntity->getLanguageId(), $context);
 
         return new CustomerProperties(
             $customerEntity->getEmail(),

@@ -19,10 +19,8 @@ class LocaleCodeProducer
         $this->languageRepository = $languageRepository;
     }
 
-    public function getLocaleCodeFromContext(Context $context): string
+    public function getLocaleCodeFromContext(string $languageId, Context $context): string
     {
-        $languageId = $context->getLanguageId();
-
         $criteria = new Criteria([$languageId]);
         $criteria->addAssociation('locale');
         $criteria->setLimit(1);
