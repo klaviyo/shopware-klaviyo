@@ -246,7 +246,10 @@
             }
         },
         "promotion": {
-            "exportInKlaviyoFormatButtonLabel": "Export im Klaviyo Format"
+            "exportInKlaviyoFormatButtonLabel": "Export im Klaviyo Format",
+            "notification": {
+                "notificationExportErrorMessage": "Beim Exportieren der Aktion ist ein Fehler aufgetreten \"{entityName}\"."
+            }
         },
         "productComparison": {
             "templates": {
