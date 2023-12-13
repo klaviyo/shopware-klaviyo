@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Klaviyo\Integration\Utils;
@@ -19,17 +20,15 @@ class LocaleCodeProducer
         $this->languageRepository = $languageRepository;
     }
 
-    public function getLocaleCodeFromContext(Context $context): string
+    public function getLocaleCodeFromContext(string $languageId, Context $context): string
     {
-        $languageId = $context->getLanguageId();
-
         $criteria = new Criteria([$languageId]);
         $criteria->addAssociation('locale');
         $criteria->setLimit(1);
 
         $language = $this->languageRepository->search($criteria, $context)->first();
 
-        if ($language === null) {
+        if (null === $language) {
             return self::DEFAULT_LANGUAGE_LOCALE;
         }
 
