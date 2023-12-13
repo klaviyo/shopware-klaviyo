@@ -57,6 +57,7 @@
             <argument type="service" id="Klaviyo\Integration\Entity\Helper\AddressDataHelper"/>
             <argument type="service" id="Klaviyo\Integration\Configuration\ConfigurationRegistry"/>
             <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Klaviyo\Integration\Utils\LocaleCodeProducer"/>
         </service>
         <service id="Klaviyo\Integration\Klaviyo\Gateway\Translator\UpdateProfileRequestTranslator">
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CustomerPropertiesTranslator"/>

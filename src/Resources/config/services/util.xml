@@ -8,8 +8,13 @@
         <service id="Klaviyo\Integration\Utils\MigrationHelper" public="true">
             <argument type="service" id="Shopware\Core\Framework\Migration\MigrationCollectionLoader"/>
         </service>
+
         <service id="klaviyo.plugin.assetservice.public" public="true"
                  alias="Shopware\Core\Framework\Plugin\Util\AssetService"/>
+
+        <service id="Klaviyo\Integration\Utils\LocaleCodeProducer">
+            <argument type="service" id="language.repository"/>
+        </service>
     </services>
 
 </container>
