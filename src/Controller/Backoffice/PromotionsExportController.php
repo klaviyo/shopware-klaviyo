@@ -14,8 +14,9 @@ class PromotionsExportController
 {
     private PromotionsExporter $promotionsExporter;
 
-    public function __construct(PromotionsExporter $promotionsExporter)
-    {
+    public function __construct(
+        PromotionsExporter $promotionsExporter
+    ) {
         $this->promotionsExporter = $promotionsExporter;
     }
 

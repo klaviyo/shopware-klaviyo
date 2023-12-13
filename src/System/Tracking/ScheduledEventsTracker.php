@@ -1,12 +1,16 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\System\Tracking;
 
+use Klaviyo\Integration\Klaviyo\Gateway\Exception\TranslationException;
 use Klaviyo\Integration\Klaviyo\Gateway\Result\OrderTrackingResult;
 use Klaviyo\Integration\Model\CartRequestSerializer;
 use Klaviyo\Integration\System\Tracking\Event\Cart\CartEventRequestBag;
 use Klaviyo\Integration\System\Tracking\Event\Customer\ProfileEventsBag;
 use Klaviyo\Integration\System\Tracking\Event\Order\OrderTrackingEventsBag;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -17,15 +21,18 @@ class ScheduledEventsTracker implements EventsTrackerInterface
     private EntityRepository $eventRepository;
     private EntityRepository $cartEventRequestRepository;
     private CartRequestSerializer $cartRequestSerializer;
+    private LoggerInterface $logger;
 
     public function __construct(
         EntityRepository $eventRepository,
         EntityRepository $cartEventRequestRepository,
-        CartRequestSerializer $cartRequestSerializer
+        CartRequestSerializer $cartRequestSerializer,
+        LoggerInterface $logger
     ) {
         $this->eventRepository = $eventRepository;
         $this->cartEventRequestRepository = $cartEventRequestRepository;
         $this->cartRequestSerializer = $cartRequestSerializer;
+        $this->logger = $logger;
     }
 
     public function trackPlacedOrders(Context $context, OrderTrackingEventsBag $trackingBag): OrderTrackingResult
@@ -35,7 +42,11 @@ class ScheduledEventsTracker implements EventsTrackerInterface
 
     public function trackOrderedProducts(Context $context, OrderTrackingEventsBag $trackingBag): OrderTrackingResult
     {
-        return $this->trackOrderEventsForBackgroundProcessing($context, $trackingBag, self::ORDER_EVENT_ORDERED_PRODUCT);
+        return $this->trackOrderEventsForBackgroundProcessing(
+            $context,
+            $trackingBag,
+            self::ORDER_EVENT_ORDERED_PRODUCT
+        );
     }
 
     public function trackFulfilledOrders(Context $context, OrderTrackingEventsBag $trackingBag): OrderTrackingResult
@@ -106,7 +117,7 @@ class ScheduledEventsTracker implements EventsTrackerInterface
         try {
             $this->eventRepository->create($scheduledEvents, $context);
         } catch (\Throwable $e) {
-            null;
+            $this->logger->error($e->getMessage());
         }
 
         return $result;
@@ -137,8 +148,12 @@ class ScheduledEventsTracker implements EventsTrackerInterface
         try {
             $this->eventRepository->create($scheduledEvents, $context);
         } catch (\Throwable $e) {
+            $this->logger->error($e->getMessage());
             // TODO: add possibility to add simple (not order related) errors to OrderTrackingResult
-            $result->addFailedOrder('0', $e);
+            $result->addFailedOrder(
+                '0',
+                new TranslationException('Something is wrong with the creation of the track order event')
+            );
         }
 
         return $result;

@@ -9,7 +9,8 @@ use Klaviyo\Integration\Klaviyo\Gateway\Result\OrderTrackingResult;
 use Klaviyo\Integration\System\Tracking\Event\Order\{OrderEvent, OrderTrackingEventsBag};
 use Klaviyo\Integration\System\Tracking\EventsTrackerInterface as Tracker;
 use Od\Scheduler\Model\Job\{JobHandlerInterface, JobResult, Message};
-use Shopware\Core\Checkout\Order\{Aggregate\OrderDelivery\OrderDeliveryStates, OrderEntity, OrderStates};
+use Shopware\Core\Checkout\Order\{OrderEntity, OrderStates};
+use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryStates;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -75,8 +76,7 @@ class OrderSyncOperation implements JobHandlerInterface
             $lastDelivery = $order->getDeliveries()->last();
             $deliveryStateName = $lastDelivery->getStateMachineState()->getTechnicalName() ?: null;
 
-            if ($deliveryStateName === OrderDeliveryStates::STATE_SHIPPED)
-            {
+            if ($deliveryStateName === OrderDeliveryStates::STATE_SHIPPED) {
                 $happenedAt = $lastDelivery->getUpdatedAt();
                 $eventsBags[Tracker::ORDER_EVENT_SHIPPED]->add(new OrderEvent($order, $happenedAt));
             }
