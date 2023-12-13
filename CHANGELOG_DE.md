@@ -1,3 +1,9 @@
+# 2.8.0
+# Neu: Bessere Protokollierung im gesamten Plugin hinzugefügt.
+# Fix: Das Problem wurde behoben, bei dem Kunden im Raster des Admin-Panels keine Werbeaktionen für den Export auswählen konnten.
+# Fix: Es wurde ein Problem behoben, das bei einigen Kunden auftreten konnte, wenn gekaufte/aufgegebene Bestellungen nicht ordnungsgemäß aktualisiert wurden.
+# Fix: Es wurde ein Problem behoben, bei dem das E-Mail-Opt-in-Banner in Storefront fehlte
+
 # 2.7.1
 # Fix: Ein Fehler/Problem mit Cookiebot wurde behoben, das in der Browserkonsole ausgegeben wurde, wenn „Standard-Cookie-Benachrichtigung verwenden“ auf „Ja“ gesetzt war.
 # Fix: Es wurde ein Problem behoben, bei dem die Bestell-ID in den Ereignissen zu rückerstatteten Bestellungen falsch angezeigt wurde (die Bestell-ID wurde anstelle der Bestellnummer angezeigt, obwohl sie in der Plugin-Konfiguration auf Bestellnummer eingestellt war).
