@@ -9,6 +9,7 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\Common\
 use Klaviyo\Integration\Klaviyo\Gateway\Exception\TranslationException;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
+use Shopware\Core\Checkout\Customer\Aggregate\CustomerGroup\CustomerGroupEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
@@ -80,7 +81,8 @@ class CustomerPropertiesTranslator
             $customer ? $this->getSalesChannelName($customer->getSalesChannelId(), $customer->getSalesChannel(), $context) : null,
             $customer ? $customer->getBoundSalesChannelId(): null,
             $customer ? $this->getSalesChannelName($customer->getBoundSalesChannelId(), $customer->getBoundSalesChannel(), $context) : null,
-            $localeCode ?: null
+            $localeCode ?: null,
+            $customer ? $this->getGroupName($customer->getGroup()) : null
         );
     }
 
@@ -148,6 +150,11 @@ class CustomerPropertiesTranslator
         return $loadedChannel ? $loadedChannel->getName() : null;
     }
 
+    protected function getGroupName($customerGroupEntity): ?string
+    {
+        return $customerGroupEntity->getName();
+    }
+
     public function translateCustomer(Context $context, CustomerEntity $customerEntity): CustomerProperties
     {
         $customerAddress = $this->guessRelevantCustomerAddress($customerEntity);
@@ -175,7 +182,8 @@ class CustomerPropertiesTranslator
             $this->getSalesChannelName($customerEntity->getSalesChannelId(), $customerEntity->getSalesChannel(), $context),
             $customerEntity->getBoundSalesChannelId(),
             $this->getSalesChannelName($customerEntity->getBoundSalesChannelId(), $customerEntity->getBoundSalesChannel(), $context),
-            $localeCode ?: null
+            $localeCode ?: null,
+            $this->getGroupName($customer->getGroup())
         );
     }
 }
