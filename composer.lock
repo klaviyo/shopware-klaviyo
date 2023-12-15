@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "79db5a90faebc66bffa4294dcd0a36d9",
+    "content-hash": "aae1f31af711062e15dada27cf73f4bb",
     "packages": [
         {
             "name": "od/sw6-job-scheduler",
-            "version": "2.0.4",
+            "version": "2.0.7",
             "source": {
                 "type": "git",
                 "url": "https://bitbucket.org/overdosedigital/shopware-job-scheduler.git",
-                "reference": "e30a8b12a1a7135bd7052262a1e693df2dd30119"
+                "reference": "942ea8e0a3e3c94bc32b897e02d3927c35ff7e19"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://bitbucket.org/overdosedigital/shopware-job-scheduler/get/e30a8b12a1a7135bd7052262a1e693df2dd30119.zip",
-                "reference": "e30a8b12a1a7135bd7052262a1e693df2dd30119",
+                "url": "https://bitbucket.org/overdosedigital/shopware-job-scheduler/get/942ea8e0a3e3c94bc32b897e02d3927c35ff7e19.zip",
+                "reference": "942ea8e0a3e3c94bc32b897e02d3927c35ff7e19",
                 "shasum": ""
             },
             "require": {
@@ -36,9 +36,9 @@
             "description": "System library for async job scheduling for Shopware 6",
             "homepage": "https://bitbucket.org/overdosedigital/shopware-job-scheduler",
             "support": {
-                "source": "https://bitbucket.org/overdosedigital/shopware-job-scheduler/src/e30a8b12a1a7135bd7052262a1e693df2dd30119/?at=2.0.4"
+                "source": "https://bitbucket.org/overdosedigital/shopware-job-scheduler/src/942ea8e0a3e3c94bc32b897e02d3927c35ff7e19/?at=2.0.7"
             },
-            "time": "2023-07-10T11:58:39+00:00"
+            "time": "2023-12-14T17:18:52+00:00"
         }
     ],
     "packages-dev": [],
@@ -49,5 +49,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }
