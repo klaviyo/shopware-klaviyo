@@ -105,7 +105,7 @@ class JobRunner
                 );
 
                 if ($hasFailedChild) {
-                    $this->messageManager->addErrorMessage($parentJobId, 'Some child jobs has been failed.');
+                    $this->messageManager->addErrorMessage($parentJobId, 'Some child jobs have failed to process.');
                 }
             }
         }

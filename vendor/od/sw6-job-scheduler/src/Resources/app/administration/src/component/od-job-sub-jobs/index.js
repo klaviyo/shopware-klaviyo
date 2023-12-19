@@ -1,5 +1,4 @@
 import template from './od-job-sub-jobs.html.twig';
-import JobHelper from "../../util/job.helper";
 import './od-job-sub-jobs.scss';
 
 const {Component} = Shopware;
@@ -105,7 +104,7 @@ Component.register('od-job-sub-jobs', {
             criteria.addSorting(Criteria.sort('createdAt', 'DESC', false));
             criteria.addAssociation('messages');
             this.jobRepository.search(criteria, Shopware.Context.api).then(jobItems => {
-                this.subJobs = JobHelper.sortMessages(jobItems);
+                this.subJobs = jobItems;
             });
         },
 
