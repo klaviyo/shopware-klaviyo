@@ -12,8 +12,12 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator\GetAccountApiTrans
  */
 class GetAccountDenormalizer extends AbstractDenormalizer
 {
-    public function denormalize(mixed $data, string $type, string $format = null, array $context = [])
-    {
+    public function denormalize(
+        mixed $data,
+        string $type,
+        string $format = null,
+        array $context = []
+    ): GetAccountResponse {
         $error = '';
         $successStatus = true;
         $responsePublicKey = '';
