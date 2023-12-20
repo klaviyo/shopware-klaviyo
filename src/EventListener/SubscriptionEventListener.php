@@ -11,18 +11,22 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Psr\Log\LoggerInterface;
 
 class SubscriptionEventListener implements EventSubscriberInterface
 {
     private EntityRepositoryInterface $eventsRepository;
     private GetValidChannelConfig $getValidChannelConfig;
+    private LoggerInterface $logger;
 
     public function __construct(
         EntityRepositoryInterface $eventsRepository,
-        GetValidChannelConfig $getValidChannelConfig
+        GetValidChannelConfig $getValidChannelConfig,
+        LoggerInterface $logger
     ) {
         $this->eventsRepository = $eventsRepository;
         $this->getValidChannelConfig = $getValidChannelConfig;
+        $this->logger = $logger;
     }
 
     public static function getSubscribedEvents()
@@ -49,7 +53,7 @@ class SubscriptionEventListener implements EventSubscriberInterface
                 EventsTrackerInterface::SUBSCRIBER_EVENT_SUB
             );
         } catch (\Throwable $e) {
-            null;
+            $this->logger->error($e->getMessage());
         }
     }
 
@@ -66,7 +70,7 @@ class SubscriptionEventListener implements EventSubscriberInterface
                 EventsTrackerInterface::SUBSCRIBER_EVENT_UNSUB
             );
         } catch (\Throwable $e) {
-            null;
+            $this->logger->error($e->getMessage());
         }
     }
 
