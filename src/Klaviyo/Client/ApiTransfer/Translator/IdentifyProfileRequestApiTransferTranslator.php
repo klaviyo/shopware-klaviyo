@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator;
 
@@ -6,6 +8,7 @@ use GuzzleHttp\Psr7\Request;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\Common\EventTrackingResponse;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Identify\IdentifyProfileRequest;
 use Klaviyo\Integration\Klaviyo\Client\Exception\TranslationException;
+use Klaviyo\Integration\Klaviyo\Gateway\ClientConfigurationFactory;
 use Psr\Http\Message\ResponseInterface;
 
 class IdentifyProfileRequestApiTransferTranslator extends AbstractApiTransferMessageTranslator
@@ -33,13 +36,12 @@ class IdentifyProfileRequestApiTransferTranslator extends AbstractApiTransferMes
             'POST',
             $endpoint,
             [
-                'Accept' => 'text/html',
-                'Content-Type' => 'application/x-www-form-urlencoded'
+                'Authorization' => $this->configuration->getApiKey(),
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+                'revision' => ClientConfigurationFactory::API_REVISION_DATE,
             ],
-            \sprintf(
-                'data=%s',
-                urlencode($body)
-            )
+            \sprintf('data=%s', $body)
         );
     }
 

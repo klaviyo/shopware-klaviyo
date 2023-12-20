@@ -6,6 +6,7 @@ use GuzzleHttp\Psr7\Request;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfilesFromList\RemoveProfilesFromListRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfilesFromList\RemoveProfilesFromListResponse;
 use Klaviyo\Integration\Klaviyo\Client\Exception\TranslationException;
+use Klaviyo\Integration\Klaviyo\Gateway\ClientConfigurationFactory;
 use Psr\Http\Message\ResponseInterface;
 
 class RemoveProfilesFromListApiTransferTranslator extends AbstractApiTransferMessageTranslator
@@ -16,7 +17,7 @@ class RemoveProfilesFromListApiTransferTranslator extends AbstractApiTransferMes
 
         $url = \sprintf(
             '%s/list/%s/members?api_key=%s',
-            $this->configuration->getListAndSegmentsApiEndpointUrl(),
+            $this->configuration->getGlobalNewEndpointUrl(),
             $request->getListId(),
             $this->configuration->getApiKey()
         );
@@ -26,16 +27,16 @@ class RemoveProfilesFromListApiTransferTranslator extends AbstractApiTransferMes
 
     private function constructGuzzleRequestToKlaviyoAPI(string $endpoint, $body): Request
     {
-        $guzzleRequest = new Request(
+        return new Request(
             'DELETE',
             $endpoint,
             [
-                'Content-Type' => 'application/json'
+                'Authorization' => $this->configuration->getApiKey(),
+                'Content-Type' => 'application/json',
+                'revision' => ClientConfigurationFactory::API_REVISION_DATE,
             ],
             $body
         );
-
-        return $guzzleRequest;
     }
 
     public function translateResponse(ResponseInterface $response): object

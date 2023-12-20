@@ -9,12 +9,18 @@ class GetProfilesListsResponse
     private bool $success;
     private ProfilesListInfoCollection $lists;
     private string $errorDetails;
+    private string $nextPageUrl;
 
-    public function __construct(bool $success, ProfilesListInfoCollection $lists, string $errorDetails = '')
-    {
+    public function __construct(
+        bool $success,
+        ProfilesListInfoCollection $lists,
+        string $nextPageUrl,
+        string $errorDetails = ''
+    ) {
         $this->success = $success;
         $this->lists = $lists;
         $this->errorDetails = $errorDetails;
+        $this->nextPageUrl = $nextPageUrl;
     }
 
     public function isSuccess(): bool
@@ -30,5 +36,10 @@ class GetProfilesListsResponse
     public function getErrorDetails(): string
     {
         return $this->errorDetails;
+    }
+
+    public function getNextPageUrl(): string
+    {
+        return $this->nextPageUrl;
     }
 }
