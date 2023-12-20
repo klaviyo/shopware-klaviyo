@@ -1,27 +1,27 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator\Profiles\Search;
 
 use GuzzleHttp\Psr7\Request;
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Search\GetProfileIdByCustomerIdRequest;
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Search\GetProfileIdByEmailRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Search\GetProfileIdRequestInterface;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Search\GetProfileIdResponse;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator\AbstractApiTransferMessageTranslator;
 use Klaviyo\Integration\Klaviyo\Client\Exception\TranslationException;
+use Klaviyo\Integration\Klaviyo\Gateway\ClientConfigurationFactory;
 use Psr\Http\Message\ResponseInterface;
 
 class SearchProfileIdApiTransferTranslator extends AbstractApiTransferMessageTranslator
 {
     /**
      * @param GetProfileIdRequestInterface $request
-     * @return Request
      */
     public function translateRequest(object $request): Request
     {
         $url = \sprintf(
             '%s/people/search?%s=%s&api_key=%s',
-            $this->configuration->getListAndSegmentsApiEndpointUrl(),
+            $this->configuration->getGlobalNewEndpointUrl(),
             $request->getSearchFieldName(),
             \urlencode($request->getSearchFieldValue()),
             $this->configuration->getApiKey()
@@ -47,11 +47,8 @@ class SearchProfileIdApiTransferTranslator extends AbstractApiTransferMessageTra
 
     private function assertStatusCode(ResponseInterface $response)
     {
-        if ($response->getStatusCode() !== 200 || $response->getStatusCode() !== 404) {
-            throw new TranslationException(
-                $response,
-                \sprintf('Invalid profile search API response status code: %s', $response->getStatusCode())
-            );
+        if (200 !== $response->getStatusCode() || 404 !== $response->getStatusCode()) {
+            throw new TranslationException($response, \sprintf('Invalid profile search API response status code: %s', $response->getStatusCode()));
         }
     }
 
@@ -66,7 +63,9 @@ class SearchProfileIdApiTransferTranslator extends AbstractApiTransferMessageTra
             'GET',
             $endpoint,
             [
-                'Accept' => 'application/json'
+                'Authorization' => $this->configuration->getApiKey(),
+                'Accept' => 'application/json',
+                'revision' => ClientConfigurationFactory::API_REVISION_DATE,
             ]
         );
     }

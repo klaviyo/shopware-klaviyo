@@ -8,10 +8,8 @@ class Configuration implements ConfigurationInterface
     private string $publicApiKey;
     private string $trackApiEndpointUrl;
     private string $identifyApiEndpoint;
-    private string $listAndSegmentsApiEndpointUrl;
     private int $requestTimeout;
     private int $connectionTimeout;
-    private string $globalExclusionsEndpointUrl;
     private string $globalNewEndpointUrl;
 
     public function __construct(
@@ -19,20 +17,16 @@ class Configuration implements ConfigurationInterface
         string $publicApiKey,
         string $trackApiEndpoint,
         string $identifyApiEndpoint,
-        string $listAndSegmentsApiEndpointUrl,
         int $requestTimeout,
         int $connectionTimeout,
-        string $globalExclusionsEndpointUrl,
         string $globalNewEndpointUrl
     ) {
         $this->apiKey = $apiKey;
         $this->publicApiKey = $publicApiKey;
         $this->trackApiEndpointUrl = $trackApiEndpoint;
         $this->identifyApiEndpoint = $identifyApiEndpoint;
-        $this->listAndSegmentsApiEndpointUrl = $listAndSegmentsApiEndpointUrl;
         $this->requestTimeout = $requestTimeout;
         $this->connectionTimeout = $connectionTimeout;
-        $this->globalExclusionsEndpointUrl = $globalExclusionsEndpointUrl;
         $this->globalNewEndpointUrl = $globalNewEndpointUrl;
     }
 
@@ -56,11 +50,6 @@ class Configuration implements ConfigurationInterface
         return $this->identifyApiEndpoint;
     }
 
-    public function getListAndSegmentsApiEndpointUrl(): string
-    {
-        return $this->listAndSegmentsApiEndpointUrl;
-    }
-
     public function getRequestTimeout(): int
     {
         return $this->requestTimeout;
@@ -69,11 +58,6 @@ class Configuration implements ConfigurationInterface
     public function getConnectionTimeout(): int
     {
         return $this->connectionTimeout;
-    }
-
-    public function getGlobalExclusionsEndpointUrl(): string
-    {
-        return $this->globalExclusionsEndpointUrl;
     }
 
     public function getGlobalNewEndpointUrl(): string

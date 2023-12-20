@@ -1,26 +1,27 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator;
 
 use GuzzleHttp\Psr7\Request;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribers;
-use Psr\Http\Message\ResponseInterface;
 use Klaviyo\Integration\Klaviyo\Client\Exception\TranslationException;
+use Klaviyo\Integration\Klaviyo\Gateway\ClientConfigurationFactory;
+use Psr\Http\Message\ResponseInterface;
 
 class GetExcludedSubscribersApiTransferTranslator extends AbstractApiTransferMessageTranslator
 {
     /**
      * @param GetExcludedSubscribers\Request $request
-     * @return Request
      */
     public function translateRequest(object $request): Request
     {
         $url = \sprintf(
-            '%s/people/exclusions?count=%s&page=%s&api_key=%s',
-            $this->configuration->getGlobalExclusionsEndpointUrl(),
+            '%s/people/exclusions?count=%s&page=%s',
+            $this->configuration->getGlobalNewEndpointUrl(),
             $request->getCount(),
-            $request->getPage(),
-            $this->configuration->getApiKey()
+            $request->getPage()
         );
 
         return $this->constructGuzzleRequestToKlaviyoAPI($url);
@@ -32,7 +33,9 @@ class GetExcludedSubscribersApiTransferTranslator extends AbstractApiTransferMes
             'GET',
             $endpoint,
             [
-                'Accept' => 'application/json'
+                'Authorization' => $this->configuration->getApiKey(),
+                'Accept' => 'application/json',
+                'revision' => ClientConfigurationFactory::API_REVISION_DATE,
             ]
         );
     }
@@ -51,7 +54,7 @@ class GetExcludedSubscribersApiTransferTranslator extends AbstractApiTransferMes
         throw new TranslationException($response, 'Get excluded subscribers api response expected to be a JSON');
     }
 
-    private function assertStatusCode(ResponseInterface $response)
+    private function assertStatusCode(ResponseInterface $response): void
     {
         if ($response->getStatusCode() < 200 || $response->getStatusCode() >= 300) {
             throw new TranslationException(
