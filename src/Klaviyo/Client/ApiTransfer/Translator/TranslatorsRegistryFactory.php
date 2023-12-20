@@ -11,7 +11,7 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEv
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\PlacedOrderEventTrackingRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\RefundedOrderEventTrackingRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator\Profiles\Search\SearchProfileIdApiTransferTranslator;
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator\Profiles\Update\UpdateProdileApiTransferTranslator;
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator\Profiles\Update\UpdateProfileApiTransferTranslator;
 use Klaviyo\Integration\Klaviyo\Client\Configuration\ConfigurationInterface;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\SerializerFactory;
 use Klaviyo\Integration\Klaviyo\FrontendApi\DTO\StartedCheckoutEventTrackingRequest;
@@ -85,7 +85,7 @@ class TranslatorsRegistryFactory
             new SearchProfileIdApiTransferTranslator($serializer, $configuration)
         );
         $registry->addTranslator(
-            new UpdateProdileApiTransferTranslator($serializer, $configuration)
+            new UpdateProfileApiTransferTranslator($serializer, $configuration)
         );
         $registry->addTranslator(
             new GetAccountApiTransferTranslator($serializer, $configuration)

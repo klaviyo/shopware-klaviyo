@@ -64,14 +64,11 @@ class GetAccountApiTransferTranslator extends AbstractApiTransferMessageTranslat
 
     private function constructGuzzleRequestToKlaviyoAPI(string $endpoint): Request
     {
-        $authorizationValue = ClientConfigurationFactory::AUTHORIZATION_PREKEY . ' ' .
-            $this->configuration->getApiKey();
-
         return new Request(
             'GET',
             $endpoint,
             [
-                'Authorization' => $authorizationValue,
+                'Authorization' => $this->configuration->getApiKey(),
                 'Accept' => 'application/json',
                 'revision' => ClientConfigurationFactory::API_REVISION_DATE
             ]
