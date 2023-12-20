@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fdff9286e9b9f48186b57fb4e396b03b",
+    "content-hash": "6ad2eeca3f035790e215cfbde3c765fd",
     "packages": [
         {
             "name": "od/sw6-job-scheduler",
-            "version": "1.0.3",
+            "version": "1.0.5",
             "source": {
                 "type": "git",
                 "url": "https://bitbucket.org/overdosedigital/shopware-job-scheduler.git",
-                "reference": "86f681957e8680fc74389c02eeccef3a04e45714"
+                "reference": "c97d38a0d15fab551800c17a189cd85474efdc0a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://bitbucket.org/overdosedigital/shopware-job-scheduler/get/86f681957e8680fc74389c02eeccef3a04e45714.zip",
-                "reference": "86f681957e8680fc74389c02eeccef3a04e45714",
+                "url": "https://bitbucket.org/overdosedigital/shopware-job-scheduler/get/c97d38a0d15fab551800c17a189cd85474efdc0a.zip",
+                "reference": "c97d38a0d15fab551800c17a189cd85474efdc0a",
                 "shasum": ""
             },
             "require": {
@@ -36,9 +36,9 @@
             "description": "System library for async job scheduling for Shopware 6",
             "homepage": "https://bitbucket.org/overdosedigital/shopware-job-scheduler",
             "support": {
-                "source": "https://bitbucket.org/overdosedigital/shopware-job-scheduler/src/86f681957e8680fc74389c02eeccef3a04e45714/?at=1.0.3"
+                "source": "https://bitbucket.org/overdosedigital/shopware-job-scheduler/src/c97d38a0d15fab551800c17a189cd85474efdc0a/?at=1.0.5"
             },
-            "time": "2022-11-01T08:59:55+00:00"
+            "time": "2023-12-14T18:08:24+00:00"
         }
     ],
     "packages-dev": [],
@@ -48,8 +48,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "^7.4 || ^8.0",
-        "ext-json": "*"
+        "php": "^7.4 || ^8.0"
     },
     "platform-dev": [],
     "plugin-api-version": "2.3.0"

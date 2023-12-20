@@ -1,3 +1,7 @@
+# 1.6.1
+# Fix: Added customer language field that will be sent to Klaviyo upon other data when syncing newsletter recipients.
+# Fix: Fixed typos
+
 # 1.6.0
 # New: Added better logging across the plugin.
 # Fix: Fixed the issue where customers were unable to select promotions in the admin panel grid for export.
