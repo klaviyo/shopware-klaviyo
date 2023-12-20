@@ -6,32 +6,36 @@ use GuzzleHttp\Psr7\Request;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetLists\GetProfilesListsRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetLists\GetProfilesListsResponse;
 use Klaviyo\Integration\Klaviyo\Client\Exception\TranslationException;
+use Klaviyo\Integration\Klaviyo\Gateway\ClientConfigurationFactory;
 use Psr\Http\Message\ResponseInterface;
 
 class GetProfilesListsApiTransferTranslator extends AbstractApiTransferMessageTranslator
 {
     public function translateRequest(object $request): Request
     {
-        $url = \sprintf(
-            '%s/lists?api_key=%s',
-            $this->configuration->getListAndSegmentsApiEndpointUrl(),
-            $this->configuration->getApiKey()
-        );
+        if ($request->getNextPageUrl()) {
+            $url = $request->getNextPageUrl();
+        } else {
+            $url = \sprintf(
+                '%s/lists',
+                $this->configuration->getGlobalNewEndpointUrl()
+            );
+        }
 
         return $this->constructGuzzleRequestToKlaviyoAPI($url);
     }
 
     private function constructGuzzleRequestToKlaviyoAPI(string $endpoint): Request
     {
-        $guzzleRequest = new Request(
+        return new Request(
             'GET',
             $endpoint,
             [
-                'Accept' => 'application/json'
+                'Authorization' => $this->configuration->getApiKey(),
+                'Accept' => 'application/json',
+                'revision' => ClientConfigurationFactory::API_REVISION_DATE,
             ]
         );
-
-        return $guzzleRequest;
     }
 
     public function translateResponse(ResponseInterface $response): object
@@ -39,9 +43,8 @@ class GetProfilesListsApiTransferTranslator extends AbstractApiTransferMessageTr
         $isJsonResponse = $this->isResponseJson($response);
         if ($isJsonResponse) {
             $content = $response->getBody()->getContents();
-            $result = $this->deserialize($content, GetProfilesListsResponse::class);
 
-            return $result;
+            return $this->deserialize($content, GetProfilesListsResponse::class);
         }
 
         $this->assertStatusCode($response);

@@ -6,23 +6,22 @@ use GuzzleHttp\Psr7\Request;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetListProfiles\GetListProfilesRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetListProfiles\GetListProfilesResponse;
 use Klaviyo\Integration\Klaviyo\Client\Exception\TranslationException;
+use Klaviyo\Integration\Klaviyo\Gateway\ClientConfigurationFactory;
 use Psr\Http\Message\ResponseInterface;
 
 class GetListProfilesRequestApiTransferTranslator extends AbstractApiTransferMessageTranslator
 {
     /**
      * @param GetListProfilesRequest $request
-     *
-     * @return Request
      */
     public function translateRequest(object $request): Request
     {
         $url = \sprintf(
-            '%s/group/%s/members/all?api_key=%s',
-            $this->configuration->getListAndSegmentsApiEndpointUrl(),
-            $request->getListId(),
-            $this->configuration->getApiKey()
+            '%s/segments/%s/profiles',
+            $this->configuration->getGlobalNewEndpointUrl(),
+            $request->getListId()
         );
+
         if ($request->getCursorMarker()) {
             $url .= "&marker={$request->getCursorMarker()}";
         }
@@ -36,7 +35,9 @@ class GetListProfilesRequestApiTransferTranslator extends AbstractApiTransferMes
             'GET',
             $endpoint,
             [
-                'Accept' => 'application/json'
+                'Authorization' => $this->configuration->getApiKey(),
+                'Accept' => 'application/json',
+                'revision' => ClientConfigurationFactory::API_REVISION_DATE,
             ]
         );
 
@@ -48,9 +49,8 @@ class GetListProfilesRequestApiTransferTranslator extends AbstractApiTransferMes
         $isJsonResponse = $this->isResponseJson($response);
         if ($isJsonResponse) {
             $content = $response->getBody()->getContents();
-            $result = $this->deserialize($content, GetListProfilesResponse::class);
 
-            return $result;
+            return $this->deserialize($content, GetListProfilesResponse::class);
         }
 
         $this->assertStatusCode($response);
@@ -59,16 +59,12 @@ class GetListProfilesRequestApiTransferTranslator extends AbstractApiTransferMes
     }
 
     /**
-     * @param ResponseInterface $response
      * @throws TranslationException
      */
     private function assertStatusCode(ResponseInterface $response)
     {
         if ($response->getStatusCode() < 200 || $response->getStatusCode() >= 300) {
-            throw new TranslationException(
-                $response,
-                \sprintf('Invalid response status code %s', $response->getStatusCode())
-            );
+            throw new TranslationException($response, \sprintf('Invalid response status code %s', $response->getStatusCode()));
         }
     }
 

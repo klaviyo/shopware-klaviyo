@@ -9,6 +9,7 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\SubscribeCus
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\SubscribeCustomersToList\SubscribeToListResponse;
 use Klaviyo\Integration\Klaviyo\Client\Exception\DeserializationException;
 use Klaviyo\Integration\Klaviyo\Client\Exception\TranslationException;
+use Klaviyo\Integration\Klaviyo\Gateway\ClientConfigurationFactory;
 use Psr\Http\Message\ResponseInterface;
 
 class RealtimeProfilesSubscribeToListApiTransferTranslator extends AbstractApiTransferMessageTranslator
@@ -23,7 +24,7 @@ class RealtimeProfilesSubscribeToListApiTransferTranslator extends AbstractApiTr
 
         $url = \sprintf(
             '%s/list/%s/subscribe?api_key=%s',
-            $this->configuration->getListAndSegmentsApiEndpointUrl(),
+            $this->configuration->getGlobalNewEndpointUrl(),
             $request->getListId(),
             $this->configuration->getApiKey()
         );
@@ -70,8 +71,10 @@ class RealtimeProfilesSubscribeToListApiTransferTranslator extends AbstractApiTr
             'POST',
             $endpoint,
             [
+                'Authorization' => $this->configuration->getApiKey(),
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
+                'revision' => ClientConfigurationFactory::API_REVISION_DATE,
             ],
             $body
         );
