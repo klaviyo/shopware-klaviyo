@@ -1,3 +1,7 @@
+# 2.8.1
+# Fix: Kundensprachfeld hinzugefügt, das bei der Synchronisierung von Newsletter-Empfängern zusammen mit anderen Daten an Klaviyo gesendet wird.
+# Fix: Tippfehler behoben
+
 # 2.8.0
 # Neu: Bessere Protokollierung im gesamten Plugin hinzugefügt.
 # Fix: Das Problem wurde behoben, bei dem Kunden im Raster des Admin-Panels keine Werbeaktionen für den Export auswählen konnten.

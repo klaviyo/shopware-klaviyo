@@ -57,6 +57,7 @@ class SubscriberSyncOperation implements JobHandlerInterface
         /** @var SalesChannelEntity $channel */
         foreach ($this->getValidChannels->execute($message->getContext()) as $channel) {
             try {
+                $product->getParent()->getChildId();
                 $errors = $this->doOperation($message, $context, $channel);
 
                 foreach ($errors as $error) {
