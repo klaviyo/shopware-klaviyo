@@ -65,7 +65,11 @@ class OrderSyncOperation implements JobHandlerInterface
             $eventsBags[Tracker::ORDER_EVENT_ORDERED_PRODUCT]->add(new OrderEvent($order, $order->getCreatedAt()));
 
             $lastTransaction = $order->getTransactions()->last();
-            $transactionStateName = $lastTransaction->getStateMachineState()->getTechnicalName() ?: null;
+            $transactionStateName = null;
+
+            if ($lastTransaction !== null) {
+                $transactionStateName = $lastTransaction->getStateMachineState()->getTechnicalName() ?: null;
+            }
 
             if (
                 (StateActions::ACTION_PAID === $transactionStateName)
@@ -75,7 +79,13 @@ class OrderSyncOperation implements JobHandlerInterface
                 $eventsBags[Tracker::ORDER_EVENT_PAID]->add(new OrderEvent($order, $happenedAt));
             }
             $lastDelivery = $order->getDeliveries()->last();
-            $deliveryStateName = $lastDelivery->getStateMachineState()->getTechnicalName() ?: null;
+            $deliveryStateName = null;
+
+            if ($lastDelivery !== null) {
+                $deliveryStateName = $lastDelivery->getStateMachineState()->getTechnicalName() ?: null;
+            }
+
+            $orderStateName = $order->getStateMachineState()->getTechnicalName();
 
             if ($deliveryStateName === OrderDeliveryStates::STATE_SHIPPED)
             {
@@ -83,12 +93,12 @@ class OrderSyncOperation implements JobHandlerInterface
                 $eventsBags[Tracker::ORDER_EVENT_SHIPPED]->add(new OrderEvent($order, $happenedAt));
             }
 
-            if ($order->getStateMachineState()->getTechnicalName() === OrderStates::STATE_COMPLETED) {
+            if ($orderStateName === OrderStates::STATE_COMPLETED) {
                 $happenedAt = $order->getUpdatedAt();
                 $eventsBags[Tracker::ORDER_EVENT_FULFILLED]->add(new OrderEvent($order, $happenedAt));
             }
 
-            if ($order->getStateMachineState()->getTechnicalName() === OrderStates::STATE_CANCELLED) {
+            if ($orderStateName === OrderStates::STATE_CANCELLED) {
                 $happenedAt = $order->getUpdatedAt();
                 $eventsBags[Tracker::ORDER_EVENT_CANCELED]->add(new OrderEvent($order, $happenedAt));
             }
