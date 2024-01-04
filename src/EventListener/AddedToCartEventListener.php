@@ -65,15 +65,26 @@ class AddedToCartEventListener implements EventSubscriberInterface
 
             /** @var LineItem $lineItem */
             foreach ($event->getLineItems() as $lineItem) {
+                $lineItemEntity = $event->getCart()->get($lineItem->getId());
+
+                if (null === $lineItemEntity) {
+                    $this->logger->error('Item added to the cart is null, lineItem ID=' . $lineItem->getId());
+                    continue;
+                }
+
                 $requestBag->add(
                     $this->cartEventRequestTranslator->translateToAddedToCartEventRequest(
                         $salesChannelContext,
                         $event->getCart(),
-                        $event->getCart()->get($lineItem->getId()),
+                        $lineItemEntity,
                         $now
                     ),
                     $salesChannelContext->getSalesChannelId()
                 );
+            }
+
+            if (empty($requestBag->all())) {
+                return;
             }
 
             $this->eventsTracker->trackAddedToCart($salesChannelContext->getContext(), $requestBag);
