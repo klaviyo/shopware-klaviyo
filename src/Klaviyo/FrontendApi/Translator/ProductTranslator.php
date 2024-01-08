@@ -6,7 +6,10 @@ use Klaviyo\Integration\Entity\Helper\ProductDataHelper;
 use Klaviyo\Integration\Klaviyo\FrontendApi\DTO\ProductInfo;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\Defaults;
+use Shopware\Core\Framework\Api\Context\SystemSource;
 
 class ProductTranslator
 {
@@ -35,13 +38,24 @@ class ProductTranslator
             $compareAtPrice = $priceEntity->getListPrice()->getGross();
         }
 
-        $parentProduct = null;
+        $name = $product->getName();
         if ($product->getParentId()) {
             $parentProduct = $this->productDataHelper->getProductById($context, $product->getParentId());
+            $name = $parentProduct->getName();
+        }
+
+        if ($name == null) {
+            if (isset($parentProduct)) {
+                $prodId = $parentProduct->getId();
+            } else {
+                $prodId = $product->getId();
+            }
+
+            $name = $this->productDataHelper->getProductNameById($prodId);
         }
 
         return new ProductInfo(
-            $parentProduct ? $parentProduct->getName() : $product->getName(),
+            $name,
             $product->getId(),
             $product->getProductNumber(),
             $categories,

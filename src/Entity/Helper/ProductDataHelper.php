@@ -9,6 +9,8 @@ use Shopware\Core\Content\Product\Aggregate\ProductManufacturer\ProductManufactu
 use Shopware\Core\Content\Product\Aggregate\ProductMedia\ProductMediaEntity;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface;
+use Shopware\Core\Defaults;
+use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -238,5 +240,23 @@ class ProductDataHelper
         );
 
         return $this->contexts[$channelId] = $salesChannelContext;
+    }
+
+    public function getProductNameById($productId) {
+        $context = Context::createDefaultContext();
+
+        $context = new Context(
+            new SystemSource(),
+            [],
+            $context->getCurrencyId(),
+            [$context->getLanguageId(), Defaults::LANGUAGE_SYSTEM]
+        );
+
+        $searchResult = $this->productRepository->search(new Criteria([$productId]), $context)->first();
+        if ($searchResult) {
+            return $searchResult->getName();
+        }
+
+        return null;
     }
 }
