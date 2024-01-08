@@ -20,6 +20,7 @@ class CustomerProperties implements \JsonSerializable
     private ?string $salesChannelName;
     private ?string $boundedSalesChannelId;
     private ?string $boundedSalesChannelName;
+    private ?string $localeCode;
 
     public function __construct(
         string $email,
@@ -37,7 +38,8 @@ class CustomerProperties implements \JsonSerializable
         ?string $salesChannelId = null,
         ?string $salesChannelName = null,
         ?string $boundedSalesChannelId = null,
-        ?string $boundedSalesChannelName = null
+        ?string $boundedSalesChannelName = null,
+        ?string $localeCode = null
     ) {
         $this->email = $email;
         $this->id = $id;
@@ -55,6 +57,7 @@ class CustomerProperties implements \JsonSerializable
         $this->salesChannelName = $salesChannelName;
         $this->boundedSalesChannelId = $boundedSalesChannelId;
         $this->boundedSalesChannelName = $boundedSalesChannelName;
+        $this->localeCode = $localeCode;
     }
 
     public function getEmail(): string
@@ -149,7 +152,8 @@ class CustomerProperties implements \JsonSerializable
             'salesChannelId' => $this->getSalesChannelId(),
             'salesChannelName' => $this->getSalesChannelName(),
             'boundedSalesChannelId' => $this->getBoundedSalesChannelId(),
-            'boundedSalesChannelName' => $this->getBoundedSalesChannelName()
+            'boundedSalesChannelName' => $this->getBoundedSalesChannelName(),
+            'language' => $this->getLocaleCode()
         ];
 
         foreach ($this->getCustomFields() as $fieldKey => $fieldValue) {
@@ -162,5 +166,10 @@ class CustomerProperties implements \JsonSerializable
     public function getBirthday(): ?string
     {
         return $this->birthday;
+    }
+
+    public function getLocaleCode(): ?string
+    {
+        return $this->localeCode;
     }
 }

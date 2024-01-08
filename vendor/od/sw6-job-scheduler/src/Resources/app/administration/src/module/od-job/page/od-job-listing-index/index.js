@@ -1,5 +1,4 @@
 import template from './od-job-listing-index.html.twig';
-import JobHelper from "../../../../util/job.helper";
 import './od-job-listing-index.scss';
 
 const { Component } = Shopware;
@@ -215,7 +214,7 @@ Component.register('od-job-listing-index', {
             }
 
             return this.jobRepository.search(criteria, Shopware.Context.api).then(jobItems => {
-                this.jobItems = JobHelper.sortMessages(jobItems);
+                this.jobItems = jobItems;
             });
         },
 
