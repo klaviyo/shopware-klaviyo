@@ -1,3 +1,8 @@
+# 1.6.2
+# Fix: Fixed an issue where some product related event was missing product name
+# Fix: Fixed an issue where some transaction data was not synced
+# Fix: Fixed an issue where some data was missing for cart related events
+
 # 1.6.1
 # Fix: Added customer language field that will be sent to Klaviyo upon other data when syncing newsletter recipients.
 # Fix: Fixed typos
