@@ -1,3 +1,8 @@
+# 2.8.2
+# Fix: Es wurde ein Problem behoben, bei dem bei einem produktbezogenen Ereignis der Produktname fehlte
+# Fix: Es wurde ein Problem behoben, bei dem einige Transaktionsdaten nicht synchronisiert wurden
+# Fix: Es wurde ein Problem behoben, bei dem einige Daten für warenkorbbezogene Ereignisse fehlten
+
 # 2.8.1
 # Fix: Kundensprachfeld hinzugefügt, das bei der Synchronisierung von Newsletter-Empfängern zusammen mit anderen Daten an Klaviyo gesendet wird.
 # Fix: Tippfehler behoben
