@@ -105,7 +105,7 @@
         </service>
         <service id="Klaviyo\Integration\EventListener\AddedToCartEventListener">
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator"/>
-            <argument type="service" id="Klaviyo\Integration\System\Tracking\ScheduledEventsTracker"/>
+            <argument type="service" id="Klaviyo\Integration\System\Tracking\EventsTracker"/>
             <argument type="service" id="monolog.logger.od_klaviyo"/>
             <argument type="service" id="request_stack"/>
             <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannelConfig"/>
