@@ -10,6 +10,7 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Common\Profi
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfilesFromList\RemoveProfilesFromListRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfilesFromList\RemoveProfilesFromListResponse;
 use Klaviyo\Integration\Klaviyo\Client\ClientResult;
+use Klaviyo\Integration\Exception\JobRuntimeWarningException;
 use Klaviyo\Integration\Klaviyo\Gateway\Domain\Profile\Search\ProfileIdSearchResult;
 use Klaviyo\Integration\Klaviyo\Gateway\Domain\Profile\Search\Strategy\SearchStrategyInterface;
 use Klaviyo\Integration\Klaviyo\Gateway\Exception\ProfilesListNotFoundException;
@@ -82,6 +83,11 @@ class KlaviyoGateway
                 );
                 $requestOrderIdMap[spl_object_id($request)] = $orderEvent->getOrder()->getId();
                 $requests[] = $request;
+            } catch (JobRuntimeWarningException $e) {
+                $result->addFailedOrder(
+                    $orderEvent->getOrder()->getId(),
+                    $e
+                );
             } catch (\Throwable $e) {
                 $this->logger->error($e->getMessage());
                 $result->addFailedOrder(
@@ -117,6 +123,11 @@ class KlaviyoGateway
                         ->translateToOrderedProductEventRequest($context, $lineItem, $event->getOrder());
                     $requestOrderIdMap[spl_object_id($request)] = $event->getOrder()->getId();
                     $requests[] = $request;
+                } catch (JobRuntimeWarningException $e) {
+                    $result->addFailedOrder(
+                        $event->getOrder()->getId(),
+                        $e
+                    );
                 } catch (\Throwable $e) {
                     $this->logger->error($e->getMessage());
                     $result->addFailedOrder(
@@ -151,6 +162,11 @@ class KlaviyoGateway
                 );
                 $requestOrderIdMap[spl_object_id($request)] = $orderEvent->getOrder()->getId();
                 $requests[] = $request;
+            } catch (JobRuntimeWarningException $e) {
+                $result->addFailedOrder(
+                    $orderEvent->getOrder()->getId(),
+                    $e
+                );
             } catch (\Throwable $e) {
                 $this->logger->error($e->getMessage());
                 $result->addFailedOrder(
@@ -184,6 +200,11 @@ class KlaviyoGateway
                 );
                 $requestOrderIdMap[spl_object_id($request)] = $orderEvent->getOrder()->getId();
                 $requests[] = $request;
+            } catch (JobRuntimeWarningException $e) {
+                $result->addFailedOrder(
+                    $orderEvent->getOrder()->getId(),
+                    $e
+                );
             } catch (\Throwable $e) {
                 $this->logger->error($e->getMessage());
                 $result->addFailedOrder(
@@ -217,6 +238,11 @@ class KlaviyoGateway
                 );
                 $requestOrderIdMap[spl_object_id($request)] = $orderEvent->getOrder()->getId();
                 $requests[] = $request;
+            } catch (JobRuntimeWarningException $e) {
+                $result->addFailedOrder(
+                    $orderEvent->getOrder()->getId(),
+                    $e
+                );
             } catch (\Throwable $e) {
                 $this->logger->error($e->getMessage());
                 $result->addFailedOrder(
@@ -250,6 +276,11 @@ class KlaviyoGateway
                 );
                 $requestOrderIdMap[spl_object_id($request)] = $orderEvent->getOrder()->getId();
                 $requests[] = $request;
+            } catch (JobRuntimeWarningException $e) {
+                $result->addFailedOrder(
+                    $orderEvent->getOrder()->getId(),
+                    $e
+                );
             } catch (\Throwable $e) {
                 $this->logger->error($e->getMessage());
                 $result->addFailedOrder(
@@ -283,6 +314,11 @@ class KlaviyoGateway
                 );
                 $requestOrderIdMap[spl_object_id($request)] = $orderEvent->getOrder()->getId();
                 $requests[] = $request;
+            } catch (JobRuntimeWarningException $e) {
+                $result->addFailedOrder(
+                    $orderEvent->getOrder()->getId(),
+                    $e
+                );
             } catch (\Throwable $e) {
                 $this->logger->error($e->getMessage());
                 $result->addFailedOrder(
