@@ -1,5 +1,6 @@
 # 1.6.3
 # Fix: The add to cart event is now triggered in real time mode, and not according to a schedule
+# Fix: Fixed a problem with synchronizing orders with deleted customers.
 
 # 1.6.2
 # Fix: Fixed an issue where some product related event was missing product name
