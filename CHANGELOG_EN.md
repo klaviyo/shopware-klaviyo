@@ -1,6 +1,7 @@
 # 2.8.3
 # Fix: The add to cart event is now triggered in real time mode, and not according to a schedule
 # Fix: Fixed a bug when performing asynchronous subscription operations.
+# Fix: Fixed a problem with synchronizing orders with deleted customers.
 
 
 # 2.8.2

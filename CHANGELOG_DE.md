@@ -1,6 +1,7 @@
 # 2.8.3
 # Fix: Das Ereignis „Zum Warenkorb hinzufügen“ wird jetzt im Echtzeitmodus und nicht nach einem Zeitplan ausgelöst
 # Fix: Ein Fehler beim Ausführen asynchroner Abonnementvorgänge wurde behoben
+# Fix: Ein Problem beim Synchronisieren von Bestellungen mit gelöschten Kunden wurde behoben
 
 # 2.8.3
 # Fix: Es wurde ein Problem behoben, bei dem bei einem produktbezogenen Ereignis der Produktname fehlte
