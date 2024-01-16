@@ -365,7 +365,8 @@ class OrderEventRequestTranslator
                     $productUrl = $this->productDataHelper->getProductViewPageUrlByChannelId(
                         $product,
                         $orderEntity->getSalesChannelId(),
-                        $context
+                        $context,
+                        $orderEntity->getLanguageId()
                     );
                     $productNumber = $product->getProductNumber();
                     $imageUrl = $this->productDataHelper->getCoverImageUrl($context, $product);
