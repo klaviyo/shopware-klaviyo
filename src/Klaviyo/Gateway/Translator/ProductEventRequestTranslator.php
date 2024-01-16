@@ -25,14 +25,16 @@ class ProductEventRequestTranslator
     public function translateToOrderedProductEventRequest(
         Context $context,
         OrderLineItemEntity $lineItem,
-        OrderEntity $orderEntity
+        OrderEntity $orderEntity,
+        $languageId
     ): OrderedProductEventTrackingRequest {
         try {
             $product = $this->productDataHelper->getLineItemProduct($context, $lineItem);
             $productUrl = $this->productDataHelper->getProductViewPageUrlByChannelId(
                 $product,
                 $orderEntity->getSalesChannelId(),
-                $context
+                $context,
+                $languageId
             );
             $productNumber = $product->getProductNumber();
             $imageUrl = $this->productDataHelper->getCoverImageUrl($context, $product);
