@@ -122,7 +122,6 @@ class KlaviyoGateway
     {
         $result = new OrderTrackingResult();
         $requestOrderIdMap = $requests = [];
-
         /** @var OrderEventInterface $event */
         foreach ($orderEvents as $event) {
             foreach ($event->getOrder()->getLineItems() ?? [] as $lineItem) {
@@ -132,7 +131,7 @@ class KlaviyoGateway
 
                 try {
                     $request = $this->productEventTranslator
-                        ->translateToOrderedProductEventRequest($context, $lineItem, $event->getOrder());
+                        ->translateToOrderedProductEventRequest($context, $lineItem, $event->getOrder(), $event->getOrder()->getLanguageId());
                     $requestOrderIdMap[spl_object_id($request)] = $event->getOrder()->getId();
                     $requests[] = $request;
                 } catch (JobRuntimeWarningException $e) {
