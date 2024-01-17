@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Model\UseCase;
 
@@ -11,6 +13,7 @@ use Klaviyo\Integration\Model\UseCase\Operation\{FullOrderSyncOperation, FullSub
 use Klaviyo\Integration\System\Scheduling\ExcludedSubscriberSync;
 use Od\Scheduler\Entity\Job\JobEntity;
 use Od\Scheduler\Model\JobScheduler;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -23,17 +26,20 @@ class ScheduleBackgroundJob
     private JobScheduler $scheduler;
     private ExcludedSubscribersProvider $excludedSubscribersProvider;
     private SyncProgressService $progressService;
+    private LoggerInterface $logger;
 
     public function __construct(
         EntityRepository $jobRepository,
         JobScheduler $scheduler,
         ExcludedSubscribersProvider $excludedSubscribersProvider,
-        SyncProgressService $progressService
+        SyncProgressService $progressService,
+        LoggerInterface $logger
     ) {
         $this->jobRepository = $jobRepository;
         $this->scheduler = $scheduler;
         $this->excludedSubscribersProvider = $excludedSubscribersProvider;
         $this->progressService = $progressService;
+        $this->logger = $logger;
     }
 
     public function scheduleFullSubscriberSyncJob(Context $context)
@@ -43,6 +49,10 @@ class ScheduleBackgroundJob
         $this->scheduler->schedule($jobMessage);
     }
 
+    /**
+     * @throws JobAlreadyScheduledException
+     * @throws JobAlreadyRunningException
+     */
     private function checkJobStatus(string $type, Context $context)
     {
         $criteria = new Criteria();
@@ -50,6 +60,7 @@ class ScheduleBackgroundJob
             new EqualsFilter('type', $type),
             new EqualsAnyFilter('status', [JobEntity::TYPE_PENDING, JobEntity::TYPE_RUNNING])
         ]));
+
         /** @var JobEntity $job */
         if ($job = $this->jobRepository->search($criteria, $context)->first()) {
             if ($job->getStatus() === JobEntity::TYPE_PENDING) {
@@ -98,7 +109,13 @@ class ScheduleBackgroundJob
 
     public function scheduleCartEventsSyncJob(array $eventRequestIds, string $parentJobId, Context $context)
     {
-        $jobMessage = new Message\CartEventSyncMessage(Uuid::randomHex(), $parentJobId, $eventRequestIds, null, $context);
+        $jobMessage = new Message\CartEventSyncMessage(
+            Uuid::randomHex(),
+            $parentJobId,
+            $eventRequestIds,
+            null,
+            $context
+        );
         $this->scheduler->schedule($jobMessage);
     }
 
@@ -111,7 +128,13 @@ class ScheduleBackgroundJob
 
     public function scheduleCustomerProfilesSyncJob(array $customerIds, string $parentJobId, Context $context)
     {
-        $jobMessage = new Message\CustomerProfileSyncMessage(Uuid::randomHex(), $parentJobId, $customerIds, null, $context);
+        $jobMessage = new Message\CustomerProfileSyncMessage(
+            Uuid::randomHex(),
+            $parentJobId,
+            $customerIds,
+            null,
+            $context
+        );
         $this->scheduler->schedule($jobMessage);
     }
 
@@ -133,9 +156,15 @@ class ScheduleBackgroundJob
             $syncInfo = $this->progressService->get($context, $channelId);
 
             try {
-                foreach ($this->excludedSubscribersProvider->getExcludedSubscribers($channelId, $syncInfo->getPage()) as $result) {
+                $excludedSubscribers = $this->excludedSubscribersProvider->getExcludedSubscribers(
+                    $channelId,
+                    $syncInfo->getPage()
+                );
+
+                foreach ($excludedSubscribers as $result) {
                     if ($isFirstLoadedPage) {
                         $isFirstLoadedPage = false;
+
                         if ($syncInfo->getHash() === CreateArrayHash::execute($result->getEmails())) {
                             continue 2;
                         }
@@ -159,7 +188,10 @@ class ScheduleBackgroundJob
                     $this->progressService->save($context, $syncInfo);
                 }
             } catch (\Exception $e) {
-                $schedulingResult->addError($e);
+                $this->logger->error($e->getMessage());
+                $schedulingResult->addError(
+                    new \Exception('Something wrong with the excluded subscribers sync event')
+                );
             }
         }
 

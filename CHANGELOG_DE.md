@@ -1,3 +1,23 @@
+# 2.8.3
+# Fix: Das Ereignis „Zum Warenkorb hinzufügen“ wird jetzt im Echtzeitmodus und nicht nach einem Zeitplan ausgelöst
+# Fix: Ein Fehler beim Ausführen asynchroner Abonnementvorgänge wurde behoben
+# Fix: Ein Problem beim Synchronisieren von Bestellungen mit gelöschten Kunden wurde behoben
+
+# 2.8.3
+# Fix: Es wurde ein Problem behoben, bei dem bei einem produktbezogenen Ereignis der Produktname fehlte
+# Fix: Es wurde ein Problem behoben, bei dem einige Transaktionsdaten nicht synchronisiert wurden
+# Fix: Es wurde ein Problem behoben, bei dem einige Daten für warenkorbbezogene Ereignisse fehlten
+
+# 2.8.1
+# Fix: Kundensprachfeld hinzugefügt, das bei der Synchronisierung von Newsletter-Empfängern zusammen mit anderen Daten an Klaviyo gesendet wird.
+# Fix: Tippfehler behoben
+
+# 2.8.0
+# Neu: Bessere Protokollierung im gesamten Plugin hinzugefügt.
+# Fix: Das Problem wurde behoben, bei dem Kunden im Raster des Admin-Panels keine Werbeaktionen für den Export auswählen konnten.
+# Fix: Es wurde ein Problem behoben, das bei einigen Kunden auftreten konnte, wenn gekaufte/aufgegebene Bestellungen nicht ordnungsgemäß aktualisiert wurden.
+# Fix: Es wurde ein Problem behoben, bei dem das E-Mail-Opt-in-Banner in Storefront fehlte
+
 # 2.7.1
 # Fix: Ein Fehler/Problem mit Cookiebot wurde behoben, das in der Browserkonsole ausgegeben wurde, wenn „Standard-Cookie-Benachrichtigung verwenden“ auf „Ja“ gesetzt war.
 # Fix: Es wurde ein Problem behoben, bei dem die Bestell-ID in den Ereignissen zu rückerstatteten Bestellungen falsch angezeigt wurde (die Bestell-ID wurde anstelle der Bestellnummer angezeigt, obwohl sie in der Plugin-Konfiguration auf Bestellnummer eingestellt war).

@@ -1,3 +1,24 @@
+# 2.8.3
+# Fix: The add to cart event is now triggered in real time mode, and not according to a schedule
+# Fix: Fixed a bug when performing asynchronous subscription operations.
+# Fix: Fixed a problem with synchronizing orders with deleted customers.
+
+
+# 2.8.2
+# Fix: Fixed an issue where some product related event was missing product name
+# Fix: Fixed an issue where some transaction data was not synced
+# Fix: Fixed an issue where some data was missing for cart related events
+
+# 2.8.1
+# Fix: Added customer language field that will be sent to Klaviyo upon other data when syncing newsletter recipients.
+# Fix: Fixed typos
+
+# 2.8.0
+# New: Added better logging across the plugin.
+# Fix: Fixed the issue where customers were unable to select promotions in the admin panel grid for export.
+# Fix: Fixed an issue where some customers may encounter when purchased/placed orders haven't been updated properly.
+# Fix: Fixed an issue where email opt-in banner was missing at Storefront
+
 # 2.7.1
 # Fix: Fixed an error/issue with Cookiebot that was thrown in browser console when "Use Default Cookie Notification" was set to yes.
 # Fix: Fixed an issue where Order ID was displayed incorrectly ( Order ID was displayed instead of Order Number even though it was set to Order Number in plugin configuration ) in the refunded order Events.

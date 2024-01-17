@@ -1,9 +1,12 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\EventListener;
 
 use Klaviyo\Integration\Klaviyo\Gateway\CachedGetListIdByListName;
 use Psr\Cache\CacheItemPoolInterface;
+use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SystemConfig\Event\SystemConfigChangedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -28,7 +31,7 @@ class RestartConsumerAfterPluginConfigChangedEventListener implements EventSubsc
         $this->logger = $logger;
     }
 
-    public function onSystemConfigurationChange(SystemConfigChangedEvent $systemConfigChangedEvent)
+    public function onSystemConfigurationChange(SystemConfigChangedEvent $systemConfigChangedEvent): void
     {
         try {
             $key = $systemConfigChangedEvent->getKey();
@@ -52,16 +55,19 @@ class RestartConsumerAfterPluginConfigChangedEventListener implements EventSubsc
 
     /**
      * Should restart consumers along with the scheduled tasks
+     * @throws InvalidArgumentException
      * @see \Shopware\Core\Framework\MessageQueue\ScheduledTask\Command\ScheduledTaskRunner::shouldRestart
      */
-    private function restartConsumers()
+    private function restartConsumers(): void
     {
-        $cacheItem = $this->restartSignalCachePool->getItem(StopWorkerOnRestartSignalListener::RESTART_REQUESTED_TIMESTAMP_KEY);
+        $cacheItem = $this->restartSignalCachePool->getItem(
+            StopWorkerOnRestartSignalListener::RESTART_REQUESTED_TIMESTAMP_KEY
+        );
         $cacheItem->set(microtime(true));
         $this->restartSignalCachePool->save($cacheItem);
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             SystemConfigChangedEvent::class => 'onSystemConfigurationChange'

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\EventListener;
 
@@ -48,7 +50,7 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
         ];
     }
 
-    public function onStateChange(StateMachineStateChangeEvent $event)
+    public function onStateChange(StateMachineStateChangeEvent $event): void
     {
         /** @var OrderEntity $order */
         $order = $this->orderRepository
@@ -59,6 +61,7 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
         }
 
         $configuration = $this->getValidChannelConfig->execute($order->getSalesChannelId());
+
         if ($configuration === null) {
             return;
         }
@@ -80,15 +83,17 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
         }
     }
 
-    public function onTransactionStateChanged(StateMachineStateChangeEvent $event)
+    public function onTransactionStateChanged(StateMachineStateChangeEvent $event): void
     {
         $orderTransactionCriteria = new Criteria([$event->getTransition()->getEntityId()]);
         $orderTransactionCriteria->addAssociation('order');
+
         /** @var OrderTransactionEntity $orderTransaction */
         $orderTransaction = $this->orderTransactionRepository
             ->search($orderTransactionCriteria, $event->getContext())
             ->first();
-        if(!($orderTransaction instanceof OrderTransactionEntity)) {
+
+        if (!($orderTransaction instanceof OrderTransactionEntity)) {
             return;
         }
 
@@ -98,13 +103,15 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
         }
 
         $configuration = $this->getValidChannelConfig->execute($order->getSalesChannelId());
+
         if ($configuration === null) {
             return;
         }
 
         $state = $event->getNextState();
-        if ($event->getTransitionSide() === StateMachineStateChangeEvent::STATE_MACHINE_TRANSITION_SIDE_ENTER
-            && $event->getTransition()->getEntityName() === OrderTransactionDefinition::ENTITY_NAME
+
+        if (($event->getTransitionSide() === StateMachineStateChangeEvent::STATE_MACHINE_TRANSITION_SIDE_ENTER)
+            && ($event->getTransition()->getEntityName() === OrderTransactionDefinition::ENTITY_NAME)
             && (
                 ($state->getTechnicalName() === OrderTransactionStates::STATE_REFUNDED && $configuration->isTrackRefundedOrder()) ||
                 ($state->getTechnicalName() === OrderTransactionStates::STATE_PAID && $configuration->isTrackPaidOrder())
@@ -114,7 +121,7 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
         }
     }
 
-    public function onDeliveryStateChanged(StateMachineStateChangeEvent $event)
+    public function onDeliveryStateChanged(StateMachineStateChangeEvent $event): void
     {
         $orderDeliveryCriteria = new Criteria([$event->getTransition()->getEntityId()]);
         $orderDeliveryCriteria->addAssociation('order');

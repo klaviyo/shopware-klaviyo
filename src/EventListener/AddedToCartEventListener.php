@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\EventListener;
 
@@ -10,7 +12,6 @@ use Klaviyo\Integration\Utils\Logger\ContextHelper;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\Event\{AfterLineItemAddedEvent, AfterLineItemQuantityChangedEvent};
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
-use Shopware\Core\Framework\Context;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -44,10 +45,11 @@ class AddedToCartEventListener implements EventSubscriberInterface
         ];
     }
 
-    public function onAfterLineItemAdded(AfterLineItemAddedEvent $event)
+    public function onAfterLineItemAdded(AfterLineItemAddedEvent $event): void
     {
         try {
             $config = $this->getValidChannelConfig->execute($event->getSalesChannelContext()->getSalesChannelId());
+
             if ($config === null || !$config->isTrackAddedToCart()) {
                 return;
             }
@@ -63,15 +65,26 @@ class AddedToCartEventListener implements EventSubscriberInterface
 
             /** @var LineItem $lineItem */
             foreach ($event->getLineItems() as $lineItem) {
+                $lineItemEntity = $event->getCart()->get($lineItem->getId());
+
+                if (null === $lineItemEntity) {
+                    $this->logger->error('Item added to the cart is null, lineItem ID=' . $lineItem->getId());
+                    continue;
+                }
+
                 $requestBag->add(
                     $this->cartEventRequestTranslator->translateToAddedToCartEventRequest(
                         $salesChannelContext,
                         $event->getCart(),
-                        $event->getCart()->get($lineItem->getId()),
+                        $lineItemEntity,
                         $now
                     ),
                     $salesChannelContext->getSalesChannelId()
                 );
+            }
+
+            if (empty($requestBag->all())) {
+                return;
             }
 
             $this->eventsTracker->trackAddedToCart($salesChannelContext->getContext(), $requestBag);
@@ -83,10 +96,11 @@ class AddedToCartEventListener implements EventSubscriberInterface
         }
     }
 
-    public function onLineItemQuantityChanged(AfterLineItemQuantityChangedEvent $event)
+    public function onLineItemQuantityChanged(AfterLineItemQuantityChangedEvent $event): void
     {
         try {
             $config = $this->getValidChannelConfig->execute($event->getSalesChannelContext()->getSalesChannelId());
+
             if ($config === null || !$config->isTrackAddedToCart()) {
                 return;
             }

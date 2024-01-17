@@ -9,7 +9,8 @@ use Klaviyo\Integration\Klaviyo\Gateway\Result\OrderTrackingResult;
 use Klaviyo\Integration\System\Tracking\Event\Order\{OrderEvent, OrderTrackingEventsBag};
 use Klaviyo\Integration\System\Tracking\EventsTrackerInterface as Tracker;
 use Od\Scheduler\Model\Job\{JobHandlerInterface, JobResult, Message};
-use Shopware\Core\Checkout\Order\{Aggregate\OrderDelivery\OrderDeliveryStates, OrderEntity, OrderStates};
+use Shopware\Core\Checkout\Order\{OrderEntity, OrderStates};
+use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryStates;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -62,7 +63,7 @@ class OrderSyncOperation implements JobHandlerInterface
             $eventsBags[Tracker::ORDER_EVENT_ORDERED_PRODUCT]->add(new OrderEvent($order, $order->getCreatedAt()));
 
             $lastTransaction = $order->getTransactions()->last();
-            $transactionStateName = $lastTransaction->getStateMachineState()->getTechnicalName();
+            $transactionStateName = $lastTransaction?->getStateMachineState()->getTechnicalName() ?: null;
 
             if (
                 (StateActions::ACTION_PAID === $transactionStateName)
@@ -73,21 +74,21 @@ class OrderSyncOperation implements JobHandlerInterface
             }
 
             $lastDelivery = $order->getDeliveries()->last();
-            $deliveryStateName = $lastDelivery->getStateMachineState()->getTechnicalName();
+            $deliveryStateName = $lastDelivery?->getStateMachineState()->getTechnicalName() ?: null;
+            $orderStateName = $order->getStateMachineState()->getTechnicalName();
 
-            if ($deliveryStateName === OrderDeliveryStates::STATE_SHIPPED)
-            {
+            if (OrderDeliveryStates::STATE_SHIPPED === $deliveryStateName) {
                 $happenedAt = $lastDelivery->getUpdatedAt();
                 $eventsBags[Tracker::ORDER_EVENT_SHIPPED]->add(new OrderEvent($order, $happenedAt));
             }
 
 
-            if (OrderStates::STATE_COMPLETED === $order->getStateMachineState()->getTechnicalName()) {
+            if (OrderStates::STATE_COMPLETED === $orderStateName) {
                 $happenedAt = $order->getUpdatedAt();
                 $eventsBags[Tracker::ORDER_EVENT_FULFILLED]->add(new OrderEvent($order, $happenedAt));
             }
 
-            if (OrderStates::STATE_CANCELLED === $order->getStateMachineState()->getTechnicalName()) {
+            if (OrderStates::STATE_CANCELLED === $orderStateName) {
                 $happenedAt = $order->getUpdatedAt();
                 $eventsBags[Tracker::ORDER_EVENT_CANCELED]->add(new OrderEvent($order, $happenedAt));
             }

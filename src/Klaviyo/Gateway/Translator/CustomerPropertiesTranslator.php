@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Klaviyo\Gateway\Translator;
 
@@ -15,21 +17,25 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
+use Klaviyo\Integration\Utils\LocaleCodeProducer;
 
 class CustomerPropertiesTranslator
 {
     private AddressDataHelper $addressHelper;
     private ConfigurationRegistry $configurationRegistry;
     private EntityRepository $salesChannelRepository;
+    private LocaleCodeProducer $localeCodeProducer;
 
     public function __construct(
         AddressDataHelper $addressHelper,
         ConfigurationRegistry $configurationRegistry,
-        EntityRepository $salesChannelRepository
+        EntityRepository $salesChannelRepository,
+        LocaleCodeProducer $localeCodeProducer
     ) {
         $this->addressHelper = $addressHelper;
         $this->configurationRegistry = $configurationRegistry;
         $this->salesChannelRepository = $salesChannelRepository;
+        $this->localeCodeProducer = $localeCodeProducer;
     }
 
     public function translateOrder(Context $context, OrderEntity $orderEntity): CustomerProperties
@@ -57,6 +63,8 @@ class CustomerPropertiesTranslator
         $customFields = $this->prepareCustomFields($customer, $orderEntity->getSalesChannelId());
         $birthday = $customer ? $customer->getBirthday() : null;
 
+        $localeCode = $this->localeCodeProducer->getLocaleCodeFromContext($customer->getLanguageId(), $context);
+
         return new CustomerProperties(
             $customer ? $customer->getEmail() : $orderCustomer->getEmail(),
             $customer ? $customer->getId() : $orderCustomer->getId(),
@@ -73,7 +81,8 @@ class CustomerPropertiesTranslator
             $customer ? $customer->getSalesChannelId() : null,
             $customer ? $this->getSalesChannelName($customer->getSalesChannelId(), $customer->getSalesChannel(), $context) : null,
             $customer ? $customer->getBoundSalesChannelId(): null,
-            $customer ? $this->getSalesChannelName($customer->getBoundSalesChannelId(), $customer->getBoundSalesChannel(), $context) : null
+            $customer ? $this->getSalesChannelName($customer->getBoundSalesChannelId(), $customer->getBoundSalesChannel(), $context) : null,
+            $localeCode ?: null
         );
     }
 
@@ -148,6 +157,7 @@ class CustomerPropertiesTranslator
         $country = $this->addressHelper->getAddressCountry($context, $customerAddress);
         $birthday = $customerEntity->getBirthday();
         $customFields = $this->prepareCustomFields($customerEntity, $customerEntity->getSalesChannelId());
+        $localeCode = $this->localeCodeProducer->getLocaleCodeFromContext($customerEntity->getLanguageId(), $context);
 
         return new CustomerProperties(
             $customerEntity->getEmail(),
@@ -165,7 +175,8 @@ class CustomerPropertiesTranslator
             $customerEntity->getSalesChannelId(),
             $this->getSalesChannelName($customerEntity->getSalesChannelId(), $customerEntity->getSalesChannel(), $context),
             $customerEntity->getBoundSalesChannelId(),
-            $this->getSalesChannelName($customerEntity->getBoundSalesChannelId(), $customerEntity->getBoundSalesChannel(), $context)
+            $this->getSalesChannelName($customerEntity->getBoundSalesChannelId(), $customerEntity->getBoundSalesChannel(), $context),
+            $localeCode ?: null
         );
     }
 }

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\EventListener;
 
@@ -54,7 +56,7 @@ class CustomerWrittenEventListener implements EventSubscriberInterface
             }
         }
 
-        $customers = $customers->filter(function(CustomerEntity $customer) use ($allowedChannelIds) {
+        $customers = $customers->filter(function (CustomerEntity $customer) use ($allowedChannelIds) {
             return \in_array($customer->getSalesChannelId(), $allowedChannelIds);
         });
 

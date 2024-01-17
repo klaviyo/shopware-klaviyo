@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Model\UseCase\Operation;
 
@@ -56,6 +58,7 @@ class SubscriberSyncOperation implements JobHandlerInterface
         foreach ($this->getValidChannels->execute($message->getContext()) as $channel) {
             try {
                 $errors = $this->doOperation($message, $context, $channel);
+
                 foreach ($errors as $error) {
                     $result->addMessage(new Message\ErrorMessage($error->getMessage()));
                 }
@@ -67,8 +70,11 @@ class SubscriberSyncOperation implements JobHandlerInterface
         return $result;
     }
 
-    protected function doOperation(SubscriberSyncMessage $message, Context $context, SalesChannelEntity $channel): ?array
-    {
+    protected function doOperation(
+        SubscriberSyncMessage $message,
+        Context $context,
+        SalesChannelEntity $channel
+    ): ?array {
         $unsubscribedRecipients = new ProfileContactInfoCollection();
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsAnyFilter('id', $message->getSubscriberIds()));

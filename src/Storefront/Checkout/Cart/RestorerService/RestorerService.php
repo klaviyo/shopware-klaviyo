@@ -152,7 +152,7 @@ class RestorerService implements RestorerServiceInterface
                 $context->assign(['customerObject' => $customer]);
             }
         }
-        
+
         $cart = $this->orderConverter->convertToCart($order, $context->getContext());
         $this->restoreByCart($cart, $context);
     }
@@ -176,7 +176,7 @@ class RestorerService implements RestorerServiceInterface
     {
         $resultData = new RequestDataBag();
 
-        foreach($addressData->getVars() as $key => $value) {
+        foreach ($addressData->getVars() as $key => $value) {
             if (in_array($key, ['customerId', '_uniqueIdentifier'])) {
                 continue;
             }

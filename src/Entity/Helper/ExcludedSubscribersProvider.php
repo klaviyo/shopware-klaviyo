@@ -1,10 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Entity\Helper;
 
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribers\Response;
 use Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway;
-use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 // TODO: move this class outside mysterious "Helper" namespace
 class ExcludedSubscribersProvider

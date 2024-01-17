@@ -11,6 +11,7 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfil
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfilesFromList\RemoveProfilesFromListResponse;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\SubscribeCustomersToList\SubscribeToListResponse;
 use Klaviyo\Integration\Klaviyo\Client\ClientResult;
+use Klaviyo\Integration\Exception\JobRuntimeWarningException;
 use Klaviyo\Integration\Klaviyo\Gateway\Domain\Profile\Search\ProfileIdSearchResult;
 use Klaviyo\Integration\Klaviyo\Gateway\Domain\Profile\Search\Strategy\SearchStrategyInterface;
 use Klaviyo\Integration\Klaviyo\Gateway\Exception\ProfilesListNotFoundException;
@@ -30,6 +31,7 @@ use Shopware\Core\Content\Newsletter\Aggregate\NewsletterRecipient\NewsletterRec
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\RealSubscribersToKlaviyoRequestsTranslator;
+use Klaviyo\Integration\Klaviyo\Gateway\Exception\TranslationException;
 
 class KlaviyoGateway
 {
@@ -87,8 +89,19 @@ class KlaviyoGateway
                 );
                 $requestOrderIdMap[spl_object_id($request)] = $orderEvent->getOrder()->getId();
                 $requests[] = $request;
+            } catch (JobRuntimeWarningException $e) {
+                $result->addFailedOrder(
+                    $orderEvent->getOrder()->getId(),
+                    $e
+                );
             } catch (\Throwable $e) {
-                $result->addFailedOrder($orderEvent->getOrder()->getId(), $e);
+                $this->logger->error($e->getMessage());
+                $result->addFailedOrder(
+                    $orderEvent->getOrder()->getId(),
+                    throw new TranslationException(
+                        'Something went wrong with the track of placed orders'
+                    )
+                );
             }
         }
 
@@ -122,8 +135,19 @@ class KlaviyoGateway
                         ->translateToOrderedProductEventRequest($context, $lineItem, $event->getOrder());
                     $requestOrderIdMap[spl_object_id($request)] = $event->getOrder()->getId();
                     $requests[] = $request;
+                } catch (JobRuntimeWarningException $e) {
+                    $result->addFailedOrder(
+                        $event->getOrder()->getId(),
+                        $e
+                    );
                 } catch (\Throwable $e) {
-                    $result->addFailedOrder($event->getOrder()->getId(), $e);
+                    $this->logger->error($e->getMessage());
+                    $result->addFailedOrder(
+                        $event->getOrder()->getId(),
+                        throw new TranslationException(
+                            'Something went wrong with the translation of the request to the ordered product event'
+                        )
+                    );
                 }
             }
         }
@@ -156,8 +180,19 @@ class KlaviyoGateway
                 );
                 $requestOrderIdMap[spl_object_id($request)] = $orderEvent->getOrder()->getId();
                 $requests[] = $request;
+            } catch (JobRuntimeWarningException $e) {
+                $result->addFailedOrder(
+                    $orderEvent->getOrder()->getId(),
+                    $e
+                );
             } catch (\Throwable $e) {
-                $result->addFailedOrder($orderEvent->getOrder()->getId(), $e);
+                $this->logger->error($e->getMessage());
+                $result->addFailedOrder(
+                    $orderEvent->getOrder()->getId(),
+                    throw new TranslationException(
+                        'Something went wrong with the track of fullfilled orders'
+                    )
+                );
             }
         }
 
@@ -189,8 +224,19 @@ class KlaviyoGateway
                 );
                 $requestOrderIdMap[spl_object_id($request)] = $orderEvent->getOrder()->getId();
                 $requests[] = $request;
+            } catch (JobRuntimeWarningException $e) {
+                $result->addFailedOrder(
+                    $orderEvent->getOrder()->getId(),
+                    $e
+                );
             } catch (\Throwable $e) {
-                $result->addFailedOrder($orderEvent->getOrder()->getId(), $e);
+                $this->logger->error($e->getMessage());
+                $result->addFailedOrder(
+                    $orderEvent->getOrder()->getId(),
+                    throw new TranslationException(
+                        'Something went wrong with the track of cancelled orders'
+                    )
+                );
             }
         }
 
@@ -221,8 +267,19 @@ class KlaviyoGateway
                 );
                 $requestOrderIdMap[spl_object_id($request)] = $orderEvent->getOrder()->getId();
                 $requests[] = $request;
+            } catch (JobRuntimeWarningException $e) {
+                $result->addFailedOrder(
+                    $orderEvent->getOrder()->getId(),
+                    $e
+                );
             } catch (\Throwable $e) {
-                $result->addFailedOrder($orderEvent->getOrder()->getId(), $e);
+                $this->logger->error($e->getMessage());
+                $result->addFailedOrder(
+                    $orderEvent->getOrder()->getId(),
+                    throw new TranslationException(
+                        'Something went wrong with the track of shipped orders'
+                    )
+                );
             }
         }
         $clientResult = $this->trackEvents($channelId, $requests);
@@ -252,8 +309,19 @@ class KlaviyoGateway
                 );
                 $requestOrderIdMap[spl_object_id($request)] = $orderEvent->getOrder()->getId();
                 $requests[] = $request;
+            } catch (JobRuntimeWarningException $e) {
+                $result->addFailedOrder(
+                    $orderEvent->getOrder()->getId(),
+                    $e
+                );
             } catch (\Throwable $e) {
-                $result->addFailedOrder($orderEvent->getOrder()->getId(), $e);
+                $this->logger->error($e->getMessage());
+                $result->addFailedOrder(
+                    $orderEvent->getOrder()->getId(),
+                    throw new TranslationException(
+                        'Something went wrong with the track of paid orders'
+                    )
+                );
             }
         }
 
@@ -285,8 +353,19 @@ class KlaviyoGateway
                 );
                 $requestOrderIdMap[spl_object_id($request)] = $orderEvent->getOrder()->getId();
                 $requests[] = $request;
+            } catch (JobRuntimeWarningException $e) {
+                $result->addFailedOrder(
+                    $orderEvent->getOrder()->getId(),
+                    $e
+                );
             } catch (\Throwable $e) {
-                $result->addFailedOrder($orderEvent->getOrder()->getId(), $e);
+                $this->logger->error($e->getMessage());
+                $result->addFailedOrder(
+                    $orderEvent->getOrder()->getId(),
+                    throw new TranslationException(
+                        'Something went wrong with the track of refunded orders'
+                    )
+                );
             }
         }
 

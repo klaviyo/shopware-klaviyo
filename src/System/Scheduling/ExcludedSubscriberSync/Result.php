@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\System\Scheduling\ExcludedSubscriberSync;
 
@@ -14,7 +16,7 @@ class Result
      */
     private array $errors = [];
 
-    public function addEmails(string $channelId, array $emails)
+    public function addEmails(string $channelId, array $emails): void
     {
         $this->emails[$channelId] = \array_merge($this->emails[$channelId] ?? [], $emails);
     }
