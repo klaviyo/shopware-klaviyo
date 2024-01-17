@@ -5,6 +5,7 @@ namespace Klaviyo\Integration\Entity\Helper;
 use Klaviyo\Integration\Klaviyo\Client\Exception\OrderItemProductNotFound;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Content\Category\CategoryCollection;
+use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Content\Product\Aggregate\ProductManufacturer\ProductManufacturerEntity;
 use Shopware\Core\Content\Product\Aggregate\ProductMedia\ProductMediaEntity;
 use Shopware\Core\Content\Product\ProductEntity;
@@ -154,14 +155,30 @@ class ProductDataHelper
     /**
      * @param Context $context
      * @param ProductEntity $productEntity
-     *
      * @return array|string[]
      */
     public function getCategoryNames(Context $context, ProductEntity $productEntity): array
     {
         $categoriesEntities = $this->getProductCategories($context, $productEntity);
-
         $categories = [];
+
+        $categoriesWithDynamicProductGroups = $this->getCategoriesWithDynamicProductGroups($context);
+        $streams = $productEntity->getStreamIds();
+
+        if ($categoriesWithDynamicProductGroups->count() > 0) {
+            foreach ($categoriesWithDynamicProductGroups as $category) {
+                if (!$category->getProductStreamId()) {
+                    continue;
+                }
+                foreach ($streams as $streamId) {
+                    if ($streamId == $category->getProductStreamId()){
+                        $categories[] = $category->getName();
+                    }
+                }
+            }
+        }
+
+
         foreach ($categoriesEntities as $categoryEntity) {
             $categories[] = $categoryEntity->getName();
         }
@@ -186,6 +203,19 @@ class ProductDataHelper
             ->getEntities();
 
         return $categoriesCollection;
+    }
+
+    private function getCategoriesWithDynamicProductGroups(Context $context): CategoryCollection
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(
+            new EqualsFilter(
+                'productAssignmentType',
+                CategoryDefinition::PRODUCT_ASSIGNMENT_TYPE_PRODUCT_STREAM
+            )
+        );
+
+        return $this->categoriesRepository->search($criteria, $context)->getEntities();
     }
 
     public function getManufacturerName(Context $context, ProductEntity $productEntity): ?string
