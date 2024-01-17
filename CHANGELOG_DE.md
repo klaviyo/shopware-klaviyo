@@ -1,3 +1,12 @@
+# 1.6.3
+# Fix: Das Ereignis „Zum Warenkorb hinzufügen“ wird jetzt im Echtzeitmodus und nicht nach einem Zeitplan ausgelöst
+# Fix: Ein Problem beim Synchronisieren von Bestellungen mit gelöschten Kunden wurde behoben
+
+# 1.6.2
+# Fix: Es wurde ein Problem behoben, bei dem bei einem produktbezogenen Ereignis der Produktname fehlte
+# Fix: Es wurde ein Problem behoben, bei dem einige Transaktionsdaten nicht synchronisiert wurden
+# Fix: Es wurde ein Problem behoben, bei dem einige Daten für warenkorbbezogene Ereignisse fehlten
+
 # 1.6.1
 # Fix: Kundensprachfeld hinzugefügt, das bei der Synchronisierung von Newsletter-Empfängern zusammen mit anderen Daten an Klaviyo gesendet wird.
 # Fix: Tippfehler behoben
