@@ -15,7 +15,7 @@ class AddedToCartEventTrackingRequestNormalizer extends AbstractNormalizer
      * @return array
      * @throws \Klaviyo\Integration\Klaviyo\Client\Exception\SerializationException
      */
-    public function normalize($object, string $format = null, array $context = [])
+    public function normalize($object, string $format = null, array $context = []): array
     {
         $customerProperties = $this->normalizeObject($object->getCustomerProperties());
 
@@ -40,15 +40,15 @@ class AddedToCartEventTrackingRequestNormalizer extends AbstractNormalizer
         }
 
         $properties = [
-            'AddedToCartValue' => $object->getCartTotal(),
-            'AddedItemProductName' => $object->getAddedItemProductName(),
-            'AddedItemProductID' => $object->getAddedItemProductId(),
-            'AddedItemSKU' => $object->getAddedItemProductSKU(),
-            'AddedItemCategories' => $object->getAddedItemCategoryNames(),
-            'AddedItemImageURL' => $object->getAddedItemImageUrl(),
-            'AddedItemURL' => $object->getAddedItemUrl(),
-            'AddedItemPrice' => $object->getAddedItemPrice(),
-            'AddedItemQuantity' => $object->getAddedItemQty(),
+            '$value' => $object->getCartTotal(),
+            'ProductName' => $object->getAddedItemProductName(),
+            'ProductID' => $object->getAddedItemProductId(),
+            'SKU' => $object->getAddedItemProductSKU(),
+            'Categories' => $object->getAddedItemCategoryNames(),
+            'ImageURL' => $object->getAddedItemImageUrl(),
+            'URL' => $object->getAddedItemUrl(),
+            'Price' => $object->getAddedItemPrice(),
+            'Quantity' => $object->getAddedItemQty(),
             'ItemNames' => $itemNames,
             'CheckoutURL' => $object->getCheckoutURL(),
             'Items' => $productItems
@@ -63,7 +63,7 @@ class AddedToCartEventTrackingRequestNormalizer extends AbstractNormalizer
         ];
     }
 
-    public function supportsNormalization($data, string $format = null)
+    public function supportsNormalization($data, string $format = null): bool
     {
         return $data instanceof AddedToCartEventTrackingRequest;
     }
