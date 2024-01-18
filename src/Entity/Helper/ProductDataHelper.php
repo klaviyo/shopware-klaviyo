@@ -165,7 +165,7 @@ class ProductDataHelper
         $categoriesWithDynamicProductGroups = $this->getCategoriesWithDynamicProductGroups($context);
         $streams = $productEntity->getStreamIds();
 
-        if ($categoriesWithDynamicProductGroups->count() > 0) {
+        if ($categoriesWithDynamicProductGroups->count() > 0 && $streams ) {
             foreach ($categoriesWithDynamicProductGroups as $category) {
                 if (!$category->getProductStreamId()) {
                     continue;
