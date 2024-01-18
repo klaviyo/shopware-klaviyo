@@ -171,15 +171,15 @@ class ProductDataHelper
         $categories = [];
 
         $categoriesWithDynamicProductGroups = $this->getCategoriesWithDynamicProductGroups($context);
-        $streams = $productEntity->getStreamIds();
+        $streamIds = $productEntity->getStreamIds();
 
-        if ($categoriesWithDynamicProductGroups->count() > 0 && $streams ) {
+        if ($categoriesWithDynamicProductGroups->count() > 0 && $streamIds ) {
             foreach ($categoriesWithDynamicProductGroups as $category) {
                 if (!$category->getProductStreamId()) {
                     continue;
                 }
-                foreach ($streams as $streamId) {
-                    if ($streamId == $category->getProductStreamId()){
+                foreach ($streamIds as $streamId) {
+                    if ($streamId === $category->getProductStreamId()){
                         $categories[] = $category->getName();
                     }
                 }
