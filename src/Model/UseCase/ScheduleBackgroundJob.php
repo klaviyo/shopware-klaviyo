@@ -1,11 +1,12 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Model\UseCase;
 
 use Klaviyo\Integration\Async\Message;
 use Klaviyo\Integration\Entity\Helper\ExcludedSubscribersProvider;
 use Klaviyo\Integration\Exception\{JobAlreadyRunningException, JobAlreadyScheduledException};
-use Klaviyo\Integration\Klaviyo\FrontendApi\ExcludedSubscribers\CreateArrayHash;
 use Klaviyo\Integration\Klaviyo\FrontendApi\ExcludedSubscribers\SyncProgressService;
 use Klaviyo\Integration\Model\UseCase\Operation\{FullOrderSyncOperation, FullSubscriberSyncOperation};
 use Klaviyo\Integration\System\Scheduling\ExcludedSubscriberSync;
@@ -40,14 +41,22 @@ class ScheduleBackgroundJob
         $this->logger = $logger;
     }
 
-    public function scheduleFullSubscriberSyncJob(Context $context)
+    /**
+     * @throws JobAlreadyRunningException
+     * @throws JobAlreadyScheduledException
+     */
+    public function scheduleFullSubscriberSyncJob(Context $context): void
     {
         $this->checkJobStatus(FullSubscriberSyncOperation::OPERATION_HANDLER_CODE, $context);
         $jobMessage = new Message\FullSubscriberSyncMessage(Uuid::randomHex(), null, $context);
         $this->scheduler->schedule($jobMessage);
     }
 
-    private function checkJobStatus(string $type, Context $context)
+    /**
+     * @throws JobAlreadyRunningException
+     * @throws JobAlreadyScheduledException
+     */
+    private function checkJobStatus(string $type, Context $context): void
     {
         $criteria = new Criteria();
         $criteria->addFilter(new AndFilter([
@@ -81,28 +90,39 @@ class ScheduleBackgroundJob
         $this->scheduler->schedule($jobMessage);
     }
 
-    public function scheduleFullOrderSyncJob(Context $context)
+    /**
+     * @throws JobAlreadyRunningException
+     * @throws JobAlreadyScheduledException
+     */
+    public function scheduleFullOrderSyncJob(Context $context): void
     {
         $this->checkJobStatus(FullOrderSyncOperation::OPERATION_HANDLER_CODE, $context);
         $jobMessage = new Message\FullOrderSyncMessage(Uuid::randomHex(), null, $context);
         $this->scheduler->schedule($jobMessage);
     }
 
-    public function scheduleOrderSyncJob(array $orderIds, string $parentJobId, Context $context)
+    public function scheduleOrderSyncJob(array $orderIds, string $parentJobId, Context $context): void
     {
         $jobMessage = new Message\OrderSyncMessage(Uuid::randomHex(), $parentJobId, $orderIds, null, $context);
         $this->scheduler->schedule($jobMessage);
     }
 
-    public function scheduleOrderEventsSyncJob(array $eventIds, string $parentJobId, Context $context)
+    public function scheduleOrderEventsSyncJob(array $eventIds, string $parentJobId, Context $context): void
     {
         $jobMessage = new Message\OrderEventSyncMessage(Uuid::randomHex(), $parentJobId, $eventIds, null, $context);
         $this->scheduler->schedule($jobMessage);
     }
 
-    public function scheduleCartEventsSyncJob(array $eventRequestIds, string $parentJobId, Context $context)
+    public function scheduleCartEventsSyncJob(array $eventRequestIds, string $parentJobId, Context $context): void
     {
-        $jobMessage = new Message\CartEventSyncMessage(Uuid::randomHex(), $parentJobId, $eventRequestIds, null, $context);
+        $jobMessage = new Message\CartEventSyncMessage(
+            Uuid::randomHex(),
+            $parentJobId,
+            $eventRequestIds,
+            null,
+            $context
+        );
+
         $this->scheduler->schedule($jobMessage);
     }
 
@@ -113,9 +133,16 @@ class ScheduleBackgroundJob
         $this->scheduler->schedule($jobMessage);
     }
 
-    public function scheduleCustomerProfilesSyncJob(array $customerIds, string $parentJobId, Context $context)
+    public function scheduleCustomerProfilesSyncJob(array $customerIds, string $parentJobId, Context $context): void
     {
-        $jobMessage = new Message\CustomerProfileSyncMessage(Uuid::randomHex(), $parentJobId, $customerIds, null, $context);
+        $jobMessage = new Message\CustomerProfileSyncMessage(
+            Uuid::randomHex(),
+            $parentJobId,
+            $customerIds,
+            null,
+            $context
+        );
+
         $this->scheduler->schedule($jobMessage);
     }
 
@@ -133,18 +160,8 @@ class ScheduleBackgroundJob
         $schedulingResult = new ExcludedSubscriberSync\Result();
 
         foreach ($channelIds as $channelId) {
-            $isFirstLoadedPage = true;
-            $syncInfo = $this->progressService->get($context, $channelId);
-
             try {
-                foreach ($this->excludedSubscribersProvider->getExcludedSubscribers($channelId, $syncInfo->getPage()) as $result) {
-                    if ($isFirstLoadedPage) {
-                        $isFirstLoadedPage = false;
-                        if ($syncInfo->getHash() === CreateArrayHash::execute($result->getEmails())) {
-                            continue 2;
-                        }
-                    }
-
+                foreach ($this->excludedSubscribersProvider->getExcludedSubscribers($channelId) as $result) {
                     $jobMessage = new Message\ExcludedSubscriberSyncMessage(
                         Uuid::randomHex(),
                         $parentJobId,
@@ -155,12 +172,6 @@ class ScheduleBackgroundJob
                     );
                     $this->scheduler->schedule($jobMessage);
                     $schedulingResult->addEmails($channelId, $result->getEmails());
-                }
-
-                if (isset($result)) {
-                    $syncInfo->setPage($result->getPage());
-                    $syncInfo->setHash(CreateArrayHash::execute($result->getEmails()));
-                    $this->progressService->save($context, $syncInfo);
                 }
             } catch (\Exception $e) {
                 $this->logger->error($e->getMessage());

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Update;
 
@@ -9,7 +11,7 @@ class UpdateProfileResponse
 
     public function __construct(
         bool $isSuccess,
-        ?string $errorDetail = null
+        string $errorDetail = null
     ) {
         $this->isSuccess = $isSuccess;
         $this->errorDetail = $errorDetail;

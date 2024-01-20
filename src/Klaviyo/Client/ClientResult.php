@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Klaviyo\Client;
 
@@ -25,6 +27,9 @@ class ClientResult
         $this->errors[spl_object_id($request)][] = $error;
     }
 
+    /**
+     * @throws \Exception
+     */
     public function getRequestResponse(object $request): object
     {
         if (!isset($this->responses[spl_object_id($request)])) {

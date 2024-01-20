@@ -19,24 +19,11 @@ class UpdateProfileApiTransferTranslator extends AbstractApiTransferMessageTrans
      */
     public function translateRequest(object $request): Request
     {
-        $sensitiveFields = \array_filter([
-            '$id' => $request->getCustomerProperties()->getId(),
-            '$email' => $request->getCustomerProperties()->getEmail(),
-            '$phone_number' => $request->getCustomerProperties()->getPhoneNumber(),
-        ]);
-        /*$propertiesParam = \implode('&', \array_map(function ($propName, $propValue) {
-            return \sprintf('%s=%s', $propName, \urlencode($propValue));
-        }, \array_keys($sensitiveFields), $sensitiveFields));*/
-
         $body = $this->serialize($request);
 
-        $url = \sprintf(
-            '%s/person/%s?%s&api_key=%s',
-            $this->configuration->getGlobalExclusionsEndpointUrl(),
-            $request->getProfileId(),
-        );
+        $url = \sprintf('%s/profiles/%s', $this->configuration->getGlobalNewEndpointUrl(), $request->getProfileId());
 
-        return $this->constructGuzzleRequestToKlaviyoAPI($url);
+        return $this->constructGuzzleRequestToKlaviyoAPI($url, $body);
     }
 
     public function translateResponse(ResponseInterface $response): object
@@ -71,17 +58,18 @@ class UpdateProfileApiTransferTranslator extends AbstractApiTransferMessageTrans
         return $request instanceof UpdateProfileRequest;
     }
 
-    private function constructGuzzleRequestToKlaviyoAPI(string $endpoint): Request
+    private function constructGuzzleRequestToKlaviyoAPI(string $endpoint, string $body): Request
     {
         return new Request(
-            'POST',
+            'PATCH',
             $endpoint,
             [
                 'Authorization' => $this->configuration->getApiKey(),
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
                 'revision' => ClientConfigurationFactory::API_REVISION_DATE,
-            ]
+            ],
+            $body
         );
     }
 }

@@ -28,7 +28,7 @@ class CollectionDenormalizer extends AbstractDenormalizer
         return $collection;
     }
 
-    public function supportsDenormalization($data, string $type, string $format = null)
+    public function supportsDenormalization($data, string $type, string $format = null): bool
     {
         return ReflectionHelper::isClassInstanceOf($type, TypedCollection::class);
     }

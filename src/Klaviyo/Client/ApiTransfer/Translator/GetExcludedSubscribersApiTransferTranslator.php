@@ -12,17 +12,23 @@ use Psr\Http\Message\ResponseInterface;
 
 class GetExcludedSubscribersApiTransferTranslator extends AbstractApiTransferMessageTranslator
 {
+    private const SUPPRESSION_REASON = 'USER_SUPPRESSED';
+
     /**
      * @param GetExcludedSubscribers\Request $request
      */
     public function translateRequest(object $request): Request
     {
-        $url = \sprintf(
-            '%s/people/exclusions?count=%s&page=%s',
-            $this->configuration->getGlobalNewEndpointUrl(),
-            $request->getCount(),
-            $request->getPage()
-        );
+        if ($request->getNextPageUrl()) {
+            $url = $request->getNextPageUrl();
+        } else {
+            $url = \sprintf(
+                '%s/profiles?page[size]=%s&additional-fields[profile]=subscriptions&filter=equals(subscriptions.email.marketing.suppression.reason,"%s")',
+                $this->configuration->getGlobalNewEndpointUrl(),
+                $request->getCount(),
+                self::SUPPRESSION_REASON
+            );
+        }
 
         return $this->constructGuzzleRequestToKlaviyoAPI($url);
     }
@@ -57,10 +63,7 @@ class GetExcludedSubscribersApiTransferTranslator extends AbstractApiTransferMes
     private function assertStatusCode(ResponseInterface $response): void
     {
         if ($response->getStatusCode() < 200 || $response->getStatusCode() >= 300) {
-            throw new TranslationException(
-                $response,
-                \sprintf('Invalid response status code %s', $response->getStatusCode())
-            );
+            throw new TranslationException($response, \sprintf('Invalid response status code %s', $response->getStatusCode()));
         }
     }
 

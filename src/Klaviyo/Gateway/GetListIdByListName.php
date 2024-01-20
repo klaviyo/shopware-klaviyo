@@ -6,7 +6,6 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetLists\DTO
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetLists\GetProfilesListsRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetLists\GetProfilesListsResponse;
 use Klaviyo\Integration\Klaviyo\Gateway\Exception\ProfilesListNotFoundException;
-use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 class GetListIdByListName implements GetListIdByListNameInterface
 {
@@ -17,11 +16,11 @@ class GetListIdByListName implements GetListIdByListNameInterface
         $this->clientRegistry = $clientRegistry;
     }
 
-    public function execute(SalesChannelEntity $salesChannelEntity, string $listName): string
+    public function execute(string $salesChannelEntityId, string $listName): string
     {
         $request = new GetProfilesListsRequest();
         $clientResult = $this->clientRegistry
-            ->getClient($salesChannelEntity->getId())
+            ->getClient($salesChannelEntityId)
             ->sendRequests([$request]);
 
         /** @var GetProfilesListsResponse $result */
