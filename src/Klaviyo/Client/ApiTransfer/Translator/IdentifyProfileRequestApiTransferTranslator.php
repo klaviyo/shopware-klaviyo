@@ -25,7 +25,7 @@ class IdentifyProfileRequestApiTransferTranslator extends AbstractApiTransferMes
         $this->assertStatusCode($response);
 
         $content = $response->getBody()->getContents();
-        $isSuccess = trim($content) === '1';
+        $isSuccess = '1' === trim($content);
 
         return new EventTrackingResponse($isSuccess);
     }
@@ -41,7 +41,7 @@ class IdentifyProfileRequestApiTransferTranslator extends AbstractApiTransferMes
                 'Content-Type' => 'application/json',
                 'revision' => ClientConfigurationFactory::API_REVISION_DATE,
             ],
-            \sprintf('data=%s', $body)
+            $body
         );
     }
 
@@ -50,7 +50,7 @@ class IdentifyProfileRequestApiTransferTranslator extends AbstractApiTransferMes
         return $request instanceof IdentifyProfileRequest;
     }
 
-    private function assertStatusCode(ResponseInterface $response)
+    private function assertStatusCode(ResponseInterface $response): void
     {
         if ($response->getStatusCode() < 200 || $response->getStatusCode() >= 300) {
             throw new TranslationException(

@@ -40,7 +40,6 @@ class AddedToCartEventTrackingRequestNormalizer extends AbstractNormalizer
         }
 
         $properties = [
-            '$value' => $object->getCartTotal(),
             'ProductName' => $object->getAddedItemProductName(),
             'ProductID' => $object->getAddedItemProductId(),
             'SKU' => $object->getAddedItemProductSKU(),
@@ -55,11 +54,30 @@ class AddedToCartEventTrackingRequestNormalizer extends AbstractNormalizer
         ];
 
         return [
-            'token' => $this->getToken(),
-            'event' => 'Added to Cart',
-            'customer_properties' => $customerProperties,
-            'properties' => $properties,
-            'time' => $object->getTime()->getTimestamp()
+            'data' => [
+                'type' => 'event',
+                'attributes' => [
+                    'time' => $object->getTime()->format('Y-m-d\TH:i:s'),
+                    'value' => $object->getCartTotal(),
+                    'unique_id' => $object->getEventId() . '_' . $object->getTime()->getTimestamp(),
+                    'properties' => $properties,
+                    'metric' => [
+                        'data' => [
+                            'type' => 'metric',
+                            'attributes' => [
+                                'name' => 'Added to Cart'
+                            ]
+                        ]
+                    ],
+                    'profile' => [
+                        'data' => [
+                            'type' => 'profile',
+                            'id' => '',
+                            'attributes' => $customerProperties
+                        ]
+                    ]
+                ]
+            ]
         ];
     }
 

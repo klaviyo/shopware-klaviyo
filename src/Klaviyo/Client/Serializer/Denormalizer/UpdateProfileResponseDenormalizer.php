@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer;
 
@@ -6,18 +8,19 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Update\Updat
 
 class UpdateProfileResponseDenormalizer extends AbstractDenormalizer
 {
-    public function denormalize($data, string $type, string $format = null, array $context = [])
+    public function denormalize($data, string $type, string $format = null, array $context = []): UpdateProfileResponse
     {
-        $errorDetail = $data['detail'] ?? '';
-        if ($errorDetail) {
-            return new UpdateProfileResponse(true, $errorDetail);
+        $errors = $data['errors'][0] ?? '';
+
+        if (!empty($errors['detail'])) {
+            return new UpdateProfileResponse(true, $errors['detail']);
         }
 
         return new UpdateProfileResponse(true);
     }
 
-    public function supportsDenormalization($data, string $type, string $format = null)
+    public function supportsDenormalization($data, string $type, string $format = null): bool
     {
-        return $type === UpdateProfileResponse::class;
+        return UpdateProfileResponse::class === $type;
     }
 }

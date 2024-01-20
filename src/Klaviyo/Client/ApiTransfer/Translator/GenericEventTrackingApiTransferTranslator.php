@@ -57,7 +57,7 @@ class GenericEventTrackingApiTransferTranslator extends AbstractApiTransferMessa
                 'Content-Type' => 'application/json',
                 'revision' => ClientConfigurationFactory::API_REVISION_DATE,
             ],
-            \sprintf('data=%s', $body)
+            $body
         );
     }
 

@@ -15,35 +15,33 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
         $this->systemConfigService = $systemConfigService;
     }
 
-    public function create(?string $salesChannelId = null): ConfigurationInterface
+    public function create(string $salesChannelId = null): ConfigurationInterface
     {
         $accountEnabled = $this->getBoolConfiguration('enabled', $salesChannelId);
         $privateApiKey = $this->systemConfigService
             ->get('klavi_overd.config.privateApiKey', $salesChannelId);
         if (!$privateApiKey) {
-            throw new InvalidConfigurationException(
-                'Klaviyo Integration Private Api Key configuration is not defined'
-            );
+            throw new InvalidConfigurationException('Klaviyo Integration Private Api Key configuration is not defined');
         }
 
         $publicApiKey = $this->systemConfigService
             ->get('klavi_overd.config.publicApiKey', $salesChannelId);
         if (!$publicApiKey) {
-            throw new InvalidConfigurationException(
-                'Klaviyo Integration Public Api Key configuration is not defined'
-            );
+            throw new InvalidConfigurationException('Klaviyo Integration Public Api Key configuration is not defined');
         }
 
-        $listName = $this->systemConfigService
+        $listId = $this->systemConfigService
             ->get('klavi_overd.config.klaviyoListForSubscribersSync', $salesChannelId);
-        if (!$listName) {
+        if (!$listId) {
             throw new InvalidConfigurationException(
                 'Klaviyo Integration List For Subscribers configuration is not defined'
             );
         }
 
-        $bisVariantField = $this->systemConfigService->get('klavi_overd.config.bisVariantField', $salesChannelId) ?? 'product-number';
-        $orderIdentification = $this->systemConfigService->get('klavi_overd.config.orderIdentification', $salesChannelId) ?? 'order-id';
+        $bisVariantField =
+            $this->systemConfigService->get('klavi_overd.config.bisVariantField', $salesChannelId) ?? 'product-number';
+        $orderIdentification =
+            $this->systemConfigService->get('klavi_overd.config.orderIdentification', $salesChannelId) ?? 'order-id';
         $trackDeletedAccountOrders = $this->getBoolConfiguration('trackDeletedAccountOrders', $salesChannelId);
         $trackViewedProduct = $this->getBoolConfiguration('trackViewedProduct', $salesChannelId);
         $trackRecentlyViewedItems = $this->getBoolConfiguration('trackRecentlyViewedItems', $salesChannelId);
@@ -57,10 +55,14 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
         $trackPaidOrder = $this->getBoolConfiguration('trackPaidOrder', $salesChannelId);
         $trackShippedOrder = $this->getBoolConfiguration('trackShippedOrder', $salesChannelId);
         $dailySubscribersSynchronization = $this->getBoolConfiguration('dailySynchronization', $salesChannelId);
-        $dailySubscribersSyncTime = $this->systemConfigService->get('klavi_overd.config.dailySynchronizationTime', $salesChannelId) ?? '';
+        $dailySubscribersSyncTime =
+            $this->systemConfigService->get('klavi_overd.config.dailySynchronizationTime', $salesChannelId) ?? '';
 
         $trackSubscribedToBackInStock = $this->getBoolConfiguration('trackSubscribedToBackInStock', $salesChannelId);
-        $afterInteraction = $this->systemConfigService->getBool('klavi_overd.config.isInitializeKlaviyoAfterInteraction', $salesChannelId);
+        $afterInteraction = $this->systemConfigService->getBool(
+            'klavi_overd.config.isInitializeKlaviyoAfterInteraction',
+            $salesChannelId
+        );
 
         $mapping = $this->systemConfigService
                 ->get('klavi_overd.config.customerFieldMapping', $salesChannelId) ?? [];
@@ -75,7 +77,8 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
             $this->systemConfigService->getString('klavi_overd.config.popUpAdditionalClasses', $salesChannelId)
         );
 
-        $cookieConsent = $this->systemConfigService->get('klavi_overd.config.cookieConsent', $salesChannelId) ?? 'shopware';
+        $cookieConsent =
+            $this->systemConfigService->get('klavi_overd.config.cookieConsent', $salesChannelId) ?? 'shopware';
 
         if (is_array($mapping)) {
             foreach ($mapping as $mappingId => $mappingAssociation) {
@@ -91,7 +94,7 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
             $accountEnabled,
             trim($privateApiKey),
             trim($publicApiKey),
-            trim($listName),
+            trim($listId),
             $bisVariantField,
             $orderIdentification,
             $trackDeletedAccountOrders,

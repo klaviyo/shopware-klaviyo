@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator;
 
 use GuzzleHttp\Psr7\Request;
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\SubscribeCustomersToList\SubscribeToListRequest;
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\SubscribeCustomersToList\RealSubscribersToKlaviyoRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\SubscribeCustomersToList\SubscribeToListResponse;
 use Klaviyo\Integration\Klaviyo\Client\Exception\DeserializationException;
 use Klaviyo\Integration\Klaviyo\Client\Exception\TranslationException;
@@ -23,10 +23,8 @@ class RealtimeProfilesSubscribeToListApiTransferTranslator extends AbstractApiTr
         $body = $this->serialize($request);
 
         $url = \sprintf(
-            '%s/list/%s/subscribe?api_key=%s',
-            $this->configuration->getGlobalNewEndpointUrl(),
-            $request->getListId(),
-            $this->configuration->getApiKey()
+            '%s/profile-subscription-bulk-create-jobs',
+            $this->configuration->getGlobalNewEndpointUrl()
         );
 
         return $this->constructGuzzleRequestToKlaviyoAPI($url, $body);
@@ -39,6 +37,7 @@ class RealtimeProfilesSubscribeToListApiTransferTranslator extends AbstractApiTr
     public function translateResponse(ResponseInterface $response): object
     {
         $isJsonResponse = $this->isResponseJson($response);
+
         if ($isJsonResponse) {
             $content = $response->getBody()->getContents();
 
@@ -47,8 +46,7 @@ class RealtimeProfilesSubscribeToListApiTransferTranslator extends AbstractApiTr
 
         $this->assertStatusCode($response);
 
-        // Throw different exception in case if response is 200 but not a json
-        throw new TranslationException($response, 'Add real-time Profiles to list api response expected to be a JSON');
+        return new SubscribeToListResponse(true);
     }
 
     /**
@@ -57,7 +55,7 @@ class RealtimeProfilesSubscribeToListApiTransferTranslator extends AbstractApiTr
      */
     public function isSupport(object $request): bool
     {
-        return $request instanceof SubscribeToListRequest;
+        return $request instanceof RealSubscribersToKlaviyoRequest;
     }
 
     /**

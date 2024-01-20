@@ -102,7 +102,7 @@ class OrderEventRequestTranslator
         $state = $this->addressDataHelper->getAddressRegion($context, $orderAddressEntity);
         $country = $this->addressDataHelper->getAddressCountry($context, $orderAddressEntity);
 
-        $addressDTO = new Address(
+        return new Address(
             $orderAddressEntity->getFirstName(),
             $orderAddressEntity->getLastName(),
             $orderAddressEntity->getCompany(),
@@ -116,8 +116,6 @@ class OrderEventRequestTranslator
             $orderAddressEntity->getZipcode(),
             $orderAddressEntity->getPhoneNumber()
         );
-
-        return $addressDTO;
     }
 
     private function getOrderBillingAddress(Context $context, OrderEntity $orderEntity): OrderAddressEntity
@@ -131,7 +129,6 @@ class OrderEventRequestTranslator
 
     private function getOrderShippingAddress(Context $context, OrderEntity $orderEntity): ?OrderAddressEntity
     {
-        $shippingAddress = null;
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('orderId', $orderEntity->getId()));
         $criteria->addSorting(new FieldSorting('createdAt', 'DESC'));
@@ -142,11 +139,7 @@ class OrderEventRequestTranslator
             ->search($criteria, $context)
             ->first();
 
-        if ($delivery) {
-            $shippingAddress = $delivery->getShippingOrderAddress();
-        }
-
-        return $shippingAddress;
+        return $delivery?->getShippingOrderAddress();
     }
 
     private function getOrderAddressById(Context $context, string $id): OrderAddressEntity
@@ -182,7 +175,7 @@ class OrderEventRequestTranslator
             $shippingAddress = $billingAddress;
         }
 
-        $request = new CanceledOrderEventTrackingRequest(
+        return new CanceledOrderEventTrackingRequest(
             $orderEntity->getId(),
             $eventHappenedDateTime,
             $customerProperties,
@@ -194,8 +187,6 @@ class OrderEventRequestTranslator
             $shippingAddress,
             self::ORDER_CANCELLED_REASON
         );
-
-        return $request;
     }
 
     public function translateToPaidOrderEventRequest(
@@ -238,8 +229,7 @@ class OrderEventRequestTranslator
         OrderEntity $orderEntity,
         \DateTimeInterface $eventHappenedDateTime
     ): RefundedOrderEventTrackingRequest {
-        $customerProperties = $this->orderCustomerPropertiesTranslator
-            ->translateOrder($context, $orderEntity);
+        $customerProperties = $this->orderCustomerPropertiesTranslator->translateOrder($context, $orderEntity);
 
         $discounts = $this->translateToDiscountInfoCollection($context, $orderEntity);
         $products = $this->translateToOrderInfoCollection($context, $orderEntity);
@@ -254,7 +244,7 @@ class OrderEventRequestTranslator
             $shippingAddress = $billingAddress;
         }
 
-        $request = new RefundedOrderEventTrackingRequest(
+        return new RefundedOrderEventTrackingRequest(
             $orderEntity->getId(),
             $eventHappenedDateTime,
             $customerProperties,
@@ -266,8 +256,6 @@ class OrderEventRequestTranslator
             $shippingAddress,
             self::ORDER_REFUND_REASON
         );
-
-        return $request;
     }
 
     public function translateToFulfilledOrderEventRequest(
@@ -307,7 +295,7 @@ class OrderEventRequestTranslator
         string $className,
         OrderEntity $orderEntity,
         \DateTimeInterface $eventHappenedDateTime
-    ) {
+    ): AbstractOrderEventTrackingRequest {
         if (!ReflectionHelper::isClassInstanceOf($className, AbstractOrderEventTrackingRequest::class)) {
             throw new TranslationException(
                 \sprintf(

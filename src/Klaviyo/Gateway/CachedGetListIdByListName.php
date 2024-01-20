@@ -1,9 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Klaviyo\Gateway;
 
 use Psr\Cache\CacheItemPoolInterface;
-use Shopware\Core\System\SalesChannel\SalesChannelEntity;
+use Psr\Cache\InvalidArgumentException;
 
 class CachedGetListIdByListName implements GetListIdByListNameInterface
 {
@@ -20,16 +22,19 @@ class CachedGetListIdByListName implements GetListIdByListNameInterface
         $this->getListIdByListName = $getListIdByListName;
     }
 
-    public function execute(SalesChannelEntity $salesChannelEntity, string $listName): string
+    /**
+     * @throws InvalidArgumentException
+     */
+    public function execute(string $salesChannelEntityId, string $listName): string
     {
-        $cacheKey = self::CACHE_PREFIX . $salesChannelEntity->getId();
+        $cacheKey = self::CACHE_PREFIX . $salesChannelEntityId;
         $cachedItem = $this->cache->getItem($cacheKey);
 
         if ($cachedItem->isHit()) {
-            return (string)$cachedItem->get();
+            return (string) $cachedItem->get();
         }
 
-        $klaviyoList = $this->getListIdByListName->execute($salesChannelEntity, $listName);
+        $klaviyoList = $this->getListIdByListName->execute($salesChannelEntityId, $listName);
         $cachedItem->expiresAfter(3600);
         $this->cache->save($cachedItem->set($klaviyoList));
 

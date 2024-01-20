@@ -41,7 +41,7 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
         $this->orderDeliveryRepository = $orderDeliveryRepository;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             'state_machine.order.state_changed' => 'onStateChange',
@@ -150,7 +150,7 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
     }
 
 
-    private function trackEvent(Context $context, OrderEntity $order, string $state)
+    private function trackEvent(Context $context, OrderEntity $order, string $state): void
     {
         $eventsBag = new OrderTrackingEventsBag();
         $orderPlacedEvent = new OrderEvent($order);

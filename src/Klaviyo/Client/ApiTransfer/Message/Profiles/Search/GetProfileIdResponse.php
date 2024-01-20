@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Search;
 
@@ -10,8 +12,8 @@ class GetProfileIdResponse
 
     public function __construct(
         bool $isSuccess,
-        ?string $profileId = null,
-        ?string $errorDetail = null
+        string $profileId = null,
+        string $errorDetail = null
     ) {
         $this->isSuccess = $isSuccess;
         $this->profileId = $profileId;
