@@ -4,6 +4,7 @@ namespace Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer;
 
 use Klaviyo\Integration\Klaviyo\Client\Configuration\ConfigurationInterface;
 use Klaviyo\Integration\Klaviyo\Client\Exception\SerializationException;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
@@ -27,6 +28,10 @@ abstract class AbstractNormalizer implements NormalizerInterface, NormalizerAwar
         return $this->configuration->getPublicApiKey();
     }
 
+    /**
+     * @throws ExceptionInterface
+     * @throws SerializationException
+     */
     protected function normalizeObject(?object $object): ?array
     {
         if (!$object) {
@@ -42,7 +47,7 @@ abstract class AbstractNormalizer implements NormalizerInterface, NormalizerAwar
         return $this->normalizerVirtualProxy->normalize($object);
     }
 
-    public function setNormalizer(NormalizerInterface $normalizer)
+    public function setNormalizer(NormalizerInterface $normalizer): void
     {
         $this->normalizerVirtualProxy = $normalizer;
     }

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Model\Channel;
 
@@ -39,7 +41,7 @@ class GetValidChannels
             }
         }
 
-        return $channels->filter(function(SalesChannelEntity $channel) use ($validChannelIds) {
+        return $channels->filter(function (SalesChannelEntity $channel) use ($validChannelIds) {
             return isset($validChannelIds[$channel->getId()]);
         })->getEntities();
     }

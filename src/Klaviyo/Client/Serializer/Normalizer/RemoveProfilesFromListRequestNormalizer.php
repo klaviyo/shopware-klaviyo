@@ -14,20 +14,41 @@ class RemoveProfilesFromListRequestNormalizer extends AbstractNormalizer
      *
      * @return array[]
      */
-    public function normalize($object, string $format = null, array $context = [])
+    public function normalize($object, string $format = null, array $context = []): array
     {
-        $emails = [];
+        $data = [
+            'type' => 'profile-subscription-bulk-delete-job',
+            'attributes' => [
+                'profiles' => [
+                    'data' => []
+                ]
+            ],
+            'relationships' => [
+                'list' => [
+                    'data' => [
+                        'type' => 'list',
+                        'id' => $object->getListId()
+                    ]
+                ]
+            ]
+        ];
+
         /** @var ProfileContactInfo $profile */
         foreach ($object->getProfiles() as $profile) {
-            $emails[] = $profile->getEmail();
+            $data['attributes']['profiles']['data'][] = [
+                'type' => 'profile',
+                'attributes' => [
+                    'email' => $profile->getEmail()
+                ]
+            ];
         }
 
         return [
-            'emails' => $emails
+            'data' => $data
         ];
     }
 
-    public function supportsNormalization($data, string $format = null)
+    public function supportsNormalization($data, string $format = null): bool
     {
         return $data instanceof RemoveProfilesFromListRequest;
     }

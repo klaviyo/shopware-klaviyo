@@ -16,10 +16,8 @@ class RemoveProfilesFromListApiTransferTranslator extends AbstractApiTransferMes
         $body = $this->serialize($request);
 
         $url = \sprintf(
-            '%s/list/%s/members?api_key=%s',
-            $this->configuration->getGlobalNewEndpointUrl(),
-            $request->getListId(),
-            $this->configuration->getApiKey()
+            '%s/profile-subscription-bulk-delete-jobs',
+            $this->configuration->getGlobalNewEndpointUrl()
         );
 
         return $this->constructGuzzleRequestToKlaviyoAPI($url, $body);
@@ -28,11 +26,12 @@ class RemoveProfilesFromListApiTransferTranslator extends AbstractApiTransferMes
     private function constructGuzzleRequestToKlaviyoAPI(string $endpoint, $body): Request
     {
         return new Request(
-            'DELETE',
+            'POST',
             $endpoint,
             [
                 'Authorization' => $this->configuration->getApiKey(),
                 'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
                 'revision' => ClientConfigurationFactory::API_REVISION_DATE,
             ],
             $body
@@ -55,7 +54,7 @@ class RemoveProfilesFromListApiTransferTranslator extends AbstractApiTransferMes
      * @param ResponseInterface $response
      * @throws TranslationException
      */
-    private function assertStatusCode(ResponseInterface $response)
+    private function assertStatusCode(ResponseInterface $response): void
     {
         if ($response->getStatusCode() < 200 || $response->getStatusCode() >= 300) {
             throw new TranslationException($response, sprintf('Invalid response status code %s', $response->getStatusCode()));

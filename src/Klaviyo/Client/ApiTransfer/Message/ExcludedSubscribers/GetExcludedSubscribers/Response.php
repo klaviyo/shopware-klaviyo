@@ -1,21 +1,20 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribers;
 
 class Response
 {
     private array $emails;
-    private int $page;
-    private int $totalEmailsCount;
+    private ?string $nextPageUrl;
 
     public function __construct(
         array $emails,
-        int $page,
-        int $totalEmailsCount
+        string $nextPageUrl = null
     ) {
         $this->emails = $emails;
-        $this->page = $page;
-        $this->totalEmailsCount = $totalEmailsCount;
+        $this->nextPageUrl = $nextPageUrl;
     }
 
     public function getEmails(): array
@@ -23,13 +22,8 @@ class Response
         return $this->emails;
     }
 
-    public function getPage(): int
+    public function getNextPageUrl(): ?string
     {
-        return $this->page;
-    }
-
-    public function getTotalEmailsCount(): int
-    {
-        return $this->totalEmailsCount;
+        return $this->nextPageUrl;
     }
 }
