@@ -9,7 +9,7 @@ class Configuration implements ConfigurationInterface
     private bool $accountEnabled;
     private string $privateApiKey;
     private string $publicApiKey;
-    private string $subscribersListName;
+    private string $subscribersListId;
     private string $orderIdentification;
     private string $bisVariantField;
     private bool $trackDeletedAccountOrders;
@@ -36,7 +36,7 @@ class Configuration implements ConfigurationInterface
         bool $accountEnabled,
         string $privateApiKey,
         string $publicApiKey,
-        string $subscribersListName,
+        string $subscribersListId,
         string $bisVariantField,
         string $orderIdentification,
         bool $trackDeletedAccountOrders,
@@ -62,7 +62,7 @@ class Configuration implements ConfigurationInterface
         $this->accountEnabled = $accountEnabled;
         $this->privateApiKey = $privateApiKey;
         $this->publicApiKey = $publicApiKey;
-        $this->subscribersListName = $subscribersListName;
+        $this->subscribersListId = $subscribersListId;
         $this->bisVariantField = $bisVariantField;
         $this->orderIdentification = $orderIdentification;
         $this->trackDeletedAccountOrders = $trackDeletedAccountOrders;
@@ -101,9 +101,9 @@ class Configuration implements ConfigurationInterface
         return $this->publicApiKey;
     }
 
-    public function getSubscribersListName(): string
+    public function getSubscribersListId(): string
     {
-        return $this->subscribersListName;
+        return $this->subscribersListId;
     }
 
     public function isTrackDeletedAccountOrders(): bool

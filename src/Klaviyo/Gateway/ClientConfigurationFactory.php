@@ -13,8 +13,6 @@ class ClientConfigurationFactory
     public const API_REVISION_DATE = '2023-12-15';
     private const TRACKING_ENDPOINT_URL = 'https://a.klaviyo.com/api/events';
     private const IDENTIFY_ENDPOINT_URL = 'https://a.klaviyo.com/api/profiles';
-    //private const LIST_AND_SEGMENTS_API_ROOT_ENDPOINT_URL = 'https://a.klaviyo.com/api/v2';
-    //private const GLOBAL_EXCLUSIONS_ENDPOINT_URL = 'https://a.klaviyo.com/api/v1';
     private const GLOBAL_NEW_ENDPOINT_URL = 'https://a.klaviyo.com/api';
     private const REQUEST_TIMEOUT = 30;
     private const CONNECTION_TIMEOUT = 15;
@@ -29,11 +27,20 @@ class ClientConfigurationFactory
     public function create(string $channelId): ConfigurationInterface
     {
         $pluginConfiguration = $this->pluginConfigurationRegistry->getConfiguration($channelId);
-        return $this->createByKeys($pluginConfiguration->getPrivateApiKey(), $pluginConfiguration->getPublicApiKey());
+        $subscribersListId = $pluginConfiguration->getSubscribersListId();
+
+        return $this->createByKeys(
+            $pluginConfiguration->getPrivateApiKey(),
+            $pluginConfiguration->getPublicApiKey(),
+            $subscribersListId
+        );
     }
 
-    public function createByKeys(string $privateKey, string $publicKey): ConfigurationInterface
-    {
+    public function createByKeys(
+        string $privateKey,
+        string $publicKey,
+        string $subscribersListId = null
+    ): ConfigurationInterface {
         return new Configuration(
             self::AUTHORIZATION_PREKEY . ' ' . $privateKey,
             $publicKey,
@@ -41,7 +48,8 @@ class ClientConfigurationFactory
             self::IDENTIFY_ENDPOINT_URL,
             self::REQUEST_TIMEOUT,
             self::CONNECTION_TIMEOUT,
-            self::GLOBAL_NEW_ENDPOINT_URL
+            self::GLOBAL_NEW_ENDPOINT_URL,
+            $subscribersListId
         );
     }
 }

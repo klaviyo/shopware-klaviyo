@@ -97,7 +97,7 @@ class ValidationController extends AbstractController
     {
         foreach ($response->getLists()->getElements() as $e) {
             $this->profileLists[] = [
-                'value' => $e->getName(),
+                'value' => $e->getId(),
                 'label' => $e->getName(),
             ];
         }

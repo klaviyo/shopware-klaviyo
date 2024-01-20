@@ -6,6 +6,8 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEv
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\DTO\DiscountInfo;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\DTO\OrderProductItemInfo;
 use Klaviyo\Integration\Klaviyo\Client\Configuration\ConfigurationInterface;
+use Klaviyo\Integration\Klaviyo\Client\Exception\SerializationException;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 
 class ConfigurableOrderEventTrackingRequestNormalizer extends AbstractNormalizer
 {
@@ -26,9 +28,10 @@ class ConfigurableOrderEventTrackingRequestNormalizer extends AbstractNormalizer
      * @param array $context
      *
      * @return array
-     * @throws \Klaviyo\Integration\Klaviyo\Client\Exception\SerializationException
+     * @throws SerializationException
+     * @throws ExceptionInterface
      */
-    public function normalize($object, string $format = null, array $context = [])
+    public function normalize($object, string $format = null, array $context = []): array
     {
         $customerProperties = $this->normalizeObject($object->getCustomerProperties());
 
@@ -36,6 +39,7 @@ class ConfigurableOrderEventTrackingRequestNormalizer extends AbstractNormalizer
         $itemNames = [];
         $brands = [];
         $normalizedItems = [];
+
         /** @var OrderProductItemInfo $product */
         foreach ($object->getProducts() as $product) {
             $categories = array_merge($categories, $product->getCategories());
@@ -57,6 +61,7 @@ class ConfigurableOrderEventTrackingRequestNormalizer extends AbstractNormalizer
 
         $discountCodes = [];
         $discountTotal = 0;
+
         /** @var DiscountInfo $discount */
         foreach ($object->getDiscounts() as $discount) {
             $discountCodes[] = $discount->getCode();
@@ -67,8 +72,6 @@ class ConfigurableOrderEventTrackingRequestNormalizer extends AbstractNormalizer
         $shippingAddress = $this->normalizeObject($object->getShippingAddress());
 
         $properties = [
-            '$value' => $object->getOrderTotal(),
-            '$event_id' => $object->getEventId(),
             'OrderId' => $object->getOrderId(),
             'Categories' => array_unique($categories),
             'ItemNames' => $itemNames,
@@ -80,16 +83,38 @@ class ConfigurableOrderEventTrackingRequestNormalizer extends AbstractNormalizer
             'ShippingAddress' => $shippingAddress,
         ];
 
+        if (property_exists($object, 'reason')) {
+            $properties['Reason'] = $object->getReason();
+        }
+
         return [
-            'token' => $this->getToken(),
-            'event' => $this->eventName,
-            'customer_properties' => $customerProperties,
-            'properties' => $properties,
-            'time' => $object->getTime()->getTimestamp()
+            'data' => [
+                'type' => 'event',
+                'attributes' => [
+                    'time' => $object->getTime()->format('Y-m-d\TH:i:s'),
+                    'value' => $object->getOrderTotal(),
+                    'unique_id' => $object->getEventId() . '_' . $object->getTime()->getTimestamp(),
+                    'properties' => $properties,
+                    'metric' => [
+                        'data' => [
+                            'type' => 'metric',
+                            'attributes' => [
+                                'name' => $this->eventName
+                            ]
+                        ]
+                    ],
+                    'profile' => [
+                        'data' => [
+                            'type' => 'profile',
+                            'attributes' => $customerProperties
+                        ]
+                    ]
+                ]
+            ]
         ];
     }
 
-    public function supportsNormalization($data, string $format = null)
+    public function supportsNormalization($data, string $format = null): bool
     {
         return $data instanceof $this->className;
     }

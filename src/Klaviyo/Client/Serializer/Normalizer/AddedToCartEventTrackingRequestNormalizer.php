@@ -15,7 +15,7 @@ class AddedToCartEventTrackingRequestNormalizer extends AbstractNormalizer
      * @return array
      * @throws \Klaviyo\Integration\Klaviyo\Client\Exception\SerializationException
      */
-    public function normalize($object, string $format = null, array $context = [])
+    public function normalize($object, string $format = null, array $context = []): array
     {
         $customerProperties = $this->normalizeObject($object->getCustomerProperties());
 
@@ -40,30 +40,48 @@ class AddedToCartEventTrackingRequestNormalizer extends AbstractNormalizer
         }
 
         $properties = [
-            '$value' => $object->getCartTotal(),
-            'AddedItemProductName' => $object->getAddedItemProductName(),
-            'AddedItemProductID' => $object->getAddedItemProductId(),
-            'AddedItemSKU' => $object->getAddedItemProductSKU(),
-            'AddedItemCategories' => $object->getAddedItemCategoryNames(),
-            'AddedItemImageURL' => $object->getAddedItemImageUrl(),
-            'AddedItemURL' => $object->getAddedItemUrl(),
-            'AddedItemPrice' => $object->getAddedItemPrice(),
-            'AddedItemQuantity' => $object->getAddedItemQty(),
+            'ProductName' => $object->getAddedItemProductName(),
+            'ProductID' => $object->getAddedItemProductId(),
+            'SKU' => $object->getAddedItemProductSKU(),
+            'Categories' => $object->getAddedItemCategoryNames(),
+            'ImageURL' => $object->getAddedItemImageUrl(),
+            'URL' => $object->getAddedItemUrl(),
+            'Price' => $object->getAddedItemPrice(),
+            'Quantity' => $object->getAddedItemQty(),
             'ItemNames' => $itemNames,
             'CheckoutURL' => $object->getCheckoutURL(),
             'Items' => $productItems
         ];
 
         return [
-            'token' => $this->getToken(),
-            'event' => 'Added to Cart',
-            'customer_properties' => $customerProperties,
-            'properties' => $properties,
-            'time' => $object->getTime()->getTimestamp()
+            'data' => [
+                'type' => 'event',
+                'attributes' => [
+                    'time' => $object->getTime()->format('Y-m-d\TH:i:s'),
+                    'value' => $object->getCartTotal(),
+                    'unique_id' => $object->getEventId() . '_' . $object->getTime()->getTimestamp(),
+                    'properties' => $properties,
+                    'metric' => [
+                        'data' => [
+                            'type' => 'metric',
+                            'attributes' => [
+                                'name' => 'Added to Cart'
+                            ]
+                        ]
+                    ],
+                    'profile' => [
+                        'data' => [
+                            'type' => 'profile',
+                            'id' => '',
+                            'attributes' => $customerProperties
+                        ]
+                    ]
+                ]
+            ]
         ];
     }
 
-    public function supportsNormalization($data, string $format = null)
+    public function supportsNormalization($data, string $format = null): bool
     {
         return $data instanceof AddedToCartEventTrackingRequest;
     }

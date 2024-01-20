@@ -112,8 +112,8 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
             );
             $extensionData['backInStockData'] = [
                 'listId' => $this->getListIdByListName->execute(
-                    $event->getSalesChannelContext()->getSalesChannel(),
-                    $configuration->getSubscribersListName()
+                    $event->getSalesChannelContext()->getSalesChannel()->getId(),
+                    $configuration->getSubscribersListId()
                 ),
             ];
         } catch (\Throwable $throwable) {

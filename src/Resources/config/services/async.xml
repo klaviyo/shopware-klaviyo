@@ -81,7 +81,6 @@
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway"/>
             <argument type="service" id="Klaviyo\Integration\Configuration\ConfigurationRegistry"/>
             <argument type="service" id="newsletter_recipient.repository"/>
-            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\CachedGetListIdByListName"/>
             <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannels"/>
             <tag name="od.job_handler" code="od-klaviyo-subscriber-sync-handler"/>
         </service>

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\EventListener;
 
@@ -39,7 +41,7 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
         $this->orderDeliveryRepository = $orderDeliveryRepository;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             'state_machine.order.state_changed' => 'onStateChange',
@@ -59,6 +61,7 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
         }
 
         $configuration = $this->getValidChannelConfig->execute($order->getSalesChannelId());
+
         if ($configuration === null) {
             return;
         }
@@ -80,7 +83,7 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
         }
     }
 
-    public function onTransactionStateChanged(StateMachineStateChangeEvent $event)
+    public function onTransactionStateChanged(StateMachineStateChangeEvent $event): void
     {
         $orderTransactionCriteria = new Criteria([$event->getTransition()->getEntityId()]);
         $orderTransactionCriteria->addAssociation('order');
@@ -114,7 +117,7 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
         }
     }
 
-    public function onDeliveryStateChanged(StateMachineStateChangeEvent $event)
+    public function onDeliveryStateChanged(StateMachineStateChangeEvent $event): void
     {
         $orderDeliveryCriteria = new Criteria([$event->getTransition()->getEntityId()]);
         $orderDeliveryCriteria->addAssociation('order');
@@ -143,7 +146,7 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
     }
 
 
-    private function trackEvent(Context $context, OrderEntity $order, string $state)
+    private function trackEvent(Context $context, OrderEntity $order, string $state): void
     {
         $eventsBag = new OrderTrackingEventsBag();
         $orderPlacedEvent = new OrderEvent($order);

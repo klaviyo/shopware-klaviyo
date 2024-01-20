@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\EventListener;
 
@@ -25,7 +27,7 @@ class SubscriptionEventListener implements EventSubscriberInterface
         $this->getValidChannelConfig = $getValidChannelConfig;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             Event\NewsletterConfirmEvent::class => 'onUserSubscription',
@@ -33,7 +35,7 @@ class SubscriptionEventListener implements EventSubscriberInterface
         ];
     }
 
-    public function onUserSubscription(Event\NewsletterConfirmEvent $event)
+    public function onUserSubscription(Event\NewsletterConfirmEvent $event): void
     {
         // TODO: add feature to disable newsletter opt_(in/out) tracking
         if ($this->getValidChannelConfig->execute($event->getSalesChannelId()) === null) {
@@ -53,7 +55,7 @@ class SubscriptionEventListener implements EventSubscriberInterface
         }
     }
 
-    public function onUserUnsubscription(Event\NewsletterUnsubscribeEvent $event)
+    public function onUserUnsubscription(Event\NewsletterUnsubscribeEvent $event): void
     {
         if ($this->getValidChannelConfig->execute($event->getSalesChannelId()) === null) {
             return;
@@ -70,7 +72,7 @@ class SubscriptionEventListener implements EventSubscriberInterface
         }
     }
 
-    private function writeRecipientEvent(Context $context, NewsletterRecipientEntity $recipient, string $type)
+    private function writeRecipientEvent(Context $context, NewsletterRecipientEntity $recipient, string $type): void
     {
         $now = new \DateTime('now', new \DateTimeZone('UTC'));
         $this->eventsRepository->upsert([

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\System\Tracking;
 
@@ -35,7 +37,11 @@ class ScheduledEventsTracker implements EventsTrackerInterface
 
     public function trackOrderedProducts(Context $context, OrderTrackingEventsBag $trackingBag): OrderTrackingResult
     {
-        return $this->trackOrderEventsForBackgroundProcessing($context, $trackingBag, self::ORDER_EVENT_ORDERED_PRODUCT);
+        return $this->trackOrderEventsForBackgroundProcessing(
+            $context,
+            $trackingBag,
+            self::ORDER_EVENT_ORDERED_PRODUCT
+        );
     }
 
     public function trackFulfilledOrders(Context $context, OrderTrackingEventsBag $trackingBag): OrderTrackingResult
@@ -58,12 +64,12 @@ class ScheduledEventsTracker implements EventsTrackerInterface
         return $this->trackOrderEventsForBackgroundProcessing($context, $trackingBag, self::ORDER_EVENT_SHIPPED);
     }
 
-    public function trackCustomerWritten(Context $context, ProfileEventsBag $trackingBag)
+    public function trackCustomerWritten(Context $context, ProfileEventsBag $trackingBag): OrderTrackingResult
     {
         return $this->trackCustomerEventsForBackgroundProcessing($context, $trackingBag, self::CUSTOMER_WRITTEN_EVENT);
     }
 
-    public function trackAddedToCart(Context $context, CartEventRequestBag $requestBag)
+    public function trackAddedToCart(Context $context, CartEventRequestBag $requestBag): void
     {
         $scheduledEventRequests = [];
 

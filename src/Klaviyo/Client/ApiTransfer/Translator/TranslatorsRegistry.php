@@ -7,7 +7,7 @@ class TranslatorsRegistry
     /** @var array|ApiTransferMessageTranslatorInterface[] */
     private array $translators = [];
 
-    public function addTranslator(ApiTransferMessageTranslatorInterface $translator)
+    public function addTranslator(ApiTransferMessageTranslatorInterface $translator): void
     {
         $this->translators[] = $translator;
     }

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Model\UseCase\Operation;
 
@@ -7,7 +9,6 @@ use Klaviyo\Integration\Model\Channel\GetValidChannels;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
 use Od\Scheduler\Model\Job\{GeneratingHandlerInterface, JobHandlerInterface, JobResult, Message};
 use Shopware\Core\Content\Newsletter\SalesChannel\NewsletterSubscribeRoute;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -36,7 +37,6 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
 
     /**
      * @param FullSubscriberSyncMessage $message
-     * @return JobResult
      *
      * @throws \Exception
      */
@@ -44,7 +44,9 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
     {
         $subOperationCount = 0;
         $result = new JobResult();
-        $channelIds = $this->getValidChannels->execute($message->getContext())->map(fn(SalesChannelEntity $channel) => $channel->getId());
+        $channelIds = $this->getValidChannels->execute($message->getContext())->map(
+            fn (SalesChannelEntity $channel) => $channel->getId()
+        );
         $channelIds = \array_values($channelIds);
 
         if (empty($channelIds)) {
@@ -74,21 +76,31 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
         );
 
         $excludedSubscriberIds = [];
+
         foreach ($schedulingResult->all() as $channelId => $emails) {
             $excludedCriteria = new Criteria();
             $excludedCriteria->addFilter(new EqualsFilter('salesChannelId', $channelId));
             $excludedCriteria->addFilter(new EqualsAnyFilter('email', $emails));
             $excludedSubscriberIds = \array_merge(
                 $excludedSubscriberIds,
-                \array_values($this->subscriberRepository->searchIds($excludedCriteria, $message->getContext())->getIds())
+                \array_values(
+                    $this->subscriberRepository->searchIds($excludedCriteria, $message->getContext())->getIds()
+                )
             );
         }
 
         $iterator = new RepositoryIterator($this->subscriberRepository, $message->getContext(), $criteria);
+
         while (($subscriberIds = $iterator->fetchIds()) !== null) {
             $subscriberIds = \array_values(\array_diff($subscriberIds, $excludedSubscriberIds));
-            $subOperationCount++;
-            $this->scheduleBackgroundJob->scheduleSubscriberSyncJob($subscriberIds, $message->getJobId(), $message->getContext());
+
+            ++$subOperationCount;
+
+            $this->scheduleBackgroundJob->scheduleSubscriberSyncJob(
+                $subscriberIds,
+                $message->getJobId(),
+                $message->getContext()
+            );
         }
 
         $result->addMessage(new Message\InfoMessage(\sprintf('Total %s jobs has been scheduled.', $subOperationCount)));

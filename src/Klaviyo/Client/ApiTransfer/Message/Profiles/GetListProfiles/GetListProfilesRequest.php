@@ -5,12 +5,12 @@ namespace Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetLis
 class GetListProfilesRequest
 {
     private string $listId;
-    private ?string $cursorMarker;
+    private ?string $nextPageUrl;
 
-    public function __construct(string $listId, ?string $cursorMarker)
+    public function __construct(string $listId, ?string $nextPageUrl)
     {
         $this->listId = $listId;
-        $this->cursorMarker = $cursorMarker;
+        $this->nextPageUrl = $nextPageUrl;
     }
 
     public function getListId(): string
@@ -18,8 +18,15 @@ class GetListProfilesRequest
         return $this->listId;
     }
 
-    public function getCursorMarker(): ?string
+    public function getNextPageUrl(): ?string
     {
-        return $this->cursorMarker;
+        return $this->nextPageUrl;
+    }
+
+    public function setNextPageUrl(string $nextPageUrl): GetListProfilesRequest
+    {
+        $this->nextPageUrl = $nextPageUrl;
+
+        return $this;
     }
 }

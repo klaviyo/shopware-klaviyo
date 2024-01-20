@@ -9,26 +9,31 @@ class AddProfilesToListRequestsNormalizer extends AbstractNormalizer
 {
     /**
      * @param AddProfilesToListRequest $object
-     * @param string|null $format
-     * @param array $context
-     *
-     * @return array
      */
-    public function normalize($object, string $format = null, array $context = [])
+    public function normalize($object, string $format = null, array $context = []): array
     {
         $profiles = [];
+        $data = [
+            'data' => [
+                'type' => 'profile-bulk-import-job',
+                'relationships' => ['lists' => ['data' => [['type' => 'list', 'id' => $object->getListId()]]]],
+            ],
+        ];
 
         /** @var ProfileContactInfo $profile */
         foreach ($object->getProfiles() as $profile) {
-            $profiles[] = ['email' => $profile->getEmail()];
+            $profiles[] = [
+                'type' => 'profile',
+                'attributes' => ['email' => $profile->getEmail()],
+            ];
         }
 
-        return [
-            'profiles' => $profiles
-        ];
+        $data['data']['attributes']['profiles']['data'] = $profiles;
+
+        return $data;
     }
 
-    public function supportsNormalization($data, string $format = null)
+    public function supportsNormalization($data, string $format = null): bool
     {
         return $data instanceof AddProfilesToListRequest;
     }
