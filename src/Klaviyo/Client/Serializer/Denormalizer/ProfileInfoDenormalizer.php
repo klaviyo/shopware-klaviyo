@@ -7,14 +7,20 @@ use Klaviyo\Integration\Klaviyo\Client\Exception\DeserializationException;
 
 class ProfileInfoDenormalizer extends AbstractDenormalizer
 {
-    public function denormalize($data, string $type, string $format = null, array $context = [])
+    /**
+     * @throws DeserializationException
+     */
+    public function denormalize($data, string $type, string $format = null, array $context = []): ProfileInfo
     {
         $this->assertResultRow($data);
 
         return new ProfileInfo($data['id'], $data['email']);
     }
 
-    private function assertResultRow($resultRow)
+    /**
+     * @throws DeserializationException
+     */
+    private function assertResultRow($resultRow): void
     {
         if (!is_array($resultRow)) {
             throw new DeserializationException('Decoded profile info value expected to be an array');
@@ -29,8 +35,8 @@ class ProfileInfoDenormalizer extends AbstractDenormalizer
         }
     }
 
-    public function supportsDenormalization($data, string $type, string $format = null)
+    public function supportsDenormalization($data, string $type, string $format = null): bool
     {
-        return $type === ProfileInfo::class;
+        return ProfileInfo::class === $type;
     }
 }

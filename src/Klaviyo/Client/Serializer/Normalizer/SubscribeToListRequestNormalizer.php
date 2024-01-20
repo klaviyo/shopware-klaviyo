@@ -15,17 +15,20 @@ class SubscribeToListRequestNormalizer extends AbstractNormalizer
      * @param array $context
      * @return array[]
      */
-    public function normalize($object, string $format = null, array $context = [])
+    public function normalize($object, string $format = null, array $context = []): array
     {
         $profiles = [];
 
         /** @var ProfileContactInfo $profile */
         foreach ($object->getProfiles() as $profile) {
-            $profiles[] = ['email' => $profile->getEmail()];
+            $profiles[] = [
+                'type' => 'profile',
+                'email' => $profile->getEmail(),
+            ];
         }
 
         return [
-            'profiles' => $profiles,
+            'data' => $profiles,
         ];
     }
 

@@ -37,7 +37,6 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
 
     /**
      * @param FullSubscriberSyncMessage $message
-     * @return JobResult
      *
      * @throws \Exception
      */
@@ -45,8 +44,8 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
     {
         $subOperationCount = 0;
         $result = new JobResult();
-        $channelIds = $this->getValidChannels->execute(
-            $message->getContext())->map(fn(SalesChannelEntity $channel) => $channel->getId()
+        $channelIds = $this->getValidChannels->execute($message->getContext())->map(
+            fn (SalesChannelEntity $channel) => $channel->getId()
         );
         $channelIds = \array_values($channelIds);
 
@@ -77,6 +76,7 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
         );
 
         $excludedSubscriberIds = [];
+
         foreach ($schedulingResult->all() as $channelId => $emails) {
             $excludedCriteria = new Criteria();
             $excludedCriteria->addFilter(new EqualsFilter('salesChannelId', $channelId));
@@ -93,7 +93,9 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
 
         while (($subscriberIds = $iterator->fetchIds()) !== null) {
             $subscriberIds = \array_values(\array_diff($subscriberIds, $excludedSubscriberIds));
-            $subOperationCount++;
+
+            ++$subOperationCount;
+
             $this->scheduleBackgroundJob->scheduleSubscriberSyncJob(
                 $subscriberIds,
                 $message->getJobId(),

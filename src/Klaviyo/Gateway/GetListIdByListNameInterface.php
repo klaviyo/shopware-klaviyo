@@ -1,10 +1,10 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Klaviyo\Gateway;
 
-use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-
 interface GetListIdByListNameInterface
 {
-    public function execute(SalesChannelEntity $salesChannelEntity, string $listName): string;
+    public function execute(string $salesChannelEntityId, string $listName): string;
 }

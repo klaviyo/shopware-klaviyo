@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Klaviyo\Integration\Klaviyo\Gateway;
 
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribers;
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribers\Response;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\AddMembersToList\AddProfilesToListResponse;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Common\ProfileContactInfoCollection;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfilesFromList\RemoveProfilesFromListRequest;
@@ -20,6 +21,7 @@ use Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\IdentifyProfileRequestTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\OrderEventRequestTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\ProductEventRequestTranslator;
+use Klaviyo\Integration\Klaviyo\Gateway\Translator\RealSubscribersToKlaviyoRequestsTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\SubscribersToKlaviyoRequestsTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\UpdateProfileRequestTranslator;
 use Klaviyo\Integration\System\Tracking\Event\Order\OrderEventInterface;
@@ -30,7 +32,6 @@ use Shopware\Core\Content\Newsletter\Aggregate\NewsletterRecipient\NewsletterRec
 use Shopware\Core\Content\Newsletter\Aggregate\NewsletterRecipient\NewsletterRecipientEntity as Recipient;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-use Klaviyo\Integration\Klaviyo\Gateway\Translator\RealSubscribersToKlaviyoRequestsTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Exception\TranslationException;
 
 class KlaviyoGateway
@@ -282,6 +283,7 @@ class KlaviyoGateway
             }
         }
         $clientResult = $this->trackEvents($channelId, $requests);
+
         return $result->mergeWith(
             $this->handleClientTrackingResult($clientResult, $requestOrderIdMap, 'ShippedOrder')
         );
@@ -386,22 +388,30 @@ class KlaviyoGateway
         string $channelId,
         CustomerCollection $customers
     ): ClientResult {
-        $updateRequests = $createRequests = [];
+        $updateRequests = $createRequests = $updatedCustomerIds = [];
         $profileIdSearchResult = $this->searchProfileIds($context, $channelId, $customers);
 
         /* First of all - update existing customer's sensitive fields - id, email, and phone_number */
         foreach ($profileIdSearchResult->getMapping() as $personId => $customerId) {
             $customer = $customers->get($customerId);
+            $updatedCustomerIds[] = $customerId;
             $updateRequests[] = $this->updateProfileRequestTranslator->translateToProfileRequest(
                 $context,
                 $customer,
                 $personId
             );
         }
-        $this->trackEvents($channelId, $updateRequests);
+
+        if (!empty($updateRequests)) {
+            $this->trackEvents($channelId, $updateRequests);
+        }
 
         /* Update/create customer profiles */
         foreach ($customers as $customer) {
+            if (in_array($customer->getId(), $updatedCustomerIds)) {
+                continue;
+            }
+
             $createRequests[] = $this->identifyProfileRequestTranslator->translateToProfileRequest($context, $customer);
         }
 
@@ -429,12 +439,14 @@ class KlaviyoGateway
 
     /**
      * @param SalesChannelEntity $salesChannelEntity
+     * @param Context $context
      * @param NewsletterRecipientCollection $recipientCollection
      * @param string $profilesListId
      * @return array
      */
     public function addToKlaviyoProfilesList(
         SalesChannelEntity $salesChannelEntity,
+        Context $context,
         NewsletterRecipientCollection $recipientCollection,
         string $profilesListId
     ): array {
@@ -464,7 +476,7 @@ class KlaviyoGateway
                 if ($newCollection->count()) {
                     $errors = array_merge(
                         $errors,
-                        $this->addToKlaviyoProfilesList($salesChannelEntity, $newCollection, $profilesListId)
+                        $this->addToKlaviyoProfilesList($salesChannelEntity, $context, $newCollection, $profilesListId)
                     );
                 }
             }
@@ -562,6 +574,7 @@ class KlaviyoGateway
 
             /** @var RemoveProfilesFromListResponse $result */
             $result = $clientResult->getRequestResponse($request);
+
             if (!$result->isSuccess()) {
                 $this->logger->error(
                     \sprintf(
@@ -638,16 +651,17 @@ class KlaviyoGateway
     /**
      * @param string $channelId
      * @param int $count
-     * @param int $page
-     * @return GetExcludedSubscribers\Response
+     * @param string|null $nextPageLink
+     * @return Response
+     *
      * @throws \Exception
      */
     public function getExcludedSubscribersFromList(
         string $channelId,
         int $count,
-        int $page
+        string $nextPageLink = null
     ): GetExcludedSubscribers\Response {
-        $request = new GetExcludedSubscribers\Request($count, $page);
+        $request = new GetExcludedSubscribers\Request($count, $nextPageLink);
         $clientResult = $this->clientRegistry
             ->getClient($channelId)
             ->sendRequests([$request]);

@@ -32,14 +32,14 @@ class CustomerWrittenEventListener implements EventSubscriberInterface
         $this->getValidChannelConfig = $getValidChannelConfig;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             CustomerEvents::CUSTOMER_WRITTEN_EVENT => 'onCustomerWritten'
         ];
     }
 
-    public function onCustomerWritten(EntityWrittenEvent $event)
+    public function onCustomerWritten(EntityWrittenEvent $event): void
     {
         $allowedChannelIds = [];
         $criteria = new Criteria();
@@ -47,7 +47,7 @@ class CustomerWrittenEventListener implements EventSubscriberInterface
 
         /** @var CustomerCollection $customers */
         $customers = $this->customerRepository->search($criteria, $event->getContext())->getEntities();
-        $channelIds = $customers->map(fn(CustomerEntity $customer) => $customer->getSalesChannelId());
+        $channelIds = $customers->map(fn (CustomerEntity $customer) => $customer->getSalesChannelId());
         $channelIds = \array_unique(\array_values($channelIds));
 
         foreach ($channelIds as $channelId) {

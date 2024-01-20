@@ -69,12 +69,12 @@ class ScheduledEventsTracker implements EventsTrackerInterface
         return $this->trackOrderEventsForBackgroundProcessing($context, $trackingBag, self::ORDER_EVENT_SHIPPED);
     }
 
-    public function trackCustomerWritten(Context $context, ProfileEventsBag $trackingBag)
+    public function trackCustomerWritten(Context $context, ProfileEventsBag $trackingBag): OrderTrackingResult
     {
         return $this->trackCustomerEventsForBackgroundProcessing($context, $trackingBag, self::CUSTOMER_WRITTEN_EVENT);
     }
 
-    public function trackAddedToCart(Context $context, CartEventRequestBag $requestBag)
+    public function trackAddedToCart(Context $context, CartEventRequestBag $requestBag): void
     {
         $scheduledEventRequests = [];
 

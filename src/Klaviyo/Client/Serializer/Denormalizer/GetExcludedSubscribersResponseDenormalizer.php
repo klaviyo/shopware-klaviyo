@@ -26,31 +26,30 @@ class GetExcludedSubscribersResponseDenormalizer extends AbstractDenormalizer
             );
         }
 
-        if (!is_array($data) || !isset($data['data'])) {
+        if (!is_array($data) && (!isset($data['data']) || !isset($data['errors']))) {
             throw new DeserializationException(
                 'For some reason, the data in the response from Klaviyo was not correct structure'
             );
         }
 
-        foreach ($data['data'] as $row) {
-            $this->assertResultRow($row);
-            $emails[] = $row['email'];
+        if (!empty($data['errors'][0]['code'])) {
+            throw new DeserializationException(current($data['errors'])['detail']);
         }
 
-        $page = isset($data['page']) ? $data['page'] : 0;
-        $total = isset($data['total']) ? $data['total'] : count($emails);
+        foreach ($data['data'] as $row) {
+            $this->assertResultRow($row);
+            $emails[] = $row['attributes']['email'];
+        }
 
-        return new Response(
-            $emails,
-            (int)$page,
-            (int)$total
-        );
+        $nextPageLink = $data['links']['next'] ?? null;
+
+        return new Response($emails, $nextPageLink);
     }
 
     /**
      * @throws DeserializationException
      */
-    private function assertResultRow($resultRow)
+    private function assertResultRow($resultRow): void
     {
         if (!is_array($resultRow)) {
             throw new DeserializationException(
@@ -58,7 +57,7 @@ class GetExcludedSubscribersResponseDenormalizer extends AbstractDenormalizer
             );
         }
 
-        if (empty($resultRow['email'])) {
+        if (empty($resultRow['attributes']['email'])) {
             throw new DeserializationException(
                 'Each line in the excluded subscribers list response expected to have a email'
             );

@@ -15,4 +15,8 @@ interface ConfigurationInterface
     public function getRequestTimeout(): int;
 
     public function getConnectionTimeout(): int;
+
+    public function getSubscribersListId(): ?string;
+
+    public function getGlobalNewEndpointUrl(): string;
 }
