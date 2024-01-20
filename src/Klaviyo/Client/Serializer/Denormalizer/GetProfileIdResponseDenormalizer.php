@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer;
 
@@ -6,23 +8,31 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Search\GetPr
 
 class GetProfileIdResponseDenormalizer extends AbstractDenormalizer
 {
-    public function denormalize($data, string $type, string $format = null, array $context = [])
+    public function denormalize($data, string $type, string $format = null, array $context = []): GetProfileIdResponse
     {
-        $isProfileNotExists = ($data['detail'] ?? '') === 'There is no profile matching the given parameters.';
+        $isProfileNotExists = ($data['data'] ?? '') === 'There is no profile matching the given parameters.';
+
         if ($isProfileNotExists) {
             return new GetProfileIdResponse(true);
         }
 
-        if (!empty($data['detail']) || empty($data['id'])) {
-            $errorDetail = !empty($data['detail']) ? $data['detail'] : 'Invalid API response: "id" field is missing';
+        if (!empty($data['errors'])) {
+            $errorDetail = !empty($data['errors'][0]['detail']) ?
+                $data['errors'][0]['detail'] : 'Invalid API response: "id" field is missing';
 
             return new GetProfileIdResponse(false, null, $errorDetail);
         }
 
-        return new GetProfileIdResponse(true, $data['id'], null);
+        if (!empty($data['data'][0]['id'])) {
+            $klaviyoProfileId = $data['data'][0]['id'];
+        } else {
+            $klaviyoProfileId = null;
+        }
+
+        return new GetProfileIdResponse(true, $klaviyoProfileId, null);
     }
 
-    public function supportsDenormalization($data, string $type, string $format = null)
+    public function supportsDenormalization($data, string $type, string $format = null): bool
     {
         return $type === GetProfileIdResponse::class;
     }

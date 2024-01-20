@@ -19,10 +19,8 @@ class AddProfilesToListApiTransferTranslator extends AbstractApiTransferMessageT
         $body = $this->serialize($request);
 
         $url = \sprintf(
-            '%s/list/%s/members?api_key=%s',
-            $this->configuration->getGlobalNewEndpointUrl(),
-            $request->getListId(),
-            $this->configuration->getApiKey()
+            '%s/profile-bulk-import-jobs',
+            $this->configuration->getGlobalNewEndpointUrl()
         );
 
         return $this->constructGuzzleRequestToKlaviyoAPI($url, $body);

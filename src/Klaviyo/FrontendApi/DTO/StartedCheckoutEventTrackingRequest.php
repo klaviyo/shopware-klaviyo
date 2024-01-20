@@ -60,16 +60,38 @@ class StartedCheckoutEventTrackingRequest extends EventTrackingRequest implement
         $categories = array_unique($categories);
 
         return [
-            '$event_id' => $this->getEventId() . '_' . $this->getTime()->getTimestamp(),
-            'event' => 'Started Checkout',
-            'properties' => [
-                'startedCheckoutValue' => $this->getCheckoutTotal(),
-                'CheckoutURL' => $this->getCheckoutUrl(),
-                'ItemNames' => $itemNames,
-                'Categories' => $categories,
-                'Items' => $this->getLineItemInfoCollection()->getElements(),
-            ],
-            'customer_properties' => ['$email' => $this->getCustomerProperties()->getEmail()],
+            'data' => [
+                'type' => 'event',
+                'attributes' => [
+                    'time' => $this->getTime()->format('Y-m-d\TH:i:s'),
+                    'value' => $this->getCheckoutTotal(),
+                    'unique_id' => $this->getEventId() . '_' . $this->getTime()->getTimestamp(),
+                    'properties' => [
+                        'startedCheckoutValue' => $this->getCheckoutTotal(),
+                        'CheckoutURL' => $this->getCheckoutUrl(),
+                        'ItemNames' => $itemNames,
+                        'Categories' => $categories,
+                        'Items' => $this->getLineItemInfoCollection()->getElements(),
+                    ],
+                    'metric' => [
+                        'data' => [
+                            'type' => 'metric',
+                            'attributes' => [
+                                'name' => 'Started Checkout'
+                            ]
+                        ]
+                    ],
+                    'profile' => [
+                        'data' => [
+                            'type' => 'profile',
+                            'id' => '',
+                            'attributes' => [
+                                'email' => $this->getCustomerProperties()->getEmail()
+                            ]
+                        ]
+                    ]
+                ]
+            ]
         ];
     }
 }

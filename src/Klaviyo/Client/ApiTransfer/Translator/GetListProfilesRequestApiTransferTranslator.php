@@ -16,14 +16,14 @@ class GetListProfilesRequestApiTransferTranslator extends AbstractApiTransferMes
      */
     public function translateRequest(object $request): Request
     {
-        $url = \sprintf(
-            '%s/segments/%s/profiles',
-            $this->configuration->getGlobalNewEndpointUrl(),
-            $request->getListId()
-        );
-
-        if ($request->getCursorMarker()) {
-            $url .= "&marker={$request->getCursorMarker()}";
+        if ($request->getNextPageUrl()) {
+            $url = $request->getNextPageUrl();
+        } else {
+            $url = \sprintf(
+                '%s/lists/%s/profiles',
+                $this->configuration->getGlobalNewEndpointUrl(),
+                $request->getListId()
+            );
         }
 
         return $this->constructGuzzleRequestToKlaviyoAPI($url);
@@ -31,7 +31,7 @@ class GetListProfilesRequestApiTransferTranslator extends AbstractApiTransferMes
 
     private function constructGuzzleRequestToKlaviyoAPI(string $endpoint): Request
     {
-        $guzzleRequest = new Request(
+        return new Request(
             'GET',
             $endpoint,
             [
@@ -40,8 +40,6 @@ class GetListProfilesRequestApiTransferTranslator extends AbstractApiTransferMes
                 'revision' => ClientConfigurationFactory::API_REVISION_DATE,
             ]
         );
-
-        return $guzzleRequest;
     }
 
     public function translateResponse(ResponseInterface $response): object
@@ -61,7 +59,7 @@ class GetListProfilesRequestApiTransferTranslator extends AbstractApiTransferMes
     /**
      * @throws TranslationException
      */
-    private function assertStatusCode(ResponseInterface $response)
+    private function assertStatusCode(ResponseInterface $response): void
     {
         if ($response->getStatusCode() < 200 || $response->getStatusCode() >= 300) {
             throw new TranslationException($response, \sprintf('Invalid response status code %s', $response->getStatusCode()));
