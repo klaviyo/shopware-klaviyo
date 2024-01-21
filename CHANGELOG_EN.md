@@ -1,3 +1,8 @@
+# 2.8.4
+# Fix: The category is now displayed after adding a product from a dynamic product group.
+# Fix: Plugin provides the correct product URL by domain language.
+# Fix: Changing titles in the payload Add To Cart event.
+
 # 2.8.3
 # Fix: The add to cart event is now triggered in real time mode, and not according to a schedule
 # Fix: Fixed a bug when performing asynchronous subscription operations.
