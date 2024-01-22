@@ -8,32 +8,29 @@ class Configuration implements ConfigurationInterface
     private string $publicApiKey;
     private string $trackApiEndpointUrl;
     private string $identifyApiEndpoint;
-    private string $listAndSegmentsApiEndpointUrl;
     private int $requestTimeout;
     private int $connectionTimeout;
-    private string $globalExclusionsEndpointUrl;
     private string $globalNewEndpointUrl;
+    private ?string $subscribersListId;
 
     public function __construct(
         string $apiKey,
         string $publicApiKey,
         string $trackApiEndpoint,
         string $identifyApiEndpoint,
-        string $listAndSegmentsApiEndpointUrl,
         int $requestTimeout,
         int $connectionTimeout,
-        string $globalExclusionsEndpointUrl,
-        string $globalNewEndpointUrl
+        string $globalNewEndpointUrl,
+        ?string $subscribersListId
     ) {
         $this->apiKey = $apiKey;
         $this->publicApiKey = $publicApiKey;
         $this->trackApiEndpointUrl = $trackApiEndpoint;
         $this->identifyApiEndpoint = $identifyApiEndpoint;
-        $this->listAndSegmentsApiEndpointUrl = $listAndSegmentsApiEndpointUrl;
         $this->requestTimeout = $requestTimeout;
         $this->connectionTimeout = $connectionTimeout;
-        $this->globalExclusionsEndpointUrl = $globalExclusionsEndpointUrl;
         $this->globalNewEndpointUrl = $globalNewEndpointUrl;
+        $this->subscribersListId = $subscribersListId;
     }
 
     public function getApiKey(): string
@@ -56,11 +53,6 @@ class Configuration implements ConfigurationInterface
         return $this->identifyApiEndpoint;
     }
 
-    public function getListAndSegmentsApiEndpointUrl(): string
-    {
-        return $this->listAndSegmentsApiEndpointUrl;
-    }
-
     public function getRequestTimeout(): int
     {
         return $this->requestTimeout;
@@ -71,13 +63,13 @@ class Configuration implements ConfigurationInterface
         return $this->connectionTimeout;
     }
 
-    public function getGlobalExclusionsEndpointUrl(): string
-    {
-        return $this->globalExclusionsEndpointUrl;
-    }
-
     public function getGlobalNewEndpointUrl(): string
     {
         return $this->globalNewEndpointUrl;
+    }
+
+    public function getSubscribersListId(): ?string
+    {
+        return $this->subscribersListId;
     }
 }

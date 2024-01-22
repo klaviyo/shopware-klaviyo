@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Klaviyo\Gateway\Domain\Profile\Search\Strategy;
 
@@ -22,8 +24,14 @@ class SearchByFieldStrategy implements SearchStrategyInterface
         $this->byCustomerFieldRequestTranslator = $byCustomerFieldRequestTranslator;
     }
 
-    public function searchProfilesIds(Context $context, string $channelId, CustomerCollection $customers): ProfileIdSearchResult
-    {
+    /**
+     * @throws \Exception
+     */
+    public function searchProfilesIds(
+        Context $context,
+        string $channelId,
+        CustomerCollection $customers
+    ): ProfileIdSearchResult {
         $searchResult = new ProfileIdSearchResult();
         $searchRequests = [];
         $client = $this->clientRegistry->getClient($channelId);
@@ -33,9 +41,11 @@ class SearchByFieldStrategy implements SearchStrategyInterface
         }
 
         $clientResult = $client->sendRequests($searchRequests);
+
         foreach ($searchRequests as $request) {
             /** @var GetProfileIdResponse $response */
             $response = $clientResult->getRequestResponse($request);
+
             if (!$response->isSuccess()) {
                 $searchResult->addError(
                     new \Exception($response->getErrorDetail() ?? 'Profile Search API response fault.')
@@ -43,7 +53,7 @@ class SearchByFieldStrategy implements SearchStrategyInterface
                 continue;
             }
 
-            if ($profileId = $response->getProfileId()) {
+            if ($response->getProfileId()) {
                 $searchResult->addMapping($response->getProfileId(), $request->getCustomer()->getId());
             }
         }

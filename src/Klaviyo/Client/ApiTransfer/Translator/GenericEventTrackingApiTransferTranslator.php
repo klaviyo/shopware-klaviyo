@@ -6,6 +6,7 @@ use GuzzleHttp\Psr7\Request;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\Common\EventTrackingResponse;
 use Klaviyo\Integration\Klaviyo\Client\Configuration\ConfigurationInterface;
 use Klaviyo\Integration\Klaviyo\Client\Exception\TranslationException;
+use Klaviyo\Integration\Klaviyo\Gateway\ClientConfigurationFactory;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -47,20 +48,17 @@ class GenericEventTrackingApiTransferTranslator extends AbstractApiTransferMessa
 
     private function constructGuzzleRequestToKlaviyoAPI(string $endpoint, $body): Request
     {
-        $guzzleRequest = new Request(
+        return new Request(
             'POST',
             $endpoint,
             [
-                'Accept' => 'text/html',
-                'Content-Type' => 'application/x-www-form-urlencoded'
+                'Authorization' => $this->configuration->getApiKey(),
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+                'revision' => ClientConfigurationFactory::API_REVISION_DATE,
             ],
-            \sprintf(
-                'data=%s',
-                urlencode($body)
-            )
+            $body
         );
-
-        return $guzzleRequest;
     }
 
     /**

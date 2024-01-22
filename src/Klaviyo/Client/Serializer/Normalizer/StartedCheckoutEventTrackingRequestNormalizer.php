@@ -8,13 +8,9 @@ use Klaviyo\Integration\Klaviyo\FrontendApi\DTO\StartedCheckoutEventTrackingRequ
 
 class StartedCheckoutEventTrackingRequestNormalizer extends AbstractNormalizer
 {
-    public function normalize($object, string $format = null, array $context = [])
+    public function normalize($object, string $format = null, array $context = []): array
     {
-        $normalizedData = $object->jsonSerialize();
-        $normalizedData['token'] = $this->getToken();
-        $normalizedData['time'] = $object->getTime()->getTimestamp();
-
-        return $normalizedData;
+        return $object->jsonSerialize();
     }
 
     public function supportsNormalization($data, string $format = null): bool
