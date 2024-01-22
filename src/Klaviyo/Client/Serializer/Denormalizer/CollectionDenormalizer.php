@@ -7,14 +7,6 @@ use Klaviyo\Integration\Utils\Reflection\ReflectionHelper;
 
 class CollectionDenormalizer extends AbstractDenormalizer
 {
-    /**
-     * @param array $data
-     * @param string $type
-     * @param string|null $format
-     * @param array $context
-     *
-     * @return mixed|void
-     */
     public function denormalize($data, string $type, string $format = null, array $context = [])
     {
         /** @var TypedCollection $collection */

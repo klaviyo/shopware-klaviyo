@@ -8,7 +8,7 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Update\Updat
 
 class UpdateProfileRequestNormalizer extends AbstractNormalizer
 {
-    public function normalize(mixed $object, string $format = null, array $context = []): array
+    public function normalize($object, string $format = null, array $context = []): array
     {
         $customerProperties = $object->getCustomerProperties();
 
@@ -28,7 +28,7 @@ class UpdateProfileRequestNormalizer extends AbstractNormalizer
         ]]];
     }
 
-    public function supportsNormalization(mixed $data, string $format = null): bool
+    public function supportsNormalization($data, string $format = null): bool
     {
         return $data instanceof UpdateProfileRequest;
     }
