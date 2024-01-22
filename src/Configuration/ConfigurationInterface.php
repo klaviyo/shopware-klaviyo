@@ -32,7 +32,7 @@ interface ConfigurationInterface
 
     public function getPublicApiKey(): string;
 
-    public function getSubscribersListName(): string;
+    public function getSubscribersListId(): string;
 
     public function getCustomerCustomFieldMapping(): array;
 

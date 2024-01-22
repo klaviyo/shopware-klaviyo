@@ -8,20 +8,15 @@ class OrderedProductEventTrackingRequestNormalizer extends AbstractNormalizer
 {
     /**
      * @param OrderedProductEventTrackingRequest $object
-     * @param string|null $format
-     * @param array $context
      *
      * @return array
      */
-    public function normalize($object, string $format = null, array $context = [])
+    public function normalize($object, string $format = null, array $context = []): array
     {
         $customerProperties = $this->normalizeObject($object->getCustomerProperties());
-        $now = new \DateTime('now', new \DateTimeZone('UTC'));
 
         $properties = [
             'ProductName' => $object->getProductName(),
-            '$value' => $object->getValue(),
-            '$event_id' => $object->getProductId() . '_' . $object->getOrderId() . '_' . $object->getQuantity(),
             'OrderId' => $object->getOrderId(),
             'ProductID' => $object->getProductId(),
             'SKU' => $object->getSku(),
@@ -33,15 +28,34 @@ class OrderedProductEventTrackingRequestNormalizer extends AbstractNormalizer
         ];
 
         return [
-            'token' => $this->getToken(),
-            'event' => 'Ordered Product',
-            'customer_properties' => $customerProperties,
-            'properties' => $properties,
-            'time' => $object->getTime()->getTimestamp()
+            'data' => [
+                'type' => 'event',
+                'attributes' => [
+                    'time' => $object->getTime()->format('Y-m-d\TH:i:s'),
+                    'value' => $object->getValue(),
+                    'unique_id' => $object->getEventId() . '_' . $object->getTime()->getTimestamp(),
+                    'properties' => $properties,
+                    'metric' => [
+                        'data' => [
+                            'type' => 'metric',
+                            'attributes' => [
+                                'name' => 'Ordered Product'
+                            ]
+                        ]
+                    ],
+                    'profile' => [
+                        'data' => [
+                            'type' => 'profile',
+                            'id' => '',
+                            'attributes' => $customerProperties
+                        ]
+                    ]
+                ]
+            ]
         ];
     }
 
-    public function supportsNormalization($data, string $format = null)
+    public function supportsNormalization($data, string $format = null): bool
     {
         return $data instanceof OrderedProductEventTrackingRequest;
     }

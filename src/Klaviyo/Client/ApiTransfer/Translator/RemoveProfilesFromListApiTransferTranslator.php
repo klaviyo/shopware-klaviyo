@@ -6,6 +6,7 @@ use GuzzleHttp\Psr7\Request;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfilesFromList\RemoveProfilesFromListRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfilesFromList\RemoveProfilesFromListResponse;
 use Klaviyo\Integration\Klaviyo\Client\Exception\TranslationException;
+use Klaviyo\Integration\Klaviyo\Gateway\ClientConfigurationFactory;
 use Psr\Http\Message\ResponseInterface;
 
 class RemoveProfilesFromListApiTransferTranslator extends AbstractApiTransferMessageTranslator
@@ -15,10 +16,8 @@ class RemoveProfilesFromListApiTransferTranslator extends AbstractApiTransferMes
         $body = $this->serialize($request);
 
         $url = \sprintf(
-            '%s/list/%s/members?api_key=%s',
-            $this->configuration->getListAndSegmentsApiEndpointUrl(),
-            $request->getListId(),
-            $this->configuration->getApiKey()
+            '%s/profile-subscription-bulk-delete-jobs',
+            $this->configuration->getGlobalNewEndpointUrl()
         );
 
         return $this->constructGuzzleRequestToKlaviyoAPI($url, $body);
@@ -26,16 +25,17 @@ class RemoveProfilesFromListApiTransferTranslator extends AbstractApiTransferMes
 
     private function constructGuzzleRequestToKlaviyoAPI(string $endpoint, $body): Request
     {
-        $guzzleRequest = new Request(
-            'DELETE',
+        return new Request(
+            'POST',
             $endpoint,
             [
-                'Content-Type' => 'application/json'
+                'Authorization' => $this->configuration->getApiKey(),
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
+                'revision' => ClientConfigurationFactory::API_REVISION_DATE,
             ],
             $body
         );
-
-        return $guzzleRequest;
     }
 
     public function translateResponse(ResponseInterface $response): object
@@ -54,7 +54,7 @@ class RemoveProfilesFromListApiTransferTranslator extends AbstractApiTransferMes
      * @param ResponseInterface $response
      * @throws TranslationException
      */
-    private function assertStatusCode(ResponseInterface $response)
+    private function assertStatusCode(ResponseInterface $response): void
     {
         if ($response->getStatusCode() < 200 || $response->getStatusCode() >= 300) {
             throw new TranslationException($response, sprintf('Invalid response status code %s', $response->getStatusCode()));

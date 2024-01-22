@@ -5,21 +5,30 @@ namespace Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Common\ProfileInfoCollection;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetListProfiles\GetListProfilesResponse;
 use Klaviyo\Integration\Klaviyo\Client\Exception\DeserializationException;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 
 class GetListProfilesResponseDenormalizer extends AbstractDenormalizer
 {
     /**
-     * {@inheritDoc}
-     *
+     * @param $data
+     * @param string $type
+     * @param string|null $format
+     * @param array $context
      * @return GetListProfilesResponse
+     *
      * @throws DeserializationException
+     * @throws ExceptionInterface
      */
-    public function denormalize($data, string $type, string $format = null, array $context = [])
-    {
+    public function denormalize(
+        $data,
+        string $type,
+        string $format = null,
+        array $context = []
+    ): GetListProfilesResponse {
         $profilesInfoCollection = new ProfileInfoCollection();
 
-        if (!empty($data['detail']) || !empty($data['message'])) {
-            $errorDetails = $data['message'] ?? $data['detail'];
+        if (!empty($data['errors'][0]['detail'])) {
+            $errorDetails = $data['errors'][0]['detail'];
 
             return new GetListProfilesResponse(false, $profilesInfoCollection, null, $errorDetails);
         }
@@ -36,11 +45,11 @@ class GetListProfilesResponseDenormalizer extends AbstractDenormalizer
             return new GetListProfilesResponse(true, $profilesInfoCollection);
         }
 
-        return new GetListProfilesResponse(true, $profilesInfoCollection, (int)$data['marker']);
+        return new GetListProfilesResponse(true, $profilesInfoCollection, (int) $data['marker']);
     }
 
-    public function supportsDenormalization($data, string $type, string $format = null)
+    public function supportsDenormalization($data, string $type, string $format = null): bool
     {
-        return $type === GetListProfilesResponse::class;
+        return GetListProfilesResponse::class === $type;
     }
 }

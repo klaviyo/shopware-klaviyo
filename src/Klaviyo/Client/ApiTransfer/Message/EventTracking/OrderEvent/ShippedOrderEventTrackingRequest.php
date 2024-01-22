@@ -1,6 +1,7 @@
 <?php
 
 namespace Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent;
+
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\Common\Address;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\Common\CustomerProperties;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\DTO\DiscountInfoCollection;
@@ -19,7 +20,16 @@ class ShippedOrderEventTrackingRequest extends AbstractOrderEventTrackingRequest
         ?Address $billingAddress,
         ?Address $shippingAddress
     ) {
-        parent::__construct($eventId, $time, $customerProperties, $orderTotal, $orderId, $discounts, $products,
-            $billingAddress, $shippingAddress);
+        parent::__construct(
+            $eventId,
+            $time,
+            $customerProperties,
+            $orderTotal,
+            $orderId,
+            $discounts,
+            $products,
+            $billingAddress,
+            $shippingAddress
+        );
     }
 }

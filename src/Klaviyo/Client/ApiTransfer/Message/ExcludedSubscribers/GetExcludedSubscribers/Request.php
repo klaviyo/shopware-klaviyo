@@ -1,16 +1,18 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribers;
 
 class Request
 {
     private ?int $count;
-    private int $page;
+    private ?string $nextPageUrl;
 
-    public function __construct(int $count, int $page)
+    public function __construct(int $count, string $nextPageUrl = null)
     {
         $this->count = $count;
-        $this->page = $page;
+        $this->nextPageUrl = $nextPageUrl;
     }
 
     public function getCount(): ?int
@@ -18,8 +20,15 @@ class Request
         return $this->count;
     }
 
-    public function getPage(): int
+    public function getNextPageUrl(): ?string
     {
-        return $this->page;
+        return $this->nextPageUrl;
+    }
+
+    public function setNextPageUrl(string $nextPageUrl): Request
+    {
+        $this->nextPageUrl = $nextPageUrl;
+
+        return $this;
     }
 }

@@ -12,11 +12,11 @@ interface ConfigurationInterface
 
     public function getIdentifyApiEndpointUrl(): string;
 
-    public function getListAndSegmentsApiEndpointUrl(): string;
-
     public function getRequestTimeout(): int;
 
     public function getConnectionTimeout(): int;
 
-    public function getGlobalExclusionsEndpointUrl(): string;
+    public function getSubscribersListId(): ?string;
+
+    public function getGlobalNewEndpointUrl(): string;
 }
