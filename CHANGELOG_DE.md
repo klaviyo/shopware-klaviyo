@@ -1,3 +1,8 @@
+# 1.6.4
+# Fix: Die Kategorie wird nun angezeigt, nachdem ein Produkt aus einer dynamischen Produktgruppe hinzugefügt wurde.
+# Fix: Das Plugin stellt die richtige Produkt-URL nach Domänensprache bereit.
+# Fix: Ändern von Titeln im Payload-Event „Zum Warenkorb hinzufügen“.
+
 # 1.6.3
 # Fix: Das Ereignis „Zum Warenkorb hinzufügen“ wird jetzt im Echtzeitmodus und nicht nach einem Zeitplan ausgelöst
 # Fix: Ein Problem beim Synchronisieren von Bestellungen mit gelöschten Kunden wurde behoben
