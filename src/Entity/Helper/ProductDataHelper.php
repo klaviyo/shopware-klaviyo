@@ -5,6 +5,7 @@ namespace Klaviyo\Integration\Entity\Helper;
 use Klaviyo\Integration\Klaviyo\Client\Exception\OrderItemProductNotFound;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Content\Category\CategoryCollection;
+use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Content\Product\Aggregate\ProductManufacturer\ProductManufacturerEntity;
 use Shopware\Core\Content\Product\Aggregate\ProductMedia\ProductMediaEntity;
 use Shopware\Core\Content\Product\ProductEntity;
@@ -70,6 +71,12 @@ class ProductDataHelper
             );
         }
 
+        foreach ($salesChannelContext->getSalesChannel()->getDomains() as $domain) {
+            if ($domain->getLanguageId() == $salesChannelContext->getLanguageId()) {
+                return $this->seoUrlReplacer->replace($raw, $domain->getUrl(), $salesChannelContext);
+            }
+        }
+
         if ($salesChannelContext->getSalesChannel() && $salesChannelContext->getSalesChannel()->getDomains()) {
             return $this->seoUrlReplacer->replace($raw, $salesChannelContext->getSalesChannel()->getDomains()->first()->getUrl(), $salesChannelContext);
         }
@@ -82,9 +89,9 @@ class ProductDataHelper
             );
     }
 
-    public function getProductViewPageUrlByChannelId(ProductEntity $productEntity, string $channelId,  Context $context): string
+    public function getProductViewPageUrlByChannelId(ProductEntity $productEntity, string $channelId,  Context $context, $languageId): string
     {
-        $salesChannelContext = $this->getSalesChannelContext($channelId, $context);
+        $salesChannelContext = $this->getSalesChannelContext($channelId, $context, $languageId);
 
         return $this->getProductViewPageUrlByContext($productEntity, $salesChannelContext);
     }
@@ -154,14 +161,30 @@ class ProductDataHelper
     /**
      * @param Context $context
      * @param ProductEntity $productEntity
-     *
      * @return array|string[]
      */
     public function getCategoryNames(Context $context, ProductEntity $productEntity): array
     {
         $categoriesEntities = $this->getProductCategories($context, $productEntity);
-
         $categories = [];
+
+        $categoriesWithDynamicProductGroups = $this->getCategoriesWithDynamicProductGroups($context);
+        $streamIds = $productEntity->getStreamIds();
+
+        if ($categoriesWithDynamicProductGroups->count() > 0 && $streamIds ) {
+            foreach ($categoriesWithDynamicProductGroups as $category) {
+                if (!$category->getProductStreamId()) {
+                    continue;
+                }
+                foreach ($streamIds as $streamId) {
+                    if ($streamId === $category->getProductStreamId()){
+                        $categories[] = $category->getName();
+                    }
+                }
+            }
+        }
+
+
         foreach ($categoriesEntities as $categoryEntity) {
             $categories[] = $categoryEntity->getName();
         }
@@ -186,6 +209,19 @@ class ProductDataHelper
             ->getEntities();
 
         return $categoriesCollection;
+    }
+
+    private function getCategoriesWithDynamicProductGroups(Context $context): CategoryCollection
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(
+            new EqualsFilter(
+                'productAssignmentType',
+                CategoryDefinition::PRODUCT_ASSIGNMENT_TYPE_PRODUCT_STREAM
+            )
+        );
+
+        return $this->categoriesRepository->search($criteria, $context)->getEntities();
     }
 
     public function getManufacturerName(Context $context, ProductEntity $productEntity): ?string
@@ -224,22 +260,39 @@ class ProductDataHelper
         return $this->productRepository->search(new Criteria([$productId]), $context)->first();
     }
 
-    public function getSalesChannelContext(string $channelId, Context $context)
+    public function getSalesChannelContext(string $channelId, Context $context, $languageId = null)
     {
-        if (isset($this->contexts[$channelId])) {
-            return $this->contexts[$channelId];
+        if (isset($this->contexts[$this->getHashedIdentificator($channelId, $languageId)])) {
+            return $this->contexts[$this->getHashedIdentificator($channelId, $languageId)];
         }
 
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('id', $channelId));
         $criteria->addAssociation('domains');
         $salesChannel = $this->salesChannelRepository->search($criteria, $context)->first();
-        $salesChannelContext = $this->salesChannelContextFactory->create(
-            Uuid::randomHex(),
-            $salesChannel->getId()
-        );
+        if (!$languageId) {
+            $salesChannelContext = $this->salesChannelContextFactory->create(
+                Uuid::randomHex(),
+                $salesChannel->getId()
+            );
+        } else {
+            $salesChannelContext = $this->salesChannelContextFactory->create(
+                Uuid::randomHex(),
+                $salesChannel->getId(),
+                [\Shopware\Core\System\SalesChannel\Context\SalesChannelContextService::LANGUAGE_ID => $languageId]
+            );
+        }
 
-        return $this->contexts[$channelId] = $salesChannelContext;
+        return $this->contexts[$this->getHashedIdentificator($channelId, $languageId)] = $salesChannelContext;
+    }
+
+    /**
+     * @param null|string $channelId
+     * @param null|string $languageId
+     * @return string
+     */
+    private function getHashedIdentificator($channelId, $languageId): string {
+        return $channelId . '-' . $languageId;
     }
 
     public function getProductNameById($productId) {
