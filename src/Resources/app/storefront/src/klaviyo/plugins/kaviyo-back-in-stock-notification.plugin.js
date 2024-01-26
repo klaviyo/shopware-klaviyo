@@ -9,13 +9,15 @@ export default class KlaviyoBackInStockNotification extends Plugin {
         validCls: 'is-valid',
         emailFieldSelector: '#email',
         subscribeToNewsletterSelector: '#subscribeToNewsletter',
-        apiURL: 'https://a.klaviyo.com/onsite/components/back-in-stock/subscribe',
-        contentType: 'application/x-www-form-urlencoded;charset=UTF-8',
+        newsletterSubscribeApiURL: 'https://a.klaviyo.com/client/subscriptions',
+        apiURL: 'https://a.klaviyo.com/client/back-in-stock-subscriptions',
+        contentType: 'application/json',
+        revision: '2023-12-15',
         hiddenCls: 'd-none',
         successMessageSelector: '.klaviyo-success',
         errorMessageSelector: '.klaviyo-error',
         notValidEmailMessageSelector: '.klaviyo-email-not-valid',
-        fetchHeaderAccept: "application/json, text/plain, */*"
+        fetchHeaderAccept: "application/json"
     };
 
     init() {
@@ -49,16 +51,55 @@ export default class KlaviyoBackInStockNotification extends Plugin {
 
     _proceedSubscription() {
         const data = this._createFormData();
+        let productId;
+        let email = data.get('email');
 
-        fetch(this.options.apiURL, {
+        if (data.get('variant')) {
+            productId = data.get('variant');
+        } else {
+            productId = data.get('product');
+        }
+
+        let body = JSON.stringify({
+            data: {
+                type: 'back-in-stock-subscription',
+                attributes: {
+                    channels: ['EMAIL'],
+                    profile: {
+                        data: {
+                            type: 'profile',
+                            attributes: {
+                                email: email
+                            }
+                        }
+                    }
+                },
+                relationships: {
+                    variant: {
+                        data: {
+                            type: 'catalog-variant',
+                            id: '$custom:::$default:::' + productId
+                        }
+                    }
+                }
+            }
+        });
+
+
+        fetch(this.options.apiURL + '/?company_id=' + this.options.publicApiKey, {
             "headers": {
                 "accept": this.options.fetchHeaderAccept,
                 "content-type": this.options.contentType,
+                "revision": this.options.revision,
             },
-            "body": data,
+            "body": body,
             "method": "POST",
         }).then(response => {
-            this._handleResponse(response)
+            if (data.get('subscribe_for_newsletter') === 'true') {
+                this._proceedNewsletterSubscribe(email);
+            }
+
+            this._handleResponse(response);
         }).catch(err => {
             console.error(err);
         });
@@ -70,6 +111,52 @@ export default class KlaviyoBackInStockNotification extends Plugin {
         }
 
         return this._showErrorMessage();
+    }
+
+    _proceedNewsletterSubscribe(email) {
+        const data = this._createFormData();
+
+        let body = JSON.stringify({
+            data: {
+                type: 'subscription',
+                attributes: {
+                    profile: {
+                        data: {
+                            type: 'profile',
+                            attributes: {
+                                email: email
+                            }
+                        }
+                    }
+                },
+                relationships: {
+                    list: {
+                        data: {
+                            type: 'list',
+                            id: this.options.listName
+                        }
+                    }
+                }
+            }
+        });
+
+
+        fetch(this.options.newsletterSubscribeApiURL + '/?company_id=' + this.options.publicApiKey, {
+            "headers": {
+                "content-type": this.options.contentType,
+                "revision": this.options.revision,
+            },
+            "body": body,
+            "method": "POST",
+        }).then(response => {
+            this._handleResponse(response);
+
+            if (data.get('subscribe_for_newsletter') === true) {
+                this._proceedNewsletterSubscribe();
+            }
+        }).catch(err => {
+            console.error(err);
+        });
     }
 
     _showSuccessMessage() {
