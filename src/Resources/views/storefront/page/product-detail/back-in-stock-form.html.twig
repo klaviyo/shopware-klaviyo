@@ -3,7 +3,7 @@
         <div class="klaviyo-stock-notification-container">
                 {% set notificationConfigurationOptions = {
                     publicApiKey:  extensionData.configuration.publicApiKey|sw_sanitize,
-                    listName: extensionData.configuration.subscribersListName,
+                    listName: extensionData.configuration.subscribersListId,
                     variantId: extensionData.configuration.bisVariantField == 'product-id' ? page.product.id : page.product.productNumber,
                     productID: page.product.parentId,
                 } %}
