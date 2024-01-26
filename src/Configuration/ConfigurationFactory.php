@@ -31,7 +31,7 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
         }
 
         $listId = $this->systemConfigService
-            ->get('klavi_overd.config.klaviyoListForSubscribersSync', $salesChannelId);
+            ->get('KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync', $salesChannelId);
         if (!$listId) {
             throw new InvalidConfigurationException(
                 'Klaviyo Integration List For Subscribers configuration is not defined'
@@ -39,9 +39,9 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
         }
 
         $bisVariantField =
-            $this->systemConfigService->get('klavi_overd.config.bisVariantField', $salesChannelId) ?? 'product-number';
+            $this->systemConfigService->get('KlaviyoIntegrationPlugin.config.bisVariantField', $salesChannelId) ?? 'product-number';
         $orderIdentification =
-            $this->systemConfigService->get('klavi_overd.config.orderIdentification', $salesChannelId) ?? 'order-id';
+            $this->systemConfigService->get('KlaviyoIntegrationPlugin.config.orderIdentification', $salesChannelId) ?? 'order-id';
         $trackDeletedAccountOrders = $this->getBoolConfiguration('trackDeletedAccountOrders', $salesChannelId);
         $trackViewedProduct = $this->getBoolConfiguration('trackViewedProduct', $salesChannelId);
         $trackRecentlyViewedItems = $this->getBoolConfiguration('trackRecentlyViewedItems', $salesChannelId);
@@ -56,11 +56,11 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
         $trackShippedOrder = $this->getBoolConfiguration('trackShippedOrder', $salesChannelId);
         $dailySubscribersSynchronization = $this->getBoolConfiguration('dailySynchronization', $salesChannelId);
         $dailySubscribersSyncTime =
-            $this->systemConfigService->get('klavi_overd.config.dailySynchronizationTime', $salesChannelId) ?? '';
+            $this->systemConfigService->get('KlaviyoIntegrationPlugin.config.dailySynchronizationTime', $salesChannelId) ?? '';
 
         $trackSubscribedToBackInStock = $this->getBoolConfiguration('trackSubscribedToBackInStock', $salesChannelId);
         $afterInteraction = $this->systemConfigService->getBool(
-            'klavi_overd.config.isInitializeKlaviyoAfterInteraction',
+            'KlaviyoIntegrationPlugin.config.isInitializeKlaviyoAfterInteraction',
             $salesChannelId
         );
 
@@ -78,7 +78,7 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
         );
 
         $cookieConsent =
-            $this->systemConfigService->get('klavi_overd.config.cookieConsent', $salesChannelId) ?? 'shopware';
+            $this->systemConfigService->get('KlaviyoIntegrationPlugin.config.cookieConsent', $salesChannelId) ?? 'shopware';
 
         if (is_array($mapping)) {
             foreach ($mapping as $mappingId => $mappingAssociation) {
