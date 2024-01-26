@@ -25,7 +25,7 @@ class CachedGetListIdByListName implements GetListIdByListNameInterface
     /**
      * @throws InvalidArgumentException
      */
-    public function execute(string $salesChannelEntityId, string $listName): string
+    public function execute(string $salesChannelEntityId, string $listId): string
     {
         $cacheKey = self::CACHE_PREFIX . $salesChannelEntityId;
         $cachedItem = $this->cache->getItem($cacheKey);
@@ -34,7 +34,7 @@ class CachedGetListIdByListName implements GetListIdByListNameInterface
             return (string) $cachedItem->get();
         }
 
-        $klaviyoList = $this->getListIdByListName->execute($salesChannelEntityId, $listName);
+        $klaviyoList = $this->getListIdByListName->execute($salesChannelEntityId, $listId);
         $cachedItem->expiresAfter(3600);
         $this->cache->save($cachedItem->set($klaviyoList));
 

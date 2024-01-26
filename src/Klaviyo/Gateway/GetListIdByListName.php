@@ -16,7 +16,7 @@ class GetListIdByListName implements GetListIdByListNameInterface
         $this->clientRegistry = $clientRegistry;
     }
 
-    public function execute(string $salesChannelEntityId, string $listName): string
+    public function execute(string $salesChannelEntityId, string $listId): string
     {
         $request = new GetProfilesListsRequest();
         $clientResult = $this->clientRegistry
@@ -33,13 +33,13 @@ class GetListIdByListName implements GetListIdByListNameInterface
 
         /** @var ProfilesListInfo $list */
         foreach ($result->getLists() as $list) {
-            if ($list->getName() === $listName) {
+            if ($list->getId() === $listId) {
                 return $list->getId();
             }
         }
 
         throw new ProfilesListNotFoundException(
-            \sprintf('Profiles list[name: "%s"] was not found', $listName)
+            \sprintf('Profiles list[name: "%s"] was not found', $listId)
         );
     }
 }
