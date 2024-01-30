@@ -52,8 +52,7 @@ class AddProfilesToListApiTransferTranslator extends AbstractApiTransferMessageT
 
         $this->assertStatusCode($response);
 
-        // Throw different exception in case if response is 200 but not a json
-        throw new TranslationException($response, 'Add Profiles to list api response expected to be a JSON');
+        return new AddProfilesToListResponse(true);
     }
 
     /**
