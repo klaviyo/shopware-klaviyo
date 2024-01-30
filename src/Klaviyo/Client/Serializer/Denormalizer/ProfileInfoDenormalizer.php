@@ -14,7 +14,7 @@ class ProfileInfoDenormalizer extends AbstractDenormalizer
     {
         $this->assertResultRow($data);
 
-        return new ProfileInfo($data['id'], $data['email']);
+        return new ProfileInfo($data['id'], $data['attributes']['email']);
     }
 
     /**
@@ -30,7 +30,7 @@ class ProfileInfoDenormalizer extends AbstractDenormalizer
             throw new DeserializationException('Decoded profile info array expected to have an id key');
         }
 
-        if (empty($resultRow['email'])) {
+        if (empty($resultRow['attributes']['email'])) {
             throw new DeserializationException('Decoded profile info array expected to have an email key');
         }
     }

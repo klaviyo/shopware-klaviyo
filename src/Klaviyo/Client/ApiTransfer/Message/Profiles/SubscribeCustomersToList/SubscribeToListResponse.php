@@ -13,7 +13,7 @@ class SubscribeToListResponse
 
     public function __construct(
         bool $success,
-        ProfileInfoCollection $addedProfiles,
+        ProfileInfoCollection $addedProfiles = null,
         string $errorDetails = ''
     ) {
         $this->success = $success;
@@ -26,7 +26,7 @@ class SubscribeToListResponse
         return $this->success;
     }
 
-    public function getAddedProfiles(): ProfileInfoCollection
+    public function getAddedProfiles(): ?ProfileInfoCollection
     {
         return $this->addedProfiles;
     }
