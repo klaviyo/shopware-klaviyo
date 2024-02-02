@@ -8,12 +8,12 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Common\Profi
 class SubscribeToListResponse
 {
     private bool $success;
-    private ProfileInfoCollection $addedProfiles;
+    private ?ProfileInfoCollection $addedProfiles;
     private string $errorDetails;
 
     public function __construct(
         bool $success,
-        ProfileInfoCollection $addedProfiles = null,
+        ?ProfileInfoCollection $addedProfiles = null,
         string $errorDetails = ''
     ) {
         $this->success = $success;
