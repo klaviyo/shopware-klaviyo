@@ -1,3 +1,7 @@
+# 1.7.5
+# Fix: Visibility of Back In Stock on PDP.
+# New: The plugin API has been updated to the latest version of the Klaviyo API.
+
 # 1.6.4
 # Fix: The category is now displayed after adding a product from a dynamic product group.
 # Fix: Plugin provides the correct product URL by domain language.
