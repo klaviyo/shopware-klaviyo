@@ -7,7 +7,7 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Common\Profi
 class AddProfilesToListResponse
 {
     private bool $success;
-    private ProfileInfoCollection $addedProfiles;
+    private ?ProfileInfoCollection $addedProfiles;
     private string $errorDetails;
 
     public function __construct(bool $success, ProfileInfoCollection $addedProfiles = null, string $errorDetails = '')
