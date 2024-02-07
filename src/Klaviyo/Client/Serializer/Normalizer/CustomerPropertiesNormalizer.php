@@ -12,22 +12,12 @@ class CustomerPropertiesNormalizer implements NormalizerInterface
      * @param string|null $format
      * @param array $context
      *
-     * @return array|\ArrayObject|bool|float|int|string|void|null
+     * @return array
      */
-    public function normalize($object, string $format = null, array $context = [])
+    public function normalize($object, string $format = null, array $context = []): array
     {
-        return array_merge(
+        $properties = array_merge(
             [
-                '$id' => $object->getId(),
-                '$email' => $object->getEmail(),
-                '$first_name' => $object->getFirstName(),
-                '$last_name' => $object->getLastName(),
-                '$address1' => $object->getAddress(),
-                '$phone_number' => $object->getPhoneNumber(),
-                '$city' => $object->getCity(),
-                '$region' => $object->getRegion(),
-                '$country' => $object->getCountry(),
-                '$zip' => $object->getZip(),
                 'Birthday' => $object->getBirthday(),
                 'salesChannelId' => $object->getSalesChannelId(),
                 'salesChannelName' => $object->getSalesChannelName(),
@@ -37,9 +27,25 @@ class CustomerPropertiesNormalizer implements NormalizerInterface
             ],
             $object->getCustomFields()
         );
+
+        return [
+                'external_id' => $object->getId(),
+                'email' => $object->getEmail(),
+                'first_name' => $object->getFirstName(),
+                'last_name' => $object->getLastName(),
+                'phone_number' => $object->getPhoneNumber(),
+                'location' => [
+                    'address1' => $object->getAddress(),
+                    'city' => $object->getCity(),
+                    'region' => $object->getRegion(),
+                    'country' => $object->getCountry(),
+                    'zip' => $object->getZip(),
+                ],
+                'properties' => $properties,
+            ];
     }
 
-    public function supportsNormalization($data, string $format = null)
+    public function supportsNormalization($data, string $format = null): bool
     {
         return $data instanceof CustomerProperties;
     }

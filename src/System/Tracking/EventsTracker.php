@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\System\Tracking;
 
@@ -11,9 +13,6 @@ use Klaviyo\Integration\System\Tracking\Event\Order\OrderTrackingEventsBag;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Customer\CustomerCollection;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 
 class EventsTracker implements EventsTrackerInterface
 {
@@ -31,8 +30,6 @@ class EventsTracker implements EventsTrackerInterface
         $this->logger = $logger;
     }
 
-    // TODO: It's here!!! ?????
-
     public function trackPlacedOrders(Context $context, OrderTrackingEventsBag $trackingBag): OrderTrackingResult
     {
         $trackingResult = new OrderTrackingResult();
@@ -40,6 +37,7 @@ class EventsTracker implements EventsTrackerInterface
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
             $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+
             if ($configuration->isTrackPlacedOrder()) {
                 $placedOrderTrackingResult = $this->gateway->trackPlacedOrders($context, $channelId, $events);
                 $trackingResult->mergeWith($placedOrderTrackingResult);
@@ -56,6 +54,7 @@ class EventsTracker implements EventsTrackerInterface
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
             $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+
             if ($configuration->isTrackOrderedProduct()) {
                 $orderedProductTrackingResult = $this->gateway->trackOrderedProducts($context, $channelId, $events);
                 $trackingResult->mergeWith($orderedProductTrackingResult);
@@ -72,6 +71,7 @@ class EventsTracker implements EventsTrackerInterface
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
             $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+
             if (!$configuration->isTrackFulfilledOrder()) {
                 continue;
             }
@@ -90,6 +90,7 @@ class EventsTracker implements EventsTrackerInterface
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
             $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+
             if (!$configuration->isTrackCanceledOrder()) {
                 continue;
             }
@@ -108,6 +109,7 @@ class EventsTracker implements EventsTrackerInterface
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
             $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+
             if (!$configuration->isTrackRefundedOrder()) {
                 continue;
             }
@@ -119,7 +121,7 @@ class EventsTracker implements EventsTrackerInterface
         return $trackingResult;
     }
 
-    public function trackAddedToCart(Context $context, CartEventRequestBag $requestBag)
+    public function trackAddedToCart(Context $context, CartEventRequestBag $requestBag): void
     {
         foreach ($requestBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
@@ -131,11 +133,12 @@ class EventsTracker implements EventsTrackerInterface
         }
     }
 
-    public function trackCustomerWritten(Context $context, ProfileEventsBag $trackingBag)
+    public function trackCustomerWritten(Context $context, ProfileEventsBag $trackingBag): void
     {
         foreach ($trackingBag->all() as $channelId => $customerEntities) {
-            //TODO: maybe add enable/disable setting in future?
+            // TODO: maybe add enable/disable setting in future?
             $customerCollection = new CustomerCollection();
+
             foreach ($customerEntities as $customer) {
                 $customerCollection->add($customer);
             }
@@ -170,6 +173,7 @@ class EventsTracker implements EventsTrackerInterface
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
             $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+
             // Added paid config or not
             if (!$configuration->isTrackPaidOrder()) {
                 continue;

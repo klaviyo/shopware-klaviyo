@@ -98,12 +98,12 @@
 
             {% block klaviyo_integration_settings_general_klaviyo_list_for_subscribers_sync %}
                 <sw-inherit-wrapper v-model="actualConfigData[selectedSubscriptionList]"
-                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['klavi_overd.config.klaviyoListForSubscribersSync']"
+                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync']"
                                     :label="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.label')"
                                     required
                                     :helpText="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.helpText')">
                     <template #content="props">
-                        <sw-single-select name="klavi_overd.config.klaviyoListForSubscribersSync"
+                        <sw-single-select name="KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync"
                                           labelProperty="label"
                                           valueProperty="value"
                                           required

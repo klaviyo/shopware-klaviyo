@@ -1,10 +1,12 @@
 <?php
 
-namespace Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\AddMembersToList;
+declare(strict_types=1);
+
+namespace Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\SubscribeCustomersToList;
 
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Common\ProfileContactInfoCollection;
 
-class AddProfilesToListRequest
+class RealSubscribersToKlaviyoRequest
 {
     private string $listId;
     private ProfileContactInfoCollection $profiles;

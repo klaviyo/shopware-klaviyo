@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Model\UseCase\Operation;
 
@@ -9,7 +11,6 @@ use Od\Scheduler\Model\Job\JobHandlerInterface;
 use Od\Scheduler\Model\Job\JobResult;
 use Od\Scheduler\Model\Job\Message\InfoMessage;
 use Shopware\Core\Checkout\Customer\CustomerCollection;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
@@ -45,7 +46,10 @@ class CustomerProfileSyncOperation implements JobHandlerInterface
 
         /** @var CustomerCollection $customers */
         $customers = $this->customerRepository->search($criteria, $message->getContext())->getEntities();
-        $this->eventsTracker->trackCustomerWritten($message->getContext(), ProfileEventsBag::fromCollection($customers));
+        $this->eventsTracker->trackCustomerWritten(
+            $message->getContext(),
+            ProfileEventsBag::fromCollection($customers)
+        );
 
         return new JobResult();
     }

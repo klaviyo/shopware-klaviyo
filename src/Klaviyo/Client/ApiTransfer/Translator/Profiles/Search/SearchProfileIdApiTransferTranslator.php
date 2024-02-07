@@ -1,30 +1,29 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator\Profiles\Search;
 
 use GuzzleHttp\Psr7\Request;
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Search\GetProfileIdByCustomerIdRequest;
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Search\GetProfileIdByEmailRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Search\GetProfileIdRequestInterface;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Search\GetProfileIdResponse;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator\AbstractApiTransferMessageTranslator;
 use Klaviyo\Integration\Klaviyo\Client\Exception\TranslationException;
+use Klaviyo\Integration\Klaviyo\Gateway\ClientConfigurationFactory;
 use Psr\Http\Message\ResponseInterface;
 
 class SearchProfileIdApiTransferTranslator extends AbstractApiTransferMessageTranslator
 {
     /**
      * @param GetProfileIdRequestInterface $request
-     * @return Request
      */
     public function translateRequest(object $request): Request
     {
         $url = \sprintf(
-            '%s/people/search?%s=%s&api_key=%s',
-            $this->configuration->getListAndSegmentsApiEndpointUrl(),
+            '%s/profiles?filter=equals(%s,"%s")',
+            $this->configuration->getGlobalNewEndpointUrl(),
             $request->getSearchFieldName(),
-            \urlencode($request->getSearchFieldValue()),
-            $this->configuration->getApiKey()
+            \urlencode($request->getSearchFieldValue())
         );
 
         return $this->constructGuzzleRequestToKlaviyoAPI($url);
@@ -35,9 +34,8 @@ class SearchProfileIdApiTransferTranslator extends AbstractApiTransferMessageTra
         $isJsonResponse = $this->isResponseJson($response);
         if ($isJsonResponse) {
             $content = $response->getBody()->getContents();
-            $result = $this->deserialize($content, GetProfileIdResponse::class);
 
-            return $result;
+            return $this->deserialize($content, GetProfileIdResponse::class);
         }
 
         $this->assertStatusCode($response);
@@ -45,13 +43,10 @@ class SearchProfileIdApiTransferTranslator extends AbstractApiTransferMessageTra
         throw new TranslationException($response, 'Profile search API response expected to be a JSON');
     }
 
-    private function assertStatusCode(ResponseInterface $response)
+    private function assertStatusCode(ResponseInterface $response): void
     {
-        if ($response->getStatusCode() !== 200 || $response->getStatusCode() !== 404) {
-            throw new TranslationException(
-                $response,
-                \sprintf('Invalid profile search API response status code: %s', $response->getStatusCode())
-            );
+        if (200 !== $response->getStatusCode() || 404 !== $response->getStatusCode()) {
+            throw new TranslationException($response, \sprintf('Invalid profile search API response status code: %s', $response->getStatusCode()));
         }
     }
 
@@ -66,7 +61,9 @@ class SearchProfileIdApiTransferTranslator extends AbstractApiTransferMessageTra
             'GET',
             $endpoint,
             [
-                'Accept' => 'application/json'
+                'Authorization' => $this->configuration->getApiKey(),
+                'Accept' => 'application/json',
+                'revision' => ClientConfigurationFactory::API_REVISION_DATE,
             ]
         );
     }
