@@ -6,6 +6,7 @@ namespace Klaviyo\Integration\Controller\Api;
 
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Account\GetAccountRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetLists\GetProfilesListsRequest;
+use Klaviyo\Integration\Klaviyo\Client\ClientInterface;
 use Klaviyo\Integration\Klaviyo\Gateway\ClientRegistry;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,6 +18,8 @@ use Symfony\Component\Routing\Annotation\Route;
 class ValidationController extends AbstractController
 {
     private ClientRegistry $clientRegistry;
+    private array $profileLists = [];
+    private ClientInterface $client;
 
     public function __construct(ClientRegistry $clientRegistry)
     {
@@ -34,27 +37,20 @@ class ValidationController extends AbstractController
             return new JsonResponse(['invalid_parameters' => true], Response::HTTP_OK);
         }
 
-        $client = $this->clientRegistry->getClientByKeys($privateKey, $publicKey);
-        $request = new GetProfilesListsRequest();
+        $this->client = $client = $this->clientRegistry->getClientByKeys($privateKey, $publicKey);
+
         $accountRequest = new GetAccountRequest($publicKey);
-        $responses = $client->sendRequests([$request, $accountRequest]);
+        $responses = $client->sendRequests([$accountRequest]);
 
         if (!empty($responses->getRequestErrors())) {
             return new JsonResponse(['general_error' => true], Response::HTTP_OK);
         }
 
         try {
-            $response = $responses->getRequestResponse($request);
+            $response = $this->getAllProfileLists(new GetProfilesListsRequest());
             $accountResponse = $responses->getRequestResponse($accountRequest);
         } catch (\Exception $e) {
             return new JsonResponse(['general_error' => true], Response::HTTP_OK);
-        }
-
-        if (!$response->isSuccess()) {
-            return new JsonResponse(
-                ['incorrect_credentials' => true, 'incorrect_credentials_message' => $response->getErrorDetails()],
-                Response::HTTP_OK
-            );
         }
 
         if (!$accountResponse->isSuccess()) {
@@ -67,17 +63,17 @@ class ValidationController extends AbstractController
             );
         }
 
-        foreach ($response->getLists() as $list) {
-            if ($list->getName() === $listName) {
+        foreach ($this->profileLists as $list) {
+            if ($list['value'] === $listName) {
                 return new JsonResponse(['success' => true], Response::HTTP_OK);
             }
         }
 
-        return new JsonResponse(['incorrect_list' => true], Response::HTTP_OK);
+        return $response;
     }
 
     #[Route(path: '/api/_action/od-get-subscriber-lists', name: 'api.action.od_get_subscriber_lists', defaults: ['auth_required' => false], methods: ['POST'])]
-    public function getSubscriberListsAvailable(RequestDataBag $post)
+    public function getSubscriberListsAvailable(RequestDataBag $post): JsonResponse
     {
         $publicKey = $post->get('publicKey');
         $privateKey = $post->get('privateKey');
@@ -86,32 +82,55 @@ class ValidationController extends AbstractController
             return new JsonResponse(['invalid_parameters' => true], Response::HTTP_OK);
         }
 
-        $client = $this->clientRegistry->getClientByKeys($privateKey, $publicKey);
-        $request = new GetProfilesListsRequest();
-        $clientResult = $client->sendRequests([$request]);
-        $result = $clientResult->getRequestResponse($request);
+        $this->client = $this->clientRegistry->getClientByKeys($privateKey, $publicKey);
+        $result = $this->getAllProfileLists(new GetProfilesListsRequest());
 
-        $data = $this->parseListNamesFromResponse($result);
-
-        if (empty($data)) {
-            return new JsonResponse(['incorrect_list' => true], Response::HTTP_OK);
+        if (empty($this->profileLists)) {
+            return $result;
         }
 
-        return new JsonResponse(['success' => true, 'data' => $data,
+        return new JsonResponse(['success' => true, 'data' => $this->profileLists,
         ], Response::HTTP_OK);
     }
 
-    private function parseListNamesFromResponse($response): array
+    private function parseListNamesFromResponse($response): void
     {
-        $data = [];
-
         foreach ($response->getLists()->getElements() as $e) {
-            $data[] = [
-                'value' => $e->getName(),
+            $this->profileLists[] = [
+                'value' => $e->getId(),
                 'label' => $e->getName(),
             ];
         }
+    }
 
-        return $data;
+    private function getAllProfileLists($request): JsonResponse
+    {
+        $client = $this->client;
+        $responses = $client->sendRequests([$request]);
+
+        if (!empty($responses->getRequestErrors())) {
+            return new JsonResponse(['general_error' => true], Response::HTTP_OK);
+        }
+
+        try {
+            $response = $responses->getRequestResponse($request);
+        } catch (\Exception) {
+            return new JsonResponse(['general_error' => true], Response::HTTP_OK);
+        }
+
+        if (!$response->isSuccess()) {
+            return new JsonResponse(
+                ['incorrect_credentials' => true, 'incorrect_credentials_message' => $response->getErrorDetails()],
+                Response::HTTP_OK
+            );
+        }
+
+        $this->parseListNamesFromResponse($response);
+
+        if ($response->getNextPageUrl()) {
+            $this->getAllProfileLists(new GetProfilesListsRequest($response->getNextPageUrl()));
+        }
+
+        return new JsonResponse(['incorrect_list' => true], Response::HTTP_OK);
     }
 }

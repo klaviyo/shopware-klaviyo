@@ -30,8 +30,8 @@ class SubscribeToListResponseDenormalizer extends AbstractDenormalizer
 
         // If List id is invalid we receive an error in the message field but
         // if another error will happen details will be stored in the detail field
-        if (!empty($data['detail']) || !empty($data['message'])) {
-            $errorDetails = $data['detail'] ?? $data['message'];
+        if (!empty($data['errors'][0]['detail'])) {
+            $errorDetails = $data['errors'][0]['detail'];
 
             return new SubscribeToListResponse(false, $addedProfiles, $errorDetails);
         }

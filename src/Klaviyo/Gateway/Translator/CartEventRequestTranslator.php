@@ -49,7 +49,7 @@ class CartEventRequestTranslator
         \DateTimeInterface $time
     ): AddedToCartEventTrackingRequest {
         $request = $this->requestStack->getCurrentRequest();
-        $subscriberId = (string)$request->cookies->get('klaviyo_subscriber');
+        $subscriberId = (string) $request->cookies->get('klaviyo_subscriber');
 
         if ($context->getCustomer()) {
             $customerProperties = $this->customerPropertiesTranslator->translateCustomer(
@@ -72,7 +72,7 @@ class CartEventRequestTranslator
 
         $collection = new CartEventDTO\CartProductInfoCollection();
         foreach ($cart->getLineItems() as $cartLineItem) {
-            if ($cartLineItem->getType() !== 'product') {
+            if ('product' !== $cartLineItem->getType()) {
                 continue;
             }
 
@@ -102,10 +102,9 @@ class CartEventRequestTranslator
         LineItem $lineItem
     ): CartEventDTO\CartProductInfo {
         $product = $this->productDataHelper->getProductById($context->getContext(), $lineItem->getReferencedId());
+
         if (!$product) {
-            throw new TranslationException(
-                \sprintf('Product[id: %s] was not found', $lineItem->getReferencedId())
-            );
+            throw new TranslationException(\sprintf('Product[id: %s] was not found', $lineItem->getReferencedId()));
         }
 
         $imageUrl = $this->productDataHelper->getCoverImageUrl($context->getContext(), $product);

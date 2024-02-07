@@ -4,24 +4,15 @@ declare(strict_types=1);
 
 namespace Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer;
 
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Identify\IdentifyProfileRequest;
-use Symfony\Component\Serializer\Exception\ExceptionInterface;
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Update\UpdateProfileRequest;
 
-class IdentifyProfileRequestNormalizer extends AbstractNormalizer
+class UpdateProfileRequestNormalizer extends AbstractNormalizer
 {
-    /**
-     * @param IdentifyProfileRequest $object
-     * @param string|null $format
-     * @param array $context
-     * @return array
-     * @throws \Klaviyo\Integration\Klaviyo\Client\Exception\SerializationException
-     * @throws ExceptionInterface
-     */
-    public function normalize($object, string $format = null, array $context = []): array
+    public function normalize(mixed $object, string $format = null, array $context = []): array
     {
         $customerProperties = $object->getCustomerProperties();
 
-        return ['data' => ['type' => 'profile', 'attributes' => [
+        return ['data' => ['type' => 'profile', 'id' => $object->getProfileId(), 'attributes' => [
             'email' => $customerProperties->getEmail(),
             'phone_number' => $customerProperties->getPhoneNumber(),
             'external_id' => $customerProperties->getId(),
@@ -37,8 +28,8 @@ class IdentifyProfileRequestNormalizer extends AbstractNormalizer
         ]]];
     }
 
-    public function supportsNormalization($data, string $format = null): bool
+    public function supportsNormalization(mixed $data, string $format = null): bool
     {
-        return $data instanceof IdentifyProfileRequest;
+        return $data instanceof UpdateProfileRequest;
     }
 }

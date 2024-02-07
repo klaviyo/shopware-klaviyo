@@ -23,8 +23,17 @@ class PaidOrderEventTrackingRequest extends AbstractOrderEventTrackingRequest
         ?Address $shippingAddress,
         string $reason
     ) {
-        parent::__construct($eventId, $time, $customerProperties, $orderTotal, $orderId, $discounts, $products,
-            $billingAddress, $shippingAddress);
+        parent::__construct(
+            $eventId,
+            $time,
+            $customerProperties,
+            $orderTotal,
+            $orderId,
+            $discounts,
+            $products,
+            $billingAddress,
+            $shippingAddress
+        );
 
         $this->reason = $reason;
     }

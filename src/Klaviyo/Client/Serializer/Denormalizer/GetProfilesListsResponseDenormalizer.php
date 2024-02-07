@@ -10,46 +10,59 @@ use Klaviyo\Integration\Klaviyo\Client\Exception\DeserializationException;
 class GetProfilesListsResponseDenormalizer extends AbstractDenormalizer
 {
     /**
-     * {@inheritDoc}
-     *
-     * @return GetProfilesListsResponse
      * @throws DeserializationException
      */
-    public function denormalize($data, string $type, string $format = null, array $context = [])
-    {
+    public function denormalize(
+        $data,
+        string $type,
+        string $format = null,
+        array $context = []
+    ): GetProfilesListsResponse {
         $profilesListInfoCollection = new ProfilesListInfoCollection();
+        $nextPageUrl = '';
 
-        if (!empty($data['detail']) || !empty($data['message'])) {
-            $errorDetails = $data['message'] ?? $data['detail'];
+        if (!empty($data['errors']) && !empty($data['errors']['detail'])) {
+            $errorDetails = $data['errors']['detail'];
 
-            return new GetProfilesListsResponse(false, $profilesListInfoCollection, $errorDetails);
+            return new GetProfilesListsResponse(false, $profilesListInfoCollection, $nextPageUrl, $errorDetails);
         }
 
-        foreach ($data as $row) {
+        if (!isset($data['data']) && !isset($data['links'])) {
+            throw new DeserializationException('There is something wrong with the response structure of the list data');
+        }
+
+        foreach ($data['data'] as $row) {
             $this->assertResultRow($row);
-            $profilesListInfoCollection->add(new ProfilesListInfo($row['list_id'], $row['list_name']));
+            $profilesListInfoCollection->add(new ProfilesListInfo($row['id'], $row['attributes']['name']));
         }
 
-        return new GetProfilesListsResponse(true, $profilesListInfoCollection);
+        if (!empty($data['links']['next'])) {
+            $nextPageUrl = $data['links']['next'];
+        }
+
+        return new GetProfilesListsResponse(true, $profilesListInfoCollection, $nextPageUrl);
     }
 
-    private function assertResultRow($resultRow)
+    /**
+     * @throws DeserializationException
+     */
+    private function assertResultRow($resultRow): void
     {
         if (!is_array($resultRow)) {
             throw new DeserializationException('Each line in the profiles list response expected to be an array');
         }
 
-        if (empty($resultRow['list_id'])) {
-            throw new DeserializationException('Each line in the profiles list response expected to have a list_id');
+        if (empty($resultRow['id'])) {
+            throw new DeserializationException('Each line in the profiles list response expected to have an ID');
         }
 
-        if (empty($resultRow['list_name'])) {
-            throw new DeserializationException('Each line in the profiles list response expected to have a list_name');
+        if (empty($resultRow['attributes']['name'])) {
+            throw new DeserializationException('Each line in the profiles list response expected to have a Name');
         }
     }
 
-    public function supportsDenormalization($data, string $type, string $format = null)
+    public function supportsDenormalization($data, string $type, string $format = null): bool
     {
-        return $type === GetProfilesListsResponse::class;
+        return GetProfilesListsResponse::class === $type;
     }
 }
