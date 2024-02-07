@@ -1,4 +1,4 @@
-# 1.7.5
+# 1.7.0
 # Fix: Sichtbarkeit von „Back In Stock“ auf PDP.
 # New: Die Plugin-API wurde auf die neueste Version der Klaviyo-API aktualisiert.
 
