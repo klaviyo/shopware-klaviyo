@@ -124,15 +124,46 @@ class CustomerPropertiesTranslator
 
         $address = $customerEntity->getActiveBillingAddress();
         if ($address && $address->getPhoneNumber()) {
-            return $address->getPhoneNumber();
+            $phoneNumber = $address->getPhoneNumber();
+            // Format phone number to E.164
+            return $this->fixForE164($phoneNumber);
         }
 
         $address = $customerEntity->getActiveShippingAddress();
         if ($address && $address->getPhoneNumber()) {
-            return $address->getPhoneNumber();
+            $phoneNumber = $address->getPhoneNumber();
+            // Format phone number to E.164
+            return $this->fixForE164($phoneNumber);
         }
 
         return null;
+    }
+
+    private function fixForE164($e164_phone): ?string
+    {
+        $e164_phone = str_replace(' ', '', $e164_phone);
+
+        if (strlen($e164_phone) > 15) {
+          $e164_phone = substr($e164_phone, 0, 10) . preg_replace('/[\/a-z-]0.+$/', '', substr($e164_phone, 10));
+        }
+
+        $e164_phone = preg_replace('/[^0-9]/', '', $e164_phone);
+
+        // Add a plus sign if missing
+        if (substr($e164_phone, 0, 1) !== '+') {
+            $e164_phone = '+' . $e164_phone;
+        }
+
+        // Ensure minimum length and validity
+        if (strlen($e164_phone) < 8 || !preg_match('/^\+[1-9][0-9]+$/', $e164_phone)) {
+            return null;
+        }
+
+        if (substr($e164_phone, 0, 1) !== '+' || strlen($e164_phone) < 8) {
+          $e164_phone = null;
+        }
+
+        return substr($e164_phone, 0, 16);
     }
 
     protected function getSalesChannelName(?string $id, ?SalesChannelEntity $channelEntity, Context $context): ?string
