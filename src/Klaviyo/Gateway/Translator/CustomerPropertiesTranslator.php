@@ -7,6 +7,8 @@ use Klaviyo\Integration\Entity\Helper\AddressDataHelper;
 use Klaviyo\Integration\Exception\JobRuntimeWarningException;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\Common\CustomerProperties;
 use Klaviyo\Integration\Klaviyo\Gateway\Exception\TranslationException;
+use Klaviyo\Integration\Utils\LocaleCodeProducer;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
@@ -15,7 +17,6 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-use Klaviyo\Integration\Utils\LocaleCodeProducer;
 
 class CustomerPropertiesTranslator
 {
@@ -41,16 +42,12 @@ class CustomerPropertiesTranslator
         $configuration = $this->configurationRegistry->getConfiguration($orderEntity->getSalesChannelId());
         $orderCustomer = $orderEntity->getOrderCustomer();
         if (!$orderCustomer) {
-            throw new TranslationException(
-                'OrderEntity translation failed, because order customer is empty'
-            );
+            throw new TranslationException('OrderEntity translation failed, because order customer is empty');
         }
 
         $customer = $orderCustomer->getCustomer();
-        if ($customer === null && !$configuration->isTrackDeletedAccountOrders()) {
-            throw new JobRuntimeWarningException(
-                \sprintf("Order[id: %s] associated account has been deleted - skipping.", $orderEntity->getId())
-            );
+        if (null === $customer && !$configuration->isTrackDeletedAccountOrders()) {
+            throw new JobRuntimeWarningException(\sprintf('Order[id: %s] associated account has been deleted - skipping.', $orderEntity->getId()));
         }
 
         $customerAddress = $this->guessRelevantCustomerAddress($customer);
@@ -78,7 +75,7 @@ class CustomerPropertiesTranslator
             $birthday ? $birthday->format(Defaults::STORAGE_DATE_FORMAT) : null,
             $customer ? $customer->getSalesChannelId() : null,
             $customer ? $this->getSalesChannelName($customer->getSalesChannelId(), $customer->getSalesChannel(), $context) : null,
-            $customer ? $customer->getBoundSalesChannelId(): null,
+            $customer ? $customer->getBoundSalesChannelId() : null,
             $customer ? $this->getSalesChannelName($customer->getBoundSalesChannelId(), $customer->getBoundSalesChannel(), $context) : null,
             $localeCode ?: null
         );
@@ -99,7 +96,7 @@ class CustomerPropertiesTranslator
 
     private function prepareCustomFields(?CustomerEntity $customer, string $channelId): array
     {
-        if ($customer === null) {
+        if (null === $customer) {
             return [];
         }
 
@@ -123,47 +120,38 @@ class CustomerPropertiesTranslator
         }
 
         $address = $customerEntity->getActiveBillingAddress();
+
         if ($address && $address->getPhoneNumber()) {
             $phoneNumber = $address->getPhoneNumber();
-            // Format phone number to E.164
-            return $this->fixForE164($phoneNumber);
+
+            if ($this->phoneValidationE164($phoneNumber)) {
+                return $address->getPhoneNumber();
+            }
         }
 
         $address = $customerEntity->getActiveShippingAddress();
+
         if ($address && $address->getPhoneNumber()) {
             $phoneNumber = $address->getPhoneNumber();
-            // Format phone number to E.164
-            return $this->fixForE164($phoneNumber);
+
+            if ($this->phoneValidationE164($phoneNumber)) {
+                return $address->getPhoneNumber();
+            }
         }
 
         return null;
     }
 
-    private function fixForE164($e164_phone): ?string
+    private function phoneValidationE164(string $phoneNumber): bool
     {
-        $e164_phone = str_replace(' ', '', $e164_phone);
+        $phoneNumber = trim($phoneNumber);
+        $result = preg_match('/^\+[1-9]\d{1,14}$/', $phoneNumber);
 
-        if (strlen($e164_phone) > 15) {
-          $e164_phone = substr($e164_phone, 0, 10) . preg_replace('/[\/a-z-]0.+$/', '', substr($e164_phone, 10));
+        if (1 !== $result) {
+            return false;
         }
 
-        $e164_phone = preg_replace('/[^0-9]/', '', $e164_phone);
-
-        // Add a plus sign if missing
-        if (substr($e164_phone, 0, 1) !== '+') {
-            $e164_phone = '+' . $e164_phone;
-        }
-
-        // Ensure minimum length and validity
-        if (strlen($e164_phone) < 8 || !preg_match('/^\+[1-9][0-9]+$/', $e164_phone)) {
-            return null;
-        }
-
-        if (substr($e164_phone, 0, 1) !== '+' || strlen($e164_phone) < 8) {
-          $e164_phone = null;
-        }
-
-        return substr($e164_phone, 0, 16);
+        return true;
     }
 
     protected function getSalesChannelName(?string $id, ?SalesChannelEntity $channelEntity, Context $context): ?string
@@ -176,6 +164,7 @@ class CustomerPropertiesTranslator
         }
         $criteria = new Criteria([$id]);
         $loadedChannel = $this->salesChannelRepository->search($criteria, $context)->first();
+
         return $loadedChannel ? $loadedChannel->getName() : null;
     }
 
