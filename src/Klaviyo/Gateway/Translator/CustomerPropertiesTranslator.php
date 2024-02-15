@@ -9,6 +9,7 @@ use Klaviyo\Integration\Entity\Helper\AddressDataHelper;
 use Klaviyo\Integration\Exception\JobRuntimeWarningException;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\Common\CustomerProperties;
 use Klaviyo\Integration\Klaviyo\Gateway\Exception\TranslationException;
+use Klaviyo\Integration\Utils\LocaleCodeProducer;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
@@ -17,7 +18,6 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-use Klaviyo\Integration\Utils\LocaleCodeProducer;
 
 class CustomerPropertiesTranslator
 {
@@ -43,16 +43,12 @@ class CustomerPropertiesTranslator
         $configuration = $this->configurationRegistry->getConfiguration($orderEntity->getSalesChannelId());
         $orderCustomer = $orderEntity->getOrderCustomer();
         if (!$orderCustomer) {
-            throw new TranslationException(
-                'OrderEntity translation failed, because order customer is empty'
-            );
+            throw new TranslationException('OrderEntity translation failed, because order customer is empty');
         }
 
         $customer = $orderCustomer->getCustomer();
-        if ($customer === null && !$configuration->isTrackDeletedAccountOrders()) {
-            throw new JobRuntimeWarningException(
-                \sprintf("Order[id: %s] associated account has been deleted - skipping.", $orderEntity->getId())
-            );
+        if (null === $customer && !$configuration->isTrackDeletedAccountOrders()) {
+            throw new JobRuntimeWarningException(\sprintf('Order[id: %s] associated account has been deleted - skipping.', $orderEntity->getId()));
         }
 
         $customerAddress = $this->guessRelevantCustomerAddress($customer);
@@ -80,7 +76,7 @@ class CustomerPropertiesTranslator
             $birthday ? $birthday->format(Defaults::STORAGE_DATE_FORMAT) : null,
             $customer ? $customer->getSalesChannelId() : null,
             $customer ? $this->getSalesChannelName($customer->getSalesChannelId(), $customer->getSalesChannel(), $context) : null,
-            $customer ? $customer->getBoundSalesChannelId(): null,
+            $customer ? $customer->getBoundSalesChannelId() : null,
             $customer ? $this->getSalesChannelName($customer->getBoundSalesChannelId(), $customer->getBoundSalesChannel(), $context) : null,
             $localeCode ?: null
         );
@@ -101,7 +97,7 @@ class CustomerPropertiesTranslator
 
     private function prepareCustomFields(?CustomerEntity $customer, string $channelId): array
     {
-        if ($customer === null) {
+        if (null === $customer) {
             return [];
         }
 
@@ -125,16 +121,38 @@ class CustomerPropertiesTranslator
         }
 
         $address = $customerEntity->getActiveBillingAddress();
+
         if ($address && $address->getPhoneNumber()) {
-            return $address->getPhoneNumber();
+            $phoneNumber = $address->getPhoneNumber();
+
+            if ($this->phoneValidationE164($phoneNumber)) {
+                return $address->getPhoneNumber();
+            }
         }
 
         $address = $customerEntity->getActiveShippingAddress();
+
         if ($address && $address->getPhoneNumber()) {
-            return $address->getPhoneNumber();
+            $phoneNumber = $address->getPhoneNumber();
+
+            if ($this->phoneValidationE164($phoneNumber)) {
+                return $address->getPhoneNumber();
+            }
         }
 
         return null;
+    }
+
+    private function phoneValidationE164(string $phoneNumber): bool
+    {
+        $phoneNumber = trim($phoneNumber);
+        $result = preg_match('/^\+[1-9]\d{1,14}$/', $phoneNumber);
+
+        if (1 !== $result) {
+            return false;
+        }
+
+        return true;
     }
 
     protected function getSalesChannelName(?string $id, ?SalesChannelEntity $channelEntity, Context $context): ?string
@@ -147,6 +165,7 @@ class CustomerPropertiesTranslator
         }
         $criteria = new Criteria([$id]);
         $loadedChannel = $this->salesChannelRepository->search($criteria, $context)->first();
+
         return $loadedChannel ? $loadedChannel->getName() : null;
     }
 
