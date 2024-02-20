@@ -26,7 +26,7 @@ class CanceledOrderEventTrackingRequestNormalizer extends ConfigurableOrderEvent
     public function normalize($object, string $format = null, array $context = []): array
     {
         $normalizedData = parent::normalize($object);
-
+        unset($normalizedData['customer_properties']['phone_number']);
         $normalizedData['properties']['Reason'] = $object->getReason();
 
         return [
