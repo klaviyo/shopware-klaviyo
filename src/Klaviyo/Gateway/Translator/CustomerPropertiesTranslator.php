@@ -36,6 +36,9 @@ class CustomerPropertiesTranslator
         $this->localeCodeProducer = $localeCodeProducer;
     }
 
+    /**
+     * @throws JobRuntimeWarningException
+     */
     public function translateOrder(Context $context, OrderEntity $orderEntity): CustomerProperties
     {
         $configuration = $this->configurationRegistry->getConfiguration($orderEntity->getSalesChannelId());
@@ -46,7 +49,9 @@ class CustomerPropertiesTranslator
 
         $customer = $orderCustomer->getCustomer();
         if (null === $customer && !$configuration->isTrackDeletedAccountOrders()) {
-            throw new JobRuntimeWarningException(\sprintf('Order[id: %s] associated account has been deleted - skipping.', $orderEntity->getId()));
+            throw new JobRuntimeWarningException(
+                \sprintf('Order[id: %s] associated account has been deleted - skipping.', $orderEntity->getId())
+            );
         }
 
         $customerAddress = $this->guessRelevantCustomerAddress($customer);
@@ -73,9 +78,17 @@ class CustomerPropertiesTranslator
             $customFields,
             $birthday ? $birthday->format(Defaults::STORAGE_DATE_FORMAT) : null,
             $customer ? $customer->getSalesChannelId() : null,
-            $customer ? $this->getSalesChannelName($customer->getSalesChannelId(), $customer->getSalesChannel(), $context) : null,
+            $customer ? $this->getSalesChannelName(
+                $customer->getSalesChannelId(),
+                $customer->getSalesChannel(),
+                $context
+            ) : null,
             $customer ? $customer->getBoundSalesChannelId() : null,
-            $customer ? $this->getSalesChannelName($customer->getBoundSalesChannelId(), $customer->getBoundSalesChannel(), $context) : null,
+            $customer ? $this->getSalesChannelName(
+                $customer->getBoundSalesChannelId(),
+                $customer->getBoundSalesChannel(),
+                $context
+            ) : null,
             $localeCode ?: null
         );
     }
@@ -143,7 +156,7 @@ class CustomerPropertiesTranslator
 
     private function phoneValidationE164(string $phoneNumber): bool
     {
-        $phoneNumber = trim($phoneNumber);
+        $phoneNumber = str_replace(' ', '', $phoneNumber);
         $result = preg_match('/^\+[1-9]\d{1,14}$/', $phoneNumber);
 
         if (1 !== $result) {
@@ -192,7 +205,11 @@ class CustomerPropertiesTranslator
             $customerEntity->getSalesChannelId(),
             $this->getSalesChannelName($customerEntity->getSalesChannelId(), $customerEntity->getSalesChannel(), $context),
             $customerEntity->getBoundSalesChannelId(),
-            $this->getSalesChannelName($customerEntity->getBoundSalesChannelId(), $customerEntity->getBoundSalesChannel(), $context),
+            $this->getSalesChannelName(
+                $customerEntity->getBoundSalesChannelId(),
+                $customerEntity->getBoundSalesChannel(),
+                $context
+            ),
             $localeCode ?: null
         );
     }
