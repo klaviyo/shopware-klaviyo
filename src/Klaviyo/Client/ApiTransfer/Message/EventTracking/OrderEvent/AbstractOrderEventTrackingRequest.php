@@ -11,6 +11,7 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\Common\
 class AbstractOrderEventTrackingRequest extends EventTrackingRequest
 {
     private float $orderTotal;
+    private float $shippingTotal;
     private string $orderId;
     private DiscountInfoCollection $discounts;
     private OrderProductItemInfoCollection $products;
@@ -22,6 +23,7 @@ class AbstractOrderEventTrackingRequest extends EventTrackingRequest
         \DateTimeInterface $time,
         ?CustomerProperties $customerProperties,
         float $orderTotal,
+        float $shippingTotal,
         string $orderId,
         DiscountInfoCollection $discounts,
         OrderProductItemInfoCollection $products,
@@ -29,6 +31,7 @@ class AbstractOrderEventTrackingRequest extends EventTrackingRequest
         ?Address $shippingAddress
     ) {
         $this->orderTotal = $orderTotal;
+        $this->shippingTotal = $shippingTotal;
         $this->orderId = $orderId;
         $this->discounts = $discounts;
         $this->products = $products;
@@ -66,5 +69,9 @@ class AbstractOrderEventTrackingRequest extends EventTrackingRequest
     public function getShippingAddress(): ?Address
     {
         return $this->shippingAddress;
+    }
+    public function getShippingTotal(): float
+    {
+        return $this->shippingTotal;
     }
 }
