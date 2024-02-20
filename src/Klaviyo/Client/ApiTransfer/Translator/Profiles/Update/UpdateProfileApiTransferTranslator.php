@@ -11,13 +11,14 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator\AbstractApiTransfe
 use Klaviyo\Integration\Klaviyo\Client\Exception\TranslationException;
 use Klaviyo\Integration\Klaviyo\Gateway\ClientConfigurationFactory;
 use Psr\Http\Message\ResponseInterface;
+use Shopware\Core\Framework\Context;
 
 class UpdateProfileApiTransferTranslator extends AbstractApiTransferMessageTranslator
 {
     /**
      * @param UpdateProfileRequest $request
      */
-    public function translateRequest(object $request): Request
+    public function translateRequest(object $request, Context $context = null): Request
     {
         $body = $this->serialize($request);
 
