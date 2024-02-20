@@ -329,6 +329,7 @@ class OrderEventRequestTranslator
             $customerProperties,
             $orderEntity->getAmountTotal(),
             $context->orderIdentificationFlag == 'order-id' ? $orderEntity->getId() : $orderEntity->getOrderNumber(),
+            $orderEntity->getShippingCosts()->getTotalPrice(),
             $discounts,
             $products,
             $billingAddress,
