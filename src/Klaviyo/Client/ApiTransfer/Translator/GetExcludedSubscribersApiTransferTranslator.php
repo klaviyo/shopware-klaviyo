@@ -9,6 +9,7 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\G
 use Klaviyo\Integration\Klaviyo\Client\Exception\TranslationException;
 use Klaviyo\Integration\Klaviyo\Gateway\ClientConfigurationFactory;
 use Psr\Http\Message\ResponseInterface;
+use Shopware\Core\Framework\Context;
 
 class GetExcludedSubscribersApiTransferTranslator extends AbstractApiTransferMessageTranslator
 {
@@ -17,7 +18,7 @@ class GetExcludedSubscribersApiTransferTranslator extends AbstractApiTransferMes
     /**
      * @param GetExcludedSubscribers\Request $request
      */
-    public function translateRequest(object $request): Request
+    public function translateRequest(object $request, Context $context = null): Request
     {
         if ($request->getNextPageUrl()) {
             $url = $request->getNextPageUrl();
@@ -60,6 +61,9 @@ class GetExcludedSubscribersApiTransferTranslator extends AbstractApiTransferMes
         throw new TranslationException($response, 'Get excluded subscribers api response expected to be a JSON');
     }
 
+    /**
+     * @throws TranslationException
+     */
     private function assertStatusCode(ResponseInterface $response): void
     {
         if ($response->getStatusCode() < 200 || $response->getStatusCode() >= 300) {

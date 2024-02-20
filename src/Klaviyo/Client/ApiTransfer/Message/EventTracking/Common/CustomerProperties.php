@@ -85,6 +85,11 @@ class CustomerProperties implements \JsonSerializable
         return $this->phone_number;
     }
 
+    public function setPhoneNumber(?string $phone_number): ?string
+    {
+        return $this->phone_number = $phone_number;
+    }
+
     public function getAddress(): ?string
     {
         return $this->address;

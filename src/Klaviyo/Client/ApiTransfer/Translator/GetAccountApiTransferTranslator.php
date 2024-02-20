@@ -10,12 +10,13 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Account\GetAccountRes
 use Klaviyo\Integration\Klaviyo\Client\Exception\TranslationException;
 use Klaviyo\Integration\Klaviyo\Gateway\ClientConfigurationFactory;
 use Psr\Http\Message\ResponseInterface;
+use Shopware\Core\Framework\Context;
 
 class GetAccountApiTransferTranslator extends AbstractApiTransferMessageTranslator
 {
     public const PERMISSION_DENIED = 'permission_denied';
 
-    public function translateRequest(object $request): Request
+    public function translateRequest(object $request, Context $context = null): Request
     {
         $url = \sprintf(
             '%s/accounts/%s/',
@@ -75,6 +76,9 @@ class GetAccountApiTransferTranslator extends AbstractApiTransferMessageTranslat
         );
     }
 
+    /**
+     * @throws TranslationException
+     */
     private function assertStatusCode(ResponseInterface $response): void
     {
         if ($response->getStatusCode() < 200 || $response->getStatusCode() >= 300) {
