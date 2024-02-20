@@ -78,6 +78,7 @@ class ConfigurableOrderEventTrackingRequestNormalizer extends AbstractNormalizer
             'Brands' => array_unique($brands),
             'DiscountCode' => implode(',', $discountCodes),
             'DiscountValue' => $discountTotal,
+            'ShippingCosts' => $object->getShippingTotal(),
             'Items' => $normalizedItems,
             'BillingAddress' => $billingAddress,
             'ShippingAddress' => $shippingAddress,
