@@ -9,6 +9,7 @@ use Klaviyo\Integration\Klaviyo\Client\Exception\TranslationException;
 use Klaviyo\Integration\Klaviyo\Gateway\ClientConfigurationFactory;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\Serializer\SerializerInterface;
+use Shopware\Core\Framework\Context;
 
 class GenericEventTrackingApiTransferTranslator extends AbstractApiTransferMessageTranslator
 {
@@ -29,21 +30,30 @@ class GenericEventTrackingApiTransferTranslator extends AbstractApiTransferMessa
         return $request instanceof $this->requestClassName;
     }
 
-    public function translateRequest(object $request): Request
+    public function translateRequest(object $request, Context $context = null): Request
     {
-        $body = $this->serialize($request);
+        $body = $this->serialize($request, $context);
 
         return $this->constructGuzzleRequestToKlaviyoAPI($this->configuration->getTrackApiEndpointUrl(), $body);
     }
 
     public function translateResponse(ResponseInterface $response): object
     {
+        $isJsonResponse = $this->isResponseJson($response);
+        $result = new EventTrackingResponse(true);
+
+        if ($isJsonResponse) {
+            $content = $response->getBody()->getContents();
+            $result = $this->deserialize($content, EventTrackingResponse::class);
+
+            if ($result->isSuccess() === false) {
+                return $result;
+            }
+        }
+
         $this->assertStatusCode($response);
 
-        $content = $response->getBody()->getContents();
-        $isSuccess = trim($content) === '1';
-
-        return new EventTrackingResponse($isSuccess);
+        return $result;
     }
 
     private function constructGuzzleRequestToKlaviyoAPI(string $endpoint, $body): Request
@@ -70,7 +80,11 @@ class GenericEventTrackingApiTransferTranslator extends AbstractApiTransferMessa
         if ($response->getStatusCode() < 200 || $response->getStatusCode() >= 300) {
             throw new TranslationException(
                 $response,
-                \sprintf('Invalid response status code %s', $response->getStatusCode())
+                \sprintf(
+                    'Invalid response status code %s. Details: %s',
+                    $response->getStatusCode(),
+                    $response->getReasonPhrase()
+                )
             );
         }
     }

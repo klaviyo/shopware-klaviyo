@@ -8,13 +8,14 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\AddMembersTo
 use Klaviyo\Integration\Klaviyo\Client\Exception\TranslationException;
 use Klaviyo\Integration\Klaviyo\Gateway\ClientConfigurationFactory;
 use Psr\Http\Message\ResponseInterface;
+use Shopware\Core\Framework\Context;
 
 class AddProfilesToListApiTransferTranslator extends AbstractApiTransferMessageTranslator
 {
     /**
      * @param AddProfilesToListRequest $request
      */
-    public function translateRequest(object $request): Request
+    public function translateRequest(object $request, Context $context = null): Request
     {
         $body = $this->serialize($request);
 

@@ -2,7 +2,9 @@
 
 namespace Klaviyo\Integration\Klaviyo\Client;
 
+use Shopware\Core\Framework\Context;
+
 interface ClientInterface
 {
-    public function sendRequests(array $requests): ClientResult;
+    public function sendRequests(array $requests, Context $context = null): ClientResult;
 }

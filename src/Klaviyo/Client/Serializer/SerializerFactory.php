@@ -35,6 +35,7 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer\SubscribeToListResponseDenormalizer;
+use Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer\EventTrackingResponseDenormalizer;
 
 
 class SerializerFactory
@@ -95,7 +96,8 @@ class SerializerFactory
                 new StartedCheckoutEventTrackingRequestNormalizer($configuration),
                 new GetAccountDenormalizer(),
                 new SubscribeToListRequestNormalizer($configuration),
-                new SubscribeToListResponseDenormalizer()
+                new SubscribeToListResponseDenormalizer(),
+                new EventTrackingResponseDenormalizer()
             ],
             [
                 new JsonEncoder()
