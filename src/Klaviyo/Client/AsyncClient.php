@@ -52,26 +52,19 @@ class AsyncClient implements ClientInterface
 
                         if (false === $translateResponseResult->isSuccess()) {
                             $orderId = $this->requests[$index]->getOrderId();
+                            $errorDetail = $translateResponseResult->getDetail();
 
                             if (
-                                'The phone number provided either does not exist or is ineligible to receive SMS' ===
-                                $translateResponseResult->getDetail()
+                                ('The phone number provided either does not exist or is ineligible to receive SMS' ===
+                                    $errorDetail)
+                                || (false !== strpos($errorDetail, 'Invalid phone number format'))
                             ) {
                                 $exceptionType = new JobRuntimeWarningException(
-                                    \sprintf(
-                                        'Order[id: %s] error: %s',
-                                        $orderId,
-                                        $translateResponseResult->getDetail()
-                                    )
+                                    \sprintf('Order[id: %s] error: %s', $orderId, $errorDetail)
                                 );
                             } else {
-                                $exceptionType = new \Exception(
-                                    \sprintf(
-                                        'Order[id: %s] error: %s',
-                                        $orderId,
-                                        $translateResponseResult->getDetail()
-                                    )
-                                );
+                                $throwText = \sprintf('Order[id: %s] error: %s', $orderId, $errorDetail);
+                                throw new TranslationException($response, $throwText);
                             }
 
                             $this->clientResult->addRequestError($this->requests[$index], $exceptionType);
