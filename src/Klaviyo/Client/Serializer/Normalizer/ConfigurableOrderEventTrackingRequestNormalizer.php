@@ -35,6 +35,14 @@ class ConfigurableOrderEventTrackingRequestNormalizer extends AbstractNormalizer
     {
         $customerProperties = $this->normalizeObject($object->getCustomerProperties());
 
+        if (!empty($context) && !empty($context['eventType']) &&
+            in_array(
+                $context['eventType'], ['FulfilledOrder', 'CancelledOrder', 'ShippedOrder', 'PaidOrder', 'RefundedOrder']
+            )
+        ) {
+            unset($customerProperties['phone_number']);
+        }
+
         $categories = [];
         $itemNames = [];
         $brands = [];
