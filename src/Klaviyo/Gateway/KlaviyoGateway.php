@@ -500,8 +500,15 @@ class KlaviyoGateway
 
         if (count($result->getFailedOrdersErrors()) > 0) {
             foreach ($result->getFailedOrdersErrors() as $orderId => $error) {
-                if (isset($orderEvents[$orderId]) && current($error)->getMessage() ===
-                    'The phone number provided either does not exist or is ineligible to receive SMS') {
+                if (
+                    isset($orderEvents[$orderId])
+                    && (
+                        strpos(
+                            current($error)->getMessage(),
+                            'The phone number provided either does not exist or is ineligible to receive SMS'
+                        )
+                    )
+                ) {
                     $orderEvent = $orderEvents[$orderId];
                     $context->assign(['orderSetNullPhone' => true]);
                     $this->trackOrderEvents($eventType, $context, $channelId, [$orderEvent]);
