@@ -494,8 +494,10 @@ class KlaviyoGateway
                 if (
                     isset($orderEvents[$orderId])
                     && (
-                        'The phone number provided either does not exist or is ineligible to receive SMS' ===
-                    current($error)->getMessage()
+                        strpos(
+                            current($error)->getMessage(),
+                            'The phone number provided either does not exist or is ineligible to receive SMS'
+                        )
                     )
                 ) {
                     $orderEvent = $orderEvents[$orderId];
