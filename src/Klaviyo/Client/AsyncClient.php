@@ -48,11 +48,13 @@ class AsyncClient implements ClientInterface
 
                         $translateResponseResult = $translator->translateResponse($response);
 
-                        if ($translateResponseResult->isSuccess() === false) {
+                        if (false === $translateResponseResult->isSuccess()) {
                             $orderId = $this->requests[$index]->getOrderId();
 
-                            if ($translateResponseResult->getDetail() ===
-                                'The phone number provided either does not exist or is ineligible to receive SMS') {
+                            if (
+                                'The phone number provided either does not exist or is ineligible to receive SMS' ===
+                                $translateResponseResult->getDetail()
+                            ) {
                                 $exceptionType = new JobRuntimeWarningException(
                                     \sprintf(
                                         'Order[id: %s] error: %s',
@@ -118,7 +120,7 @@ class AsyncClient implements ClientInterface
             try {
                 $guzzleRequest = $translator->translateRequest($request, $context);
 
-                yield function () use ($guzzleRequest, $guzzleRequestOptions, $translator) {
+                yield function () use ($guzzleRequest, $guzzleRequestOptions) {
                     return $this->guzzleClient->sendAsync($guzzleRequest, $guzzleRequestOptions);
                 };
             } catch (\Throwable $e) {
