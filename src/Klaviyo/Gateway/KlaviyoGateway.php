@@ -491,14 +491,14 @@ class KlaviyoGateway
 
         if (count($result->getFailedOrdersErrors()) > 0) {
             foreach ($result->getFailedOrdersErrors() as $orderId => $error) {
+                $errorMsg = current($error)->getMessage();
+
                 if (
                     isset($orderEvents[$orderId])
-                    && (
-                        strpos(
-                            current($error)->getMessage(),
+                        && (false !== strpos(
+                            $errorMsg,
                             'The phone number provided either does not exist or is ineligible to receive SMS'
-                        )
-                    )
+                        ) || (false !== strpos($errorMsg, 'Invalid phone number format')))
                 ) {
                     $orderEvent = $orderEvents[$orderId];
                     $context->assign(['orderSetNullPhone' => true]);
