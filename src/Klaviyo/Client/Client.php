@@ -9,6 +9,7 @@ use Klaviyo\Integration\Klaviyo\Client\Configuration\ConfigurationInterface;
 use Klaviyo\Integration\Klaviyo\Client\Exception\ClientException;
 use Klaviyo\Integration\Klaviyo\Client\Exception\EventTrackingOperationRequestFailedException;
 use Klaviyo\Integration\Klaviyo\Client\Exception\TranslationException;
+use Shopware\Core\Framework\Context;
 
 class Client implements ClientInterface
 {
@@ -26,7 +27,7 @@ class Client implements ClientInterface
         $this->configuration = $configuration;
     }
 
-    public function sendRequests(array $requests): ClientResult
+    public function sendRequests(array $requests, Context $context = null): ClientResult
     {
         $clientResult = new ClientResult();
         $guzzleRequestOptions = [
@@ -45,7 +46,7 @@ class Client implements ClientInterface
                     throw new TranslationException($request, 'Applicable translator for request DTO was not found');
                 }
 
-                $guzzleRequest = $translator->translateRequest($request);
+                $guzzleRequest = $translator->translateRequest($request, $context);
                 $response = $this->guzzleClient->send($guzzleRequest, $guzzleRequestOptions);
                 $clientResult->addRequestResponse($request, $translator->translateResponse($response));
             } catch (ClientException $exception) {
