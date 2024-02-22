@@ -1,11 +1,11 @@
 {
     "klaviyo-job-listing": {
         "general": {
-            "title": "Klaviyo Job Übersicht",
+            "title": "Klaviyo Job Listing",
             "description": "job-listing"
         },
         "menu": {
-            "title": "Klaviyo Job Übersicht"
+            "title": "Klaviyo Job Listing"
         },
         "page": {
             "listing": {
@@ -106,8 +106,8 @@
                 "helpText": "Der Name der Abonnentenliste in Klaviyo, zu der alle Shopware 6 Abonnenten hinzugefügt werden sollen.\n Bei doppelten Namen wird die zuerst gefundene Liste verwendet."
             },
             "bisVariantField": {
-                "label": "Wieder auf Lager Varianten Feldzuordnung",
-                "helpText": "Wieder auf Lager Varianten Feldzuordnung",
+                "label": "Zuordnung von Produktidentifikationsfeldern",
+                "helpText": "Zuordnung der Produktidentifikation",
                 "productId": "Produkt ID"
             },
             "orderIdentification": {

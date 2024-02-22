@@ -106,8 +106,8 @@
                 "helpText": "The name of the Subscribers list in Klaviyo where all Shopware 6 subscribers will be added.\n In case of duplicate names first found list will be used"
             },
             "bisVariantField": {
-                "label": "Back in stock variant field mapping",
-                "helpText": "Back in stock variant mapping",
+                "label": "Product identification field mapping",
+                "helpText": "Product identification mapping",
                 "productId": "Product ID"
             },
             "orderIdentification": {
