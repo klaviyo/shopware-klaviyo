@@ -102,7 +102,7 @@ class ConfigurableOrderEventTrackingRequestNormalizer extends AbstractNormalizer
                 'attributes' => [
                     'time' => $object->getTime()->format('Y-m-d\TH:i:s'),
                     'value' => $object->getOrderTotal(),
-                    'unique_id' => $object->getEventId() . '_' . $object->getTime()->getTimestamp(),
+                    'unique_id' => $object->getEventId(),
                     'properties' => $properties,
                     'metric' => [
                         'data' => [
