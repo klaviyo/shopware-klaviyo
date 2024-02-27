@@ -5,7 +5,7 @@
 
 # 1.7.0
 # Fix: Sichtbarkeit von „Back In Stock“ auf PDP.
-# New: Die Plugin-API wurde auf die neueste Version der Klaviyo-API aktualisiert.
+# Neu: Die Plugin-API wurde auf die neueste Version der Klaviyo-API aktualisiert.
 
 # 1.6.4
 # Fix: Die Kategorie wird nun angezeigt, nachdem ein Produkt aus einer dynamischen Produktgruppe hinzugefügt wurde.
