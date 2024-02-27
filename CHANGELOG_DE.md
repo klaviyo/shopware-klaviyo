@@ -1,3 +1,8 @@
+# 1.8.0
+# Fix: Validierung von Telefonnummern in Bestellereignissen hinzugefügt.
+# Fix: Korrektur einiger Titel.
+# Neu: Hinzugefügte Versandkosten fehlen in Variablen und Daten.
+
 # 1.7.0
 # Fix: Sichtbarkeit von „Back In Stock“ auf PDP.
 # New: Die Plugin-API wurde auf die neueste Version der Klaviyo-API aktualisiert.
