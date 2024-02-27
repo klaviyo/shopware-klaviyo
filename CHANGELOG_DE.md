@@ -1,5 +1,5 @@
 # 2.10.0
-# Fix: Validierung von Telefonnummern in Bestellereignissen hinzugefügt.
+# Fix: Validierung von Telefonnummern in Bestellereignissen hinzugefügt. Wenn die Telefonnummer nicht existiert oder nicht dem e.164-Standard entspricht, wird die Veranstaltung in Klaviyo veröffentlicht, ohne dass die falsche Telefonnummer übermittelt wird.
 # Fix: Korrektur einiger Titel.
 # Neu: Hinzugefügte Versandkosten fehlen in Variablen und Daten.
 
