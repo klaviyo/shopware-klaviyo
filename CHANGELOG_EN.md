@@ -1,3 +1,8 @@
+# 2.10.0
+# Fix: Added validation of phone numbers in order events.
+# Fix: Correction of some titles.
+# New: Added shipping costs missing in variables and data.
+
 # 2.9.0
 # Fix: Visibility of Back In Stock on PDP.
 # New: The plugin API has been updated to the latest version of the Klaviyo API.
