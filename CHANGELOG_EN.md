@@ -1,5 +1,5 @@
 # 1.8.0
-# Fix: Added validation of phone numbers in order events.
+# Fix: Added validation of phone numbers in order events. If the phone number does not exist or does not comply with the e.164 standard, the event is posted in Klaviyo without transmitting the incorrect phone number.
 # Fix: Correction of some titles.
 # New: Added shipping costs missing in variables and data.
 
