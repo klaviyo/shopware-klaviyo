@@ -24,7 +24,12 @@ class AddProfilesToListRequestsNormalizer extends AbstractNormalizer
         foreach ($object->getProfiles() as $profile) {
             $profiles[] = [
                 'type' => 'profile',
-                'attributes' => ['email' => $profile->getEmail()],
+                'attributes' => [
+                    'email' => $profile->getEmail(),
+                    'first_name' => $profile->getFirstname(),
+                    'last_name' => $profile->getLastname(),
+                    'title' => $profile->getSalutation(),
+                ],
             ];
         }
 
