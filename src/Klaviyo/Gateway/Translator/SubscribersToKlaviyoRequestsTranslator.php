@@ -24,7 +24,13 @@ class SubscribersToKlaviyoRequestsTranslator
         $profiles = new ProfileContactInfoCollection();
         /** @var NewsletterRecipientEntity $recipientEntity */
         foreach ($collection as $recipientEntity) {
-            $profiles->add(new ProfileContactInfo($recipientEntity->getId(), $recipientEntity->getEmail()));
+            $profiles->add(new ProfileContactInfo(
+                $recipientEntity->getId(),
+                $recipientEntity->getEmail(),
+                $recipientEntity->getFirstName(),
+                $recipientEntity->getLastName(),
+                $recipientEntity->getSalutation()?->getDisplayName()
+            ));
         }
 
         return $profiles;
