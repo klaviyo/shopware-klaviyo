@@ -141,6 +141,22 @@ class KlaviyoGateway
         return $this->trackOrderEvents('RefundedOrder', $context, $channelId, $orderEvents);
     }
 
+    public function trackPartiallyPaidOrders(
+        Context $context,
+        string $channelId,
+        array $orderEvents
+    ): OrderTrackingResult {
+        return $this->trackOrderEvents('PartiallyPaidOrder', $context, $channelId, $orderEvents);
+    }
+
+    public function trackPartiallyShippedOrders(
+        Context $context,
+        string $channelId,
+        array $orderEvents
+    ): OrderTrackingResult {
+        return $this->trackOrderEvents('PartiallyShippedOrder', $context, $channelId, $orderEvents);
+    }
+
     /**
      * @param Context $context
      * @param string $channelId
@@ -443,6 +459,7 @@ class KlaviyoGateway
                         );
                         break;
                     case 'ShippedOrder':
+                    case 'PartiallyShippedOrder':
                         $request = $this->orderEventRequestTranslator->translateToShippedOrderEventRequest(
                             $context,
                             $orderEvent->getOrder(),
@@ -450,6 +467,7 @@ class KlaviyoGateway
                         );
                         break;
                     case 'PaidOrder':
+                    case 'PartiallyPaidOrder':
                         $request = $this->orderEventRequestTranslator->translateToPaidOrderEventRequest(
                             $context,
                             $orderEvent->getOrder(),
