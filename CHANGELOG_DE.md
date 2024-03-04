@@ -1,6 +1,11 @@
+# 1.8.0
+# Fix: Validierung von Telefonnummern in Bestellereignissen hinzugefügt. Wenn die Telefonnummer nicht existiert oder nicht dem e.164-Standard entspricht, wird die Veranstaltung in Klaviyo veröffentlicht, ohne dass die falsche Telefonnummer übermittelt wird.
+# Fix: Korrektur einiger Titel.
+# Neu: Hinzugefügte Versandkosten fehlen in Variablen und Daten.
+
 # 1.7.0
 # Fix: Sichtbarkeit von „Back In Stock“ auf PDP.
-# New: Die Plugin-API wurde auf die neueste Version der Klaviyo-API aktualisiert.
+# Neu: Die Plugin-API wurde auf die neueste Version der Klaviyo-API aktualisiert.
 
 # 1.6.4
 # Fix: Die Kategorie wird nun angezeigt, nachdem ein Produkt aus einer dynamischen Produktgruppe hinzugefügt wurde.

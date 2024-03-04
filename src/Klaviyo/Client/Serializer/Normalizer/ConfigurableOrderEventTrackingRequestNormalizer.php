@@ -35,6 +35,14 @@ class ConfigurableOrderEventTrackingRequestNormalizer extends AbstractNormalizer
     {
         $customerProperties = $this->normalizeObject($object->getCustomerProperties());
 
+        if (!empty($context) && !empty($context['eventType']) &&
+            in_array(
+                $context['eventType'], ['FulfilledOrder', 'CancelledOrder', 'ShippedOrder', 'PaidOrder', 'RefundedOrder']
+            )
+        ) {
+            unset($customerProperties['phone_number']);
+        }
+
         $categories = [];
         $itemNames = [];
         $brands = [];
@@ -78,6 +86,7 @@ class ConfigurableOrderEventTrackingRequestNormalizer extends AbstractNormalizer
             'Brands' => array_unique($brands),
             'DiscountCode' => implode(',', $discountCodes),
             'DiscountValue' => $discountTotal,
+            'ShippingCosts' => $object->getShippingTotal(),
             'Items' => $normalizedItems,
             'BillingAddress' => $billingAddress,
             'ShippingAddress' => $shippingAddress,
@@ -93,7 +102,7 @@ class ConfigurableOrderEventTrackingRequestNormalizer extends AbstractNormalizer
                 'attributes' => [
                     'time' => $object->getTime()->format('Y-m-d\TH:i:s'),
                     'value' => $object->getOrderTotal(),
-                    'unique_id' => $object->getEventId() . '_' . $object->getTime()->getTimestamp(),
+                    'unique_id' => $object->getEventId(),
                     'properties' => $properties,
                     'metric' => [
                         'data' => [

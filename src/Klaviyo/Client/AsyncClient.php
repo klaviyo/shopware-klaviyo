@@ -7,9 +7,11 @@ use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Pool;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\RequestOptions;
+use Klaviyo\Integration\Exception\JobRuntimeWarningException;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator\TranslatorsRegistry;
 use Klaviyo\Integration\Klaviyo\Client\Configuration\ConfigurationInterface;
 use Klaviyo\Integration\Klaviyo\Client\Exception\TranslationException;
+use Shopware\Core\Framework\Context;
 
 class AsyncClient implements ClientInterface
 {
@@ -31,22 +33,45 @@ class AsyncClient implements ClientInterface
         $this->configuration = $configuration;
     }
 
-    public function sendRequests(array $requests): ClientResult
+    public function sendRequests(array $requests, Context $context = null): ClientResult
     {
         $this->clientResult = new ClientResult();
         $concurrency = 5;
         $pool = new Pool(
             $this->guzzleClient,
-            $this->createAndSendRequests($requests),
+            $this->createAndSendRequests($requests, $context),
             [
                 'concurrency' => $concurrency,
                 'fulfilled' => function (Response $response, $index) {
                     if (isset($this->requests[$index])) {
                         $translator = $this->translatorsRegistry->getTranslatorForRequest($this->requests[$index]);
-                        $this->clientResult->addRequestResponse(
-                            $this->requests[$index],
-                            $translator->translateResponse($response)
-                        );
+
+                        $translateResponseResult = $translator->translateResponse($response);
+
+                        if (false === $translateResponseResult->isSuccess()) {
+                            $orderId = $this->requests[$index]->getOrderId();
+                            $errorDetail = $translateResponseResult->getDetail();
+
+                            if (
+                                ('The phone number provided either does not exist or is ineligible to receive SMS' ===
+                                    $errorDetail)
+                                || (false !== strpos($errorDetail, 'Invalid phone number format'))
+                            ) {
+                                $exceptionType = new JobRuntimeWarningException(
+                                    \sprintf('Order[id: %s] error: %s', $orderId, $errorDetail)
+                                );
+                            } else {
+                                $throwText = \sprintf('Order[id: %s] error: %s', $orderId, $errorDetail);
+                                throw new TranslationException($response, $throwText);
+                            }
+
+                            $this->clientResult->addRequestError($this->requests[$index], $exceptionType);
+                        } else {
+                            $this->clientResult->addRequestResponse(
+                                $this->requests[$index],
+                                $translateResponseResult
+                            );
+                        }
                     }
                 },
                 'rejected' => function (TransferException $reason, $index) {
@@ -64,7 +89,7 @@ class AsyncClient implements ClientInterface
         return $this->clientResult;
     }
 
-    protected function createAndSendRequests($requests): \Generator
+    protected function createAndSendRequests($requests, Context $context = null): \Generator
     {
         $guzzleRequestOptions = [
             RequestOptions::CONNECT_TIMEOUT => $this->configuration->getConnectionTimeout(),
@@ -86,9 +111,9 @@ class AsyncClient implements ClientInterface
             $this->requests[$this->requestIndex++] = $request;
 
             try {
-                $guzzleRequest = $translator->translateRequest($request);
+                $guzzleRequest = $translator->translateRequest($request, $context);
 
-                yield function () use ($guzzleRequest, $guzzleRequestOptions, $translator) {
+                yield function () use ($guzzleRequest, $guzzleRequestOptions) {
                     return $this->guzzleClient->sendAsync($guzzleRequest, $guzzleRequestOptions);
                 };
             } catch (\Throwable $e) {
