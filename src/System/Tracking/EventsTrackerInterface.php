@@ -28,6 +28,8 @@ interface EventsTrackerInterface
     public const ORDER_EVENT_PAID = 'od-klaviyo-order-paid';
     public const ORDER_EVENT_SHIPPED = 'od-klaviyo-order-shipped';
     public const ORDER_EVENT_FULFILLED = 'od-klaviyo-order-fulfilled';
+    public const ORDER_EVENT_PARTIALLY_SHIPPED = 'od-klaviyo-order-partially-shipped';
+    public const ORDER_EVENT_PARTIALLY_PAID = 'od-klaviyo-order-partially-paid';
     public const ORDER_EVENTS = [
         self::ORDER_EVENT_PLACED => 'Order Placed',
         self::ORDER_EVENT_ORDERED_PRODUCT => 'Ordered Product',
@@ -36,6 +38,8 @@ interface EventsTrackerInterface
         self::ORDER_EVENT_FULFILLED => 'Order Fulfilled',
         self::ORDER_EVENT_PAID => 'Order Paid',
         self::ORDER_EVENT_SHIPPED => 'Order Shipped',
+        self::ORDER_EVENT_PARTIALLY_SHIPPED => 'Partially Order Shipped',
+        self::ORDER_EVENT_PARTIALLY_PAID => 'Partially Order Paid',
     ];
 
     public function trackPlacedOrders(Context $context, OrderTrackingEventsBag $trackingBag): OrderTrackingResult;
@@ -55,4 +59,14 @@ interface EventsTrackerInterface
     public function trackAddedToCart(Context $context, CartEventRequestBag $requestBag);
 
     public function trackCustomerWritten(Context $context, ProfileEventsBag $trackingBag);
+
+    public function trackPartiallyPaidOrders(
+        Context $context,
+        OrderTrackingEventsBag $trackingBag
+    ): OrderTrackingResult;
+
+    public function trackPartiallyShippedOrder(
+        Context $context,
+        OrderTrackingEventsBag $trackingBag
+    ): OrderTrackingResult;
 }
