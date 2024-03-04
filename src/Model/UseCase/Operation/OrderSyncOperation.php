@@ -43,7 +43,9 @@ class OrderSyncOperation implements JobHandlerInterface
             Tracker::ORDER_EVENT_CANCELED => new OrderTrackingEventsBag(),
             Tracker::ORDER_EVENT_FULFILLED => new OrderTrackingEventsBag(),
             Tracker::ORDER_EVENT_PAID => new OrderTrackingEventsBag(),
-            Tracker::ORDER_EVENT_SHIPPED => new OrderTrackingEventsBag()
+            Tracker::ORDER_EVENT_SHIPPED => new OrderTrackingEventsBag(),
+            Tracker::ORDER_EVENT_PARTIALLY_SHIPPED => new OrderTrackingEventsBag(),
+            Tracker::ORDER_EVENT_PARTIALLY_PAID => new OrderTrackingEventsBag(),
         ];
 
         $orderCriteria = new Criteria();
@@ -65,12 +67,14 @@ class OrderSyncOperation implements JobHandlerInterface
             $lastTransaction = $order->getTransactions()->last();
             $transactionStateName = $lastTransaction?->getStateMachineState()->getTechnicalName() ?: null;
 
-            if (
-                (StateActions::ACTION_PAID === $transactionStateName)
-                || (StateActions::ACTION_PAID_PARTIALLY === $transactionStateName)
-            ) {
+            if (StateActions::ACTION_PAID === $transactionStateName) {
                 $happenedAt = $lastTransaction->getUpdatedAt();
                 $eventsBags[Tracker::ORDER_EVENT_PAID]->add(new OrderEvent($order, $happenedAt));
+            }
+
+            if (StateActions::ACTION_PAID_PARTIALLY === $transactionStateName) {
+                $happenedAt = $lastTransaction->getUpdatedAt();
+                $eventsBags[Tracker::ORDER_EVENT_PARTIALLY_PAID]->add(new OrderEvent($order, $happenedAt));
             }
 
             $lastDelivery = $order->getDeliveries()->last();
@@ -80,6 +84,11 @@ class OrderSyncOperation implements JobHandlerInterface
             if (OrderDeliveryStates::STATE_SHIPPED === $deliveryStateName) {
                 $happenedAt = $lastDelivery->getUpdatedAt();
                 $eventsBags[Tracker::ORDER_EVENT_SHIPPED]->add(new OrderEvent($order, $happenedAt));
+            }
+
+            if (OrderDeliveryStates::STATE_PARTIALLY_SHIPPED === $deliveryStateName) {
+                $happenedAt = $lastDelivery->getUpdatedAt();
+                $eventsBags[Tracker::ORDER_EVENT_PARTIALLY_SHIPPED]->add(new OrderEvent($order, $happenedAt));
             }
 
 
@@ -142,6 +151,11 @@ class OrderSyncOperation implements JobHandlerInterface
             Tracker::ORDER_EVENT_FULFILLED => $this->eventsTracker->trackFulfilledOrders($context, $eventsBag),
             Tracker::ORDER_EVENT_PAID => $this->eventsTracker->trackPaiedOrders($context, $eventsBag),
             Tracker::ORDER_EVENT_SHIPPED => $this->eventsTracker->trackShippedOrder($context, $eventsBag),
+            Tracker::ORDER_EVENT_PARTIALLY_SHIPPED => $this->eventsTracker->trackPartiallyShippedOrder(
+                $context,
+                $eventsBag
+            ),
+            Tracker::ORDER_EVENT_PARTIALLY_PAID => $this->eventsTracker->trackPartiallyPaidOrders($context, $eventsBag),
             default => new OrderTrackingResult(),
         };
     }
