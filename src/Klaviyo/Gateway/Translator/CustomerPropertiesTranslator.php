@@ -89,7 +89,8 @@ class CustomerPropertiesTranslator
                 $customer->getBoundSalesChannel(),
                 $context
             ) : null,
-            $localeCode ?: null
+            $localeCode ?: null,
+            $customer->getGroup()->getName()
         );
     }
 
@@ -186,6 +187,7 @@ class CustomerPropertiesTranslator
         $state = $this->addressHelper->getAddressRegion($context, $customerAddress);
         $country = $this->addressHelper->getAddressCountry($context, $customerAddress);
         $birthday = $customerEntity->getBirthday();
+        $group = $customerEntity->getGroup();
         $customFields = $this->prepareCustomFields($customerEntity, $customerEntity->getSalesChannelId());
 
         $localeCode = $this->localeCodeProducer->getLocaleCodeFromContext($customerEntity->getLanguageId(), $context);
@@ -211,7 +213,8 @@ class CustomerPropertiesTranslator
                 $customerEntity->getBoundSalesChannel(),
                 $context
             ),
-            $localeCode ?: null
+            $localeCode ?: null,
+            $group ? $group->getName() : null
         );
     }
 }
