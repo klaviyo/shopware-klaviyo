@@ -24,10 +24,7 @@ class ConfigurableOrderEventTrackingRequestNormalizer extends AbstractNormalizer
 
     /**
      * @param AbstractOrderEventTrackingRequest $object
-     * @param string|null $format
-     * @param array $context
      *
-     * @return array
      * @throws SerializationException
      * @throws ExceptionInterface
      */
@@ -35,12 +32,30 @@ class ConfigurableOrderEventTrackingRequestNormalizer extends AbstractNormalizer
     {
         $customerProperties = $this->normalizeObject($object->getCustomerProperties());
 
-        if (!empty($context) && !empty($context['eventType']) &&
-            in_array(
-                $context['eventType'], ['FulfilledOrder', 'CancelledOrder', 'ShippedOrder', 'PaidOrder', 'RefundedOrder']
+        if (
+            !empty($context) && !empty($context['eventType'])
+            && in_array(
+                $context['eventType'],
+                [
+                    'FulfilledOrder',
+                    'CancelledOrder',
+                    'ShippedOrder',
+                    'PaidOrder',
+                    'RefundedOrder',
+                    'PartiallyShippedOrder',
+                    'PartiallyPaidOrder',
+                ]
             )
         ) {
             unset($customerProperties['phone_number']);
+
+            if ('PartiallyShippedOrder' === $context['eventType']) {
+                $this->eventName = 'Partially Shipped Order';
+            }
+
+            if ('PartiallyPaidOrder' === $context['eventType']) {
+                $this->eventName = 'Partially Paid Order';
+            }
         }
 
         $categories = [];
@@ -63,7 +78,7 @@ class ConfigurableOrderEventTrackingRequestNormalizer extends AbstractNormalizer
                 'ProductURL' => $product->getProductUrl(),
                 'ImageURL' => $product->getImageUrl(),
                 'Categories' => $product->getCategories(),
-                'Brand' => $product->getBrand()
+                'Brand' => $product->getBrand(),
             ];
         }
 
@@ -108,18 +123,18 @@ class ConfigurableOrderEventTrackingRequestNormalizer extends AbstractNormalizer
                         'data' => [
                             'type' => 'metric',
                             'attributes' => [
-                                'name' => $this->eventName
-                            ]
-                        ]
+                                'name' => $this->eventName,
+                            ],
+                        ],
                     ],
                     'profile' => [
                         'data' => [
                             'type' => 'profile',
-                            'attributes' => $customerProperties
-                        ]
-                    ]
-                ]
-            ]
+                            'attributes' => $customerProperties,
+                        ],
+                    ],
+                ],
+            ],
         ];
     }
 

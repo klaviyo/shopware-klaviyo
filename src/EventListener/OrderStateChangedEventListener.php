@@ -72,7 +72,8 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
             OrderTransactionStates::STATE_REFUNDED => $configuration->isTrackRefundedOrder(),
             OrderTransactionStates::STATE_PAID => $configuration->isTrackPaidOrder(),
             OrderTransactionStates::STATE_PARTIALLY_PAID => $configuration->isTrackPaidOrder(),
-            OrderDeliveryStates::STATE_SHIPPED => $configuration->isTrackShippedOrder()
+            OrderDeliveryStates::STATE_SHIPPED => $configuration->isTrackShippedOrder(),
+            OrderDeliveryStates::STATE_PARTIALLY_SHIPPED => $configuration->isTrackShippedOrder(),
         ];
 
         $state = $event->getNextState();
@@ -145,7 +146,8 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
         $state = $event->getNextState();
         if ($event->getTransitionSide() === StateMachineStateChangeEvent::STATE_MACHINE_TRANSITION_SIDE_ENTER
             && $event->getTransition()->getEntityName() === OrderDeliveryDefinition::ENTITY_NAME
-            && ($state->getTechnicalName() === OrderDeliveryStates::STATE_SHIPPED && $configuration->isTrackShippedOrder())
+            && ($state->getTechnicalName() === OrderDeliveryStates::STATE_SHIPPED && $configuration->isTrackShippedOrder()) ||
+            ($state->getTechnicalName() === OrderDeliveryStates::STATE_PARTIALLY_SHIPPED && $configuration->isTrackShippedOrder())
         ) {
             $this->trackEvent($event->getContext(), $order, $state->getTechnicalName());
         }
@@ -169,11 +171,16 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
                 $this->eventsTracker->trackRefundOrders($context, $eventsBag);
                 return;
             case OrderTransactionStates::STATE_PAID:
-            case OrderTransactionStates::STATE_PARTIALLY_PAID:
                 $this->eventsTracker->trackPaiedOrders($context, $eventsBag);
+                return;
+            case OrderTransactionStates::STATE_PARTIALLY_PAID:
+                $this->eventsTracker->trackPartiallyPaidOrders($context, $eventsBag);
                 return;
             case OrderDeliveryStates::STATE_SHIPPED:
                 $this->eventsTracker->trackShippedOrder($context, $eventsBag);
+                return;
+            case OrderDeliveryStates::STATE_PARTIALLY_SHIPPED:
+                $this->eventsTracker->trackPartiallyShippedOrder($context, $eventsBag);
                 return;
         }
     }
