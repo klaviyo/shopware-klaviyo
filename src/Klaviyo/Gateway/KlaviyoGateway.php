@@ -16,6 +16,7 @@ use Klaviyo\Integration\Exception\JobRuntimeWarningException;
 use Klaviyo\Integration\Klaviyo\Gateway\Domain\Profile\Search\ProfileIdSearchResult;
 use Klaviyo\Integration\Klaviyo\Gateway\Domain\Profile\Search\Strategy\SearchStrategyInterface;
 use Klaviyo\Integration\Klaviyo\Gateway\Exception\ProfilesListNotFoundException;
+use Klaviyo\Integration\Klaviyo\Gateway\Exception\TranslationException;
 use Klaviyo\Integration\Klaviyo\Gateway\Result\OrderTrackingResult;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\IdentifyProfileRequestTranslator;
@@ -32,7 +33,6 @@ use Shopware\Core\Content\Newsletter\Aggregate\NewsletterRecipient\NewsletterRec
 use Shopware\Core\Content\Newsletter\Aggregate\NewsletterRecipient\NewsletterRecipientEntity as Recipient;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-use Klaviyo\Integration\Klaviyo\Gateway\Exception\TranslationException;
 
 class KlaviyoGateway
 {
@@ -71,54 +71,11 @@ class KlaviyoGateway
         $this->realSubscribersTranslator = $realSubscribersTranslator;
     }
 
-    /**
-     * @param Context $context
-     * @param string $channelId
-     * @param array $orderEvents
-     * @return OrderTrackingResult
-     */
     public function trackPlacedOrders(Context $context, string $channelId, array $orderEvents): OrderTrackingResult
     {
-        $requestOrderIdMap = $requests = [];
-        $result = new OrderTrackingResult();
-
-        foreach ($orderEvents as $orderEvent) {
-            try {
-                $request = $this->orderEventRequestTranslator->translateToPlacedOrderEventRequest(
-                    $context,
-                    $orderEvent->getOrder()
-                );
-                $requestOrderIdMap[spl_object_id($request)] = $orderEvent->getOrder()->getId();
-                $requests[] = $request;
-            } catch (JobRuntimeWarningException $e) {
-                $result->addFailedOrder(
-                    $orderEvent->getOrder()->getId(),
-                    $e
-                );
-            } catch (\Throwable $e) {
-                $this->logger->error($e->getMessage());
-                $result->addFailedOrder(
-                    $orderEvent->getOrder()->getId(),
-                    throw new TranslationException(
-                        'Something went wrong with the track of placed orders'
-                    )
-                );
-            }
-        }
-
-        $clientResult = $this->trackEvents($channelId, $requests);
-
-        return $result->mergeWith(
-            $this->handleClientTrackingResult($clientResult, $requestOrderIdMap, 'PlacedOrder')
-        );
+        return $this->trackOrderEvents('PlacedOrder', $context, $channelId, $orderEvents);
     }
 
-    /**
-     * @param Context $context
-     * @param string $channelId
-     * @param array $orderEvents
-     * @return OrderTrackingResult
-     */
     public function trackOrderedProducts(Context $context, string $channelId, array $orderEvents): OrderTrackingResult
     {
         $result = new OrderTrackingResult();
@@ -132,7 +89,12 @@ class KlaviyoGateway
 
                 try {
                     $request = $this->productEventTranslator
-                        ->translateToOrderedProductEventRequest($context, $lineItem, $event->getOrder(), $event->getOrder()->getLanguageId());
+                        ->translateToOrderedProductEventRequest(
+                            $context,
+                            $lineItem,
+                            $event->getOrder(),
+                            $event->getOrder()->getLanguageId()
+                        );
                     $requestOrderIdMap[spl_object_id($request)] = $event->getOrder()->getId();
                     $requests[] = $request;
                 } catch (JobRuntimeWarningException $e) {
@@ -144,9 +106,7 @@ class KlaviyoGateway
                     $this->logger->error($e->getMessage());
                     $result->addFailedOrder(
                         $event->getOrder()->getId(),
-                        throw new TranslationException(
-                            'Something went wrong with the translation of the request to the ordered product event'
-                        )
+                        throw new TranslationException('Something went wrong with the translation of the request to the ordered product event')
                     );
                 }
             }
@@ -159,230 +119,31 @@ class KlaviyoGateway
         );
     }
 
-    /**
-     * @param Context $context
-     * @param string $channelId
-     * @param array $orderEvents
-     * @return OrderTrackingResult
-     */
     public function trackFulfilledOrders(Context $context, string $channelId, array $orderEvents): OrderTrackingResult
     {
-        $requestOrderIdMap = $requests = [];
-        $result = new OrderTrackingResult();
-
-        /** @var OrderEventInterface $orderEvent */
-        foreach ($orderEvents as $orderEvent) {
-            try {
-                $request = $this->orderEventRequestTranslator->translateToFulfilledOrderEventRequest(
-                    $context,
-                    $orderEvent->getOrder(),
-                    $orderEvent->getEventDateTime()
-                );
-                $requestOrderIdMap[spl_object_id($request)] = $orderEvent->getOrder()->getId();
-                $requests[] = $request;
-            } catch (JobRuntimeWarningException $e) {
-                $result->addFailedOrder(
-                    $orderEvent->getOrder()->getId(),
-                    $e
-                );
-            } catch (\Throwable $e) {
-                $this->logger->error($e->getMessage());
-                $result->addFailedOrder(
-                    $orderEvent->getOrder()->getId(),
-                    throw new TranslationException(
-                        'Something went wrong with the track of fullfilled orders'
-                    )
-                );
-            }
-        }
-
-        $clientResult = $this->trackEvents($channelId, $requests);
-
-        return $result->mergeWith(
-            $this->handleClientTrackingResult($clientResult, $requestOrderIdMap, 'FulfilledOrder')
-        );
+        return $this->trackOrderEvents('FulfilledOrder', $context, $channelId, $orderEvents);
     }
 
-    /**
-     * @param Context $context
-     * @param string $channelId
-     * @param array $orderEvents
-     * @return OrderTrackingResult
-     */
     public function trackCancelledOrders(Context $context, string $channelId, array $orderEvents): OrderTrackingResult
     {
-        $requestOrderIdMap = $requests = [];
-        $result = new OrderTrackingResult();
-
-        /** @var OrderEventInterface $orderEvent */
-        foreach ($orderEvents as $orderEvent) {
-            try {
-                $request = $this->orderEventRequestTranslator->translateToCanceledOrderEventRequest(
-                    $context,
-                    $orderEvent->getOrder(),
-                    $orderEvent->getEventDateTime()
-                );
-                $requestOrderIdMap[spl_object_id($request)] = $orderEvent->getOrder()->getId();
-                $requests[] = $request;
-            } catch (JobRuntimeWarningException $e) {
-                $result->addFailedOrder(
-                    $orderEvent->getOrder()->getId(),
-                    $e
-                );
-            } catch (\Throwable $e) {
-                $this->logger->error($e->getMessage());
-                $result->addFailedOrder(
-                    $orderEvent->getOrder()->getId(),
-                    throw new TranslationException(
-                        'Something went wrong with the track of cancelled orders'
-                    )
-                );
-            }
-        }
-
-        $clientResult = $this->trackEvents($channelId, $requests);
-
-        return $result->mergeWith(
-            $this->handleClientTrackingResult($clientResult, $requestOrderIdMap, 'CancelledOrder')
-        );
+        return $this->trackOrderEvents('CancelledOrder', $context, $channelId, $orderEvents);
     }
 
-    /**
-     * @param Context $context
-     * @param string $channelId
-     * @param array $orderEvents
-     * @return OrderTrackingResult
-     */
     public function trackShippedOrders(Context $context, string $channelId, array $orderEvents): OrderTrackingResult
     {
-        $requestOrderIdMap = $requests = [];
-        $result = new OrderTrackingResult();
-        /** @var OrderEventInterface $orderEvent */
-        foreach ($orderEvents as $orderEvent) {
-            try {
-                $request = $this->orderEventRequestTranslator->translateToShippedOrderEventRequest(
-                    $context,
-                    $orderEvent->getOrder(),
-                    $orderEvent->getEventDateTime()
-                );
-                $requestOrderIdMap[spl_object_id($request)] = $orderEvent->getOrder()->getId();
-                $requests[] = $request;
-            } catch (JobRuntimeWarningException $e) {
-                $result->addFailedOrder(
-                    $orderEvent->getOrder()->getId(),
-                    $e
-                );
-            } catch (\Throwable $e) {
-                $this->logger->error($e->getMessage());
-                $result->addFailedOrder(
-                    $orderEvent->getOrder()->getId(),
-                    throw new TranslationException(
-                        'Something went wrong with the track of shipped orders'
-                    )
-                );
-            }
-        }
-        $clientResult = $this->trackEvents($channelId, $requests);
-
-        return $result->mergeWith(
-            $this->handleClientTrackingResult($clientResult, $requestOrderIdMap, 'ShippedOrder')
-        );
+        return $this->trackOrderEvents('ShippedOrder', $context, $channelId, $orderEvents);
     }
 
-    /**
-     * @param Context $context
-     * @param string $channelId
-     * @param array $orderEvents
-     * @return OrderTrackingResult
-     */
     public function trackPaiedOrders(Context $context, string $channelId, array $orderEvents): OrderTrackingResult
     {
-        $requestOrderIdMap = $requests = [];
-        $result = new OrderTrackingResult();
-
-        /** @var OrderEventInterface $orderEvent */
-        foreach ($orderEvents as $orderEvent) {
-            try {
-                $request = $this->orderEventRequestTranslator->translateToPaidOrderEventRequest(
-                    $context,
-                    $orderEvent->getOrder(),
-                    $orderEvent->getEventDateTime()
-                );
-                $requestOrderIdMap[spl_object_id($request)] = $orderEvent->getOrder()->getId();
-                $requests[] = $request;
-            } catch (JobRuntimeWarningException $e) {
-                $result->addFailedOrder(
-                    $orderEvent->getOrder()->getId(),
-                    $e
-                );
-            } catch (\Throwable $e) {
-                $this->logger->error($e->getMessage());
-                $result->addFailedOrder(
-                    $orderEvent->getOrder()->getId(),
-                    throw new TranslationException(
-                        'Something went wrong with the track of paid orders'
-                    )
-                );
-            }
-        }
-
-        $clientResult = $this->trackEvents($channelId, $requests);
-
-        return $result->mergeWith(
-            $this->handleClientTrackingResult($clientResult, $requestOrderIdMap, 'PaidOrder')
-        );
+        return $this->trackOrderEvents('PaidOrder', $context, $channelId, $orderEvents);
     }
 
-    /**
-     * @param Context $context
-     * @param string $channelId
-     * @param array $orderEvents
-     * @return OrderTrackingResult
-     */
     public function trackRefundedOrders(Context $context, string $channelId, array $orderEvents): OrderTrackingResult
     {
-        $requestOrderIdMap = $requests = [];
-        $result = new OrderTrackingResult();
-
-        /** @var OrderEventInterface $orderEvent */
-        foreach ($orderEvents as $orderEvent) {
-            try {
-                $request = $this->orderEventRequestTranslator->translateToRefundedOrderEventRequest(
-                    $context,
-                    $orderEvent->getOrder(),
-                    $orderEvent->getEventDateTime()
-                );
-                $requestOrderIdMap[spl_object_id($request)] = $orderEvent->getOrder()->getId();
-                $requests[] = $request;
-            } catch (JobRuntimeWarningException $e) {
-                $result->addFailedOrder(
-                    $orderEvent->getOrder()->getId(),
-                    $e
-                );
-            } catch (\Throwable $e) {
-                $this->logger->error($e->getMessage());
-                $result->addFailedOrder(
-                    $orderEvent->getOrder()->getId(),
-                    throw new TranslationException(
-                        'Something went wrong with the track of refunded orders'
-                    )
-                );
-            }
-        }
-
-        $clientResult = $this->trackEvents($channelId, $requests);
-
-        return $result->mergeWith(
-            $this->handleClientTrackingResult($clientResult, $requestOrderIdMap, 'RefundedOrder')
-        );
+        return $this->trackOrderEvents('RefundedOrder', $context, $channelId, $orderEvents);
     }
 
-    /**
-     * @param Context $context
-     * @param string $channelId
-     * @param CustomerCollection $customers
-     * @return ClientResult
-     */
     public function upsertCustomerProfiles(
         Context $context,
         string $channelId,
@@ -418,12 +179,6 @@ class KlaviyoGateway
         return $this->trackEvents($channelId, $createRequests);
     }
 
-    /**
-     * @param Context $context
-     * @param string $channelId
-     * @param CustomerCollection $customers
-     * @return ProfileIdSearchResult
-     */
     public function searchProfileIds(
         Context $context,
         string $channelId,
@@ -437,13 +192,6 @@ class KlaviyoGateway
         return $this->trackEvents($channelId, $cartRequests);
     }
 
-    /**
-     * @param SalesChannelEntity $salesChannelEntity
-     * @param Context $context
-     * @param NewsletterRecipientCollection $recipientCollection
-     * @param string $profilesListId
-     * @return array
-     */
     public function addToKlaviyoProfilesList(
         SalesChannelEntity $salesChannelEntity,
         Context $context,
@@ -495,12 +243,6 @@ class KlaviyoGateway
         }
     }
 
-    /**
-     * @param SalesChannelEntity $salesChannelEntity
-     * @param NewsletterRecipientCollection $recipientCollection
-     * @param string $profilesListId
-     * @return array
-     */
     public function subscribeToKlaviyoList(
         SalesChannelEntity $salesChannelEntity,
         NewsletterRecipientCollection $recipientCollection,
@@ -555,12 +297,6 @@ class KlaviyoGateway
         }
     }
 
-    /**
-     * @param SalesChannelEntity $salesChannelEntity
-     * @param ProfileContactInfoCollection $profileInfoCollection
-     * @param string $profilesListId
-     * @return bool
-     */
     public function removeKlaviyoSubscribersFromList(
         SalesChannelEntity $salesChannelEntity,
         ProfileContactInfoCollection $profileInfoCollection,
@@ -603,24 +339,13 @@ class KlaviyoGateway
         return $this->trackEvents($channelId, $checkoutRequests);
     }
 
-    /**
-     * @param string $channelId
-     * @param array $requests
-     * @return ClientResult
-     */
-    private function trackEvents(string $channelId, array $requests): ClientResult
+    private function trackEvents(string $channelId, array $requests, Context $context = null): ClientResult
     {
         $client = $this->clientRegistry->getClient($channelId);
 
-        return $client->sendRequests($requests);
+        return $client->sendRequests($requests, $context);
     }
 
-    /**
-     * @param ClientResult $result
-     * @param array $requestOrderIdMap
-     * @param string $eventType
-     * @return OrderTrackingResult
-     */
     protected function handleClientTrackingResult(
         ClientResult $result,
         array $requestOrderIdMap,
@@ -649,9 +374,6 @@ class KlaviyoGateway
     }
 
     /**
-     * @param string $channelId
-     * @param int $count
-     * @param string|null $nextPageLink
      * @return Response
      *
      * @throws \Exception
@@ -668,8 +390,121 @@ class KlaviyoGateway
 
         /** @var GetExcludedSubscribers\Response $result */
         $result = $clientResult->getRequestResponse($request);
+
         if (!$result) {
             throw new ProfilesListNotFoundException('Could not get excluded subscribers from Klaviyo.');
+        }
+
+        return $result;
+    }
+
+    private function trackOrderEvents(
+        string $eventType,
+        Context $context,
+        string $channelId,
+        array $orderEvents
+    ): OrderTrackingResult {
+        $requestOrderIdMap = $requests = [];
+        $result = new OrderTrackingResult();
+        $request = null;
+
+        $context->assign(['eventType' => $eventType]);
+
+        foreach ($orderEvents as $orderEvent) {
+            try {
+                switch ($eventType) {
+                    case 'PlacedOrder':
+                        $request = $this->orderEventRequestTranslator->translateToPlacedOrderEventRequest(
+                            $context,
+                            $orderEvent->getOrder()
+                        );
+                        break;
+                    case 'FulfilledOrder':
+                        $request = $this->orderEventRequestTranslator->translateToFulfilledOrderEventRequest(
+                            $context,
+                            $orderEvent->getOrder(),
+                            $orderEvent->getEventDateTime()
+                        );
+                        break;
+                    case 'CancelledOrder':
+                        $request = $this->orderEventRequestTranslator->translateToCanceledOrderEventRequest(
+                            $context,
+                            $orderEvent->getOrder(),
+                            $orderEvent->getEventDateTime()
+                        );
+                        break;
+                    case 'ShippedOrder':
+                        $request = $this->orderEventRequestTranslator->translateToShippedOrderEventRequest(
+                            $context,
+                            $orderEvent->getOrder(),
+                            $orderEvent->getEventDateTime()
+                        );
+                        break;
+                    case 'PaidOrder':
+                        $request = $this->orderEventRequestTranslator->translateToPaidOrderEventRequest(
+                            $context,
+                            $orderEvent->getOrder(),
+                            $orderEvent->getEventDateTime()
+                        );
+                        break;
+                    case 'RefundedOrder':
+                        $request = $this->orderEventRequestTranslator->translateToRefundedOrderEventRequest(
+                            $context,
+                            $orderEvent->getOrder(),
+                            $orderEvent->getEventDateTime()
+                        );
+                        break;
+                }
+
+                if (!$request) {
+                    return $result;
+                }
+
+                $requestOrderIdMap[spl_object_id($request)] = $orderEvent->getOrder()->getId();
+
+                if (isset($context->getVars()['orderSetNullPhone'])) {
+                    $request->getCustomerProperties()->setPhoneNumber(null);
+                }
+
+                $requests[] = $request;
+            } catch (JobRuntimeWarningException $e) {
+                $result->addFailedOrder(
+                    $orderEvent->getOrder()->getId(),
+                    $e
+                );
+            } catch (\Throwable $e) {
+                $this->logger->error($e->getMessage());
+                $result->addFailedOrder(
+                    $orderEvent->getOrder()->getId(),
+                    new TranslationException(
+                        \sprintf('Something went wrong with the track of %s', $eventType)
+                    )
+                );
+            }
+        }
+
+        $clientResult = $this->trackEvents($channelId, $requests, $context);
+
+        $result->mergeWith(
+            $this->handleClientTrackingResult($clientResult, $requestOrderIdMap, $eventType)
+        );
+
+        if (count($result->getFailedOrdersErrors()) > 0) {
+            foreach ($result->getFailedOrdersErrors() as $orderId => $error) {
+                $errorMsg = current($error)->getMessage();
+
+                if (
+                    isset($orderEvents[$orderId])
+                        && (false !== strpos(
+                            $errorMsg,
+                            'The phone number provided either does not exist or is ineligible to receive SMS'
+                        ) || (false !== strpos($errorMsg, 'Invalid phone number format')))
+                ) {
+                    $orderEvent = $orderEvents[$orderId];
+                    $context->assign(['orderSetNullPhone' => true]);
+                    $this->trackOrderEvents($eventType, $context, $channelId, [$orderEvent]);
+                }
+            }
         }
 
         return $result;

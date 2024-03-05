@@ -18,6 +18,7 @@ class AddedToCartEventTrackingRequestNormalizer extends AbstractNormalizer
     public function normalize($object, string $format = null, array $context = []): array
     {
         $customerProperties = $this->normalizeObject($object->getCustomerProperties());
+        unset($customerProperties['phone_number']);
 
         $itemNames = [];
         $productItems = [];

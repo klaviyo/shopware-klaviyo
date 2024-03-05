@@ -35,6 +35,7 @@ use Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer\UpdateProfileReques
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
+use Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer\EventTrackingResponseDenormalizer;
 
 class SerializerFactory
 {
@@ -94,6 +95,7 @@ class SerializerFactory
                 new UpdateProfileResponseDenormalizer(),
                 new StartedCheckoutEventTrackingRequestNormalizer($configuration),
                 new GetAccountDenormalizer(),
+                new EventTrackingResponseDenormalizer(),
             ],
             [
                 new JsonEncoder(),

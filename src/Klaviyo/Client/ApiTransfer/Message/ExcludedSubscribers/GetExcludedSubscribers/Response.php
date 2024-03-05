@@ -8,13 +8,16 @@ class Response
 {
     private array $emails;
     private ?string $nextPageUrl;
+    private ?bool $isSuccess;
 
     public function __construct(
         array $emails,
-        string $nextPageUrl = null
+        string $nextPageUrl = null,
+        bool $isSuccess = null
     ) {
         $this->emails = $emails;
         $this->nextPageUrl = $nextPageUrl;
+        $this->isSuccess = $isSuccess;
     }
 
     public function getEmails(): array
@@ -25,5 +28,10 @@ class Response
     public function getNextPageUrl(): ?string
     {
         return $this->nextPageUrl;
+    }
+
+    public function isSuccess(): ?bool
+    {
+        return $this->isSuccess;
     }
 }

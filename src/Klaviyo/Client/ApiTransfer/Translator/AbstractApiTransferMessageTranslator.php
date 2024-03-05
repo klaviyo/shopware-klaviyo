@@ -7,6 +7,7 @@ use Klaviyo\Integration\Klaviyo\Client\Exception\DeserializationException;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\SerializerInterface;
+use Shopware\Core\Framework\Context;
 
 abstract class AbstractApiTransferMessageTranslator implements ApiTransferMessageTranslatorInterface
 {
@@ -19,8 +20,12 @@ abstract class AbstractApiTransferMessageTranslator implements ApiTransferMessag
         $this->configuration = $configuration;
     }
 
-    protected function serialize(object $object): string
+    protected function serialize(object $object, Context $context = null): string
     {
+        if ($context) {
+            return $this->serializer->serialize($object, JsonEncoder::FORMAT, $context->getVars());
+        }
+
         return $this->serializer->serialize($object, JsonEncoder::FORMAT);
     }
 

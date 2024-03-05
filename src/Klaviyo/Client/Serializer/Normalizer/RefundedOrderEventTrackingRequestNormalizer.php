@@ -28,6 +28,7 @@ class RefundedOrderEventTrackingRequestNormalizer extends ConfigurableOrderEvent
         $normalizedData = parent::normalize($object);
 
         $normalizedData['properties']['Reason'] = $object->getReason();
+        unset($normalizedData['customer_properties']['phone_number']);
 
         return [
             'data' => [
