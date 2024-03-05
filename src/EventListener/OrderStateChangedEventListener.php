@@ -71,6 +71,7 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
             OrderStates::STATE_CANCELLED => $configuration->isTrackCanceledOrder(),
             OrderTransactionStates::STATE_REFUNDED => $configuration->isTrackRefundedOrder(),
             OrderTransactionStates::STATE_PAID => $configuration->isTrackPaidOrder(),
+            OrderTransactionStates::STATE_PARTIALLY_PAID => $configuration->isTrackPaidOrder(),
             OrderDeliveryStates::STATE_SHIPPED => $configuration->isTrackShippedOrder()
         ];
 
@@ -114,7 +115,8 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
             && ($event->getTransition()->getEntityName() === OrderTransactionDefinition::ENTITY_NAME)
             && (
                 ($state->getTechnicalName() === OrderTransactionStates::STATE_REFUNDED && $configuration->isTrackRefundedOrder()) ||
-                ($state->getTechnicalName() === OrderTransactionStates::STATE_PAID && $configuration->isTrackPaidOrder())
+                ($state->getTechnicalName() === OrderTransactionStates::STATE_PAID && $configuration->isTrackPaidOrder()) ||
+                ($state->getTechnicalName() === OrderTransactionStates::STATE_PARTIALLY_PAID && $configuration->isTrackPaidOrder())
             )
         ) {
             $this->trackEvent($event->getContext(), $order, $state->getTechnicalName());
@@ -167,6 +169,7 @@ class OrderStateChangedEventListener implements EventSubscriberInterface
                 $this->eventsTracker->trackRefundOrders($context, $eventsBag);
                 return;
             case OrderTransactionStates::STATE_PAID:
+            case OrderTransactionStates::STATE_PARTIALLY_PAID:
                 $this->eventsTracker->trackPaiedOrders($context, $eventsBag);
                 return;
             case OrderDeliveryStates::STATE_SHIPPED:

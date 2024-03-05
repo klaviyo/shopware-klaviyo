@@ -15,6 +15,8 @@ class OrderedProductEventTrackingRequestNormalizer extends AbstractNormalizer
     {
         $customerProperties = $this->normalizeObject($object->getCustomerProperties());
 
+        unset($customerProperties['phone_number']);
+
         $properties = [
             'ProductName' => $object->getProductName(),
             'OrderId' => $object->getOrderId(),
