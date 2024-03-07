@@ -12,6 +12,18 @@ class UpdateProfileRequestNormalizer extends AbstractNormalizer
     {
         $customerProperties = $object->getCustomerProperties();
 
+        $properties = array_merge(
+            [
+                'Birthday' => $customerProperties->getBirthday(),
+                'salesChannelId' => $customerProperties->getSalesChannelId(),
+                'salesChannelName' => $customerProperties->getSalesChannelName(),
+                'boundedSalesChannelId' => $customerProperties->getBoundedSalesChannelId(),
+                'boundedSalesChannelName' => $customerProperties->getBoundedSalesChannelName(),
+                'language' => $customerProperties->getLocaleCode(),
+            ],
+            $customerProperties->getCustomFields()
+        );
+
         return ['data' => ['type' => 'profile', 'id' => $object->getProfileId(), 'attributes' => [
             'email' => $customerProperties->getEmail(),
             'phone_number' => $customerProperties->getPhoneNumber(),
@@ -25,6 +37,7 @@ class UpdateProfileRequestNormalizer extends AbstractNormalizer
                 'region' => $customerProperties->getRegion(),
                 'zip' => $customerProperties->getZip(),
             ],
+            'properties' => $properties,
         ]]];
     }
 
