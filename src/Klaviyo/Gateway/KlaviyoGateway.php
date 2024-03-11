@@ -319,14 +319,16 @@ class KlaviyoGateway
                     $trackingResult->addFailedOrder($failedOrderId, $error);
                 }
 
-                $this->logger->error(
-                    \sprintf(
-                        'Could not track %s, reason: %s',
-                        $eventType,
-                        $error->getMessage()
-                    ),
-                    ContextHelper::createContextFromException($error)
-                );
+                if (!($error instanceof JobRuntimeWarningException)) {
+                    $this->logger->error(
+                        \sprintf(
+                            'Could not track %s, reason: %s',
+                            $eventType,
+                            $error->getMessage()
+                        ),
+                        ContextHelper::createContextFromException($error)
+                    );
+                }
             }
         }
 
