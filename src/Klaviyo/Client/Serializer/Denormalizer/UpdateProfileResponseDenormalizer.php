@@ -13,7 +13,7 @@ class UpdateProfileResponseDenormalizer extends AbstractDenormalizer
         $errors = $data['errors'][0] ?? '';
 
         if (!empty($errors['detail'])) {
-            return new UpdateProfileResponse(true, $errors['detail']);
+            return new UpdateProfileResponse(false, $errors['detail']);
         }
 
         return new UpdateProfileResponse(true);

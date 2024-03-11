@@ -48,7 +48,7 @@ class SearchByFieldStrategy implements SearchStrategyInterface
 
             if (!$response->isSuccess()) {
                 $searchResult->addError(
-                    new \Exception($response->getErrorDetail() ?? 'Profile Search API response fault.')
+                    new \Exception($response->getErrorDetails() ?? 'Profile Search API response fault.')
                 );
                 continue;
             }
