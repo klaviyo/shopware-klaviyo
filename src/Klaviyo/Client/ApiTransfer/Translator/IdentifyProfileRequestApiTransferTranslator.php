@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator;
 
 use GuzzleHttp\Psr7\Request;
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\Common\EventTrackingResponse;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Identify\IdentifyProfileRequest;
+use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Identify\IdentifyProfileResponse;
 use Klaviyo\Integration\Klaviyo\Client\Exception\TranslationException;
 use Klaviyo\Integration\Klaviyo\Gateway\ClientConfigurationFactory;
 use Psr\Http\Message\ResponseInterface;
@@ -23,12 +23,17 @@ class IdentifyProfileRequestApiTransferTranslator extends AbstractApiTransferMes
 
     public function translateResponse(ResponseInterface $response): object
     {
+        $isJsonResponse = $this->isResponseJson($response);
+
+        if ($isJsonResponse) {
+            $content = $response->getBody()->getContents();
+
+            return $this->deserialize($content, IdentifyProfileResponse::class);
+        }
+
         $this->assertStatusCode($response);
-
-        $content = $response->getBody()->getContents();
-        $isSuccess = '1' === trim($content);
-
-        return new EventTrackingResponse($isSuccess);
+        // Throw different exception in case if response is 200 but not a json
+        throw new TranslationException($response, 'Identify Profile API response expected to be a JSON');
     }
 
     private function constructGuzzleRequestToKlaviyoAPI(string $endpoint, $body): Request
@@ -51,13 +56,13 @@ class IdentifyProfileRequestApiTransferTranslator extends AbstractApiTransferMes
         return $request instanceof IdentifyProfileRequest;
     }
 
+    /**
+     * @throws TranslationException
+     */
     private function assertStatusCode(ResponseInterface $response): void
     {
         if ($response->getStatusCode() < 200 || $response->getStatusCode() >= 300) {
-            throw new TranslationException(
-                $response,
-                \sprintf('Invalid response status code %s', $response->getStatusCode())
-            );
+            throw new TranslationException($response, \sprintf('Invalid response status code %s', $response->getStatusCode()));
         }
     }
 }
