@@ -22,7 +22,7 @@ class UpdateProfileResponse
         return $this->isSuccess;
     }
 
-    public function getErrorDetail(): ?string
+    public function getErrorDetails(): ?string
     {
         return $this->errorDetail;
     }
