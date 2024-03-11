@@ -33,7 +33,7 @@ class GetExcludedSubscribersResponseDenormalizer extends AbstractDenormalizer
         }
 
         if (!empty($data['errors'][0]['code'])) {
-            throw new DeserializationException(current($data['errors'])['detail']);
+            return new Response($emails, null, false, current($data['errors'])['detail']);
         }
 
         foreach ($data['data'] as $row) {

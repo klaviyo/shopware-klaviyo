@@ -5,12 +5,12 @@ namespace Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\C
 class EventTrackingResponse
 {
     private bool $isSuccess;
-    private ?string $detail;
+    private ?string $errorDetail;
 
-    public function __construct(bool $isSuccess, string $detail = null)
+    public function __construct(bool $isSuccess, string $errorDetail = null)
     {
         $this->isSuccess = $isSuccess;
-        $this->detail = $detail;
+        $this->errorDetail = $errorDetail;
     }
 
     public function isSuccess(): bool
@@ -18,8 +18,8 @@ class EventTrackingResponse
         return $this->isSuccess;
     }
 
-    public function getDetail(string $detail = null): ?string
+    public function getErrorDetails(): ?string
     {
-        return $this->detail;
+        return $this->errorDetail;
     }
 }
