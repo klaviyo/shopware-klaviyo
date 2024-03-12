@@ -102,6 +102,7 @@ class AsyncClient implements ClientInterface
             RequestOptions::CONNECT_TIMEOUT => $this->configuration->getConnectionTimeout(),
             RequestOptions::TIMEOUT => $this->configuration->getRequestTimeout(),
             RequestOptions::HTTP_ERRORS => false,
+            RequestOptions::DELAY => 1000,
         ];
 
         foreach ($requests as $request) {
