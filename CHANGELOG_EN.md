@@ -1,3 +1,10 @@
+# 1.9.0
+# Fix: Fixed a bug in updating customer custom fields.
+# Fix: Fixed a bug with exceeding the request limit rate in Klaviyo.
+# Fix: Fixed an error in receiving a response from Klaviyo after creating a customer.
+# Fix: Fixed transmission of customer's first name, last name and salutation when full synchronizing customers.
+# New: Added synchronization of new events of order statuses such as: Partially Paid Order and Partially Shipped Order.
+
 # 1.8.0
 # Fix: Added validation of phone numbers in order events. If the phone number does not exist or does not comply with the e.164 standard, the event is posted in Klaviyo without transmitting the incorrect phone number.
 # Fix: Correction of some titles.
