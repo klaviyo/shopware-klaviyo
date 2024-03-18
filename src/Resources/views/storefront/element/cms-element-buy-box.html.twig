@@ -1,0 +1,11 @@
+{% sw_extends '@Storefront/storefront/element/cms-element-buy-box.html.twig' %}
+{% block element_buy_box %}
+    {% if page.getExtension('klaviyoIntegrationPluginExtension').configuration.trackSubscribedToBackInStock and
+        page.extensions.klaviyoIntegrationPluginExtension.backInStockData and not page.product.translated.customFields.klaviyo_back_in_stock_disabled %}
+
+        {% sw_include '@Storefront/storefront/page/product-detail/back-in-stock-form.html.twig' with {
+            extensionData: page.getExtension('klaviyoIntegrationPluginExtension')
+        } %}
+    {% endif %}
+    {{ parent() }}
+{% endblock %}
