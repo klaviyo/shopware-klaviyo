@@ -185,4 +185,45 @@ class EventsTracker implements EventsTrackerInterface
 
         return $trackingResult;
     }
+
+    public function trackPartiallyPaidOrders(Context $context, OrderTrackingEventsBag $trackingBag): OrderTrackingResult
+    {
+        $trackingResult = new OrderTrackingResult();
+
+        foreach ($trackingBag->all() as $channelId => $events) {
+            $configuration = $this->configurationRegistry->getConfiguration($channelId);
+            $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+
+            // Added paid config or not
+            if (!$configuration->isTrackPaidOrder()) {
+                continue;
+            }
+
+            $channelTrackingResult = $this->gateway->trackPartiallyPaidOrders($context, $channelId, $events);
+            $trackingResult->mergeWith($channelTrackingResult);
+        }
+
+        return $trackingResult;
+    }
+
+    public function trackPartiallyShippedOrder(
+        Context $context,
+        OrderTrackingEventsBag $trackingBag
+    ): OrderTrackingResult {
+        $trackingResult = new OrderTrackingResult();
+
+        foreach ($trackingBag->all() as $channelId => $events) {
+            $configuration = $this->configurationRegistry->getConfiguration($channelId);
+            $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+
+            if (!$configuration->isTrackShippedOrder()) {
+                continue;
+            }
+
+            $channelTrackingResult = $this->gateway->trackPartiallyShippedOrders($context, $channelId, $events);
+            $trackingResult->mergeWith($channelTrackingResult);
+        }
+
+        return $trackingResult;
+    }
 }

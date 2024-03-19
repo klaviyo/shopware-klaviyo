@@ -30,7 +30,7 @@ class GetProfileIdResponse
         return $this->profileId;
     }
 
-    public function getErrorDetail(): ?string
+    public function getErrorDetails(): ?string
     {
         return $this->errorDetail;
     }

@@ -162,4 +162,24 @@ class ScheduledEventsTracker implements EventsTrackerInterface
     {
         return $this->trackOrderEventsForBackgroundProcessing($context, $trackingBag, self::ORDER_EVENT_PAID);
     }
+
+    public function trackPartiallyPaidOrders(Context $context, OrderTrackingEventsBag $trackingBag): OrderTrackingResult
+    {
+        return $this->trackOrderEventsForBackgroundProcessing(
+            $context,
+            $trackingBag,
+            self::ORDER_EVENT_PARTIALLY_PAID
+        );
+    }
+
+    public function trackPartiallyShippedOrder(
+        Context $context,
+        OrderTrackingEventsBag $trackingBag
+    ): OrderTrackingResult {
+        return $this->trackOrderEventsForBackgroundProcessing(
+            $context,
+            $trackingBag,
+            self::ORDER_EVENT_PARTIALLY_SHIPPED
+        );
+    }
 }
