@@ -98,7 +98,7 @@ class CustomerPropertiesTranslator
         );
     }
 
-    private function getCustomerGroupName(?CustomerEntity $customer, Context $context) :string
+    private function getCustomerGroupName(CustomerEntity $customer, Context $context) :string
     {
         $groupId = $customer->getGroupId();
         $criteria = new Criteria();
