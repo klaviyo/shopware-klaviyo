@@ -17,6 +17,7 @@ use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 class CustomerPropertiesTranslator
@@ -25,14 +26,14 @@ class CustomerPropertiesTranslator
     private ConfigurationRegistry $configurationRegistry;
     private EntityRepository $salesChannelRepository;
     private LocaleCodeProducer $localeCodeProducer;
-    private EntityRepositoryInterface $customerGroupRepository;
+    private EntityRepository $customerGroupRepository;
 
     public function __construct(
         AddressDataHelper $addressHelper,
         ConfigurationRegistry $configurationRegistry,
         EntityRepository $salesChannelRepository,
         LocaleCodeProducer $localeCodeProducer,
-        EntityRepositoryInterface $customerGroupRepository
+        EntityRepository $customerGroupRepository
     ) {
         $this->addressHelper = $addressHelper;
         $this->configurationRegistry = $configurationRegistry;
