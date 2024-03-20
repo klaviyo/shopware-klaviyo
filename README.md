@@ -38,4 +38,4 @@ How to run load tests:
 ./bin/phpunit.sh --testsuite Load
 ```
 
-Test: 1
+Test: 2
