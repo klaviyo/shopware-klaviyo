@@ -58,6 +58,7 @@
             <argument type="service" id="Klaviyo\Integration\Configuration\ConfigurationRegistry"/>
             <argument type="service" id="sales_channel.repository"/>
             <argument type="service" id="Klaviyo\Integration\Utils\LocaleCodeProducer"/>
+            <argument type="service" id="customer_group.repository"/>
         </service>
         <service id="Klaviyo\Integration\Klaviyo\Gateway\Translator\UpdateProfileRequestTranslator">
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CustomerPropertiesTranslator"/>

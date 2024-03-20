@@ -23,7 +23,8 @@ class CustomerPropertiesNormalizer implements NormalizerInterface
                 'salesChannelName' => $object->getSalesChannelName(),
                 'boundedSalesChannelId' => $object->getBoundedSalesChannelId(),
                 'boundedSalesChannelName' => $object->getBoundedSalesChannelName(),
-                'language' => $object->getLocaleCode()
+                'language' => $object->getLocaleCode(),
+                'customerGroup' => $object->getGroupName()
             ],
             $object->getCustomFields()
         );
