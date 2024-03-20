@@ -17,6 +17,7 @@ use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 class CustomerPropertiesTranslator
@@ -25,17 +26,20 @@ class CustomerPropertiesTranslator
     private ConfigurationRegistry $configurationRegistry;
     private EntityRepository $salesChannelRepository;
     private LocaleCodeProducer $localeCodeProducer;
+    private EntityRepository $customerGroupRepository;
 
     public function __construct(
         AddressDataHelper $addressHelper,
         ConfigurationRegistry $configurationRegistry,
         EntityRepository $salesChannelRepository,
-        LocaleCodeProducer $localeCodeProducer
+        LocaleCodeProducer $localeCodeProducer,
+        EntityRepository $customerGroupRepository
     ) {
         $this->addressHelper = $addressHelper;
         $this->configurationRegistry = $configurationRegistry;
         $this->salesChannelRepository = $salesChannelRepository;
         $this->localeCodeProducer = $localeCodeProducer;
+        $this->customerGroupRepository = $customerGroupRepository;
     }
 
     /**
@@ -91,8 +95,18 @@ class CustomerPropertiesTranslator
                 $customer->getBoundSalesChannel(),
                 $context
             ) : null,
-            $localeCode ?: null
+            $localeCode ?: null,
+            $this->getCustomerGroupName($customer, $context)
         );
+    }
+
+    private function getCustomerGroupName(CustomerEntity $customer, Context $context) :string
+    {
+        $groupId = $customer->getGroupId();
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('id', $groupId));
+        $group = $this->customerGroupRepository->search($criteria, $context)->first();
+        return $group->getName();
     }
 
     private function guessRelevantCustomerAddress(?CustomerEntity $customerEntity): ?CustomerAddressEntity
@@ -212,7 +226,8 @@ class CustomerPropertiesTranslator
                 $customerEntity->getBoundSalesChannel(),
                 $context
             ),
-            $localeCode ?: null
+            $localeCode ?: null,
+            $this->getCustomerGroupName($customerEntity, $context)
         );
     }
 }
