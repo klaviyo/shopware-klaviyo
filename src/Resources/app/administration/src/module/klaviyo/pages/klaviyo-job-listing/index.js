@@ -94,14 +94,7 @@ Component.register('klaviyo-job-listing', {
         }
     },
 
-    created() {
-        this.createdComponent()
-    },
-
     methods: {
-        createdComponent() {
-            this.loadFilterValues();
-        },
 
         onDisplayModeChange(mode) {
             let innerBox = this.$el;
@@ -119,12 +112,10 @@ Component.register('klaviyo-job-listing', {
             }
 
             this.hideFilters = false;
-            this.loadFilterValues();
         },
 
         onRefresh() {
             this.$refs.jobListing.onRefresh(this.filterCriteria);
-            this.loadFilterValues();
         },
 
         updateCriteria(criteria) {
