@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Klaviyo\Integration\Entity\Helper;
 
 use Klaviyo\Integration\Klaviyo\Client\Exception\OrderItemProductNotFound;
@@ -59,12 +61,14 @@ class ProductDataHelper
         $this->requestStack = $requestStack;
     }
 
-    public function getProductViewPageUrlByContext(ProductEntity $productEntity, SalesChannelContext $salesChannelContext): string
-    {
+    public function getProductViewPageUrlByContext(
+        ProductEntity $productEntity,
+        SalesChannelContext $salesChannelContext
+    ): string {
         $request = $this->requestStack->getCurrentRequest();
         $raw = $this->seoUrlReplacer->generate('frontend.detail.page', ['productId' => $productEntity->getId()]);
 
-        if ($request !== null && !empty($request->get(RequestTransformer::STOREFRONT_URL))) {
+        if (null !== $request && !empty($request->get(RequestTransformer::STOREFRONT_URL))) {
             return $this->seoUrlReplacer->replace(
                 $raw,
                 $request->get(RequestTransformer::STOREFRONT_URL),
@@ -79,7 +83,11 @@ class ProductDataHelper
         }
 
         if ($salesChannelContext->getSalesChannel() && $salesChannelContext->getSalesChannel()->getDomains()) {
-            return $this->seoUrlReplacer->replace($raw, $salesChannelContext->getSalesChannel()->getDomains()->first()->getUrl(), $salesChannelContext);
+            return $this->seoUrlReplacer->replace(
+                $raw,
+                $salesChannelContext->getSalesChannel()->getDomains()->first()->getUrl(),
+                $salesChannelContext
+            );
         }
 
         return $this->urlGenerator
@@ -90,13 +98,20 @@ class ProductDataHelper
             );
     }
 
-    public function getProductViewPageUrlByChannelId(ProductEntity $productEntity, string $channelId,  Context $context, $languageId): string
-    {
+    public function getProductViewPageUrlByChannelId(
+        ProductEntity $productEntity,
+        string $channelId,
+        Context $context,
+        $languageId
+    ): string {
         $salesChannelContext = $this->getSalesChannelContext($channelId, $context, $languageId);
 
         return $this->getProductViewPageUrlByContext($productEntity, $salesChannelContext);
     }
 
+    /**
+     * @throws OrderItemProductNotFound
+     */
     public function getLineItemProduct(Context $context, OrderLineItemEntity $orderLineItemEntity): ProductEntity
     {
         if ($orderLineItemEntity->getProduct()) {
@@ -110,6 +125,7 @@ class ProductDataHelper
         $productEntity = $this->productRepository
             ->search(new Criteria([$orderLineItemEntity->getProductId()]), $context)
             ->first();
+
         if (!$productEntity) {
             throw new OrderItemProductNotFound(
                 \sprintf('Product[id: %s] was not found', $orderLineItemEntity->getProductId())
@@ -179,8 +195,9 @@ class ProductDataHelper
                 if (!$category->getProductStreamId()) {
                     continue;
                 }
+
                 foreach ($streamIds as $streamId) {
-                    if ($streamId === $category->getProductStreamId()){
+                    if ($streamId === $category->getProductStreamId()) {
                         $categories[] = $category->getName();
                     }
                 }
@@ -264,7 +281,7 @@ class ProductDataHelper
         return $this->productRepository->search(new Criteria([$productId]), $context)->first();
     }
 
-    public function getSalesChannelContext(string $channelId, Context $context, $languageId = null)
+    public function getSalesChannelContext(string $channelId, Context $context, $languageId = null): SalesChannelContext
     {
         if (isset($this->contexts[$this->getHashedIdentificator($channelId, $languageId)])) {
             return $this->contexts[$this->getHashedIdentificator($channelId, $languageId)];
@@ -274,6 +291,7 @@ class ProductDataHelper
         $criteria->addFilter(new EqualsFilter('id', $channelId));
         $criteria->addAssociation('domains');
         $salesChannel = $this->salesChannelRepository->search($criteria, $context)->first();
+
         if (!$languageId) {
             $salesChannelContext = $this->salesChannelContextFactory->create(
                 Uuid::randomHex(),
@@ -295,11 +313,13 @@ class ProductDataHelper
      * @param null|string $languageId
      * @return string
      */
-    private function getHashedIdentificator($channelId, $languageId): string {
+    private function getHashedIdentificator(?string $channelId, ?string $languageId): string
+    {
         return $channelId . '-' . $languageId;
     }
 
-    public function getProductNameById($productId) {
+    public function getProductNameById(string $productId)
+    {
         $context = Context::createDefaultContext();
 
         $context = new Context(
