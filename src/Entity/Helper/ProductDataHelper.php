@@ -18,6 +18,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Framework\Routing\RequestTransformer;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -228,7 +229,7 @@ class ProductDataHelper
     {
         $manufacturer = $this->getProductManufacturer($context, $productEntity);
 
-        return $manufacturer ? $manufacturer->getName() : null;
+        return $manufacturer ? $manufacturer->getTranslation('name') : null;
     }
 
     private function getProductManufacturer(Context $context, ProductEntity $productEntity): ?ProductManufacturerEntity
@@ -238,8 +239,10 @@ class ProductDataHelper
         }
 
         $manufacturerId = $productEntity->getManufacturerId();
+
         if (!$manufacturerId) {
             $productParent = $this->getProductParent($context, $productEntity);
+
             if ($productParent) {
                 $manufacturerId = $productParent->getManufacturerId();
             }
@@ -279,7 +282,7 @@ class ProductDataHelper
             $salesChannelContext = $this->salesChannelContextFactory->create(
                 Uuid::randomHex(),
                 $salesChannel->getId(),
-                [\Shopware\Core\System\SalesChannel\Context\SalesChannelContextService::LANGUAGE_ID => $languageId]
+                [SalesChannelContextService::LANGUAGE_ID => $languageId]
             );
         }
 
