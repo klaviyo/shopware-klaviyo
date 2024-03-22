@@ -66,7 +66,7 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
     /**
      * @param EventsProcessingMessage $message
      *
-     * @throws \Exception
+     * @return JobResult
      */
     public function execute(object $message): JobResult
     {
@@ -100,14 +100,22 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
 
         $fullSubscribersSync = $this->processFullSubscriberSyncByTimeEvent($context, $channelIds);
 
-        $result->addMessage(new Message\InfoMessage(\sprintf('Total %s order events was scheduled.', $orderTotal)));
-        $result->addMessage(new Message\InfoMessage(\sprintf('Total %s cart events was scheduled.', $cartTotal)));
-        $result->addMessage(
-            new Message\InfoMessage(\sprintf('Total %s customer events was scheduled.', $customerTotal))
-        );
-        $result->addMessage(
-            new Message\InfoMessage(\sprintf('Total %s subscriber events was scheduled.', $subscriberTotal))
-        );
+        if ($orderTotal > 0) {
+            $result->addMessage(new Message\InfoMessage(\sprintf('Total %s order events was scheduled.', $orderTotal)));
+        }
+        if ($cartTotal > 0) {
+            $result->addMessage(new Message\InfoMessage(\sprintf('Total %s cart events was scheduled.', $cartTotal)));
+        }
+        if ($customerTotal > 0) {
+            $result->addMessage(
+                new Message\InfoMessage(\sprintf('Total %s customer events was scheduled.', $customerTotal))
+            );
+        }
+        if ($subscriberTotal > 0) {
+            $result->addMessage(
+                new Message\InfoMessage(\sprintf('Total %s subscriber events was scheduled.', $subscriberTotal))
+            );
+        }
 
         if ($fullSubscribersSync) {
             $result->addMessage(
