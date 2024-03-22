@@ -74,7 +74,13 @@ class JobRunner
                 $resultMessage->getType()
             );
         }
-        $status = $result->hasErrors() ? JobEntity::TYPE_FAILED : JobEntity::TYPE_SUCCEED;
+
+        if ($this->jobHelper->getChildJobs($message->getJobId(), self::NOT_FINISHED_STATUSES)->count() === 0) {
+            $status = $result->hasErrors() ? JobEntity::TYPE_FAILED : JobEntity::TYPE_SUCCEED;
+        }
+        else {
+            $status = JobEntity::TYPE_RUNNING ;
+        }
 
         if ($handler instanceof GeneratingHandlerInterface) {
             if ($status === JobEntity::TYPE_FAILED) {
