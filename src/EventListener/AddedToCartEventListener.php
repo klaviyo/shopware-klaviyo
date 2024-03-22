@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\EventListener;
 
@@ -15,6 +17,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class AddedToCartEventListener implements EventSubscriberInterface
 {
+    public const SUBSCRIBER_COOKIE = 'klaviyo_subscriber';
+
     private CartEventRequestTranslator $cartEventRequestTranslator;
     private EventsTrackerInterface $eventsTracker;
     private LoggerInterface $logger;
@@ -35,6 +39,9 @@ class AddedToCartEventListener implements EventSubscriberInterface
         $this->getValidChannelConfig = $getValidChannelConfig;
     }
 
+    /**
+     * @return string[]
+     */
     public static function getSubscribedEvents(): array
     {
         return [
@@ -43,6 +50,11 @@ class AddedToCartEventListener implements EventSubscriberInterface
         ];
     }
 
+    /**
+     * @param AfterLineItemAddedEvent $event
+     *
+     * @return void
+     */
     public function onAfterLineItemAdded(AfterLineItemAddedEvent $event)
     {
         try {
@@ -53,7 +65,13 @@ class AddedToCartEventListener implements EventSubscriberInterface
 
             $salesChannelContext = $event->getSalesChannelContext();
             $request = $this->requestStack->getCurrentRequest();
-            if (!$salesChannelContext->getCustomer() && !$request->cookies->get('klaviyo_subscriber')) {
+            if (
+                !$salesChannelContext->getCustomer()
+                && (
+                    !$request->cookies
+                    || !$request->cookies->has(self::SUBSCRIBER_COOKIE)
+                )
+            ) {
                 return;
             }
 
@@ -105,7 +123,13 @@ class AddedToCartEventListener implements EventSubscriberInterface
             $cart = $event->getCart();
             $salesChannelContext = $event->getSalesChannelContext();
             $request = $this->requestStack->getCurrentRequest();
-            if (!$salesChannelContext->getCustomer() && !$request->cookies->get('klaviyo_subscriber')) {
+            if (
+                !$salesChannelContext->getCustomer()
+                && (
+                    !$request->cookies
+                    || !$request->cookies->has(self::SUBSCRIBER_COOKIE)
+                )
+            ) {
                 return;
             }
 
