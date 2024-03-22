@@ -34,6 +34,11 @@
       </div>
     </div>
 
+    <sw-container v-if="!jobItems" columns="1fr 1fr">
+        <sw-loader size="50px">
+        </sw-loader>
+    </sw-container>
+
     {% block od_job_charts %}
       <od-scheduler-charts ref="jobCharts"
                            v-if="jobDisplayType === 'chart'"
