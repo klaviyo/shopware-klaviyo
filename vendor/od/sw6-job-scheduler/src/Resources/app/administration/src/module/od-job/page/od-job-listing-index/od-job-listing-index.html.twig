@@ -33,6 +33,11 @@
         {% endblock %}
       </div>
     </div>
+      
+    <sw-container v-if="!jobItems" columns="1fr 1fr">
+        <sw-loader size="50px">
+        </sw-loader>
+    </sw-container>
 
     {% block od_job_charts %}
       <od-scheduler-charts ref="jobCharts"
@@ -56,15 +61,26 @@
               v-if="jobItems && jobDisplayType === 'list'"
               :items="jobItems"
               :repository="jobRepository"
+              :sort-by="currentSortBy"
+              :sort-direction="sortDirection"
               :is-loading="isLoading"
               :showSelection="true"
               :allowColumnEdit="false"
               :allowDelete="true"
+              :criteriaLimit="25"
+              :limit="25"
               :allowEdit="false"
               :jobTypes="jobTypes"
               :isGroupedView="isGroupedView"
               @page-change="pageChange"
               :columns="columns">
+            {% block sw_data_grid_slot_pagination %}
+                <sw-pagination
+                    v-bind="{ page, limit, total }"
+                    :total-visible="6"
+                    @page-change="paginate"
+                />
+            {% endblock %}
         <template #column-status="{ item }">
           {% block od_job_list_grid_job_status_link %}
             <template>
