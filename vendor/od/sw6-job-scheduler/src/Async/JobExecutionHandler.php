@@ -33,7 +33,7 @@ class JobExecutionHandler implements \Symfony\Component\Messenger\Handler\Messag
         } catch (\Throwable $e) {
             // Should not trigger any exceptions to avoid message requeue
             $this->logger->error(
-                \sprintf('Failed to run job[id: %s] message: %s', $message->getJobId(), $e->getMessage()),
+                \sprintf('Failed to run job[id: %s] | ' . get_class($message) . ' |  message: %s', $message->getJobId(), $e->getMessage()),
             );
         }
     }

@@ -16,7 +16,7 @@
 
         <!-- Job Management Services -->
         <service id="Od\Scheduler\Async\JobExecutionHandler">
-            <argument type="service" id="logger"/>
+            <argument type="service" id="od-scheduler.plugin.logger"/>
             <argument type="service" id="Od\Scheduler\Model\Job\JobRunner"/>
             <tag name="messenger.message_handler"/>
         </service>
@@ -66,6 +66,16 @@
         <!-- /Decorators -->
         <service id="Od\Scheduler\Model\Job\JobTreeProvider">
             <argument type="service" id="od_scheduler_job.repository"/>
+        </service>
+        <service id="od-scheduler.plugin.logger" class="Monolog\Logger">
+            <argument type="string">Od_Scheduler</argument>
+            <argument type="collection">
+                <argument type="service" id="od-scheduler.plugin.rotatingHandler"/>
+            </argument>
+        </service>
+
+        <service id="od-scheduler.plugin.rotatingHandler" class="Monolog\Handler\RotatingFileHandler">
+            <argument type="string">%kernel.logs_dir%/od-scheduler-%kernel.environment%.log</argument>
         </service>
     </services>
 </container>
