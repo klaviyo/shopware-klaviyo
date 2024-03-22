@@ -41,7 +41,7 @@
         "shopware/administration": ">=6.4.4.0, <6.5.0.0",
         "shopware/core": ">=6.4.4.0, <6.5.0.0",
         "shopware/storefront": ">=6.4.4.0, <6.5.0.0",
-        "od/sw6-job-scheduler": "1.0.5",
+        "od/sw6-job-scheduler": "1.0.6",
         "ext-json": "*"
     }
 }
