@@ -36,9 +36,11 @@ class ExcludedSubscriberSyncOperation implements JobHandlerInterface
         $criteria->addFilter(new EqualsFilter('salesChannelId', $message->getSalesChannelId()));
         $subscribers = $this->newsletterRepository->search($criteria, $context);
 
-        $result->addMessage(
-            new InfoMessage(\sprintf('Total %s customers was unsubscribed.', \count($message->getEmails())))
-        );
+        if (count($message->getEmails())) {
+            $result->addMessage(
+                new InfoMessage(\sprintf('Total %s customers was unsubscribed.', \count($message->getEmails())))
+            );
+        }
 
         if (!empty($message->getEmails())) {
             $result->addMessage(new InfoMessage(
@@ -59,6 +61,6 @@ class ExcludedSubscriberSyncOperation implements JobHandlerInterface
         }, $subscribers->getElements()));
         $this->newsletterRepository->update($subscriberData, $context);
 
-        return new JobResult();
+        return $result;
     }
 }
