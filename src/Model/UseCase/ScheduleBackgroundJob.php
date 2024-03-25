@@ -163,6 +163,9 @@ class ScheduleBackgroundJob
         foreach ($channelIds as $channelId) {
             try {
                 foreach ($this->excludedSubscribersProvider->getExcludedSubscribers($channelId) as $result) {
+                    if (!count($result->getEmails())) {
+                        continue;
+                    }
                     $jobMessage = new Message\ExcludedSubscriberSyncMessage(
                         Uuid::randomHex(),
                         $parentJobId,
