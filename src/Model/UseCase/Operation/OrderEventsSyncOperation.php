@@ -72,9 +72,11 @@ class OrderEventsSyncOperation implements JobHandlerInterface
             $orderCriteria->addAssociation('orderCustomer.customer.defaultShippingAddress');
             $orders = $this->orderRepository->search($orderCriteria, $context)->getEntities()->getElements();
 
-            $result->addMessage(new Message\InfoMessage(
-                \sprintf('Total %s "%s" order events to process.', \count($orders), $eventTypeName))
-            );
+            if (count($orders) > 0) {
+                $result->addMessage(new Message\InfoMessage(
+                    \sprintf('Total %s "%s" order events to process.', \count($orders), $eventTypeName))
+                );
+            }
 
             /** @var EventEntity $deferredEvent */
             foreach ($events as $deferredEvent) {
