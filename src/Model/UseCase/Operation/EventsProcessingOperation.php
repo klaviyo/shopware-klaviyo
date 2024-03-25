@@ -43,6 +43,11 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
     private SystemConfigService $systemConfigService;
     private LoggerInterface $logger;
 
+    /**
+     * @var JobResult
+     */
+    private JobResult $jobResult;
+
     public function __construct(
         EntityRepository $eventRepository,
         EntityRepository $cartEventRequestRepository,
@@ -70,7 +75,7 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
      */
     public function execute(object $message): JobResult
     {
-        $result = new JobResult();
+        $this->jobResult = new JobResult();
         $context = $message->getContext();
         $channelIds = $this->getValidChannels->execute($context)->map(
             fn (SalesChannelEntity $channel) => $channel->getId()
@@ -78,56 +83,34 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
         $channelIds = \array_values($channelIds);
 
         if (empty($channelIds)) {
-            $result->addMessage(new Message\WarningMessage('There are no configured channels - skipping.'));
-
-            return $result;
+            $this->jobResult->addMessage(
+                new Message\WarningMessage('There are no configured channels - skipping.')
+            );
+            return $this->jobResult;
         }
 
-        $orderTotal = $this->processOrderEvents($context, $message->getJobId(), $channelIds);
-        $cartTotal = $this->processCartEvents($context, $message->getJobId(), $channelIds);
-        $customerTotal = $this->processCustomerProfileEvents($context, $message->getJobId(), $channelIds);
+        $this->processOrderEvents($context, $message->getJobId(), $channelIds);
+        $this->processCartEvents($context, $message->getJobId(), $channelIds);
+        $this->processCustomerProfileEvents($context, $message->getJobId(), $channelIds);
+
         $schedulingResult = $this->scheduleBackgroundJob->scheduleExcludedSubscribersSyncJobs(
             $context,
             $message->getJobId(),
             $channelIds
         );
-        $subscriberTotal = $this->processSubscriberEvents(
+        $this->processSubscriberEvents(
             $context,
             $message->getJobId(),
             $channelIds,
             $schedulingResult->all()
         );
 
-        $fullSubscribersSync = $this->processFullSubscriberSyncByTimeEvent($context, $channelIds);
-
-        if ($orderTotal > 0) {
-            $result->addMessage(new Message\InfoMessage(\sprintf('Total %s order events was scheduled.', $orderTotal)));
-        }
-        if ($cartTotal > 0) {
-            $result->addMessage(new Message\InfoMessage(\sprintf('Total %s cart events was scheduled.', $cartTotal)));
-        }
-        if ($customerTotal > 0) {
-            $result->addMessage(
-                new Message\InfoMessage(\sprintf('Total %s customer events was scheduled.', $customerTotal))
-            );
-        }
-        if ($subscriberTotal > 0) {
-            $result->addMessage(
-                new Message\InfoMessage(\sprintf('Total %s subscriber events was scheduled.', $subscriberTotal))
-            );
-        }
-
-        if ($fullSubscribersSync) {
-            $result->addMessage(
-                new Message\InfoMessage('Full subscribers sync event was scheduled.')
-            );
-        }
+        $this->processFullSubscriberSyncByTimeEvent($context, $channelIds);
 
         foreach ($schedulingResult->getErrors() as $error) {
-            $result->addError($error);
+            $this->jobResult->addError($error);
         }
-
-        return $result;
+        return  $this->jobResult;
     }
 
     private function processCustomerProfileEvents(Context $context, string $parentJobId, array $channelIds): int
@@ -147,6 +130,11 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
             $this->deleteProcessedEvents($context, $events->getEntities());
         }
 
+        if ($total > 0) {
+            $this->jobResult->addMessage(
+                new Message\InfoMessage(\sprintf('Total %s customer events was scheduled.', $total))
+            );
+        }
         return $total;
     }
 
@@ -164,6 +152,11 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
             $this->scheduleBackgroundJob->scheduleCartEventsSyncJob($eventRequestIds, $parentJobId, $context);
         }
 
+        if ($total > 0) {
+            $this->jobResult->addMessage(
+                new Message\InfoMessage(\sprintf('Total %s cart events was scheduled.', $total))
+            );
+        }
         return $total;
     }
 
@@ -181,6 +174,11 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
             $this->scheduleBackgroundJob->scheduleOrderEventsSyncJob($eventIds, $parentJobId, $context);
         }
 
+        if ($total > 0) {
+            $this->jobResult->addMessage(
+                new Message\InfoMessage(\sprintf('Total %s order events was scheduled.', $total))
+            );
+        }
         return $total;
     }
 
@@ -222,6 +220,11 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
             $this->deleteProcessedEvents($context, $events->getEntities());
         }
 
+        if ($total > 0) {
+            $this->jobResult->addMessage(
+                new Message\InfoMessage(\sprintf('Total %s subscriber events was scheduled.', $total))
+            );
+        }
         return $total;
     }
 
@@ -266,6 +269,11 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
             $this->logger->error('Unable to sync job, the reason is:' . $e->getMessage());
         }
 
+        if ($isJobStarted) {
+            $this->jobResult->addMessage(
+                new Message\InfoMessage('Full subscribers sync event was scheduled.')
+            );
+        }
         return $isJobStarted;
     }
 
