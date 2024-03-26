@@ -49,23 +49,30 @@ class AsyncClient implements ClientInterface
                         $translateResponseResult = $translator->translateResponse($response);
 
                         if (false === $translateResponseResult->isSuccess()) {
-                            $orderId = $this->requests[$index]->getOrderId();
-                            $errorDetail = $translateResponseResult->getDetail();
+                            $currentRequest = $this->requests[$index];
+                            $errorDetail = $translateResponseResult->getErrorDetails();
 
-                            if (
-                                ('The phone number provided either does not exist or is ineligible to receive SMS' ===
-                                    $errorDetail)
-                                || (false !== strpos($errorDetail, 'Invalid phone number format'))
-                            ) {
-                                $exceptionType = new JobRuntimeWarningException(
-                                    \sprintf('Order[id: %s] error: %s', $orderId, $errorDetail)
-                                );
+                            if (\method_exists($currentRequest, 'getOrderId')) {
+                                $orderId = $this->requests[$index]->getOrderId();
+
+                                if (
+                                    ('The phone number provided either does not exist or is ineligible to receive SMS' ===
+                                        $errorDetail)
+                                    || (false !== strpos($errorDetail, 'Invalid phone number format'))
+                                ) {
+                                    $exceptionType = new JobRuntimeWarningException(
+                                        \sprintf('Order[id: %s] error: %s', $orderId, $errorDetail)
+                                    );
+                                } else {
+                                    $throwText = \sprintf('Order[id: %s] error: %s', $orderId, $errorDetail);
+                                    throw new TranslationException($response, $throwText);
+                                }
+
+                                $this->clientResult->addRequestError($this->requests[$index], $exceptionType);
                             } else {
-                                $throwText = \sprintf('Order[id: %s] error: %s', $orderId, $errorDetail);
+                                $throwText = \sprintf('Event error: %s', $errorDetail);
                                 throw new TranslationException($response, $throwText);
                             }
-
-                            $this->clientResult->addRequestError($this->requests[$index], $exceptionType);
                         } else {
                             $this->clientResult->addRequestResponse(
                                 $this->requests[$index],
@@ -95,6 +102,7 @@ class AsyncClient implements ClientInterface
             RequestOptions::CONNECT_TIMEOUT => $this->configuration->getConnectionTimeout(),
             RequestOptions::TIMEOUT => $this->configuration->getRequestTimeout(),
             RequestOptions::HTTP_ERRORS => false,
+            RequestOptions::DELAY => 1000,
         ];
 
         foreach ($requests as $request) {

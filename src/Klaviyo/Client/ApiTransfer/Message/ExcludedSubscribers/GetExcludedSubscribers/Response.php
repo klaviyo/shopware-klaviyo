@@ -9,15 +9,18 @@ class Response
     private array $emails;
     private ?string $nextPageUrl;
     private ?bool $isSuccess;
+    private ?string $errorDetails;
 
     public function __construct(
         array $emails,
         string $nextPageUrl = null,
-        bool $isSuccess = null
+        bool $isSuccess = null,
+        string $errorDetails = null
     ) {
         $this->emails = $emails;
         $this->nextPageUrl = $nextPageUrl;
         $this->isSuccess = $isSuccess;
+        $this->errorDetails = $errorDetails;
     }
 
     public function getEmails(): array
@@ -33,5 +36,10 @@ class Response
     public function isSuccess(): ?bool
     {
         return $this->isSuccess;
+    }
+
+    public function getErrorDetails(): ?string
+    {
+        return $this->errorDetails;
     }
 }
