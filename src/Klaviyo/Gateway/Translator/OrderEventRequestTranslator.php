@@ -19,6 +19,7 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEv
 use Klaviyo\Integration\Klaviyo\Client\Exception\OrderItemProductNotFound;
 use Klaviyo\Integration\Klaviyo\Gateway\Exception\TranslationException;
 use Klaviyo\Integration\Utils\Reflection\ReflectionHelper;
+use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemCollection;
@@ -85,7 +86,7 @@ class OrderEventRequestTranslator
         $this->ensureOrderLineItemsLoaded($context, $orderEntity);
         /** @var OrderLineItemEntity $lineItem */
         foreach ($orderEntity->getLineItems() ?? [] as $lineItem) {
-            if ($lineItem->getType() === 'promotion') {
+            if (LineItem::PROMOTION_LINE_ITEM_TYPE === $lineItem->getType()) {
                 $discounts->add(new DiscountInfo($lineItem->getLabel(), $lineItem->getTotalPrice()));
             }
         }
