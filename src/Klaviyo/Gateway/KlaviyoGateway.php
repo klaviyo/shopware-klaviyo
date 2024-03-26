@@ -144,6 +144,22 @@ class KlaviyoGateway
         return $this->trackOrderEvents('RefundedOrder', $context, $channelId, $orderEvents);
     }
 
+    public function trackPartiallyPaidOrders(
+        Context $context,
+        string $channelId,
+        array $orderEvents
+    ): OrderTrackingResult {
+        return $this->trackOrderEvents('PartiallyPaidOrder', $context, $channelId, $orderEvents);
+    }
+
+    public function trackPartiallyShippedOrders(
+        Context $context,
+        string $channelId,
+        array $orderEvents
+    ): OrderTrackingResult {
+        return $this->trackOrderEvents('PartiallyShippedOrder', $context, $channelId, $orderEvents);
+    }
+
     public function upsertCustomerProfiles(
         Context $context,
         string $channelId,
@@ -359,14 +375,16 @@ class KlaviyoGateway
                     $trackingResult->addFailedOrder($failedOrderId, $error);
                 }
 
-                $this->logger->error(
-                    \sprintf(
-                        'Could not track %s, reason: %s',
-                        $eventType,
-                        $error->getMessage()
-                    ),
-                    ContextHelper::createContextFromException($error)
-                );
+                if (!($error instanceof JobRuntimeWarningException)) {
+                    $this->logger->error(
+                        \sprintf(
+                            'Could not track %s, reason: %s',
+                            $eventType,
+                            $error->getMessage()
+                        ),
+                        ContextHelper::createContextFromException($error)
+                    );
+                }
             }
         }
 
@@ -434,6 +452,7 @@ class KlaviyoGateway
                         );
                         break;
                     case 'ShippedOrder':
+                    case 'PartiallyShippedOrder':
                         $request = $this->orderEventRequestTranslator->translateToShippedOrderEventRequest(
                             $context,
                             $orderEvent->getOrder(),
@@ -441,6 +460,7 @@ class KlaviyoGateway
                         );
                         break;
                     case 'PaidOrder':
+                    case 'PartiallyPaidOrder':
                         $request = $this->orderEventRequestTranslator->translateToPaidOrderEventRequest(
                             $context,
                             $orderEvent->getOrder(),

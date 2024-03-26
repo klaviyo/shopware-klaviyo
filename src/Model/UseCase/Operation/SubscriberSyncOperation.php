@@ -74,6 +74,7 @@ class SubscriberSyncOperation implements JobHandlerInterface
     ): ?array {
         $unsubscribedRecipients = new ProfileContactInfoCollection();
         $criteria = new Criteria();
+        $criteria->addAssociation('salutation');
         $criteria->addFilter(new EqualsAnyFilter('id', $message->getSubscriberIds()));
         $criteria->addFilter(
             new EqualsAnyFilter(

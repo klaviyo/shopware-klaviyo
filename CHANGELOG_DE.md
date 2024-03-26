@@ -1,3 +1,10 @@
+# 2.11.0
+# Fix: Ein Fehler beim Aktualisieren benutzerdefinierter Kundenfelder wurde behoben.
+# Fix: Ein Fehler beim Überschreiten der Anforderungslimitrate in Klaviyo wurde behoben.
+# Fix: Ein Fehler beim Empfang einer Antwort von Klaviyo nach dem Erstellen eines Kunden wurde behoben.
+# Fix: Die Übertragung des Vornamens, Nachnamens und der Anrede des Kunden bei der vollständigen Synchronisierung von Kunden wurde korrigiert.
+# Neu: Synchronisierung neuer Ereignisse des Bestellstatus hinzugefügt, wie zum Beispiel: Teilweise bezahlte Bestellung und Teilweise versendete Bestellung.
+
 # 2.10.0
 # Fix: Validierung von Telefonnummern in Bestellereignissen hinzugefügt. Wenn die Telefonnummer nicht existiert oder nicht dem e.164-Standard entspricht, wird die Veranstaltung in Klaviyo veröffentlicht, ohne dass die falsche Telefonnummer übermittelt wird.
 # Fix: Korrektur einiger Titel.
