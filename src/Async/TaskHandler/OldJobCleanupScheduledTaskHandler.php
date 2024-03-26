@@ -12,30 +12,32 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter;
+use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler(handles: OldJobCleanupScheduledTask::class)]
-final class OldJobCleanupScheduledTaskHandler
+final class OldJobCleanupScheduledTaskHandler extends ScheduledTaskHandler
 {
     /**
+     * @param EntityRepository $scheduledTaskRepository
      * @param EntityRepository $jobRepository
      * @param SystemConfigService $systemConfigService
      * @param LoggerInterface $logger
      */
     public function __construct(
+        protected EntityRepository $scheduledTaskRepository,
         private readonly EntityRepository $jobRepository,
         private readonly SystemConfigService $systemConfigService,
         private readonly LoggerInterface $logger
     ) {
+        parent::__construct($scheduledTaskRepository, $logger);
     }
 
     /**
-     * @param OldJobCleanupScheduledTask $task
-     *
      * @return void
      */
-    public function __invoke(OldJobCleanupScheduledTask $task): void
+    public function run(): void
     {
         try {
             $isJobCleanupEnabled = $this->systemConfigService->getInt('klavi_overd.config.oldJobCleanup');

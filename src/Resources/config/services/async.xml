@@ -10,6 +10,7 @@
             <tag name="shopware.scheduled.task"/>
         </service>
         <service id="Klaviyo\Integration\Async\TaskHandler\ScheduleEventJobsHandler">
+            <argument type="service" id="scheduled_task.repository"/>
             <argument type="service" id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob"/>
             <argument type="service" id="monolog.logger.od_klaviyo"/>
             <tag name="messenger.message_handler"/>
@@ -18,6 +19,7 @@
             <tag name="shopware.scheduled.task"/>
         </service>
         <service id="Klaviyo\Integration\Async\TaskHandler\OldJobCleanupScheduledTaskHandler">
+            <argument type="service" id="scheduled_task.repository"/>
             <argument type="service" id="od_scheduler_job.repository"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="monolog.logger.od_klaviyo"/>
