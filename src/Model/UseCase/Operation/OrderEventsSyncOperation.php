@@ -32,28 +32,27 @@ class OrderEventsSyncOperation implements JobHandlerInterface
         Tracker::ORDER_EVENT_PARTIALLY_PAID,
     ];
 
-    private EntityRepository $eventsRepository;
-    private EntityRepository $orderRepository;
-    private Tracker $eventsTracker;
-
+    /**
+     * @param EntityRepository $eventsRepository
+     * @param EntityRepository $orderRepository
+     * @param Tracker $eventsTracker
+     */
     public function __construct(
-        EntityRepository $eventsRepository,
-        EntityRepository $orderRepository,
-        Tracker $eventsTracker
+        private readonly EntityRepository $eventsRepository,
+        private readonly EntityRepository $orderRepository,
+        private readonly Tracker $eventsTracker
     ) {
-        $this->eventsRepository = $eventsRepository;
-        $this->orderRepository = $orderRepository;
-        $this->eventsTracker = $eventsTracker;
     }
 
     /**
      * @param OrderEventSyncMessage $message
+     *
      * @return JobResult
      */
     public function execute(object $message): JobResult
     {
+        $messages = [];
         $result = new JobResult();
-        $result->addMessage(new Message\InfoMessage('Starting Order Events Sync Operation...'));
         $context = $message->getContext();
 
         foreach (self::ALLOWED_EVENT_TYPES as $eventType) {
@@ -73,8 +72,8 @@ class OrderEventsSyncOperation implements JobHandlerInterface
             $orders = $this->orderRepository->search($orderCriteria, $context)->getEntities()->getElements();
 
             if (count($orders) > 0) {
-                $result->addMessage(new Message\InfoMessage(
-                    \sprintf('Total %s "%s" order events to process.', \count($orders), $eventTypeName))
+                $messages[] = new Message\InfoMessage(
+                    \sprintf('Total %s "%s" order events to process.', \count($orders), $eventTypeName)
                 );
             }
 
@@ -89,60 +88,55 @@ class OrderEventsSyncOperation implements JobHandlerInterface
                 }
             }
 
-            switch ($eventType) {
-                case Tracker::ORDER_EVENT_PLACED:
-                    $trackingResult = $this->eventsTracker->trackPlacedOrders($context, $eventsBag);
-                    break;
-                case Tracker::ORDER_EVENT_ORDERED_PRODUCT:
-                    $trackingResult = $this->eventsTracker->trackOrderedProducts($context, $eventsBag);
-                    break;
-                case Tracker::ORDER_EVENT_CANCELED:
-                    $trackingResult = $this->eventsTracker->trackCanceledOrders($context, $eventsBag);
-                    break;
-                case Tracker::ORDER_EVENT_REFUNDED:
-                    $trackingResult = $this->eventsTracker->trackRefundOrders($context, $eventsBag);
-                    break;
-                case Tracker::ORDER_EVENT_FULFILLED:
-                    $trackingResult = $this->eventsTracker->trackFulfilledOrders($context, $eventsBag);
-                    break;
-                case Tracker::ORDER_EVENT_PAID:
-                    $trackingResult = $this->eventsTracker->trackPaiedOrders($context, $eventsBag);
-                    break;
-                case Tracker::ORDER_EVENT_SHIPPED:
-                    $trackingResult = $this->eventsTracker->trackShippedOrder($context, $eventsBag);
-                    break;
-                case Tracker::ORDER_EVENT_PARTIALLY_PAID:
-                    $trackingResult = $this->eventsTracker->trackPartiallyPaidOrders($context, $eventsBag);
-                    break;
-                case Tracker::ORDER_EVENT_PARTIALLY_SHIPPED:
-                    $trackingResult = $this->eventsTracker->trackPartiallyShippedOrder($context, $eventsBag);
-                    break;
-                default:
-                    $trackingResult = new OrderTrackingResult();
-                    break;
-            }
+            $trackingResult = match ($eventType) {
+                Tracker::ORDER_EVENT_PLACED => $this->eventsTracker->trackPlacedOrders($context, $eventsBag),
+                Tracker::ORDER_EVENT_ORDERED_PRODUCT => $this->eventsTracker->trackOrderedProducts(
+                    $context,
+                    $eventsBag
+                ),
+                Tracker::ORDER_EVENT_CANCELED => $this->eventsTracker->trackCanceledOrders($context, $eventsBag),
+                Tracker::ORDER_EVENT_REFUNDED => $this->eventsTracker->trackRefundOrders($context, $eventsBag),
+                Tracker::ORDER_EVENT_FULFILLED => $this->eventsTracker->trackFulfilledOrders($context, $eventsBag),
+                Tracker::ORDER_EVENT_PAID => $this->eventsTracker->trackPaiedOrders($context, $eventsBag),
+                Tracker::ORDER_EVENT_SHIPPED => $this->eventsTracker->trackShippedOrder($context, $eventsBag),
+                Tracker::ORDER_EVENT_PARTIALLY_PAID => $this->eventsTracker->trackPartiallyPaidOrders(
+                    $context,
+                    $eventsBag
+                ),
+                Tracker::ORDER_EVENT_PARTIALLY_SHIPPED => $this->eventsTracker->trackPartiallyShippedOrder(
+                    $context,
+                    $eventsBag
+                ),
+                default => new OrderTrackingResult(),
+            };
 
-            $deleteDataSet = array_map(function (EventEntity $event) {
-                return ['id' => $event->getId()];
-                }, array_values($events));
+            $deleteDataSet = array_map(
+                function (EventEntity $event) {
+                    return ['id' => $event->getId()];
+                },
+                array_values($events)
+            );
             $this->eventsRepository->delete($deleteDataSet, $context);
 
             foreach ($trackingResult->getFailedOrdersErrors() as $orderId => $orderErrors) {
                 /** @var \Throwable $error */
                 foreach ($orderErrors as $error) {
                     if ($error instanceof JobRuntimeWarningException) {
-                        $result->addMessage(new Message\WarningMessage($error->getMessage()));
+                        $messages[] = new Message\WarningMessage($error->getMessage());
                     } else {
-                        $result->addMessage(new Message\ErrorMessage(
+                        $messages[] = new Message\ErrorMessage(
                             \sprintf('Order[id: %s] error: %s', $orderId, $error->getMessage())
-                        ));
+                        );
                     }
                 }
             }
         }
 
-        $result->addMessage(new Message\InfoMessage('Operation finished.'));
-
+        if (count($messages)) {
+            $result->addMessage(new Message\InfoMessage('Starting Order Events Sync Operation...'));
+            array_walk($messages, fn($message) => $result->addMessage($message));
+            $result->addMessage(new Message\InfoMessage('Operation finished.'));
+        }
         return $result;
     }
 }
