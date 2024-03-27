@@ -10,7 +10,6 @@ use Klaviyo\Integration\System\Tracking\Event\Order\OrderEvent;
 use Klaviyo\Integration\System\Tracking\Event\Order\OrderTrackingEventsBag;
 use Klaviyo\Integration\System\Tracking\EventsTrackerInterface as Tracker;
 use Od\Scheduler\Model\Job\{JobHandlerInterface, JobResult, Message};
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
@@ -31,10 +30,26 @@ class OrderEventsSyncOperation implements JobHandlerInterface
         Tracker::ORDER_EVENT_PARTIALLY_PAID,
     ];
 
+    /**
+     * @var EntityRepositoryInterface
+     */
     private EntityRepositoryInterface $eventsRepository;
+
+    /**
+     * @var EntityRepositoryInterface
+     */
     private EntityRepositoryInterface $orderRepository;
+
+    /**
+     * @var Tracker
+     */
     private Tracker $eventsTracker;
 
+    /**
+     * @param EntityRepositoryInterface $eventsRepository
+     * @param EntityRepositoryInterface $orderRepository
+     * @param Tracker $eventsTracker
+     */
     public function __construct(
         EntityRepositoryInterface $eventsRepository,
         EntityRepositoryInterface $orderRepository,
@@ -47,12 +62,13 @@ class OrderEventsSyncOperation implements JobHandlerInterface
 
     /**
      * @param OrderEventSyncMessage $message
+     *
      * @return JobResult
      */
     public function execute(object $message): JobResult
     {
+        $messages = [];
         $result = new JobResult();
-        $result->addMessage(new Message\InfoMessage('Starting Order Events Sync Operation...'));
         $context = $message->getContext();
 
         foreach (self::ALLOWED_EVENT_TYPES as $eventType) {
@@ -71,16 +87,22 @@ class OrderEventsSyncOperation implements JobHandlerInterface
             $orderCriteria->addAssociation('orderCustomer.customer.defaultShippingAddress');
             $orders = $this->orderRepository->search($orderCriteria, $context)->getEntities()->getElements();
 
-            $result->addMessage(new Message\InfoMessage(
-                \sprintf('Total %s "%s" order events to process.', \count($orders), $eventTypeName))
-            );
+            if (count($orders) > 0) {
+                $messages[] = new Message\InfoMessage(
+                    \sprintf('Total %s "%s" order events to process.', \count($orders), $eventTypeName)
+                );
+            }
 
             /** @var EventEntity $deferredEvent */
             foreach ($events as $deferredEvent) {
-                if (isset($orders[$deferredEvent->getEntityId()])) {
-                    $orderEvent = new OrderEvent($orders[$deferredEvent->getEntityId()], $deferredEvent->getHappenedAt());
-                    $eventsBag->add($orderEvent);
+                if (!isset($orders[$deferredEvent->getEntityId()])) {
+                    continue;
                 }
+                $orderEvent = new OrderEvent(
+                    $orders[$deferredEvent->getEntityId()],
+                    $deferredEvent->getHappenedAt()
+                );
+                $eventsBag->add($orderEvent);
             }
 
             switch ($eventType) {
@@ -116,27 +138,33 @@ class OrderEventsSyncOperation implements JobHandlerInterface
                     break;
             }
 
-            $deleteDataSet = array_map(function (EventEntity $event) {
-                return ['id' => $event->getId()];
-                }, array_values($events));
+            $deleteDataSet = array_map(
+                function (EventEntity $event) {
+                    return ['id' => $event->getId()];
+                },
+                array_values($events)
+            );
             $this->eventsRepository->delete($deleteDataSet, $context);
 
             foreach ($trackingResult->getFailedOrdersErrors() as $orderId => $orderErrors) {
                 /** @var \Throwable $error */
                 foreach ($orderErrors as $error) {
                     if ($error instanceof JobRuntimeWarningException) {
-                        $result->addMessage(new Message\WarningMessage($error->getMessage()));
+                        $messages[] = new Message\WarningMessage($error->getMessage());
                     } else {
-                        $result->addMessage(new Message\ErrorMessage(
+                        $messages[] = new Message\ErrorMessage(
                             \sprintf('Order[id: %s] error: %s', $orderId, $error->getMessage())
-                        ));
+                        );
                     }
                 }
             }
         }
 
-        $result->addMessage(new Message\InfoMessage('Operation finished.'));
-
+        if (count($messages)) {
+            $result->addMessage(new Message\InfoMessage('Starting Order Events Sync Operation...'));
+            array_walk($messages, fn($message) => $result->addMessage($message));
+            $result->addMessage(new Message\InfoMessage('Operation finished.'));
+        }
         return $result;
     }
 }

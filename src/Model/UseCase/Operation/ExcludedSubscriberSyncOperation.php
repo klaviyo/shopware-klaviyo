@@ -14,8 +14,14 @@ class ExcludedSubscriberSyncOperation implements JobHandlerInterface
 {
     public const OPERATION_HANDLER_CODE = 'od-klaviyo-excluded-subscriber-sync-handler';
 
+    /**
+     * @var EntityRepositoryInterface
+     */
     private EntityRepositoryInterface $newsletterRepository;
 
+    /**
+     * @param EntityRepositoryInterface $newsletterRepository
+     */
     public function __construct(EntityRepositoryInterface $newsletterRepository)
     {
         $this->newsletterRepository = $newsletterRepository;
@@ -35,8 +41,15 @@ class ExcludedSubscriberSyncOperation implements JobHandlerInterface
         $criteria->addFilter(new EqualsFilter('salesChannelId', $message->getSalesChannelId()));
         $subscribers = $this->newsletterRepository->search($criteria, $context);
 
-        $result->addMessage(new InfoMessage(\sprintf('Total %s customers was unsubscribed.', \count($message->getEmails()))));
-        if (!empty($message->getEmails())) {
+        if (count($message->getEmails())) {
+            $result->addMessage(
+                new InfoMessage(
+                    \sprintf('Total %s customers was unsubscribed.', \count($message->getEmails()))
+                )
+            );
+        }
+
+        if (!empty($message->getEmails()) && count($message->getEmails())) {
             $result->addMessage(new InfoMessage(
                 \sprintf(
                     'Channel[id: %s] unsubscribed emails: %s',
@@ -55,6 +68,6 @@ class ExcludedSubscriberSyncOperation implements JobHandlerInterface
         }, $subscribers->getElements()));
         $this->newsletterRepository->update($subscriberData, $context);
 
-        return new JobResult();
+        return $result;
     }
 }
