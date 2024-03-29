@@ -51,11 +51,13 @@ class CustomerPropertiesTranslator
     {
         $configuration = $this->configurationRegistry->getConfiguration($orderEntity->getSalesChannelId());
         $orderCustomer = $orderEntity->getOrderCustomer();
+
         if (!$orderCustomer) {
             throw new TranslationException('OrderEntity translation failed, because order customer is empty');
         }
 
         $customer = $orderCustomer->getCustomer();
+
         if (null === $customer && !$configuration->isTrackDeletedAccountOrders()) {
             throw new JobRuntimeWarningException(
                 \sprintf('Order[id: %s] associated account has been deleted - skipping.', $orderEntity->getId())
@@ -121,8 +123,12 @@ class CustomerPropertiesTranslator
         }
     }
 
-    private function getCustomerGroupName(CustomerEntity $customer, Context $context) :string
+    private function getCustomerGroupName(?CustomerEntity $customer, Context $context): ?string
     {
+        if (!$customer) {
+            return null;
+        }
+
         $groupId = $customer->getGroupId();
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('id', $groupId));
@@ -241,7 +247,11 @@ class CustomerPropertiesTranslator
             $customFields,
             $birthday ? $birthday->format(Defaults::STORAGE_DATE_FORMAT) : null,
             $customerEntity->getSalesChannelId(),
-            $this->getSalesChannelName($customerEntity->getSalesChannelId(), $customerEntity->getSalesChannel(), $context),
+            $this->getSalesChannelName(
+                $customerEntity->getSalesChannelId(),
+                $customerEntity->getSalesChannel(),
+                $context
+            ),
             $customerEntity->getBoundSalesChannelId(),
             $this->getSalesChannelName(
                 $customerEntity->getBoundSalesChannelId(),
