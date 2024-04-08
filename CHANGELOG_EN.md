@@ -1,3 +1,12 @@
+# 1.9.1
+# Fix: Outdated code tests that caused errors have been removed.
+# Fix: Errors when synchronizing historical data have been fixed.
+# Fix: Fixed an error with the lack of translation of the product manufacturer.
+# Fix: Fixed a bug with transferring data about a customer group to custom fields.
+# Fix: Fixed behavior of the status of the parent job in Klaviyo Job Listing when child jobs are still in progress.
+# Fix: Improved Klaviyo Job Listing performance.
+# Fix: Fixed a bug related to the "Add to Cart" event when the event was not triggered.
+
 # 1.9.0
 # Fix: Fixed a bug in updating customer custom fields.
 # Fix: Fixed a bug with exceeding the request limit rate in Klaviyo.

@@ -1,3 +1,12 @@
+# 1.9.1
+# Fix: Veraltete Code-Tests, die Fehler verursachten, wurden entfernt.
+# Fix: Fehler bei der Synchronisierung von historischen Daten wurden behoben.
+# Fix: Ein Fehler bei der fehlenden Übersetzung des Produktherstellers wurde behoben.
+# Fix: Ein Fehler bei der Übertragung von Daten über eine Kundengruppe in benutzerdefinierte Felder wurde behoben.
+# Fix: Das Verhalten des Status des übergeordneten Auftrags in der Klaviyo Auftragsliste wurde korrigiert, wenn die untergeordneten Aufträge noch in Bearbeitung sind.
+# Fix: Die Leistung des Klaviyo Job Listing wurde verbessert.
+# Fix: Ein Fehler im Zusammenhang mit dem Ereignis "In den Warenkorb" wurde behoben, wenn das Ereignis nicht ausgelöst wurde.
+
 # 1.9.0
 # Fix: Ein Fehler beim Aktualisieren benutzerdefinierter Kundenfelder wurde behoben.
 # Fix: Ein Fehler beim Überschreiten der Anforderungslimitrate in Klaviyo wurde behoben.
