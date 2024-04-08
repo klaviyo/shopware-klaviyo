@@ -52,7 +52,9 @@ Component.extend('od-entity-listing', 'sw-entity-listing', {
             successItems: false,
             pendingItems: false,
             errorItems: false,
-            reloadInterval: null
+            reloadInterval: null,
+            page: 1,
+            limit: 25
         };
     },
 

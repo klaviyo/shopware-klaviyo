@@ -17,26 +17,27 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class AddedToCartEventListener implements EventSubscriberInterface
 {
-    private CartEventRequestTranslator $cartEventRequestTranslator;
-    private EventsTrackerInterface $eventsTracker;
-    private LoggerInterface $logger;
-    private RequestStack $requestStack;
-    private GetValidChannelConfig $getValidChannelConfig;
+    public const SUBSCRIBER_COOKIE = 'klaviyo_subscriber';
 
+    /**
+     * @param CartEventRequestTranslator $cartEventRequestTranslator
+     * @param EventsTrackerInterface $eventsTracker
+     * @param LoggerInterface $logger
+     * @param RequestStack $requestStack
+     * @param GetValidChannelConfig $getValidChannelConfig
+     */
     public function __construct(
-        CartEventRequestTranslator $cartEventRequestTranslator,
-        EventsTrackerInterface $eventsTracker,
-        LoggerInterface $logger,
-        RequestStack $requestStack,
-        GetValidChannelConfig $getValidChannelConfig
+        private readonly CartEventRequestTranslator $cartEventRequestTranslator,
+        private readonly EventsTrackerInterface $eventsTracker,
+        private readonly LoggerInterface $logger,
+        private readonly RequestStack $requestStack,
+        private readonly GetValidChannelConfig $getValidChannelConfig
     ) {
-        $this->cartEventRequestTranslator = $cartEventRequestTranslator;
-        $this->eventsTracker = $eventsTracker;
-        $this->logger = $logger;
-        $this->requestStack = $requestStack;
-        $this->getValidChannelConfig = $getValidChannelConfig;
     }
 
+    /**
+     * @return string[]
+     */
     public static function getSubscribedEvents(): array
     {
         return [
@@ -56,7 +57,7 @@ class AddedToCartEventListener implements EventSubscriberInterface
 
             $salesChannelContext = $event->getSalesChannelContext();
             $request = $this->requestStack->getCurrentRequest();
-            if (!$salesChannelContext->getCustomer() && !$request->cookies->get('klaviyo_subscriber')) {
+            if (!$salesChannelContext->getCustomer() && !$request?->cookies->has(self::SUBSCRIBER_COOKIE)) {
                 return;
             }
 
@@ -109,7 +110,7 @@ class AddedToCartEventListener implements EventSubscriberInterface
             $cart = $event->getCart();
             $salesChannelContext = $event->getSalesChannelContext();
             $request = $this->requestStack->getCurrentRequest();
-            if (!$salesChannelContext->getCustomer() && !$request->cookies->get('klaviyo_subscriber')) {
+            if (!$salesChannelContext->getCustomer() && !$request?->cookies->has(self::SUBSCRIBER_COOKIE)) {
                 return;
             }
 

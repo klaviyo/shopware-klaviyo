@@ -40,6 +40,8 @@ Component.register('od-job-listing-index', {
     data() {
         return {
             jobItems: null,
+            currentSortBy: 'startedAt',
+            sortDirection: 'DESC',
             isLoading: false,
             reloadInterval: null,
             showJobInfoModal: false,
@@ -47,6 +49,7 @@ Component.register('od-job-listing-index', {
             currentJobID: null,
             showMessagesModal: false,
             currentJobMessages: null,
+            total: 0,
             groupCreationDate: {
             },
             sortType: 'status',
@@ -54,6 +57,8 @@ Component.register('od-job-listing-index', {
             autoLoad: false,
             autoLoadIsActive: false,
             autoReloadInterval: 60000,
+            page: 1,
+            limit: 25
         }
     },
 
@@ -156,6 +161,12 @@ Component.register('od-job-listing-index', {
     },
 
     methods: {
+        paginate({ page, limit }) {
+            this.page = page;
+            this.limit = limit;
+            this.getList();
+        },
+
         createdComponent() {
             this.jobDisplayType = 'list';
             this.getList();
@@ -197,8 +208,9 @@ Component.register('od-job-listing-index', {
             };
         },
 
-        updateList(filterCriteria) {
-            const criteria = new Criteria();
+        async updateList(filterCriteria) {
+
+            const criteria = new Criteria(this.page, this.limit);
             criteria.addFilter(Criteria.equals('parentId', null));
             criteria.addSorting(Criteria.sort('createdAt', 'DESC', false));
             criteria.addAssociation('messages');

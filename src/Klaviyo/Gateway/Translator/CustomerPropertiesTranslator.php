@@ -17,6 +17,7 @@ use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 class CustomerPropertiesTranslator
@@ -25,20 +26,27 @@ class CustomerPropertiesTranslator
     private ConfigurationRegistry $configurationRegistry;
     private EntityRepository $salesChannelRepository;
     private LocaleCodeProducer $localeCodeProducer;
+    private EntityRepository $customerGroupRepository;
 
     public function __construct(
         AddressDataHelper $addressHelper,
         ConfigurationRegistry $configurationRegistry,
         EntityRepository $salesChannelRepository,
-        LocaleCodeProducer $localeCodeProducer
+        LocaleCodeProducer $localeCodeProducer,
+        EntityRepository $customerGroupRepository
     ) {
         $this->addressHelper = $addressHelper;
         $this->configurationRegistry = $configurationRegistry;
         $this->salesChannelRepository = $salesChannelRepository;
         $this->localeCodeProducer = $localeCodeProducer;
+        $this->customerGroupRepository = $customerGroupRepository;
     }
 
     /**
+     * @param Context $context
+     * @param OrderEntity $orderEntity
+     *
+     * @return CustomerProperties
      * @throws JobRuntimeWarningException
      */
     public function translateOrder(Context $context, OrderEntity $orderEntity): CustomerProperties
@@ -62,9 +70,7 @@ class CustomerPropertiesTranslator
         $country = $this->addressHelper->getAddressCountry($context, $customerAddress);
 
         $customFields = $this->prepareCustomFields($customer, $orderEntity->getSalesChannelId());
-        $birthday = $customer ? $customer->getBirthday() : null;
-
-        $localeCode = $this->localeCodeProducer->getLocaleCodeFromContext($customer->getLanguageId(), $context);
+        $birthday = $customer?->getBirthday();
 
         return new CustomerProperties(
             $customer ? $customer->getEmail() : $orderCustomer->getEmail(),
@@ -91,8 +97,41 @@ class CustomerPropertiesTranslator
                 $customer->getBoundSalesChannel(),
                 $context
             ) : null,
-            $localeCode ?: null
+            $this->getLocaleCode($orderEntity, $context),
+            $this->getCustomerGroupName($customer, $context)
         );
+    }
+
+    /**
+     * Get locale code.
+     *
+     * @param OrderEntity $orderEntity
+     * @param Context $context
+     *
+     * @return string|null
+     */
+    private function getLocaleCode(OrderEntity $orderEntity, Context $context): ?string
+    {
+        try {
+            $orderCustomer = $orderEntity->getOrderCustomer()->getCustomer();
+
+            return $this->localeCodeProducer->getLocaleCodeFromContext(
+                $orderCustomer ? $orderCustomer->getLanguageId() : $orderEntity->getLanguageId(),
+                $context
+            );
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    private function getCustomerGroupName(CustomerEntity $customer, Context $context): string
+    {
+        $groupId = $customer->getGroupId();
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('id', $groupId));
+        $group = $this->customerGroupRepository->search($criteria, $context)->first();
+
+        return $group->getName();
     }
 
     private function guessRelevantCustomerAddress(?CustomerEntity $customerEntity): ?CustomerAddressEntity
@@ -212,7 +251,8 @@ class CustomerPropertiesTranslator
                 $customerEntity->getBoundSalesChannel(),
                 $context
             ),
-            $localeCode ?: null
+            $localeCode ?: null,
+            $this->getCustomerGroupName($customerEntity, $context)
         );
     }
 }
