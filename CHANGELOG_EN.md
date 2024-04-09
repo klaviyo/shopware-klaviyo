@@ -1,3 +1,9 @@
+# 2.12.0
+# New: The back in stock pop up is now available when using the `frontend.cms.buybox.switch` route (SwitchBuyBoxVariantEvent).
+# Fix: Fixed an error when applying promotions. 
+# Fix: Fixed a bug when synchronizing customer data.
+# Fix: Fixed a bug with the display of empty jobs after daily synchronization.
+
 # 2.11.1
 # Fix: Outdated code tests that caused errors have been removed.
 # Fix: Errors when synchronizing historical data have been fixed.
