@@ -16,6 +16,7 @@ use Klaviyo\Integration\Utils\Logger\ContextHelper;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Storefront\Event\SwitchBuyBoxVariantEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Page\GenericPageLoadedEvent;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
@@ -67,6 +68,7 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
         return [
             GenericPageLoadedEvent::class => 'onPageLoaded',
             ProductPageLoadedEvent::class => 'onProductPageLoaded',
+            SwitchBuyBoxVariantEvent::class => 'onProductPageLoaded',
             CheckoutConfirmPageLoadedEvent::class => 'onCheckoutPageLoaded',
         ];
     }
