@@ -26,6 +26,7 @@
             <tag name="messenger.message_handler"/>
         </service>
         <!-- /Message Handlers and Scheduled Tasks -->
+
         <!-- Operations' definitions -->
         <service id="Klaviyo\Integration\Model\UseCase\Operation\EventsProcessingOperation">
             <argument type="service" id="klaviyo_job_event.repository"/>

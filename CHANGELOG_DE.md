@@ -1,3 +1,9 @@
+# 2.12.0
+# Neu: Das Popup "Wieder auf Lager" ist jetzt verfügbar, wenn die Route `frontend.cms.buybox.switch` verwendet wird (SwitchBuyBoxVariantEvent).
+# Fix: Ein Fehler bei der Anwendung von Werbeaktionen wurde behoben.
+# Fix: Ein Fehler bei der Synchronisierung von Kundendaten wurde behoben.
+# Fix: Ein Fehler bei der Anzeige von leeren Aufträgen nach der täglichen Synchronisation wurde behoben.
+
 # 2.11.1
 # Fix: Veraltete Code-Tests, die Fehler verursachten, wurden entfernt.
 # Fix: Fehler bei der Synchronisierung von historischen Daten wurden behoben.

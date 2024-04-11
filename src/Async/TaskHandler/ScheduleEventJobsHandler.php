@@ -1,28 +1,35 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Async\TaskHandler;
 
 use Klaviyo\Integration\Async\Task\ScheduleEventJobsTask;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
-use Psr\Log\LoggerInterface;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-class ScheduleEventJobsHandler extends ScheduledTaskHandler
+#[AsMessageHandler(handles: ScheduleEventJobsTask::class)]
+final class ScheduleEventJobsHandler extends ScheduledTaskHandler
 {
-    private ScheduleBackgroundJob $scheduleBackgroundJob;
-    private LoggerInterface $logger;
-
+    /**
+     * @param EntityRepository $scheduledTaskRepository
+     * @param ScheduleBackgroundJob $scheduleBackgroundJob
+     * @param LoggerInterface $logger
+     */
     public function __construct(
-        EntityRepository $scheduledTaskRepository,
-        ScheduleBackgroundJob $scheduleBackgroundJob,
-        LoggerInterface $logger
+        protected EntityRepository $scheduledTaskRepository,
+        private readonly ScheduleBackgroundJob $scheduleBackgroundJob,
+        private readonly LoggerInterface $logger
     ) {
-        parent::__construct($scheduledTaskRepository);
-        $this->scheduleBackgroundJob = $scheduleBackgroundJob;
-        $this->logger = $logger;
+        parent::__construct($scheduledTaskRepository, $logger);
     }
 
+    /**
+     * @return void
+     */
     public function run(): void
     {
         try {
@@ -30,10 +37,5 @@ class ScheduleEventJobsHandler extends ScheduledTaskHandler
         } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
         }
-    }
-
-    public static function getHandledMessages(): iterable
-    {
-        return [ScheduleEventJobsTask::class];
     }
 }

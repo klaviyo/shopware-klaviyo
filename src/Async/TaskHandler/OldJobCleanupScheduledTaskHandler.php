@@ -17,22 +17,26 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler(handles: OldJobCleanupScheduledTask::class)]
-class OldJobCleanupScheduledTaskHandler extends ScheduledTaskHandler
+final class OldJobCleanupScheduledTaskHandler extends ScheduledTaskHandler
 {
+    /**
+     * @param EntityRepository $scheduledTaskRepository
+     * @param EntityRepository $jobRepository
+     * @param SystemConfigService $systemConfigService
+     * @param LoggerInterface $logger
+     */
     public function __construct(
-        EntityRepository $scheduledTaskRepository,
+        protected EntityRepository $scheduledTaskRepository,
         private readonly EntityRepository $jobRepository,
         private readonly SystemConfigService $systemConfigService,
         private readonly LoggerInterface $logger
     ) {
-        parent::__construct($scheduledTaskRepository);
+        parent::__construct($scheduledTaskRepository, $logger);
     }
 
-    public static function getHandledMessages(): iterable
-    {
-        return [OldJobCleanupScheduledTask::class];
-    }
-
+    /**
+     * @return void
+     */
     public function run(): void
     {
         try {
