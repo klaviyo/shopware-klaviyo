@@ -58,7 +58,8 @@ Component.register('klaviyo-job-listing', {
                 'od-klaviyo-full-subscriber-sync-handler',
                 'od-klaviyo-order-event-sync-handler',
                 'od-klaviyo-order-sync-handler',
-                'od-klaviyo-subscriber-sync-handler'
+                'od-klaviyo-subscriber-sync-handler',
+                'od-klaviyo-daily-excluded-subscriber-sync-handler'
             ];
         },
 
@@ -139,7 +140,8 @@ Component.register('klaviyo-job-listing', {
                 'od-klaviyo-full-subscriber-sync-handler',
                 'od-klaviyo-order-event-sync-handler',
                 'od-klaviyo-order-sync-handler',
-                'od-klaviyo-subscriber-sync-handler'
+                'od-klaviyo-subscriber-sync-handler',
+                'od-klaviyo-daily-excluded-subscriber-sync-handler'
             ]));
 
             return this.jobRepository.search(criteria, Shopware.Context.api).then((items) => {

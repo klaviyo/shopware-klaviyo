@@ -26,8 +26,7 @@
             <argument type="service" id="od_scheduler_job.repository"/>
             <argument type="service" id="Od\Scheduler\Model\JobScheduler"/>
             <argument type="service" id="Klaviyo\Integration\Entity\Helper\ExcludedSubscribersProvider"/>
-            <argument type="service"
-                      id="Klaviyo\Integration\Klaviyo\FrontendApi\ExcludedSubscribers\SyncProgressService"/>
+            <argument type="service" id="newsletter_recipient.repository"/>
             <argument type="service" id="monolog.logger.od_klaviyo"/>
         </service>
 
