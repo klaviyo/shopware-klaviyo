@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Async\Message;
 
@@ -18,8 +20,8 @@ class ExcludedSubscriberSyncMessage extends AbstractBasicMessage implements Pare
         string $parentJobId,
         array $emails,
         string $salesChannelId,
-        ?string $name = null,
-        ?Context $context = null
+        string $name = null,
+        Context $context = null
     ) {
         parent::__construct($jobId, $name, $context);
         $this->parentJobId = $parentJobId;

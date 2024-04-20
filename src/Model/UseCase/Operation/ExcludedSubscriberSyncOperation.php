@@ -45,7 +45,7 @@ class ExcludedSubscriberSyncOperation implements JobHandlerInterface
         if (!empty($message->getEmails())) {
             $result->addMessage(new InfoMessage(
                 \sprintf(
-                    'Channel[id: %s] unsubscribed emails: %s',
+                    'Channel[id: %s] awaiting deletion Newsletter emails: %s',
                     $message->getSalesChannelId(),
                     \implode(',', $message->getEmails())
                 )
