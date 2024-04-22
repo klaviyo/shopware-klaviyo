@@ -192,7 +192,8 @@ Component.register('klaviyo-integration-settings-general', {
                     popUpAdditionalClasses: '',
                     cookieConsent: 'shopware',
                     dailySynchronizationTime: false,
-                    oldJobCleanupPeriod: 5
+                    oldJobCleanupPeriod: 5,
+                    excludedSubscribersSynchronization: true
                 };
 
             /**

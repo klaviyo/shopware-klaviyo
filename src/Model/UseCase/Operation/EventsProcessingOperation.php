@@ -14,7 +14,7 @@ use Od\Scheduler\Model\Job\GeneratingHandlerInterface;
 use Od\Scheduler\Model\Job\{JobHandlerInterface, JobResult, Message};
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
-use Shopware\Core\Framework\DataAbstractionLayer\{EntityCollection, EntityRepositoryInterface, Search\Filter\EqualsFilter};
+use Shopware\Core\Framework\DataAbstractionLayer\{EntityCollection, EntityRepositoryInterface};
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -46,11 +46,6 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
     private EntityRepositoryInterface $cartEventRequestRepository;
 
     /**
-     * @var EntityRepositoryInterface
-     */
-    private EntityRepositoryInterface $subscriberRepository;
-
-    /**
      * @var ScheduleBackgroundJob
      */
     private ScheduleBackgroundJob $scheduleBackgroundJob;
@@ -78,7 +73,6 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
     /**
      * @param EntityRepositoryInterface $eventRepository
      * @param EntityRepositoryInterface $cartEventRequestRepository
-     * @param EntityRepositoryInterface $subscriberRepository
      * @param ScheduleBackgroundJob $scheduleBackgroundJob
      * @param GetValidChannels $getValidChannels
      * @param ConfigurationRegistry $configurationRegistry
@@ -88,7 +82,6 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
     public function __construct(
         EntityRepositoryInterface $eventRepository,
         EntityRepositoryInterface $cartEventRequestRepository,
-        EntityRepositoryInterface $subscriberRepository,
         ScheduleBackgroundJob $scheduleBackgroundJob,
         GetValidChannels $getValidChannels,
         ConfigurationRegistry $configurationRegistry,
@@ -97,7 +90,6 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
     ) {
         $this->eventRepository = $eventRepository;
         $this->cartEventRequestRepository = $cartEventRequestRepository;
-        $this->subscriberRepository = $subscriberRepository;
         $this->scheduleBackgroundJob = $scheduleBackgroundJob;
         $this->getValidChannels = $getValidChannels;
         $this->configurationRegistry = $configurationRegistry;
@@ -132,22 +124,9 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
         $this->processOrderEvents($context, $message->getJobId(), $channelIds);
         $this->processCartEvents($context, $message->getJobId(), $channelIds);
         $this->processCustomerProfileEvents($context, $message->getJobId(), $channelIds);
-        $schedulingResult = $this->scheduleBackgroundJob->scheduleExcludedSubscribersSyncJobs(
-            $context,
-            $message->getJobId(),
-            $channelIds
-        );
-        $this->processSubscriberEvents(
-            $context,
-            $message->getJobId(),
-            $channelIds,
-            $schedulingResult->all()
-        );
+        $this->processSubscriberEvents($context, $message->getJobId(), $channelIds);
         $this->processFullSubscriberSyncByTimeEvent($context, $channelIds);
 
-        foreach ($schedulingResult->getErrors() as $error) {
-            $this->jobResult->addError($error);
-        }
         return $this->jobResult;
     }
 
@@ -156,9 +135,9 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
      * @param string $parentJobId
      * @param array $channelIds
      *
-     * @return int
+     * @return void
      */
-    private function processCustomerProfileEvents(Context $context, string $parentJobId, array $channelIds): int
+    private function processCustomerProfileEvents(Context $context, string $parentJobId, array $channelIds): void
     {
         $total = 0;
         $iterator = $this->getEventRepoIterator(
@@ -180,7 +159,6 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
                 new Message\InfoMessage(\sprintf('Total %s customer events was scheduled.', $total))
             );
         }
-        return $total;
     }
 
     /**
@@ -188,9 +166,9 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
      * @param string $parentJobId
      * @param array $channelIds
      *
-     * @return int
+     * @return void
      */
-    private function processCartEvents(Context $context, string $parentJobId, array $channelIds): int
+    private function processCartEvents(Context $context, string $parentJobId, array $channelIds): void
     {
         $total = 0;
         $criteria = new Criteria();
@@ -209,7 +187,6 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
                 new Message\InfoMessage(\sprintf('Total %s cart events was scheduled.', $total))
             );
         }
-        return $total;
     }
 
     /**
@@ -217,9 +194,9 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
      * @param string $parentJobId
      * @param array $channelIds
      *
-     * @return int
+     * @return void
      */
-    private function processOrderEvents(Context $context, string $parentJobId, array $channelIds): int
+    private function processOrderEvents(Context $context, string $parentJobId, array $channelIds): void
     {
         $total = 0;
         $iterator = $this->getEventRepoIterator(
@@ -238,7 +215,6 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
                 new Message\InfoMessage(\sprintf('Total %s order events was scheduled.', $total))
             );
         }
-        return $total;
     }
 
     /**
@@ -247,36 +223,20 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
      * @param array $channelIds
      * @param array $excludedEmailsMap
      *
-     * @return int
+     * @return void
      */
     private function processSubscriberEvents(
         Context $context,
         string $parentJobId,
-        array $channelIds,
-        array $excludedEmailsMap
-    ): int {
+        array $channelIds
+    ): void
+    {
         $total = 0;
-        /**
-         * Ensure we will not process unsubscribed customers from backlog.
-         * Additionally prepare unsubscribed recipient ids using channel_id to cover cases when there are more than one
-         * recipient with same email across multiple channels (including different Klaviyo lists).
-         */
-        $excludedSubscriberIds = [];
-        foreach ($excludedEmailsMap as $channelId => $emails) {
-            $criteria = new Criteria();
-            $criteria->addFilter(new EqualsFilter('salesChannelId', $channelId));
-            $criteria->addFilter(new EqualsAnyFilter('email', $emails));
-            $excludedSubscriberIds = \array_merge(
-                $excludedSubscriberIds,
-                \array_values($this->subscriberRepository->searchIds($criteria, $context)->getIds())
-            );
-        }
 
         $iterator = $this->getEventRepoIterator($context, EventsTrackerInterface::SUBSCRIBER_EVENTS, $channelIds);
 
         while (($events = $iterator->fetch()) !== null) {
             $subscriberIds = $events->map(fn(EventEntity $event) => $event->getEntityId());
-            $subscriberIds = \array_values(\array_diff($subscriberIds, $excludedSubscriberIds));
             $total += \count($subscriberIds);
 
             $this->scheduleBackgroundJob->scheduleSubscriberSyncJob(
@@ -294,7 +254,6 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
                 new Message\InfoMessage(\sprintf('Total %s subscriber events was scheduled.', $total))
             );
         }
-        return $total;
     }
 
     /**

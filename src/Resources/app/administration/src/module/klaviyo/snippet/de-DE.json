@@ -195,6 +195,10 @@
             "timeDailySynchronization": {
                 "label": "Zeit für die tägliche Synchronisierung der Abonnenten",
                 "helpText": "Die Option gibt an, zu welchem Zeitpunkt die tägliche Abonnentensynchronisierung erfolgen soll"
+            },
+            "excludedSubscribersSynchronization": {
+                "label": "Tägliche Synchronisierung der ausgeschlossenen Abonnenten aktivieren",
+                "helpText": "Mit dieser Option können Sie die tägliche geplante Synchronisierung der ausgeschlossenen Abonnenten aktivieren."
             }
         },
         "customer": {
