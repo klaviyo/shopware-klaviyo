@@ -199,6 +199,10 @@
             "timeDailySynchronization": {
                 "label": "Time for Daily Subscribers Synchronization",
                 "helpText": "The option specifies at which time to sync daily subscribers synchronization"
+            },
+            "excludedSubscribersSynchronization": {
+                "label": "Enable Daily Excluded Subscribers Synchronization",
+                "helpText": "This option allows you to enable daily scheduled synchronization of excluded subscribers"
             }
         },
         "customer": {

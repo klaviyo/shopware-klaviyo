@@ -416,6 +416,23 @@
                 </sw-inherit-wrapper>
             {% endblock %}
 
+            {% block klaviyo_integration_settings_general_excluded_subscribers_synchronization_flag %}
+                <sw-inherit-wrapper v-if="selectedSalesChannelId === null"
+                                    v-model="actualConfigData['klavi_overd.config.excludedSubscribersSynchronization']"
+                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['klavi_overd.config.excludedSubscribersSynchronization']">
+                    <template #content="props">
+                        <sw-switch-field name="klavi_overd.config.excludedSubscribersSynchronization"
+                                :map-inheritance="props"
+                                :label="$tc('klaviyo-integration-settings.configs.excludedSubscribersSynchronization.label')"
+                                :help-text="$tc('klaviyo-integration-settings.configs.excludedSubscribersSynchronization.helpText')"
+                                :disabled="props.isInherited"
+                                :value="props.currentValue"
+                                @change="props.updateCurrentValue"
+                        />
+                    </template>
+                </sw-inherit-wrapper>
+            {% endblock %}
+
             {% block klaviyo_integration_settings_general_daily_synchronization_flag %}
                 <sw-inherit-wrapper v-if="selectedSalesChannelId === null"
                                     v-model="actualConfigData['klavi_overd.config.dailySynchronization']"

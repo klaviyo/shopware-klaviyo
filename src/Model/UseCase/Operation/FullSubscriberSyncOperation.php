@@ -13,7 +13,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHandlerInterface
@@ -21,18 +20,11 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
     public const OPERATION_HANDLER_CODE = 'od-klaviyo-full-subscriber-sync-handler';
     private const SUBSCRIBER_BATCH_SIZE = 100;
 
-    private ScheduleBackgroundJob $scheduleBackgroundJob;
-    private EntityRepository $subscriberRepository;
-    private GetValidChannels $getValidChannels;
-
     public function __construct(
-        ScheduleBackgroundJob $scheduleBackgroundJob,
-        EntityRepository $subscriberRepository,
-        GetValidChannels $getValidChannels
+        private readonly ScheduleBackgroundJob $scheduleBackgroundJob,
+        private readonly EntityRepository $subscriberRepository,
+        private readonly GetValidChannels $getValidChannels
     ) {
-        $this->scheduleBackgroundJob = $scheduleBackgroundJob;
-        $this->subscriberRepository = $subscriberRepository;
-        $this->getValidChannels = $getValidChannels;
     }
 
     /**
@@ -63,7 +55,7 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
                 [
                     NewsletterSubscribeRoute::STATUS_OPT_OUT,
                     NewsletterSubscribeRoute::STATUS_OPT_IN,
-                    NewsletterSubscribeRoute::STATUS_DIRECT
+                    NewsletterSubscribeRoute::STATUS_DIRECT,
                 ]
             ),
             new EqualsAnyFilter('salesChannelId', $channelIds)
@@ -77,14 +69,11 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
 
         $excludedSubscriberIds = [];
 
-        foreach ($schedulingResult->all() as $channelId => $emails) {
-            $excludedCriteria = new Criteria();
-            $excludedCriteria->addFilter(new EqualsFilter('salesChannelId', $channelId));
-            $excludedCriteria->addFilter(new EqualsAnyFilter('email', $emails));
+        foreach ($schedulingResult->getAllSubscribersIds() as $ids) {
             $excludedSubscriberIds = \array_merge(
                 $excludedSubscriberIds,
                 \array_values(
-                    $this->subscriberRepository->searchIds($excludedCriteria, $message->getContext())->getIds()
+                    $ids
                 )
             );
         }
