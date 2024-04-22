@@ -7,7 +7,6 @@ namespace Klaviyo\Integration\Model\UseCase;
 use Klaviyo\Integration\Async\Message;
 use Klaviyo\Integration\Entity\Helper\ExcludedSubscribersProvider;
 use Klaviyo\Integration\Exception\{JobAlreadyRunningException, JobAlreadyScheduledException};
-use Klaviyo\Integration\Klaviyo\FrontendApi\ExcludedSubscribers\SyncProgressService;
 use Klaviyo\Integration\Model\UseCase\Operation\{FullOrderSyncOperation, FullSubscriberSyncOperation};
 use Klaviyo\Integration\System\Scheduling\ExcludedSubscriberSync;
 use Od\Scheduler\Entity\Job\JobEntity;
@@ -24,20 +23,20 @@ class ScheduleBackgroundJob
     private EntityRepositoryInterface $jobRepository;
     private JobScheduler $scheduler;
     private ExcludedSubscribersProvider $excludedSubscribersProvider;
-    private SyncProgressService $progressService;
     private LoggerInterface $logger;
+    private EntityRepositoryInterface $subscriberRepository;
 
     public function __construct(
         EntityRepositoryInterface $jobRepository,
         JobScheduler $scheduler,
         ExcludedSubscribersProvider $excludedSubscribersProvider,
-        SyncProgressService $progressService,
+        EntityRepositoryInterface $subscriberRepository,
         LoggerInterface $logger
     ) {
         $this->jobRepository = $jobRepository;
         $this->scheduler = $scheduler;
         $this->excludedSubscribersProvider = $excludedSubscribersProvider;
-        $this->progressService = $progressService;
+        $this->subscriberRepository = $subscriberRepository;
         $this->logger = $logger;
     }
 
@@ -126,10 +125,16 @@ class ScheduleBackgroundJob
         $this->scheduler->schedule($jobMessage);
     }
 
-    public function scheduleEventsProcessingJob()
+    public function scheduleEventsProcessingJob(): void
     {
         // Here we have context-less process
         $jobMessage = new Message\EventsProcessingMessage(Uuid::randomHex());
+        $this->scheduler->schedule($jobMessage);
+    }
+
+    public function scheduleEventsDailyExcludedSubscribersProcessingJob(): void
+    {
+        $jobMessage = new Message\DailyExcludedSubscriberSyncMessage(Uuid::randomHex());
         $this->scheduler->schedule($jobMessage);
     }
 
@@ -165,16 +170,41 @@ class ScheduleBackgroundJob
                     if (!count($result->getEmails())) {
                         continue;
                     }
-                    $jobMessage = new Message\ExcludedSubscriberSyncMessage(
-                        Uuid::randomHex(),
-                        $parentJobId,
-                        $result->getEmails(),
-                        $channelId,
-                        null,
+
+                    $excludedSubscriberIds = [];
+                    $resultEmails = $result->getEmails();
+
+                    $excludedCriteria = new Criteria();
+                    $excludedCriteria->addFilter(new EqualsFilter('salesChannelId', $channelId));
+                    $excludedCriteria->addFilter(new EqualsAnyFilter('email', $result->getEmails()));
+
+                    $excludedSubscribers = $this->subscriberRepository->search(
+                        $excludedCriteria,
                         $context
-                    );
-                    $this->scheduler->schedule($jobMessage);
-                    $schedulingResult->addEmails($channelId, $result->getEmails());
+                    )->map(fn ($entity) => $entity->getEmail());
+
+                    if (!empty($excludedSubscribers)) {
+                        $excludedSubscriberIds = \array_merge(
+                            $excludedSubscriberIds,
+                            \array_keys($excludedSubscribers)
+                        );
+
+                        $resultEmails = \array_values($excludedSubscribers);
+                    }
+
+                    if (!empty($excludedSubscriberIds)) {
+                        $jobMessage = new Message\ExcludedSubscriberSyncMessage(
+                            Uuid::randomHex(),
+                            $parentJobId,
+                            $resultEmails,
+                            $channelId,
+                            null,
+                            $context
+                        );
+                        $this->scheduler->schedule($jobMessage);
+
+                        $schedulingResult->addSubscriberIds($channelId, $excludedSubscriberIds);
+                    }
                 }
             } catch (\Exception $e) {
                 $this->logger->error($e->getMessage());
