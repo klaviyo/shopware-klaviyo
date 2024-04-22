@@ -25,13 +25,22 @@
             <argument type="service" id="monolog.logger.od_klaviyo"/>
             <tag name="messenger.message_handler"/>
         </service>
+        <service id="Klaviyo\Integration\Async\Task\ExcludedSubscribersSyncScheduledTask">
+            <tag name="shopware.scheduled.task"/>
+        </service>
+        <service id="Klaviyo\Integration\Async\TaskHandler\ExcludedSubscribersSyncScheduledTaskHandler">
+            <argument type="service" id="scheduled_task.repository"/>
+            <argument type="service" id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="monolog.logger.od_klaviyo"/>
+            <tag name="messenger.message_handler"/>
+        </service>
         <!-- /Message Handlers and Scheduled Tasks -->
         <!-- Operations' definitions -->
         <service id="Klaviyo\Integration\Model\UseCase\Operation\EventsProcessingOperation">
             <tag name="od.job_handler" code="od-klaviyo-events-sync-handler"/>
             <argument type="service" id="klaviyo_job_event.repository"/>
             <argument type="service" id="klaviyo_job_cart_request.repository"/>
-            <argument type="service" id="newsletter_recipient.repository"/>
             <argument type="service" id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob"/>
             <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannels"/>
             <argument type="service" id="Klaviyo\Integration\Configuration\ConfigurationRegistry"/>
@@ -85,6 +94,11 @@
             <argument type="service" id="Klaviyo\Integration\Configuration\ConfigurationRegistry"/>
             <argument type="service" id="newsletter_recipient.repository"/>
             <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannels"/>
+        </service>
+        <service id="Klaviyo\Integration\Model\UseCase\Operation\DailyEventProcessExcludedSubscriberSyncOperation">
+            <argument type="service" id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob"/>
+            <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannels"/>
+            <tag name="od.job_handler" code="od-klaviyo-daily-excluded-subscriber-sync-handler"/>
         </service>
         <!-- /Operations' definitions -->
     </services>
