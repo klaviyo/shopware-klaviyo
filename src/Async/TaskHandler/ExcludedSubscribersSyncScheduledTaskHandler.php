@@ -39,7 +39,7 @@ class ExcludedSubscribersSyncScheduledTaskHandler extends ScheduledTaskHandler
     {
         try {
             $isJobExcludedSubscribersSyncEnabled = $this->systemConfigService->getBool(
-                'klavi_overd.config.excludedSubscribersSynchronization'
+                'KlaviyoIntegrationPlugin.config.excludedSubscribersSynchronization'
             );
 
             if ($isJobExcludedSubscribersSyncEnabled) {
