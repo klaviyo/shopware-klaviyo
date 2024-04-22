@@ -77,14 +77,11 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
 
         $excludedSubscriberIds = [];
 
-        foreach ($schedulingResult->all() as $channelId => $emails) {
-            $excludedCriteria = new Criteria();
-            $excludedCriteria->addFilter(new EqualsFilter('salesChannelId', $channelId));
-            $excludedCriteria->addFilter(new EqualsAnyFilter('email', $emails));
+        foreach ($schedulingResult->getAllSubscribersIds() as $ids) {
             $excludedSubscriberIds = \array_merge(
                 $excludedSubscriberIds,
                 \array_values(
-                    $this->subscriberRepository->searchIds($excludedCriteria, $message->getContext())->getIds()
+                    $ids
                 )
             );
         }

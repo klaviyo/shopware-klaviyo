@@ -5,7 +5,6 @@ namespace Klaviyo\Integration\Model\UseCase\Operation;
 use Klaviyo\Integration\Async\Message\ExcludedSubscriberSyncMessage;
 use Od\Scheduler\Model\Job\{JobHandlerInterface, JobResult, Message\InfoMessage};
 use Shopware\Core\Content\Newsletter\SalesChannel\NewsletterSubscribeRoute;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\{EqualsAnyFilter, EqualsFilter};
@@ -52,7 +51,7 @@ class ExcludedSubscriberSyncOperation implements JobHandlerInterface
         if (!empty($message->getEmails()) && count($message->getEmails())) {
             $result->addMessage(new InfoMessage(
                 \sprintf(
-                    'Channel[id: %s] unsubscribed emails: %s',
+                    'Channel[id: %s] awaiting deletion Newsletter emails: %s',
                     $message->getSalesChannelId(),
                     \implode(',', $message->getEmails())
                 )

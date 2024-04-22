@@ -9,7 +9,7 @@ use Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway;
 // TODO: move this class outside mysterious "Helper" namespace
 class ExcludedSubscribersProvider
 {
-    public const DEFAULT_COUNT_PER_PAGE = 1;
+    public const DEFAULT_COUNT_PER_PAGE = 100;
     private KlaviyoGateway $klaviyoGateway;
 
     public function __construct(KlaviyoGateway $klaviyoGateway)
