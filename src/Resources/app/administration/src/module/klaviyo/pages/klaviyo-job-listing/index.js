@@ -95,7 +95,14 @@ Component.register('klaviyo-job-listing', {
         }
     },
 
+    created() {
+        this.createdComponent();
+    },
+
     methods: {
+        createdComponent() {
+            return this.loadFilterValues();
+        },
 
         onDisplayModeChange(mode) {
             let innerBox = this.$el;
