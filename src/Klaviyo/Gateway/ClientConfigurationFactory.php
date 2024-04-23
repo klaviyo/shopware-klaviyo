@@ -10,7 +10,7 @@ use Klaviyo\Integration\Klaviyo\Client\Configuration\{Configuration, Configurati
 class ClientConfigurationFactory
 {
     public const AUTHORIZATION_PREKEY = 'Klaviyo-API-Key';
-    public const API_REVISION_DATE = '2023-12-15';
+    public const API_REVISION_DATE = '2024-02-15';
     private const TRACKING_ENDPOINT_URL = 'https://a.klaviyo.com/api/events';
     private const IDENTIFY_ENDPOINT_URL = 'https://a.klaviyo.com/api/profiles';
     private const GLOBAL_NEW_ENDPOINT_URL = 'https://a.klaviyo.com/api';
