@@ -137,6 +137,7 @@ Component.register('klaviyo-job-listing', {
             const criteria = new Criteria();
             criteria.addFilter(Criteria.equals('parentId', null));
             criteria.addSorting(Criteria.sort('createdAt', 'DESC', false));
+            criteria.setLimit(999999);
             criteria.addFilter(Criteria.equalsAny('type', [
                 'od-klaviyo-events-sync-handler',
                 'od-klaviyo-cart-event-sync-handler',
@@ -170,7 +171,7 @@ Component.register('klaviyo-job-listing', {
 
                 this.filterLoading = false;
 
-                return Promise.resolve();
+                return Promise.resolve([]);
             }).catch(() => {
                 this.filterLoading = false;
             });
