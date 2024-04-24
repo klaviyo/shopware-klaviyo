@@ -139,6 +139,7 @@ Component.register('klaviyo-job-listing', {
             criteria.addFilter(Criteria.equals('parentId', null));
             criteria.addSorting(Criteria.sort('createdAt', 'DESC', false));
             criteria.setLimit(999999);
+            criteria.setPage(1);
             criteria.addFilter(Criteria.equalsAny('type', [
                 'od-klaviyo-events-sync-handler',
                 'od-klaviyo-cart-event-sync-handler',
