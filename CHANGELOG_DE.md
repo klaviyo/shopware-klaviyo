@@ -1,3 +1,8 @@
+# 2.13.0
+# Neu: Die API-Revision wurde auf die neueste Version aktualisiert.
+# Neu: Um die Arbeit zu optimieren und die Leistung zu verbessern, wurde eine separate Cron-Aufgabe hinzugefügt, um ausgeschlossene Abonnenten zu synchronisieren.
+# Fix: Die Arbeit der Filter in Klaviyo Job Listing wurde korrigiert.
+
 # 2.12.0
 # Neu: Das Popup "Wieder auf Lager" ist jetzt verfügbar, wenn die Route `frontend.cms.buybox.switch` verwendet wird (SwitchBuyBoxVariantEvent).
 # Fix: Ein Fehler bei der Anwendung von Werbeaktionen wurde behoben.

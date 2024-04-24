@@ -1,4 +1,8 @@
-# 2.12.0
+# 2.13.0
+# New: The API revision has been updated to the latest version.
+# New: To optimize work and better performance, a separate Cron task was added to synchronize excluded subscribers.
+# Fix: Fixed work of filters in Klaviyo Job Listing.
+
 # New: The back in stock pop up is now available when using the `frontend.cms.buybox.switch` route (SwitchBuyBoxVariantEvent).
 # Fix: Fixed an error when applying promotions. 
 # Fix: Fixed a bug when synchronizing customer data.
