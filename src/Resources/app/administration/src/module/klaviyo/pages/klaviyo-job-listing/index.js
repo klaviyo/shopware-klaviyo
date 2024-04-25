@@ -58,7 +58,8 @@ Component.register('klaviyo-job-listing', {
                 'od-klaviyo-full-subscriber-sync-handler',
                 'od-klaviyo-order-event-sync-handler',
                 'od-klaviyo-order-sync-handler',
-                'od-klaviyo-subscriber-sync-handler'
+                'od-klaviyo-subscriber-sync-handler',
+                'od-klaviyo-daily-excluded-subscriber-sync-handler'
             ];
         },
 
@@ -94,7 +95,14 @@ Component.register('klaviyo-job-listing', {
         }
     },
 
+    created() {
+        this.createdComponent();
+    },
+
     methods: {
+        createdComponent() {
+            return this.loadFilterValues();
+        },
 
         onDisplayModeChange(mode) {
             let innerBox = this.$el;
@@ -130,7 +138,6 @@ Component.register('klaviyo-job-listing', {
             const criteria = new Criteria();
             criteria.addFilter(Criteria.equals('parentId', null));
             criteria.addSorting(Criteria.sort('createdAt', 'DESC', false));
-            criteria.setLimit(25);
             criteria.setPage(1);
             criteria.addFilter(Criteria.equalsAny('type', [
                 'od-klaviyo-events-sync-handler',
@@ -139,7 +146,8 @@ Component.register('klaviyo-job-listing', {
                 'od-klaviyo-full-subscriber-sync-handler',
                 'od-klaviyo-order-event-sync-handler',
                 'od-klaviyo-order-sync-handler',
-                'od-klaviyo-subscriber-sync-handler'
+                'od-klaviyo-subscriber-sync-handler',
+                'od-klaviyo-daily-excluded-subscriber-sync-handler'
             ]));
 
             return this.jobRepository.search(criteria, Shopware.Context.api).then((items) => {
