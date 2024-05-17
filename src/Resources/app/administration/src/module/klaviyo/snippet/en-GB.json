@@ -102,8 +102,8 @@
                 "helpText": "Klaviyo Public API key. You can find it in your Klaviyo account"
             },
             "klaviyoListForSubscribersSync": {
-                "label": "Klaviyo List name for subscribers sync",
-                "helpText": "The name of the Subscribers list in Klaviyo where all Shopware 6 subscribers will be added.\n In case of duplicate names first found list will be used"
+                "label": "Klaviyo List ID for subscribers sync",
+                "helpText": "The ID of the Subscribers list in Klaviyo where all Shopware6 subscribers will be added."
             },
             "bisVariantField": {
                 "label": "Product identification field mapping",
@@ -190,7 +190,7 @@
                 "generalErrorMessage": "Unable to validate API-keys",
                 "incorrectCredentialsTitle": "Incorrect Credentials",
                 "correctApiMessage": "API-keys are valid",
-                "listNotExistMessage": "No Lists found in Klaviyo"
+                "listNotExistMessage": "In Klaviyo a List with such an ID was not found. Please check the correctness of the List ID."
             },
             "enableDailySynchronization": {
                 "label": "Enable Daily Subscribers Synchronization",

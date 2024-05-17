@@ -9,12 +9,18 @@ Component.register('klaviyo-integration-settings', {
 
     inject: [
         'repositoryFactory',
+        'klaviyoApiKeyValidatorService',
+    ],
+
+    mixins: [
+        'notification',
     ],
 
     data() {
         return {
             isLoading: false,
             isSaveSuccessful: false,
+            isListIdPresent: false,
             privateKeyFilled: false,
             publicKeyFilled: false,
             listNameFilled: false,
@@ -97,6 +103,8 @@ Component.register('klaviyo-integration-settings', {
                     this.privateKeyFilled = !!this.config['KlaviyoIntegrationPlugin.config.privateApiKey'];
                     this.publicKeyFilled = !!this.config['KlaviyoIntegrationPlugin.config.publicApiKey'];
                     this.listNameFilled = !!this.config['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync'];
+
+                    this.validateNewsletterListId(this.config['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync']);
                 } else {
                     this.privateKeyFilled = this.publicKeyFilled = this.listNameFilled = true;
                 }
@@ -142,10 +150,44 @@ Component.register('klaviyo-integration-settings', {
 
             this.isLoading = true;
 
+            const newsletterListId = this.config['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync'];
+            if (newsletterListId) {
+                if (!this.isListIdPresent) {
+                    this.isLoading = false;
+                    this.isSaveSuccessful = false;
+                    return;
+                }
+            }
+
             this.$refs.configComponent.save().then(() => {
                 this.isSaveSuccessful = true;
             }).finally(() => {
                 this.isLoading = false;
+            });
+        },
+
+        validateNewsletterListId(newsletterListId) {
+            const privateKey = this.config['KlaviyoIntegrationPlugin.config.privateApiKey'];
+            const publicKey = this.config['KlaviyoIntegrationPlugin.config.publicApiKey'];
+
+            this.isListIdPresent = false;
+
+            this.klaviyoApiKeyValidatorService.validateListById(privateKey, publicKey, newsletterListId).then((response) => {
+                if (!response.data || !response.data.data) {
+                    this.isListIdPresent = false;
+                    this.createNotificationError({
+                        message: this.$tc('klaviyo-integration-settings.configs.apiValidation.listNotExistMessage'),
+                    });
+                }
+
+                if (response.data && response.data.data && response.data.data[0].value === newsletterListId) {
+                    this.isListIdPresent = true;
+                }
+            }).catch(() => {
+                this.isListIdPresent = false;
+                this.createNotificationError({
+                    message: this.$tc('klaviyo-integration-settings.configs.apiValidation.listNotExistMessage'),
+                });
             });
         }
     }
