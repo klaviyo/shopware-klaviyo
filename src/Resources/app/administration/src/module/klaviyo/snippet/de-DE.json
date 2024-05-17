@@ -102,7 +102,7 @@
                 "helpText": "Klaviyo Public API Schlüssel. Du findest ihn in deinem Klaviyo Konto."
             },
             "klaviyoListForSubscribersSync": {
-                "label": "Klaviyo Liste für Newsletter Anmeldungen",
+                "label": "Klaviyo List ID für die Synchronisierung der Abonnenten",
                 "helpText": "Die ID der Abonnentenliste in Klaviyo, zu der alle Shopware6-Abonnenten hinzugefügt werden sollen."
             },
             "bisVariantField": {
