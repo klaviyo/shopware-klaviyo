@@ -21,8 +21,8 @@ class GetProfilesListsResponseDenormalizer extends AbstractDenormalizer
         $profilesListInfoCollection = new ProfilesListInfoCollection();
         $nextPageUrl = '';
 
-        if (!empty($data['errors']) && !empty($data['errors']['detail'])) {
-            $errorDetails = $data['errors']['detail'];
+        if (!empty($data['errors'][0]) && !empty($data['errors'][0]['detail'])) {
+            $errorDetails = $data['errors'][0]['detail'];
 
             return new GetProfilesListsResponse(false, $profilesListInfoCollection, $nextPageUrl, $errorDetails);
         }
