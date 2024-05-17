@@ -5,10 +5,12 @@ namespace Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetLis
 class GetProfilesListsRequest
 {
     private ?string $nextPageUrl;
+    private ?string $listId;
 
-    public function __construct(string $nextPageUrl = null)
+    public function __construct(string $nextPageUrl = null, string $listId = null)
     {
         $this->nextPageUrl = $nextPageUrl;
+        $this->listId = $listId;
     }
 
     public function getNextPageUrl(): ?string
@@ -21,5 +23,10 @@ class GetProfilesListsRequest
         $this->nextPageUrl = $nextPageUrl;
 
         return $this;
+    }
+
+    public function getListId(): ?string
+    {
+        return $this->listId;
     }
 }
