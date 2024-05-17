@@ -17,10 +17,18 @@ class GetProfilesListsApiTransferTranslator extends AbstractApiTransferMessageTr
         if ($request->getNextPageUrl()) {
             $url = $request->getNextPageUrl();
         } else {
-            $url = \sprintf(
-                '%s/lists',
-                $this->configuration->getGlobalNewEndpointUrl()
-            );
+            if ($request->getListId()) {
+                $url = \sprintf(
+                    '%s/lists?filter=equals(id,"%s")',
+                    $this->configuration->getGlobalNewEndpointUrl(),
+                    $request->getListId()
+                );
+            } else {
+                $url = \sprintf(
+                    '%s/lists',
+                    $this->configuration->getGlobalNewEndpointUrl()
+                );
+            }
         }
 
         return $this->constructGuzzleRequestToKlaviyoAPI($url);
