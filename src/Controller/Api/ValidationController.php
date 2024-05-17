@@ -31,9 +31,9 @@ class ValidationController extends AbstractController
     {
         $publicKey = $post->get('publicKey');
         $privateKey = $post->get('privateKey');
-        $listName = $post->get('listName');
+        $listId = $post->get('listId');
 
-        if (empty($listName) || empty($publicKey) || empty($privateKey)) {
+        if (empty($listId) || empty($publicKey) || empty($privateKey)) {
             return new JsonResponse(['invalid_parameters' => true], Response::HTTP_OK);
         }
 
@@ -47,7 +47,7 @@ class ValidationController extends AbstractController
         }
 
         try {
-            $response = $this->getAllProfileLists(new GetProfilesListsRequest());
+            $response = $this->getAllProfileLists(new GetProfilesListsRequest(null, $listId));
             $accountResponse = $responses->getRequestResponse($accountRequest);
         } catch (\Exception $e) {
             return new JsonResponse(['general_error' => true], Response::HTTP_OK);
@@ -64,7 +64,7 @@ class ValidationController extends AbstractController
         }
 
         foreach ($this->profileLists as $list) {
-            if ($list['value'] === $listName) {
+            if ($list['value'] === $listId) {
                 return new JsonResponse(['success' => true], Response::HTTP_OK);
             }
         }
@@ -84,6 +84,28 @@ class ValidationController extends AbstractController
 
         $this->client = $this->clientRegistry->getClientByKeys($privateKey, $publicKey);
         $result = $this->getAllProfileLists(new GetProfilesListsRequest());
+
+        if (empty($this->profileLists)) {
+            return $result;
+        }
+
+        return new JsonResponse(['success' => true, 'data' => $this->profileLists,
+        ], Response::HTTP_OK);
+    }
+
+    #[Route(path: '/api/_action/od-list-id-validate', name: 'api.action.od_list_id_validate', defaults: ['auth_required' => false], methods: ['POST'])]
+    public function getSubscriberListsByIdAvailable(RequestDataBag $post): JsonResponse
+    {
+        $publicKey = $post->get('publicKey');
+        $privateKey = $post->get('privateKey');
+        $searchedListId = $post->get('listId');
+
+        if (empty($publicKey) || empty($privateKey)) {
+            return new JsonResponse(['invalid_parameters' => true], Response::HTTP_OK);
+        }
+
+        $this->client = $this->clientRegistry->getClientByKeys($privateKey, $publicKey);
+        $result = $this->getAllProfileLists(new GetProfilesListsRequest(null, $searchedListId));
 
         if (empty($this->profileLists)) {
             return $result;
