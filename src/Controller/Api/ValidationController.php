@@ -94,7 +94,7 @@ class ValidationController extends AbstractController
     }
 
     #[Route(path: '/api/_action/od-list-id-validate', name: 'api.action.od_list_id_validate', defaults: ['auth_required' => false], methods: ['POST'])]
-    public function getSubscriberListsByNameAvailable(RequestDataBag $post): JsonResponse
+    public function getSubscriberListsByIdAvailable(RequestDataBag $post): JsonResponse
     {
         $publicKey = $post->get('publicKey');
         $privateKey = $post->get('privateKey');
