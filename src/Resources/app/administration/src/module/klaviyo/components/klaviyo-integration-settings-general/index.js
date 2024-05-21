@@ -33,7 +33,7 @@ Component.register('klaviyo-integration-settings-general', {
             required: false,
             default: null,
         },
-        listNameErrorState: {
+        listIdErrorState: {
             type: Object,
             required: false,
             default: null,
