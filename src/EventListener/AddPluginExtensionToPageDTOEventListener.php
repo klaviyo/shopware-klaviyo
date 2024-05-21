@@ -7,7 +7,6 @@ namespace Klaviyo\Integration\EventListener;
 use Klaviyo\Integration\Configuration\Configuration;
 use Klaviyo\Integration\Entity\Helper\NewsletterSubscriberHelper;
 use Klaviyo\Integration\Klaviyo\FrontendApi\Translator;
-use Klaviyo\Integration\Klaviyo\Gateway\GetListIdByListNameInterface;
 use Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\CustomerPropertiesTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\NewsletterSubscriberPropertiesTranslator;
@@ -35,7 +34,6 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
     private NewsletterSubscriberHelper $newsletterSubscriberHelper;
     private RequestStack $requestStack;
     private NewsletterSubscriberPropertiesTranslator $newsletterSubscriberPropertiesTranslator;
-    private GetListIdByListNameInterface $getListIdByListName;
     private KlaviyoGateway $klaviyoGateway;
 
     // TODO: make some args as proxy
@@ -48,7 +46,6 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
         NewsletterSubscriberHelper $newsletterSubscriberHelper,
         RequestStack $requestStack,
         NewsletterSubscriberPropertiesTranslator $newsletterSubscriberPropertiesTranslator,
-        GetListIdByListNameInterface $getListIdByListName,
         KlaviyoGateway $klaviyoGateway,
     ) {
         $this->getValidChannelConfig = $getValidChannelConfig;
@@ -59,7 +56,6 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
         $this->newsletterSubscriberHelper = $newsletterSubscriberHelper;
         $this->requestStack = $requestStack;
         $this->newsletterSubscriberPropertiesTranslator = $newsletterSubscriberPropertiesTranslator;
-        $this->getListIdByListName = $getListIdByListName;
         $this->klaviyoGateway = $klaviyoGateway;
     }
 
@@ -114,10 +110,7 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
                 $event->getPage()->getProduct()
             );
             $extensionData['backInStockData'] = [
-                'listId' => $this->getListIdByListName->execute(
-                    $event->getSalesChannelContext()->getSalesChannel()->getId(),
-                    $configuration->getSubscribersListId()
-                ),
+                'listId' => $configuration->getSubscribersListId(),
             ];
         } catch (\Throwable $throwable) {
             $this->logger->error(
