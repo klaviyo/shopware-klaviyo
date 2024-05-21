@@ -109,7 +109,7 @@ Component.register('klaviyo-integration-settings', {
                         this.savedListId = this.config['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync'];
                     } else {
                         if (this.savedListId !== this.config['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync']) {
-                            if (this.privateKeyFilled && this.publicKeyFilled) {
+                            if (this.privateKeyFilled && this.publicKeyFilled && this.listIdFilled) {
                                 this.validateNewsletterListId(this.config['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync']);
                                 this.savedListId = this.config['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync'];
                             }
