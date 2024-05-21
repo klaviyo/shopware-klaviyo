@@ -105,7 +105,7 @@
                     :label="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.label')"
                     :helpText="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.helpText')"
                     :disabled="selectedSalesChannelId === null"
-                    :error="publicKeyErrorState"
+                    :error="listIdErrorState"
                     required="required">
                 </sw-field>
             {% endblock %}
