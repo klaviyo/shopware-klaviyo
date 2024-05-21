@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Klaviyo\Integration\Klaviyo\Gateway;
 
+use Klaviyo\Integration\Klaviyo\Gateway\Exception\ProfilesListNotFoundException;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Cache\InvalidArgumentException;
 
@@ -12,14 +13,11 @@ class CachedGetListIdByListName implements GetListIdByListNameInterface
     public const CACHE_PREFIX = 'od_klaviyo_list_';
 
     private CacheItemPoolInterface $cache;
-    private GetListIdByListName $getListIdByListName;
 
     public function __construct(
-        CacheItemPoolInterface $cache,
-        GetListIdByListName $getListIdByListName
+        CacheItemPoolInterface $cache
     ) {
         $this->cache = $cache;
-        $this->getListIdByListName = $getListIdByListName;
     }
 
     /**
@@ -27,6 +25,10 @@ class CachedGetListIdByListName implements GetListIdByListNameInterface
      */
     public function execute(string $salesChannelEntityId, string $listId): string
     {
+        if (!$listId) {
+            throw new ProfilesListNotFoundException('Subscription List ID is empty!');
+        }
+
         $cacheKey = self::CACHE_PREFIX . $salesChannelEntityId;
         $cachedItem = $this->cache->getItem($cacheKey);
 
@@ -34,10 +36,9 @@ class CachedGetListIdByListName implements GetListIdByListNameInterface
             return (string) $cachedItem->get();
         }
 
-        $klaviyoList = $this->getListIdByListName->execute($salesChannelEntityId, $listId);
         $cachedItem->expiresAfter(3600);
-        $this->cache->save($cachedItem->set($klaviyoList));
+        $this->cache->save($cachedItem->set($listId));
 
-        return $klaviyoList;
+        return $listId;
     }
 }

@@ -98,7 +98,6 @@
             <argument type="service" id="request_stack"/>
             <argument type="service"
                       id="Klaviyo\Integration\Klaviyo\Gateway\Translator\NewsletterSubscriberPropertiesTranslator"/>
-            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\CachedGetListIdByListName"/>
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway"/>
             <tag name="kernel.event_subscriber"/>
         </service>
@@ -166,7 +165,6 @@
         </service>
         <service id="Klaviyo\Integration\Klaviyo\Gateway\CachedGetListIdByListName">
             <argument type="service" id="cache.object"/>
-            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\GetListIdByListName"/>
         </service>
         <service id="Klaviyo\Integration\Klaviyo\FrontendApi\ExcludedSubscribers\SyncProgressService">
             <argument type="service" id="klaviyo_flag_storage.repository"/>
