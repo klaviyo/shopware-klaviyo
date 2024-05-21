@@ -94,7 +94,7 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
         }
     }
 
-    public function onProductPageLoaded(ProductPageLoadedEvent $event): void
+    public function onProductPageLoaded(ProductPageLoadedEvent|SwitchBuyBoxVariantEvent $event): void
     {
         try {
             if (!$event->getPage()->hasExtension(self::PDP_EXTENSION)) {
