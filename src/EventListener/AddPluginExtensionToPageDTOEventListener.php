@@ -97,7 +97,7 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
         }
     }
 
-    public function onProductPageLoaded(ProductPageLoadedEvent $event)
+    public function onProductPageLoaded($event)
     {
         try {
             if (!$event->getPage()->hasExtension(self::PDP_EXTENSION)) {
