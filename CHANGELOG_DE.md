@@ -1,3 +1,7 @@
+# 2.13.1
+# Fix: Ein Problem mit der fehlenden Listen-ID von Abonnenten im PDP wurde behoben. Das Speichern der Listen-ID von Abonnenten in den Plugin-Einstellungen wurde neu gestaltet.
+# Fix: Es wurde ein Fehler behoben, wenn das Ereignis SwitchBuyBoxVariantEvent auf der PDP ausgelöst wurde.
+
 # 2.13.0
 # Neu: Die API-Revision wurde auf die neueste Version aktualisiert.
 # Neu: Um die Arbeit zu optimieren und die Leistung zu verbessern, wurde eine separate Cron-Aufgabe hinzugefügt, um ausgeschlossene Abonnenten zu synchronisieren.
