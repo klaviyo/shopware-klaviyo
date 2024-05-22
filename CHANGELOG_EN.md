@@ -1,3 +1,7 @@
+# 2.13.1
+# Fix: Fixed an issue with missing List ID of subscribers on PDP. Redesigned saving List ID of subscribers in the plugin settings.
+# Fix: Fixed an error when the SwitchBuyBoxVariantEvent event was triggered on the PDP.
+
 # 2.13.0
 # New: The API revision has been updated to the latest version.
 # New: To optimize work and better performance, a separate Cron task was added to synchronize excluded subscribers.
