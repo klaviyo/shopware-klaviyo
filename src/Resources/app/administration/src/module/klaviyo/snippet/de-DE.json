@@ -102,8 +102,8 @@
                 "helpText": "Klaviyo Public API Schlüssel. Du findest ihn in deinem Klaviyo Konto."
             },
             "klaviyoListForSubscribersSync": {
-                "label": "Klaviyo Liste für Newsletter Anmeldungen",
-                "helpText": "Der Name der Abonnentenliste in Klaviyo, zu der alle Shopware 6 Abonnenten hinzugefügt werden sollen.\n Bei doppelten Namen wird die zuerst gefundene Liste verwendet."
+                "label": "Klaviyo List ID für die Synchronisierung der Abonnenten",
+                "helpText": "Die ID der Abonnentenliste in Klaviyo, zu der alle Shopware6-Abonnenten hinzugefügt werden sollen."
             },
             "bisVariantField": {
                 "label": "Zuordnung von Produktidentifikationsfeldern",
@@ -186,7 +186,7 @@
                 "generalErrorMessage": "API-Schlüssel können nicht validiert werden",
                 "incorrectCredentialsTitle": "Falsche Anmeldeinformationen",
                 "correctApiMessage": "API-keys sind gültig",
-                "listNotExistMessage": "Keine Listen in Klaviyo gefunden"
+                "listNotExistMessage": "In Klaviyo wurde eine Liste mit einer solchen ID nicht gefunden. Bitte überprüfen Sie die Korrektheit der Listen-ID."
             },
             "enableDailySynchronization": {
                 "label": "Aktivieren Sie die tägliche Abonnentensynchronisierung",
