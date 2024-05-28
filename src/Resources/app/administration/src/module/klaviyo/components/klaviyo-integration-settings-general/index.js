@@ -33,7 +33,7 @@ Component.register('klaviyo-integration-settings-general', {
             required: false,
             default: null,
         },
-        listNameErrorState: {
+        listIdErrorState: {
             type: Object,
             required: false,
             default: null,
@@ -48,13 +48,6 @@ Component.register('klaviyo-integration-settings-general', {
                 this.salesChannelSwitched(v);
             }
         },
-        actualConfigData: {
-            deep: true,
-            immediate: true,
-            handler: function(v) {
-                this.bringSubscribersList(v);
-            },
-        }
     },
 
     data() {
@@ -152,15 +145,9 @@ Component.register('klaviyo-integration-settings-general', {
 
     methods: {
         salesChannelSwitched(v) {
-            if (v) {
-                this.bringSubscribersList();
-            } else {
+            if (!v) {
                 this.selectedSubscriptionList = null;
             }
-        },
-
-        bringSubscribersList(v) {
-            this.setSubscriptionListOptions();
         },
 
         createdComponent() {
@@ -206,29 +193,6 @@ Component.register('klaviyo-integration-settings-general', {
             }
         },
 
-        setSubscriptionListOptions: function () {
-            const privateKey = this.actualConfigData['KlaviyoIntegrationPlugin.config.privateApiKey'];
-            const publicKey = this.actualConfigData['KlaviyoIntegrationPlugin.config.publicApiKey'];
-
-            this.klaviyoApiKeyValidatorService.getList(privateKey, publicKey).then((response) => {
-
-                if (response.data.incorrect_list) {
-                    this.createNotificationWarning({
-                        message: this.$tc('klaviyo-integration-settings.configs.apiValidation.listNotExistMessage'),
-                    });
-                }
-
-                let options = [];
-                for (let i = 0; i < response.data.data.length; i++) {
-                    options.push(response.data.data[i]);
-                }
-                this.subscriptionListOptions = options;
-                this.selectedSubscriptionList = this.actualConfigData['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync'];
-
-            }).catch(() => {
-            });
-        },
-
         checkTextFieldInheritance(value) {
             if (typeof value !== 'string') {
                 return true;
@@ -245,14 +209,14 @@ Component.register('klaviyo-integration-settings-general', {
             this.apiValidationInProgress = true;
             const privateKey = this.actualConfigData['KlaviyoIntegrationPlugin.config.privateApiKey'];
             const publicKey = this.actualConfigData['KlaviyoIntegrationPlugin.config.publicApiKey'];
-            const list = this.actualConfigData['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync'];
+            const listId = this.actualConfigData['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync'];
 
             if (!(this.credentialsEmptyValidation('privateApiKey', privateKey) * this.credentialsEmptyValidation('publicApiKey', publicKey))) {
                 this.apiValidationInProgress = false;
                 return;
             }
 
-            this.klaviyoApiKeyValidatorService.validate(privateKey, publicKey, list).then((response) => {
+            this.klaviyoApiKeyValidatorService.validate(privateKey, publicKey, listId).then((response) => {
                 if (response.status !== 200) {
                     this.createNotificationError({
                         message: this.$tc('klaviyo-integration-settings.configs.apiValidation.generalErrorMessage'),
@@ -296,12 +260,5 @@ Component.register('klaviyo-integration-settings-general', {
             }
             return true;
         },
-
-        storeSelectedListValue(val) {
-            this.selectedSubscriptionList = val;
-            if (val) {
-                this.actualConfigData['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync'] = val;
-            }
-        }
     },
 });
