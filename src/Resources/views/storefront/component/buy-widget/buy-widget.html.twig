@@ -1,11 +1,25 @@
 {% sw_extends '@Storefront/storefront/component/buy-widget/buy-widget.html.twig' %}
 
-{% block buy_widget %}
+{% block buy_widget_buy_form %}
     {{ parent() }}
 
-    {% if page.getExtension('klaviyoIntegrationPluginExtension').configuration.trackSubscribedToBackInStock and
-        page.extensions.klaviyoIntegrationPluginExtension.backInStockData and not product.translated.customFields.klaviyo_back_in_stock_disabled %}
-        {% if page.product.isCloseout and page.product.availableStock < page.product.minPurchase %}
+    {% if page %}
+        {% set backInStockData = page.getExtension('klaviyoIntegrationPluginExtension').configuration.subscribersListId %}
+        {% set trackSubscribedToBackInStock = page.getExtension('klaviyoIntegrationPluginExtension').configuration.trackSubscribedToBackInStock %}
+        {% set pluginExtensionData = page.getExtension('klaviyoIntegrationPluginExtension') %}
+    {% elseif context %}
+        {% set backInStockData = context.extensions.klaviyoIntegrationPluginExtension.backInStockData %}
+        {% set trackSubscribedToBackInStock = context.getExtension('klaviyoIntegrationPluginExtension').configuration.trackSubscribedToBackInStock %}
+        {% set pluginExtensionData = context.getExtension('klaviyoIntegrationPluginExtension') %}
+    {% endif %}
+
+    {% if trackSubscribedToBackInStock and backInStockData and
+        not product.translated.customFields.klaviyo_back_in_stock_disabled %}
+        {% sw_include '@Storefront/storefront/component/buy-widget/back-in-stock-form.html.twig' with {
+            extensionData: pluginExtensionData
+        } %}
+
+        {% if product.isCloseout and product.availableStock < product.minPurchase %}
             {% block klaviyo_back_in_stock_modal_open %}
                 <button class="btn btn-primary" data-toggle="modal"
                         style="{% if extensionData.configuration.popUpOpenBtnColor %}color: {{ extensionData.configuration.popUpOpenBtnColor }};{% endif %}{% if extensionData.configuration.popUpOpenBtnBgColor %}background-color: {{ extensionData.configuration.popUpOpenBtnBgColor }}; border-color: {{ extensionData.configuration.popUpOpenBtnBgColor }};{% endif %}"
