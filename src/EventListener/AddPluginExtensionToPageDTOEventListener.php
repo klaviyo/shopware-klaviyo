@@ -64,7 +64,7 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
         return [
             GenericPageLoadedEvent::class => 'onPageLoaded',
             ProductPageLoadedEvent::class => 'onProductPageLoaded',
-            SwitchBuyBoxVariantEvent::class => 'onProductPageLoaded',
+            SwitchBuyBoxVariantEvent::class => 'onSwitchOptionLoaded',
             CheckoutConfirmPageLoadedEvent::class => 'onCheckoutPageLoaded',
         ];
     }
@@ -93,7 +93,7 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
         }
     }
 
-    public function onProductPageLoaded($event)
+    public function onProductPageLoaded(ProductPageLoadedEvent $event): void
     {
         try {
             if (!$event->getPage()->hasExtension(self::PDP_EXTENSION)) {
@@ -107,6 +107,43 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
                 $event->getContext(),
                 $event->getSalesChannelContext(),
                 $event->getPage()->getProduct()
+            );
+            $extensionData['backInStockData'] = [
+                'listId' => $configuration->getSubscribersListId(),
+            ];
+        } catch (\Throwable $throwable) {
+            $this->logger->error(
+                \sprintf(
+                    'Could not add Klaviyo plugin extension product information to the page object, reason: %s',
+                    $throwable->getMessage()
+                ),
+                ContextHelper::createContextFromException($throwable)
+            );
+        }
+    }
+
+    public function onSwitchOptionLoaded(SwitchBuyBoxVariantEvent $event): void
+    {
+        try {
+            $salesChannelContext = $event->getSalesChannelContext();
+            $configuration = $this->getValidChannelConfig->execute($salesChannelContext->getSalesChannel()->getId());
+
+            if (null === $configuration) {
+                return;
+            }
+
+            $event->getSalesChannelContext()->addExtension(self::PDP_EXTENSION, new ArrayStruct([
+                'configuration' => $configuration,
+                'customerIdentity' => $this->getCustomerIdentity($salesChannelContext),
+            ]));
+
+            $extensionData = $event->getSalesChannelContext()->getExtension(self::PDP_EXTENSION);
+            /** @var Configuration $configuration */
+            $configuration = $extensionData['configuration'];
+            $extensionData['productInfo'] = $this->productTranslator->translateToProductInfo(
+                $event->getContext(),
+                $event->getSalesChannelContext(),
+                $event->getProduct()
             );
             $extensionData['backInStockData'] = [
                 'listId' => $configuration->getSubscribersListId(),
