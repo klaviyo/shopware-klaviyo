@@ -1,3 +1,6 @@
+# 2.13.2
+# Fix: Es wurde ein Fehler behoben, wenn das Ereignis SwitchBuyBoxVariantEvent auf dem Widget ausgelöst wurde. Behebung von Abhängigkeiten in der Vorlage.
+
 # 2.13.1
 # Fix: Ein Problem mit der fehlenden Listen-ID von Abonnenten im PDP wurde behoben. Das Speichern der Listen-ID von Abonnenten in den Plugin-Einstellungen wurde neu gestaltet.
 # Fix: Es wurde ein Fehler behoben, wenn das Ereignis SwitchBuyBoxVariantEvent auf der PDP ausgelöst wurde.

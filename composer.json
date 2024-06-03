@@ -1,5 +1,5 @@
 {
-    "version": "2.13.1",
+    "version": "2.13.2",
     "name": "klaviyo/shopware-klaviyo",
     "description": "Shopware 6 plugin for Klaviyo integration",
     "type": "shopware-platform-plugin",
