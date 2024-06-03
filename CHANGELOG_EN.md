@@ -1,3 +1,6 @@
+# 1.11.2
+# Fix: Fixed an error when the SwitchBuyBoxVariantEvent event was triggered on widget. Fixing dependencies in the template.
+
 # 1.11.1
 # Fix: Fixed an issue with missing List ID of subscribers on PDP. Redesigned saving List ID of subscribers in the plugin settings.
 # Fix: Fixed an error when the SwitchBuyBoxVariantEvent event was triggered on the PDP.
