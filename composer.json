@@ -1,6 +1,6 @@
 {
     "version": "2.13.1",
-    "name": "od/sw6-klaviyo-integration",
+    "name": "klaviyo/shopware-klaviyo",
     "description": "Shopware 6 plugin for Klaviyo integration",
     "type": "shopware-platform-plugin",
     "license": "proprietary",
