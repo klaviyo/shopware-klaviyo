@@ -138,7 +138,6 @@ Component.register('klaviyo-job-listing', {
             const criteria = new Criteria();
             criteria.addFilter(Criteria.equals('parentId', null));
             criteria.addSorting(Criteria.sort('createdAt', 'DESC', false));
-            criteria.setLimit(999999);
             criteria.setPage(1);
             criteria.setLimit(25);
             criteria.addFilter(Criteria.equalsAny('type', [
@@ -156,7 +155,6 @@ Component.register('klaviyo-job-listing', {
                 const statuses = ['pending', 'running', 'succeed', 'error'];
                 const types = [
                     'Full Order Sync Operation',
-                    'Excluded Subscriber Sync Operation',
                     'Excluded Subscribers Daily Sync',
                     'Full Subscriber Sync Operation',
                     'Scheduled Events Sync'
