@@ -1,3 +1,7 @@
+# 2.13.3
+# Fix: Correction of multiple loading records in listing.
+# Fix: Changing the type of data when transferring product categories in order events.
+
 # 2.13.2
 # Fix: Fixed an error when the SwitchBuyBoxVariantEvent event was triggered on widget. Fixing dependencies in the template.
 
