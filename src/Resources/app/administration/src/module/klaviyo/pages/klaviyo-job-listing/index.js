@@ -139,6 +139,7 @@ Component.register('klaviyo-job-listing', {
             criteria.addFilter(Criteria.equals('parentId', null));
             criteria.addSorting(Criteria.sort('createdAt', 'DESC', false));
             criteria.setPage(1);
+            criteria.setLimit(25);
             criteria.addFilter(Criteria.equalsAny('type', [
                 'od-klaviyo-events-sync-handler',
                 'od-klaviyo-cart-event-sync-handler',
@@ -151,8 +152,14 @@ Component.register('klaviyo-job-listing', {
             ]));
 
             return this.jobRepository.search(criteria, Shopware.Context.api).then((items) => {
-                const statuses = [...new Set(items.map(item => item.status))];
-                const types = [...new Set(items.map(item => item.name))];
+                const statuses = ['pending', 'running', 'succeed', 'error'];
+                const types = [
+                    'Full Order Sync Operation',
+                    'Excluded Subscriber Sync Operation',
+                    'Excluded Subscribers Daily Sync',
+                    'Full Subscriber Sync Operation',
+                    'Scheduled Events Sync'
+                ];
 
                 this.statusFilterOptions = [];
                 this.typeFilterOptions = [];
