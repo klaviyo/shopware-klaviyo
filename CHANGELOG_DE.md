@@ -1,3 +1,7 @@
+# 2.13.3
+# Fix: Korrektur von mehrfachen Ladesätzen in der Auflistung.
+# Fix: Ändern des Datentyps bei der Übertragung von Produktkategorien in Bestellvorgängen.
+
 # 2.13.2
 # Fix: Es wurde ein Fehler behoben, wenn das Ereignis SwitchBuyBoxVariantEvent auf dem Widget ausgelöst wurde. Behebung von Abhängigkeiten in der Vorlage.
 
