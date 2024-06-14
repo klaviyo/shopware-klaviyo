@@ -151,8 +151,13 @@ Component.register('klaviyo-job-listing', {
             ]));
 
             return this.jobRepository.search(criteria, Shopware.Context.api).then((items) => {
-                const statuses = [...new Set(items.map(item => item.status))];
-                const types = [...new Set(items.map(item => item.name))];
+                const statuses = ['pending', 'running', 'succeed', 'error'];
+                const types = [
+                    'Full Order Sync Operation',
+                    'Excluded Subscribers Daily Sync',
+                    'Full Subscriber Sync Operation',
+                    'Scheduled Events Sync'
+                ];
 
                 this.statusFilterOptions = [];
                 this.typeFilterOptions = [];
