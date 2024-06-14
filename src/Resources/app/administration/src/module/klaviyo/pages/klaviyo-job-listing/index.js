@@ -155,7 +155,6 @@ Component.register('klaviyo-job-listing', {
                 const statuses = ['pending', 'running', 'succeed', 'error'];
                 const types = [
                     'Full Order Sync Operation',
-                    'Excluded Subscriber Sync Operation',
                     'Excluded Subscribers Daily Sync',
                     'Full Subscriber Sync Operation',
                     'Scheduled Events Sync'
