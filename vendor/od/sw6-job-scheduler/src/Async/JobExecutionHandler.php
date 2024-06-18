@@ -2,10 +2,11 @@
 
 namespace Od\Scheduler\Async;
 
+use Od\Scheduler\Async\JobMessageInterface;
 use Od\Scheduler\Model\Job\JobRunner;
 use Psr\Log\LoggerInterface;
 
-class JobExecutionHandler implements \Symfony\Component\Messenger\Handler\MessageSubscriberInterface
+class JobExecutionHandler
 {
     private LoggerInterface $logger;
     private JobRunner $jobRunner;
@@ -18,6 +19,7 @@ class JobExecutionHandler implements \Symfony\Component\Messenger\Handler\Messag
         $this->jobRunner = $jobRunner;
     }
 
+    #[AsMessageHandler]
     public function __invoke(JobMessageInterface $message)
     {
         $this->handle($message);

@@ -39,9 +39,9 @@
     "require": {
         "od/sw6-job-scheduler": "2.0.8",
         "php": "^7.4 || ^8.0",
-        "shopware/administration": "6.5.*",
-        "shopware/core": "6.5.*",
-        "shopware/storefront": "6.5.*",
+        "shopware/administration": "6.6.*",
+        "shopware/core": "6.6.*",
+        "shopware/storefront": "6.6.*",
         "ext-json": "*"
     }
 }
