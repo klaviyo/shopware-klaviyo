@@ -6,7 +6,7 @@ use Klaviyo\Integration\Klaviyo\Promotion\PromotionsExporter;
 use Klaviyo\Integration\Model\Response\KlaviyoBinaryFileResponse;
 use Shopware\Core\Framework\Context;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
 
 #[Route(defaults: ['_routeScope' => ['api']])]

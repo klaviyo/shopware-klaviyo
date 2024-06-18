@@ -6,9 +6,8 @@ use Klaviyo\Integration\Exception\JobAlreadyRunningException;
 use Klaviyo\Integration\Exception\JobAlreadyScheduledException;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(defaults: ['_routeScope' => ['api']])]
 class JobController

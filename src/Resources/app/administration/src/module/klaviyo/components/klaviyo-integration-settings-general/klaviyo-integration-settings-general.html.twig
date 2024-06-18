@@ -9,7 +9,8 @@
                 :label="$tc('klaviyo-integration-settings.configs.cookieConsent.label')"
                 :help-text="$tc('klaviyo-integration-settings.configs.cookieConsent.helpText')">
                 <template #content="props">
-                    <sw-single-select name="klavi_overd.config.cookieConsent"
+                    <sw-single-select v-model:value="props.currentValue"
+                                      name="klavi_overd.config.cookieConsent"
                                       labelProperty="label"
                                       valueProperty="value"
                                       :options="createCookieConsentOptions"
@@ -17,7 +18,7 @@
                                       :disabled="props.isInherited"
                                       show-clearable-button
                                       :value="props.currentValue"
-                                      @change="props.updateCurrentValue">
+                                      @change:value="props.updateCurrentValue">
                     </sw-single-select>
                 </template>
             </sw-inherit-wrapper>
