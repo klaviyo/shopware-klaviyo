@@ -32,7 +32,7 @@ abstract class AbstractDenormalizer implements DenormalizerInterface, Denormaliz
         return $this->denormalizerVirtualProxy->denormalize($value, $type);
     }
 
-    public function setDenormalizer(DenormalizerInterface $denormalizer)
+    public function setDenormalizer(DenormalizerInterface $denormalizer): void
     {
         $this->denormalizerVirtualProxy = $denormalizer;
     }

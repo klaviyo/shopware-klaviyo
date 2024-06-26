@@ -5,6 +5,8 @@ namespace Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer;
 
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\Common\EventTrackingResponse;
 use Klaviyo\Integration\Klaviyo\Client\Exception\DeserializationException;
+use Symfony\Component\Serializer\Normalizer\DenormalizableInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizableInterface;
 
 class EventTrackingResponseDenormalizer extends AbstractDenormalizer
 {
@@ -40,8 +42,16 @@ class EventTrackingResponseDenormalizer extends AbstractDenormalizer
         return new EventTrackingResponse($success, $detail);
     }
 
-    public function supportsDenormalization($data, string $type, string $format = null): bool
+    public function supportsDenormalization($data, string $type, string $format = null, array $context = []): bool
     {
         return $type === EventTrackingResponse::class;
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            NormalizableInterface::class => true,
+            DenormalizableInterface::class => true,
+        ];
     }
 }

@@ -6,10 +6,9 @@ namespace Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer;
 
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Account\GetAccountResponse;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator\GetAccountApiTransferTranslator;
+use Symfony\Component\Serializer\Normalizer\DenormalizableInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizableInterface;
 
-/**
- * @method getSupportedTypes(?string $format)
- */
 class GetAccountDenormalizer extends AbstractDenormalizer
 {
     public function denormalize(
@@ -39,8 +38,16 @@ class GetAccountDenormalizer extends AbstractDenormalizer
         return new GetAccountResponse($successStatus, $responsePublicKey, $code, $error);
     }
 
-    public function supportsDenormalization(mixed $data, string $type, string $format = null): bool
+    public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
     {
         return GetAccountResponse::class === $type;
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            NormalizableInterface::class => true,
+            DenormalizableInterface::class => true,
+        ];
     }
 }

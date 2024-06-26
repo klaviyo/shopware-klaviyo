@@ -6,6 +6,8 @@ namespace Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer;
 
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Identify\IdentifyProfileRequest;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
+use Symfony\Component\Serializer\Normalizer\DenormalizableInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizableInterface;
 
 class IdentifyProfileRequestNormalizer extends AbstractNormalizer
 {
@@ -37,8 +39,16 @@ class IdentifyProfileRequestNormalizer extends AbstractNormalizer
         ]]];
     }
 
-    public function supportsNormalization($data, string $format = null): bool
+    public function supportsNormalization($data, string $format = null, array $context = []): bool
     {
         return $data instanceof IdentifyProfileRequest;
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            NormalizableInterface::class => true,
+            DenormalizableInterface::class => true,
+        ];
     }
 }

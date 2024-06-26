@@ -6,6 +6,8 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Common\Profi
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\GetListProfiles\GetListProfilesResponse;
 use Klaviyo\Integration\Klaviyo\Client\Exception\DeserializationException;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
+use Symfony\Component\Serializer\Normalizer\DenormalizableInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizableInterface;
 
 class GetListProfilesResponseDenormalizer extends AbstractDenormalizer
 {
@@ -48,8 +50,16 @@ class GetListProfilesResponseDenormalizer extends AbstractDenormalizer
         return new GetListProfilesResponse(true, $profilesInfoCollection, (int) $data['marker']);
     }
 
-    public function supportsDenormalization($data, string $type, string $format = null): bool
+    public function supportsDenormalization($data, string $type, string $format = null, array $context = []): bool
     {
         return GetListProfilesResponse::class === $type;
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            NormalizableInterface::class => true,
+            DenormalizableInterface::class => true,
+        ];
     }
 }

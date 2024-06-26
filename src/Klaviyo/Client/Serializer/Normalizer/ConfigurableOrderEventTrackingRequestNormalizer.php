@@ -8,6 +8,8 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEv
 use Klaviyo\Integration\Klaviyo\Client\Configuration\ConfigurationInterface;
 use Klaviyo\Integration\Klaviyo\Client\Exception\SerializationException;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
+use Symfony\Component\Serializer\Normalizer\DenormalizableInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizableInterface;
 
 class ConfigurableOrderEventTrackingRequestNormalizer extends AbstractNormalizer
 {
@@ -138,8 +140,16 @@ class ConfigurableOrderEventTrackingRequestNormalizer extends AbstractNormalizer
         ];
     }
 
-    public function supportsNormalization($data, string $format = null): bool
+    public function supportsNormalization($data, string $format = null, array $context = []): bool
     {
         return $data instanceof $this->className;
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            NormalizableInterface::class => true,
+            DenormalizableInterface::class => true,
+        ];
     }
 }

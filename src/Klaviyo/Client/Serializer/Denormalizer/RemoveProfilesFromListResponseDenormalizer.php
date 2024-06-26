@@ -4,6 +4,8 @@ namespace Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer;
 
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfilesFromList\RemoveProfilesFromListResponse;
 use Klaviyo\Integration\Klaviyo\Client\Exception\DeserializationException;
+use Symfony\Component\Serializer\Normalizer\DenormalizableInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizableInterface;
 
 class RemoveProfilesFromListResponseDenormalizer extends AbstractDenormalizer
 {
@@ -34,8 +36,16 @@ class RemoveProfilesFromListResponseDenormalizer extends AbstractDenormalizer
         return new RemoveProfilesFromListResponse(false, $errorDetails);
     }
 
-    public function supportsDenormalization($data, string $type, string $format = null): bool
+    public function supportsDenormalization($data, string $type, string $format = null, array $context = []): bool
     {
         return RemoveProfilesFromListResponse::class === $type;
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            NormalizableInterface::class => true,
+            DenormalizableInterface::class => true,
+        ];
     }
 }

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer;
 
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Update\UpdateProfileRequest;
+use Symfony\Component\Serializer\Normalizer\DenormalizableInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizableInterface;
 
 class UpdateProfileRequestNormalizer extends AbstractNormalizer
 {
@@ -41,8 +43,16 @@ class UpdateProfileRequestNormalizer extends AbstractNormalizer
         ]]];
     }
 
-    public function supportsNormalization(mixed $data, string $format = null): bool
+    public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
     {
         return $data instanceof UpdateProfileRequest;
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            NormalizableInterface::class => true,
+            DenormalizableInterface::class => true,
+        ];
     }
 }

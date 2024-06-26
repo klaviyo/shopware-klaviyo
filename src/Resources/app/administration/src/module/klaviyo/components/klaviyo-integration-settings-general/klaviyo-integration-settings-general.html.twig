@@ -4,13 +4,12 @@
                  class="klaviyo-interaction-settings">
             <sw-inherit-wrapper
                 class="cookie-consent-inheritance"
-                v-model="actualConfigData['klavi_overd.config.cookieConsent']"
+                v-model:value="actualConfigData['klavi_overd.config.cookieConsent']"
                 :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['klavi_overd.config.cookieConsent']"
                 :label="$tc('klaviyo-integration-settings.configs.cookieConsent.label')"
                 :help-text="$tc('klaviyo-integration-settings.configs.cookieConsent.helpText')">
                 <template #content="props">
-                    <sw-single-select v-model:value="props.currentValue"
-                                      name="klavi_overd.config.cookieConsent"
+                    <sw-single-select name="klavi_overd.config.cookieConsent"
                                       labelProperty="label"
                                       valueProperty="value"
                                       :options="createCookieConsentOptions"
@@ -18,13 +17,13 @@
                                       :disabled="props.isInherited"
                                       show-clearable-button
                                       :value="props.currentValue"
-                                      @change:value="props.updateCurrentValue">
+                                      @update:value="props.updateCurrentValue">
                     </sw-single-select>
                 </template>
             </sw-inherit-wrapper>
 
             <sw-inherit-wrapper
-                    v-model="actualConfigData['klavi_overd.config.isInitializeKlaviyoAfterInteraction']"
+                    v-model:value="actualConfigData['klavi_overd.config.isInitializeKlaviyoAfterInteraction']"
                     :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['klavi_overd.config.isInitializeKlaviyoAfterInteraction']"
                     :customInheritationCheckFunction="checkBoolFieldInheritance">
                 <template #content="props">
@@ -58,7 +57,7 @@
                 <sw-switch-field
                         v-if="selectedSalesChannelId !== null"
                         class="no-top-margin"
-                        v-model="actualConfigData['klavi_overd.config.enabled']"
+                        v-model:value="actualConfigData['klavi_overd.config.enabled']"
                         name="klavi_overd.config.enabled"
                         :label="$tc('klaviyo-integration-settings.configs.enabled.label')"
                         :helpText="$tc('klaviyo-integration-settings.configs.enabled.helpText')">
@@ -67,9 +66,8 @@
 
             {% block klaviyo_integration_settings_general_private_api_key %}
                 <sw-password-field
-                        v-model="actualConfigData['klavi_overd.config.privateApiKey']"
+                        v-model:value="actualConfigData['klavi_overd.config.privateApiKey']"
                         name="klavi_overd.config.privateApiKey"
-                        type="text"
                         :label="$tc('klaviyo-integration-settings.configs.privateApiKey.label')"
                         :helpText="$tc('klaviyo-integration-settings.configs.privateApiKey.helpText')"
                         :disabled="selectedSalesChannelId === null"
@@ -79,16 +77,15 @@
             {% endblock %}
 
             {% block klaviyo_integration_settings_general_public_api_key %}
-                <sw-field
-                        v-model="actualConfigData['klavi_overd.config.publicApiKey']"
-                        name="klavi_overd.config.privateApiKey"
-                        type="text"
+                <sw-text-field
+                        v-model:value="actualConfigData['klavi_overd.config.publicApiKey']"
+                        name="klavi_overd.config.publicApiKey"
                         :label="$tc('klaviyo-integration-settings.configs.publicApiKey.label')"
                         :helpText="$tc('klaviyo-integration-settings.configs.publicApiKey.helpText')"
                         :disabled="selectedSalesChannelId === null"
                         :error="publicKeyErrorState"
                         required>
-                </sw-field>
+                </sw-text-field>
             {% endblock %}
 
             {% block klaviyo_integration_settings_general_double_opt_in_alert %}
@@ -98,7 +95,7 @@
             {% endblock %}
 
             {% block klaviyo_integration_settings_general_klaviyo_list_for_subscribers_sync %}
-                <sw-inherit-wrapper v-model="actualConfigData[selectedSubscriptionList]"
+                <sw-inherit-wrapper v-model:value="actualConfigData[selectedSubscriptionList]"
                                     :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['klavi_overd.config.klaviyoListForSubscribersSync']"
                                     :label="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.label')"
                                     required
@@ -120,7 +117,7 @@
             {% endblock %}
 
             {% block klaviyo_integration_settings_general_varian_for_bis %}
-                <sw-inherit-wrapper v-model="actualConfigData['klavi_overd.config.bisVariantField']"
+                <sw-inherit-wrapper v-model:value="actualConfigData['klavi_overd.config.bisVariantField']"
                                     :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['klavi_overd.config.bisVariantField']"
                                     :label="$tc('klaviyo-integration-settings.configs.bisVariantField.label')"
                                     :help-text="$tc('klaviyo-integration-settings.configs.bisVariantField.helpText')">
@@ -140,7 +137,7 @@
             {% endblock %}
 
             {% block klaviyo_integration_settings_general_order_identification %}
-                <sw-inherit-wrapper v-model="actualConfigData['klavi_overd.config.orderIdentification']"
+                <sw-inherit-wrapper v-model:value="actualConfigData['klavi_overd.config.orderIdentification']"
                                     :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['klavi_overd.config.orderIdentification']"
                                     :label="$tc('klaviyo-integration-settings.configs.orderIdentification.label')"
                                     :help-text="$tc('klaviyo-integration-settings.configs.orderIdentification.helpText')">
@@ -161,7 +158,7 @@
 
             {% block klaviyo_integration_settings_general_track_deleted_account_orders %}
                 <sw-inherit-wrapper
-                        v-model="actualConfigData['klavi_overd.config.trackDeletedAccountOrders']"
+                        v-model:value="actualConfigData['klavi_overd.config.trackDeletedAccountOrders']"
                         :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['klavi_overd.config.trackDeletedAccountOrders']"
                         :customInheritationCheckFunction="checkBoolFieldInheritance">
                     <template #content="props">
@@ -178,7 +175,7 @@
             {% endblock %}
 
             {% block klaviyo_integration_settings_general_track_viewed_product %}
-                <sw-inherit-wrapper v-model="actualConfigData['klavi_overd.config.trackViewedProduct']"
+                <sw-inherit-wrapper v-model:value="actualConfigData['klavi_overd.config.trackViewedProduct']"
                                     :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['klavi_overd.config.trackViewedProduct']"
                                     :customInheritationCheckFunction="checkBoolFieldInheritance">
                     <template #content="props">
@@ -196,7 +193,7 @@
 
             {% block klaviyo_integration_settings_general_track_recently_viewed_items %}
                 <sw-inherit-wrapper
-                        v-model="actualConfigData['klavi_overd.config.trackRecentlyViewedItems']"
+                        v-model:value="actualConfigData['klavi_overd.config.trackRecentlyViewedItems']"
                         :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['klavi_overd.config.trackRecentlyViewedItems']"
                         :customInheritationCheckFunction="checkBoolFieldInheritance">
                     <template #content="props">
@@ -213,7 +210,7 @@
             {% endblock %}
 
             {% block klaviyo_integration_settings_general_track_added_to_cart %}
-                <sw-inherit-wrapper v-model="actualConfigData['klavi_overd.config.trackAddedToCart']"
+                <sw-inherit-wrapper v-model:value="actualConfigData['klavi_overd.config.trackAddedToCart']"
                                     :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['klavi_overd.config.trackAddedToCart']"
                                     :customInheritationCheckFunction="checkBoolFieldInheritance">
                     <template #content="props">

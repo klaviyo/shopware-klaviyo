@@ -3,6 +3,8 @@
 namespace Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer;
 
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\Common\Address;
+use Symfony\Component\Serializer\Normalizer\DenormalizableInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizableInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class AddressNormalizer implements NormalizerInterface
@@ -31,8 +33,16 @@ class AddressNormalizer implements NormalizerInterface
         ];
     }
 
-    public function supportsNormalization($data, string $format = null): bool
+    public function supportsNormalization($data, string $format = null, array $context = []): bool
     {
         return $data instanceof Address;
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            NormalizableInterface::class => true,
+            DenormalizableInterface::class => true,
+        ];
     }
 }

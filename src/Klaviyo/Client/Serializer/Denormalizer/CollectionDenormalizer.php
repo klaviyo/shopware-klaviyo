@@ -4,6 +4,8 @@ namespace Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer;
 
 use Klaviyo\Integration\Utils\Collection\TypedCollection;
 use Klaviyo\Integration\Utils\Reflection\ReflectionHelper;
+use Symfony\Component\Serializer\Normalizer\DenormalizableInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizableInterface;
 
 class CollectionDenormalizer extends AbstractDenormalizer
 {
@@ -13,9 +15,9 @@ class CollectionDenormalizer extends AbstractDenormalizer
      * @param string|null $format
      * @param array $context
      *
-     * @return mixed|void
+     * @return TypedCollection
      */
-    public function denormalize($data, string $type, string $format = null, array $context = [])
+    public function denormalize($data, string $type, string $format = null, array $context = []): TypedCollection
     {
         /** @var TypedCollection $collection */
         $collection = new $type();
@@ -28,8 +30,16 @@ class CollectionDenormalizer extends AbstractDenormalizer
         return $collection;
     }
 
-    public function supportsDenormalization($data, string $type, string $format = null): bool
+    public function supportsDenormalization($data, string $type, string $format = null, array $context = []): bool
     {
         return ReflectionHelper::isClassInstanceOf($type, TypedCollection::class);
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            NormalizableInterface::class => true,
+            DenormalizableInterface::class => true,
+        ];
     }
 }
