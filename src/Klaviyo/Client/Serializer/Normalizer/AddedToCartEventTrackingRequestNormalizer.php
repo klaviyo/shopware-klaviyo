@@ -82,8 +82,15 @@ class AddedToCartEventTrackingRequestNormalizer extends AbstractNormalizer
         ];
     }
 
-    public function supportsNormalization($data, string $format = null): bool
+    public function supportsNormalization($data, string $format = null, array $context = []): bool
     {
         return $data instanceof AddedToCartEventTrackingRequest;
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            AddedToCartEventTrackingRequest::class => true,
+        ];
     }
 }

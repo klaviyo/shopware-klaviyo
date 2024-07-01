@@ -48,8 +48,15 @@ class GetListProfilesResponseDenormalizer extends AbstractDenormalizer
         return new GetListProfilesResponse(true, $profilesInfoCollection, (int) $data['marker']);
     }
 
-    public function supportsDenormalization($data, string $type, string $format = null): bool
+    public function supportsDenormalization($data, string $type, string $format = null, array $context = []): bool
     {
         return GetListProfilesResponse::class === $type;
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            GetListProfilesResponse::class => true,
+        ];
     }
 }

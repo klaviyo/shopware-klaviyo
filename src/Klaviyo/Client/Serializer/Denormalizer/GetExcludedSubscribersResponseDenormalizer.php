@@ -64,8 +64,15 @@ class GetExcludedSubscribersResponseDenormalizer extends AbstractDenormalizer
         }
     }
 
-    public function supportsDenormalization($data, string $type, string $format = null): bool
+    public function supportsDenormalization($data, string $type, string $format = null, array $context = []): bool
     {
         return $type === Response::class;
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            Response::class => true,
+        ];
     }
 }

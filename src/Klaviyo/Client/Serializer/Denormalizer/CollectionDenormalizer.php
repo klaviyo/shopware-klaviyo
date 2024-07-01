@@ -15,7 +15,7 @@ class CollectionDenormalizer extends AbstractDenormalizer
      *
      * @return mixed|void
      */
-    public function denormalize($data, string $type, string $format = null, array $context = [])
+    public function denormalize($data, string $type, string $format = null, array $context = []): mixed
     {
         /** @var TypedCollection $collection */
         $collection = new $type();
@@ -28,8 +28,15 @@ class CollectionDenormalizer extends AbstractDenormalizer
         return $collection;
     }
 
-    public function supportsDenormalization($data, string $type, string $format = null): bool
+    public function supportsDenormalization($data, string $type, string $format = null, array $context = []): bool
     {
         return ReflectionHelper::isClassInstanceOf($type, TypedCollection::class);
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            TypedCollection::class => true,
+        ];
     }
 }

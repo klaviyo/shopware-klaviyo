@@ -32,8 +32,15 @@ class GetProfileIdResponseDenormalizer extends AbstractDenormalizer
         return new GetProfileIdResponse(true, $klaviyoProfileId, null);
     }
 
-    public function supportsDenormalization($data, string $type, string $format = null): bool
+    public function supportsDenormalization($data, string $type, string $format = null, array $context = []): bool
     {
         return $type === GetProfileIdResponse::class;
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            GetProfileIdResponse::class => true,
+        ];
     }
 }

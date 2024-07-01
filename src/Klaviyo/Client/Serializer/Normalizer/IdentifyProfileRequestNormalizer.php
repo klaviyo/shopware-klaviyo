@@ -37,8 +37,15 @@ class IdentifyProfileRequestNormalizer extends AbstractNormalizer
         ]]];
     }
 
-    public function supportsNormalization($data, string $format = null): bool
+    public function supportsNormalization($data, string $format = null, array $context = []): bool
     {
         return $data instanceof IdentifyProfileRequest;
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            IdentifyProfileRequest::class => true,
+        ];
     }
 }

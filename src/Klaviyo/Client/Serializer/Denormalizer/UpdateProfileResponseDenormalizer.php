@@ -19,8 +19,15 @@ class UpdateProfileResponseDenormalizer extends AbstractDenormalizer
         return new UpdateProfileResponse(true);
     }
 
-    public function supportsDenormalization($data, string $type, string $format = null): bool
+    public function supportsDenormalization($data, string $type, string $format = null, array $context = []): bool
     {
         return UpdateProfileResponse::class === $type;
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            UpdateProfileResponse::class => true,
+        ];
     }
 }

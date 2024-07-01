@@ -41,8 +41,15 @@ class ProfileInfoDenormalizer extends AbstractDenormalizer
         }
     }
 
-    public function supportsDenormalization($data, string $type, string $format = null): bool
+    public function supportsDenormalization($data, string $type, string $format = null, array $context = []): bool
     {
         return ProfileInfo::class === $type;
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            ProfileInfo::class => true,
+        ];
     }
 }

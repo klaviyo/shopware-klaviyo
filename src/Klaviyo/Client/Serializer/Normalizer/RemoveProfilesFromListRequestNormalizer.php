@@ -48,8 +48,15 @@ class RemoveProfilesFromListRequestNormalizer extends AbstractNormalizer
         ];
     }
 
-    public function supportsNormalization($data, string $format = null): bool
+    public function supportsNormalization($data, string $format = null, array $context = []): bool
     {
         return $data instanceof RemoveProfilesFromListRequest;
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            RemoveProfilesFromListRequest::class => true,
+        ];
     }
 }

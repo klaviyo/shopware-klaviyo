@@ -40,8 +40,15 @@ class EventTrackingResponseDenormalizer extends AbstractDenormalizer
         return new EventTrackingResponse($success, $detail);
     }
 
-    public function supportsDenormalization($data, string $type, string $format = null): bool
+    public function supportsDenormalization($data, string $type, string $format = null, array $context = []): bool
     {
         return $type === EventTrackingResponse::class;
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            EventTrackingResponse::class => true,
+        ];
     }
 }

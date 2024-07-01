@@ -33,12 +33,20 @@ class SubscribeToListRequestNormalizer extends AbstractNormalizer
     }
 
     /**
-     * @param $data
+     * @param mixed $data
      * @param string|null $format
+     * @param array $context
      * @return bool
      */
-    public function supportsNormalization($data, string $format = null): bool
+    public function supportsNormalization($data, string $format = null, array $context = []): bool
     {
         return $data instanceof SubscribeToListRequest;
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            SubscribeToListRequest::class => true,
+        ];
     }
 }

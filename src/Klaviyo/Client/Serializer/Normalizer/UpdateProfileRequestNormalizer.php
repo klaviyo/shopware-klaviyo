@@ -41,8 +41,15 @@ class UpdateProfileRequestNormalizer extends AbstractNormalizer
         ]]];
     }
 
-    public function supportsNormalization(mixed $data, string $format = null): bool
+    public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
     {
         return $data instanceof UpdateProfileRequest;
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            UpdateProfileRequest::class => true,
+        ];
     }
 }

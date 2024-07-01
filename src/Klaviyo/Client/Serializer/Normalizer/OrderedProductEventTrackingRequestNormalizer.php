@@ -63,8 +63,15 @@ class OrderedProductEventTrackingRequestNormalizer extends AbstractNormalizer
         ];
     }
 
-    public function supportsNormalization($data, string $format = null): bool
+    public function supportsNormalization($data, string $format = null, array $context = []): bool
     {
         return $data instanceof OrderedProductEventTrackingRequest;
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            OrderedProductEventTrackingRequest::class => true,
+        ];
     }
 }

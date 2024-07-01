@@ -42,13 +42,21 @@ class SubscribeToListResponseDenormalizer extends AbstractDenormalizer
     }
 
     /**
-     * @param $data
+     * @param mixed $data
      * @param string $type
      * @param string|null $format
+     * @param array $context
      * @return bool
      */
-    public function supportsDenormalization($data, string $type, string $format = null): bool
+    public function supportsDenormalization($data, string $type, string $format = null, array $context = []): bool
     {
         return SubscribeToListResponse::class === $type;
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            SubscribeToListResponse::class => true,
+        ];
     }
 }

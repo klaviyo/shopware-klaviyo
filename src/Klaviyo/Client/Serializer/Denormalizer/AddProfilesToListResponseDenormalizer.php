@@ -33,8 +33,15 @@ class AddProfilesToListResponseDenormalizer extends AbstractDenormalizer
         return new AddProfilesToListResponse(true, $addedProfiles);
     }
 
-    public function supportsDenormalization($data, string $type, string $format = null): bool
+    public function supportsDenormalization($data, string $type, string $format = null, array $context = []): bool
     {
         return AddProfilesToListResponse::class === $type;
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            AddProfilesToListResponse::class => true,
+        ];
     }
 }

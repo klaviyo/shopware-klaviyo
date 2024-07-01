@@ -13,8 +13,15 @@ class StartedCheckoutEventTrackingRequestNormalizer extends AbstractNormalizer
         return $object->jsonSerialize();
     }
 
-    public function supportsNormalization(mixed $data, string $format = null): bool
+    public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
     {
         return $data instanceof StartedCheckoutEventTrackingRequest;
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            StartedCheckoutEventTrackingRequest::class => true,
+        ];
     }
 }

@@ -23,8 +23,15 @@ class IdentifyProfileResponseDenormalizer extends AbstractDenormalizer
         return new IdentifyProfileResponse(true);
     }
 
-    public function supportsDenormalization($data, string $type, string $format = null): bool
+    public function supportsDenormalization($data, string $type, string $format = null, array $context = []): bool
     {
         return IdentifyProfileResponse::class === $type;
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            IdentifyProfileResponse::class => true,
+        ];
     }
 }

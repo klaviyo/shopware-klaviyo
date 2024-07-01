@@ -34,8 +34,15 @@ class RemoveProfilesFromListResponseDenormalizer extends AbstractDenormalizer
         return new RemoveProfilesFromListResponse(false, $errorDetails);
     }
 
-    public function supportsDenormalization($data, string $type, string $format = null): bool
+    public function supportsDenormalization($data, string $type, string $format = null, array $context = []): bool
     {
         return RemoveProfilesFromListResponse::class === $type;
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            RemoveProfilesFromListResponse::class => true,
+        ];
     }
 }
