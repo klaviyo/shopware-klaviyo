@@ -81,11 +81,11 @@ Component.register('klaviyo-integration-settings-general', {
         createBisVariantFieldOptions() {
             return [
                 {
-                    label: this.$tc('klaviyo-integration-settings.configs.bisVariantField.productId'),
+                    label: Shopware.Snippet.tc('klaviyo-integration-settings.configs.bisVariantField.productId'),
                     value: 'product-id'
                 },
                 {
-                    label: this.$tc('sw-product.basicForm.labelProductNumber'),
+                    label: Shopware.Snippet.tc('sw-product.basicForm.labelProductNumber'),
                     value: 'product-number'
                 }
             ]
@@ -93,11 +93,11 @@ Component.register('klaviyo-integration-settings-general', {
         createOrderIdentificationFieldOptions() {
             return [
                 {
-                    label: this.$tc('klaviyo-integration-settings.configs.orderIdentification.orderId'),
+                    label: Shopware.Snippet.tc('klaviyo-integration-settings.configs.orderIdentification.orderId'),
                     value: 'order-id'
                 },
                 {
-                    label: this.$tc('klaviyo-integration-settings.configs.orderIdentification.orderNumber'),
+                    label: Shopware.Snippet.tc('klaviyo-integration-settings.configs.orderIdentification.orderNumber'),
                     value: 'order-number'
                 }
             ]
@@ -105,19 +105,19 @@ Component.register('klaviyo-integration-settings-general', {
         createCookieConsentOptions() {
             return [
                 {
-                    label: this.$tc('klaviyo-integration-settings.configs.cookieConsent.nothingLabel'),
+                    label: Shopware.Snippet.tc('klaviyo-integration-settings.configs.cookieConsent.nothingLabel'),
                     value: 'nothing'
                 },
                 {
-                    label: this.$tc('klaviyo-integration-settings.configs.cookieConsent.shopwareLabel'),
+                    label: Shopware.Snippet.tc('klaviyo-integration-settings.configs.cookieConsent.shopwareLabel'),
                     value: 'shopware'
                 },
                 {
-                    label: this.$tc('klaviyo-integration-settings.configs.cookieConsent.cookieBotLabel'),
+                    label: Shopware.Snippet.tc('klaviyo-integration-settings.configs.cookieConsent.cookieBotLabel'),
                     value: 'cookiebot'
                 },
                 {
-                    label: this.$tc('klaviyo-integration-settings.configs.cookieConsent.consentManagerLabel'),
+                    label: Shopware.Snippet.tc('klaviyo-integration-settings.configs.cookieConsent.consentManagerLabel'),
                     value: 'consentmanager'
                 }
             ]
@@ -129,9 +129,9 @@ Component.register('klaviyo-integration-settings-general', {
             for (let dayPeriodsKey in dayPeriods) {
                 options.push(
                     {
-                        label: this.$tc('klaviyo-integration-settings.configs.oldJobCleanupPeriod.after') + ' ' +
+                        label: Shopware.Snippet.tc('klaviyo-integration-settings.configs.oldJobCleanupPeriod.after') + ' ' +
                             dayPeriods[dayPeriodsKey] + ' ' +
-                            this.$tc('klaviyo-integration-settings.configs.oldJobCleanupPeriod.days'),
+                            Shopware.Snippet.tc('klaviyo-integration-settings.configs.oldJobCleanupPeriod.days'),
                         value: dayPeriods[dayPeriodsKey]
                     }
                 )
@@ -221,7 +221,7 @@ Component.register('klaviyo-integration-settings-general', {
             this.klaviyoApiKeyValidatorService.validate(privateKey, publicKey, listId).then((response) => {
                 if (response.status !== 200) {
                     this.createNotificationError({
-                        message: this.$tc('klaviyo-integration-settings.configs.apiValidation.generalErrorMessage'),
+                        message: Shopware.Snippet.tc('klaviyo-integration-settings.configs.apiValidation.generalErrorMessage'),
                     });
                     return;
                 }
@@ -230,23 +230,23 @@ Component.register('klaviyo-integration-settings-general', {
                 if (data.success) {
                     this.createNotificationSuccess({
                         title: this.$root.$tc('global.default.success'),
-                        message: this.$tc('klaviyo-integration-settings.configs.apiValidation.correctApiMessage'),
+                        message: Shopware.Snippet.tc('klaviyo-integration-settings.configs.apiValidation.correctApiMessage'),
                     });
                 } else if (data.general_error) {
                     this.createNotificationError({
-                        message: this.$tc('klaviyo-integration-settings.configs.apiValidation.generalErrorMessage'),
+                        message: Shopware.Snippet.tc('klaviyo-integration-settings.configs.apiValidation.generalErrorMessage'),
                     });
                     this.storeSelectedListValue(null);
                 } else if (data.incorrect_credentials) {
                     this.createNotificationError({
-                        title: this.$tc('klaviyo-integration-settings.configs.apiValidation.incorrectCredentialsTitle'),
+                        title: Shopware.Snippet.tc('klaviyo-integration-settings.configs.apiValidation.incorrectCredentialsTitle'),
                         message: data.incorrect_credentials_message,
                     });
                     this.storeSelectedListValue(null);
                 }
             }).catch(() => {
                 this.createNotificationError({
-                    message: this.$tc('klaviyo-integration-settings.configs.apiValidation.generalErrorMessage'),
+                    message: Shopware.Snippet.tc('klaviyo-integration-settings.configs.apiValidation.generalErrorMessage'),
                 });
             }).finally(() => {
                 this.apiValidationInProgress = false;
@@ -256,7 +256,7 @@ Component.register('klaviyo-integration-settings-general', {
         credentialsEmptyValidation(key, value) {
             if (value === undefined || value === '' || value === null) {
                 this.createNotificationError({
-                    message: this.$tc('klaviyo-integration-settings.configs.apiValidation.emptyErrorMessage', 0, {entityName: this.$tc('klaviyo-integration-settings.configs.' + key + '.label')}),
+                    message: Shopware.Snippet.tc('klaviyo-integration-settings.configs.apiValidation.emptyErrorMessage', 0, {entityName: Shopware.Snippet.tc('klaviyo-integration-settings.configs.' + key + '.label')}),
                 });
                 return false
             }
