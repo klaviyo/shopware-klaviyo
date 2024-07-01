@@ -1,8 +1,8 @@
 import template from './klaviyo-integration-settings.html.twig';
 import './klaviyo-integration-settings.scss';
 
-const {Component, Defaults} = Shopware;
-const {Criteria} = Shopware.Data;
+const { Component, Mixin, Defaults } = Shopware;
+const { Criteria } = Shopware.Data;
 
 Component.register('klaviyo-integration-settings', {
     template,
@@ -10,10 +10,11 @@ Component.register('klaviyo-integration-settings', {
     inject: [
         'repositoryFactory',
         'klaviyoApiKeyValidatorService',
+        'systemConfigApiService',
     ],
 
     mixins: [
-        'notification',
+        Mixin.getByName('notification')
     ],
 
     data() {
@@ -26,9 +27,9 @@ Component.register('klaviyo-integration-settings', {
             listIdFilled: false,
             messageBlankErrorState: null,
             mappingErrorStates: {},
-            config: null,
+            config: {},
             savedListId: null,
-            salesChannels: []
+            salesChannels: [],
         };
     },
 
@@ -48,7 +49,6 @@ Component.register('klaviyo-integration-settings', {
         },
 
         salesChannelCriteria() {
-            // Limit of 500 is fine according same limits on Shopware's official PayPal plugin.
             const criteria = new Criteria(1, 500);
             criteria.addFilter(Criteria.equalsAny('typeId', [
                 Defaults.storefrontSalesChannelTypeId,
@@ -59,7 +59,7 @@ Component.register('klaviyo-integration-settings', {
         },
 
         privateKeyErrorState() {
-            if (this.privateKeyFilled) {
+            if (!this.privateKeyFilled) {
                 return null;
             }
 
@@ -67,7 +67,7 @@ Component.register('klaviyo-integration-settings', {
         },
 
         publicKeyErrorState() {
-            if (this.publicKeyFilled) {
+            if (!this.publicKeyFilled) {
                 return null;
             }
 
@@ -75,7 +75,7 @@ Component.register('klaviyo-integration-settings', {
         },
 
         listIdErrorState() {
-            if (this.listIdFilled) {
+            if (!this.listIdFilled) {
                 return null;
             }
 
@@ -143,7 +143,7 @@ Component.register('klaviyo-integration-settings', {
 
             this.messageBlankErrorState = {
                 code: 1,
-                detail: this.$tc('klaviyo-integration-settings.configs.credentials.messageNotBlank'),
+                detail: Shopware.Snippet.tc('klaviyo-integration-settings.configs.credentials.messageNotBlank'),
             };
         },
 
@@ -157,7 +157,7 @@ Component.register('klaviyo-integration-settings', {
                 res.add({
                     id: null,
                     translated: {
-                        name: this.$tc('sw-sales-channel-switch.labelDefaultOption'),
+                        name: Shopware.Snippet.tc('sw-sales-channel-switch.labelDefaultOption'),
                     },
                 });
 
@@ -189,6 +189,20 @@ Component.register('klaviyo-integration-settings', {
             }).finally(() => {
                 this.isLoading = false;
             });
+
+/*
+
+            this.isLoading = true;
+            return this.systemConfigApiService.saveValues(this.config, null)
+                .then(() => {
+                    if (this.setDefault) {
+                        return this.SwagPaypalPaymentMethodService.setDefaultPaymentForSalesChannel();
+                    }
+
+                    return Promise.resolve();
+                }).then(() => {
+                    this.isLoading = false;
+                });*/
         },
 
         validateNewsletterListId(newsletterListId) {
@@ -200,7 +214,7 @@ Component.register('klaviyo-integration-settings', {
                 if (!response.data || !response.data.data) {
                     this.isListIdPresent = false;
                     this.createNotificationError({
-                        message: this.$tc('klaviyo-integration-settings.configs.apiValidation.listNotExistMessage'),
+                        message: Shopware.Snippet.tc('klaviyo-integration-settings.configs.apiValidation.listNotExistMessage'),
                     });
                 }
 
@@ -211,7 +225,7 @@ Component.register('klaviyo-integration-settings', {
             }).catch(() => {
                 this.isListIdPresent = false;
                 this.createNotificationError({
-                    message: this.$tc('klaviyo-integration-settings.configs.apiValidation.listNotExistMessage'),
+                    message: Shopware.Snippet.tc('klaviyo-integration-settings.configs.apiValidation.listNotExistMessage'),
                 });
             });
         }
