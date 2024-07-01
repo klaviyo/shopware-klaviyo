@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer;
 
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Search\GetProfileIdResponse;
-use Symfony\Component\Serializer\Normalizer\DenormalizableInterface;
-use Symfony\Component\Serializer\Normalizer\NormalizableInterface;
 
 class GetProfileIdResponseDenormalizer extends AbstractDenormalizer
 {
@@ -42,8 +40,7 @@ class GetProfileIdResponseDenormalizer extends AbstractDenormalizer
     public function getSupportedTypes(?string $format): array
     {
         return [
-            NormalizableInterface::class => true,
-            DenormalizableInterface::class => true,
+            GetProfileIdResponse::class => true,
         ];
     }
 }

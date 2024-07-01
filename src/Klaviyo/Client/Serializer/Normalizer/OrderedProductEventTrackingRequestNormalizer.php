@@ -3,8 +3,6 @@
 namespace Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer;
 
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderedProductEvent\OrderedProductEventTrackingRequest;
-use Symfony\Component\Serializer\Normalizer\DenormalizableInterface;
-use Symfony\Component\Serializer\Normalizer\NormalizableInterface;
 
 class OrderedProductEventTrackingRequestNormalizer extends AbstractNormalizer
 {
@@ -73,8 +71,7 @@ class OrderedProductEventTrackingRequestNormalizer extends AbstractNormalizer
     public function getSupportedTypes(?string $format): array
     {
         return [
-            NormalizableInterface::class => true,
-            DenormalizableInterface::class => true,
+            OrderedProductEventTrackingRequest::class => true,
         ];
     }
 }

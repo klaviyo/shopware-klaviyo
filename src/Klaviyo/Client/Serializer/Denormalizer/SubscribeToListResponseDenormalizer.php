@@ -8,8 +8,6 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\SubscribeCus
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Common\ProfileInfoCollection;
 use Klaviyo\Integration\Klaviyo\Client\Exception\DeserializationException;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
-use Symfony\Component\Serializer\Normalizer\DenormalizableInterface;
-use Symfony\Component\Serializer\Normalizer\NormalizableInterface;
 
 class SubscribeToListResponseDenormalizer extends AbstractDenormalizer
 {
@@ -58,8 +56,7 @@ class SubscribeToListResponseDenormalizer extends AbstractDenormalizer
     public function getSupportedTypes(?string $format): array
     {
         return [
-            NormalizableInterface::class => true,
-            DenormalizableInterface::class => true,
+            SubscribeToListResponse::class => true,
         ];
     }
 }

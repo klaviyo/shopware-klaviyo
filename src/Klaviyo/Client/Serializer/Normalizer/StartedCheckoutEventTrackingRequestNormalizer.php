@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer;
 
 use Klaviyo\Integration\Klaviyo\FrontendApi\DTO\StartedCheckoutEventTrackingRequest;
-use Symfony\Component\Serializer\Normalizer\DenormalizableInterface;
-use Symfony\Component\Serializer\Normalizer\NormalizableInterface;
 
 class StartedCheckoutEventTrackingRequestNormalizer extends AbstractNormalizer
 {
@@ -23,8 +21,7 @@ class StartedCheckoutEventTrackingRequestNormalizer extends AbstractNormalizer
     public function getSupportedTypes(?string $format): array
     {
         return [
-            NormalizableInterface::class => true,
-            DenormalizableInterface::class => true,
+            StartedCheckoutEventTrackingRequest::class => true,
         ];
     }
 }
