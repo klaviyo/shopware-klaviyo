@@ -1,7 +1,7 @@
 {% block job_listing_page %}
     <sw-page class="klaviyo-job-list">
         <template v-slot:content>
-            <od-job-listing-index ref="jobListing"
+            <od-job-listing-index @ref="jobListing"
                                   :filterCriteria="filterCriteria"
                                   @job-display-type-changed="onDisplayModeChange"
                                   :jobTypes="klaviyoJobTypes">

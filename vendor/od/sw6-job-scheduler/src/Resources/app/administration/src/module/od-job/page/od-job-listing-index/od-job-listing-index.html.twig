@@ -3,11 +3,11 @@
     <div class="od-job-listing-actions-bar">
       <div class="action-item">
         {% block od_scheduler_job_view_mode %}
-          <sw-select-field v-model="jobDisplayType" :label="$tc('job-listing.page.listing.index.display-mode')">
+          <sw-select-field v-model:value="jobDisplayType" :label="$tc('job-listing.page.listing.index.display-mode')">
             <option v-for="option in jobDisplayMode" :value="option.value">{{ option.name }}</option>
           </sw-select-field>
 
-          <sw-select-field v-if="jobDisplayType !== 'list'" v-model="sortType" :label="$tc('job-listing.page.listing.index.group-by')">
+          <sw-select-field v-if="jobDisplayType !== 'list'" v-model:value="sortType" :label="$tc('job-listing.page.listing.index.group-by')">
               <option value="status">{{ $tc('job-listing.page.listing.index.status') }}</option>
               <option value="type">{{ $tc('job-listing.page.listing.index.job-type') }}</option>
           </sw-select-field>
@@ -15,13 +15,13 @@
           <sw-datepicker
             :label="$tc('job-listing.page.listing.index.date-from')"
             v-if="jobDisplayType == 'grouped'"
-            v-model="groupCreationDate.fromDate"
+            v-model:value="groupCreationDate.fromDate"
           />
 
           <sw-datepicker
             :label="$tc('job-listing.page.listing.index.date-to')"
             v-if="jobDisplayType == 'grouped'"
-            v-model="groupCreationDate.toDate"
+            v-model:value="groupCreationDate.toDate"
           />
 
         {% endblock %}
@@ -96,17 +96,17 @@
         </template>
         <template #column-startedAt="{ item }">
           {% block od_job_list_grid_job_started_date %}
-            {{ item.startedAt|date() }}
+            {{ formatDate(item.startedAt) }}
           {% endblock %}
         </template>
         <template #column-finishedAt="{ item }">
           {% block od_job_list_grid_job_finished_date %}
-            {{ item.finishedAt|date() }}
+            {{ formatDate(item.finishedAt) }}
           {% endblock %}
         </template>
         <template #column-createdAt="{ item }">
           {% block od_job_list_grid_job_created_date %}
-            {{ item.createdAt|date() }}
+            {{ formatDate(item.createdAt) }}
           {% endblock %}
         </template>
         <template class="sub-jobs-column" #column-subJobs="{ item }">
