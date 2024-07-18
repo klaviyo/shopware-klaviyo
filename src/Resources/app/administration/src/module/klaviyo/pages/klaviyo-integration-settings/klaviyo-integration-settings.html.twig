@@ -17,12 +17,14 @@
                 {% endblock %}
 
                 {% block klaviyo_integration_settings_actions_save %}
-                    <sw-button-process v-model="isSaveSuccessful"
-                                       class="klaviyo-integration-settings-save"
-                                       variant="primary"
-                                       :isLoading="isLoading"
-                                       :disabled="isLoading || hasError"
-                                       @click="onSave">
+                    <sw-button-process
+                             v-model:value="isSaveSuccessful"
+                               :process-success="isSaveSuccessful"
+                               class="klaviyo-integration-settings-save"
+                               variant="primary"
+                               :is-loading="isLoading"
+                               :disabled="isLoading || hasError"
+                               @click="onSave">
                         {{ $tc('global.default.save') }}
                     </sw-button-process>
                 {% endblock %}
@@ -34,7 +36,7 @@
 
 
                 {% block klaviyo_integration_settings_content_sales_channel_config %}
-                    <sw-sales-channel-config v-model="config"
+                    <sw-sales-channel-config v-model:value="config"
                                              ref="configComponent"
                                              domain="klavi_overd.config">
                         {% block klaviyo_integration_settings_content_sales_channel_config_channel %}

@@ -1,8 +1,8 @@
 import template from './klaviyo-integration-settings.html.twig';
 import './klaviyo-integration-settings.scss';
 
-const {Component, Defaults} = Shopware;
-const {Criteria} = Shopware.Data;
+const { Component, Mixin, Defaults } = Shopware;
+const { Criteria } = Shopware.Data;
 
 Component.register('klaviyo-integration-settings', {
     template,
@@ -10,10 +10,11 @@ Component.register('klaviyo-integration-settings', {
     inject: [
         'repositoryFactory',
         'klaviyoApiKeyValidatorService',
+        'systemConfigApiService',
     ],
 
     mixins: [
-        'notification',
+        Mixin.getByName('notification')
     ],
 
     data() {
@@ -48,7 +49,6 @@ Component.register('klaviyo-integration-settings', {
         },
 
         salesChannelCriteria() {
-            // Limit of 500 is fine according same limits on Shopware's official PayPal plugin.
             const criteria = new Criteria(1, 500);
             criteria.addFilter(Criteria.equalsAny('typeId', [
                 Defaults.storefrontSalesChannelTypeId,
@@ -143,12 +143,8 @@ Component.register('klaviyo-integration-settings', {
 
             this.messageBlankErrorState = {
                 code: 1,
-                detail: this.$tc('klaviyo-integration-settings.configs.credentials.messageNotBlank'),
+                detail: Shopware.Snippet.tc('klaviyo-integration-settings.configs.credentials.messageNotBlank'),
             };
-        },
-
-        onChangeLanguage() {
-            this.getSalesChannels();
         },
 
         getSalesChannels() {
@@ -157,7 +153,7 @@ Component.register('klaviyo-integration-settings', {
                 res.add({
                     id: null,
                     translated: {
-                        name: this.$tc('sw-sales-channel-switch.labelDefaultOption'),
+                        name: Shopware.Snippet.tc('sw-sales-channel-switch.labelDefaultOption'),
                     },
                 });
 
@@ -167,21 +163,22 @@ Component.register('klaviyo-integration-settings', {
             });
         },
 
-        onSave() {
+        async onSave() {
             if (this.hasError) {
                 return;
             }
 
             this.isLoading = true;
-
             const newsletterListId = this.config['klavi_overd.config.klaviyoListForSubscribersSync'];
 
             if (newsletterListId) {
-               if (!this.isListIdPresent) {
+                await this.validateNewsletterListId(newsletterListId);
+
+                if (!this.isListIdPresent) {
                    this.isLoading = false;
                    this.isSaveSuccessful = false;
                    return;
-               }
+                }
             }
 
             this.$refs.configComponent.save().then(() => {
@@ -191,29 +188,28 @@ Component.register('klaviyo-integration-settings', {
             });
         },
 
-        validateNewsletterListId(newsletterListId) {
+        async validateNewsletterListId(newsletterListId) {
             const privateKey = this.config['klavi_overd.config.privateApiKey'];
             const publicKey = this.config['klavi_overd.config.publicApiKey'];
             this.isListIdPresent = false;
 
-            this.klaviyoApiKeyValidatorService.validateListById(privateKey, publicKey, newsletterListId).then((response) => {
+            try {
+                const response = await this.klaviyoApiKeyValidatorService.validateListById(privateKey, publicKey, newsletterListId);
+
                 if (!response.data || !response.data.data) {
                     this.isListIdPresent = false;
                     this.createNotificationError({
-                        message: this.$tc('klaviyo-integration-settings.configs.apiValidation.listNotExistMessage'),
+                        message: Shopware.Snippet.tc('klaviyo-integration-settings.configs.apiValidation.listNotExistMessage'),
                     });
-                }
-
-                if (response.data && response.data.data && response.data.data[0].value === newsletterListId) {
+                } else if (response.data.data[0].value === newsletterListId) {
                     this.isListIdPresent = true;
                 }
-
-            }).catch(() => {
+            } catch (error) {
                 this.isListIdPresent = false;
                 this.createNotificationError({
-                    message: this.$tc('klaviyo-integration-settings.configs.apiValidation.listNotExistMessage'),
+                    message: Shopware.Snippet.tc('klaviyo-integration-settings.configs.apiValidation.listNotExistMessage'),
                 });
-            });
+            }
         }
     }
 });

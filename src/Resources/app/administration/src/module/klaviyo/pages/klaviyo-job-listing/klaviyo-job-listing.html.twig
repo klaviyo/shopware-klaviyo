@@ -1,6 +1,6 @@
 {% block job_listing_page %}
     <sw-page class="klaviyo-job-list">
-        <template slot="content">
+        <template v-slot:content>
             <od-job-listing-index ref="jobListing"
                                   :filterCriteria="filterCriteria"
                                   @job-display-type-changed="onDisplayModeChange"
@@ -13,11 +13,13 @@
                     <sw-sidebar-item
                             icon="regular-undo"
                             :title="$tc('sw-product.list.titleSidebarItemRefresh')"
-                            @click="onRefresh"></sw-sidebar-item>
+                            @click="onRefresh">
+                    </sw-sidebar-item>
                 {% endblock %}
 
                 {% block od_klaviyo_jobs_list_sidebar_filters %}
-                    <sw-sidebar-filter-panel ref="odFilter"
+                    <sw-sidebar-filter-panel
+                            ref="odFilter"
                             :hidden="hideFilters"
                             entity="od_scheduler_job"
                             :store-key="storeKey"
