@@ -4,8 +4,6 @@ namespace Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer;
 
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\AddMembersToList\AddProfilesToListRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Common\ProfileContactInfo;
-use Symfony\Component\Serializer\Normalizer\DenormalizableInterface;
-use Symfony\Component\Serializer\Normalizer\NormalizableInterface;
 
 class AddProfilesToListRequestsNormalizer extends AbstractNormalizer
 {
@@ -48,8 +46,7 @@ class AddProfilesToListRequestsNormalizer extends AbstractNormalizer
     public function getSupportedTypes(?string $format): array
     {
         return [
-            NormalizableInterface::class => true,
-            DenormalizableInterface::class => true,
+            AddProfilesToListRequest::class => true,
         ];
     }
 }

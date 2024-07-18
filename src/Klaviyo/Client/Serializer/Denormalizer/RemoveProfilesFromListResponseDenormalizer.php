@@ -44,8 +44,7 @@ class RemoveProfilesFromListResponseDenormalizer extends AbstractDenormalizer
     public function getSupportedTypes(?string $format): array
     {
         return [
-            NormalizableInterface::class => true,
-            DenormalizableInterface::class => true,
+            RemoveProfilesFromListResponse::class => true,
         ];
     }
 }

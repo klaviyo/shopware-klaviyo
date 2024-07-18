@@ -4,8 +4,6 @@ namespace Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer;
 
 use Klaviyo\Integration\Utils\Collection\TypedCollection;
 use Klaviyo\Integration\Utils\Reflection\ReflectionHelper;
-use Symfony\Component\Serializer\Normalizer\DenormalizableInterface;
-use Symfony\Component\Serializer\Normalizer\NormalizableInterface;
 
 class CollectionDenormalizer extends AbstractDenormalizer
 {
@@ -38,8 +36,7 @@ class CollectionDenormalizer extends AbstractDenormalizer
     public function getSupportedTypes(?string $format): array
     {
         return [
-            NormalizableInterface::class => true,
-            DenormalizableInterface::class => true,
+            TypedCollection::class => true,
         ];
     }
 }

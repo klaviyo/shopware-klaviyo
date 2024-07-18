@@ -6,8 +6,6 @@ namespace Klaviyo\Integration\Klaviyo\Client\Serializer\Denormalizer;
 
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribers\Response;
 use Klaviyo\Integration\Klaviyo\Client\Exception\DeserializationException;
-use Symfony\Component\Serializer\Normalizer\DenormalizableInterface;
-use Symfony\Component\Serializer\Normalizer\NormalizableInterface;
 
 class GetExcludedSubscribersResponseDenormalizer extends AbstractDenormalizer
 {
@@ -74,8 +72,7 @@ class GetExcludedSubscribersResponseDenormalizer extends AbstractDenormalizer
     public function getSupportedTypes(?string $format): array
     {
         return [
-            NormalizableInterface::class => true,
-            DenormalizableInterface::class => true,
+            Response::class => true,
         ];
     }
 }

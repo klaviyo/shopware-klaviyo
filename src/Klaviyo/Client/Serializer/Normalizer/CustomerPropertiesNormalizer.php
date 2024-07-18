@@ -3,8 +3,6 @@
 namespace Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer;
 
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\Common\CustomerProperties;
-use Symfony\Component\Serializer\Normalizer\DenormalizableInterface;
-use Symfony\Component\Serializer\Normalizer\NormalizableInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class CustomerPropertiesNormalizer implements NormalizerInterface
@@ -56,8 +54,7 @@ class CustomerPropertiesNormalizer implements NormalizerInterface
     public function getSupportedTypes(?string $format): array
     {
         return [
-            NormalizableInterface::class => true,
-            DenormalizableInterface::class => true,
+            CustomerProperties::class => true,
         ];
     }
 }
