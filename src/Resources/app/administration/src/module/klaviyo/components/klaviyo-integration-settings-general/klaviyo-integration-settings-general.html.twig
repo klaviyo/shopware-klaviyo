@@ -33,7 +33,7 @@
                                      :disabled="props.isInherited"
                                      :modelValue="props.currentValue"
                                      :helpText="$tc('klaviyo-integration-settings.general.initialization.helpText')"
-                                     @change="props.updateCurrentValue">
+                                     @update:value="props.updateCurrentValue">
                     </sw-switch-field>
                 </template>
             </sw-inherit-wrapper>
@@ -160,7 +160,7 @@
                                          :helpText="$tc('klaviyo-integration-settings.configs.trackDeletedAccountOrders.helpText')"
                                          :disabled="props.isInherited"
                                          :modelValue="props.currentValue"
-                                         @change="props.updateCurrentValue">
+                                         @update:value="props.updateCurrentValue">
                         </sw-switch-field>
                     </template>
                 </sw-inherit-wrapper>
@@ -177,7 +177,7 @@
                                          :helpText="$tc('klaviyo-integration-settings.configs.trackViewedProduct.helpText')"
                                          :disabled="props.isInherited"
                                          :modelValue="props.currentValue"
-                                         @change="props.updateCurrentValue">
+                                         @update:value="props.updateCurrentValue">
                         </sw-switch-field>
                     </template>
                 </sw-inherit-wrapper>
@@ -448,10 +448,13 @@
                         <sw-datepicker
                                 :map-inheritance="props"
                                 :modelValue="props.currentValue"
+                                dateType="time"
+                                dateFormat="H:i"
+                                :time="true"
                                 :disabled="props.isInherited"
                                 :label="$tc('klaviyo-integration-settings.configs.timeDailySynchronization.label')"
                                 :help-text="$tc('klaviyo-integration-settings.configs.timeDailySynchronization.helpText')"
-                                @update:modelValue="props.updateCurrentValue">
+                                @update:value="props.updateCurrentValue">
                         </sw-datepicker>
                     </template>
                 </sw-inherit-wrapper>
@@ -468,7 +471,7 @@
                             :help-text="$tc('klaviyo-integration-settings.configs.oldJobCleanup.helpText')"
                             :disabled="props.isInherited"
                             :modelValue="props.currentValue"
-                            @change="props.updateCurrentValue">
+                            @update:value="props.updateCurrentValue">
                         </sw-switch-field>
                     </template>
                 </sw-inherit-wrapper>
@@ -487,7 +490,7 @@
                                           :disabled="props.isInherited"
                                           show-clearable-button
                                           :modelValue="props.currentValue"
-                                          @update:modelValue="props.updateCurrentValue">
+                                          @update:value="props.updateCurrentValue">
                         </sw-single-select>
                     </template>
                 </sw-inherit-wrapper>
@@ -511,7 +514,7 @@
                                         :modelValue="props.currentValue"
                                         :disabled="props.isInherited"
                                         name="klavi_overd.config.popUpOpenBtnColor"
-                                        @update:modelValue="props.updateCurrentValue">
+                                        @update:value="props.updateCurrentValue">
                                 </sw-colorpicker>
                             </template>
                         </sw-inherit-wrapper>
@@ -528,7 +531,7 @@
                                         :modelValue="props.currentValue"
                                         :disabled="props.isInherited"
                                         name="klavi_overd.config.popUpOpenBtnBgColor"
-                                        @update:modelValue="props.updateCurrentValue">
+                                        @update:value="props.updateCurrentValue">
                                 </sw-colorpicker>
                             </template>
                         </sw-inherit-wrapper>
@@ -551,7 +554,7 @@
                                         :modelValue="props.currentValue"
                                         :disabled="props.isInherited"
                                         name="klavi_overd.config.popUpCloseBtnColor"
-                                        @update:modelValue="props.updateCurrentValue">
+                                        @update:value="props.updateCurrentValue">
                                 </sw-colorpicker>
                             </template>
                         </sw-inherit-wrapper>
@@ -568,7 +571,7 @@
                                         :modelValue="props.currentValue"
                                         :disabled="props.isInherited"
                                         name="klavi_overd.config.popUpCloseBtnBgColor"
-                                        @update:modelValue="props.updateCurrentValue">
+                                        @update:value="props.updateCurrentValue">
                                 </sw-colorpicker>
                             </template>
                         </sw-inherit-wrapper>
@@ -591,7 +594,7 @@
                                         :modelValue="props.currentValue"
                                         :disabled="props.isInherited"
                                         name="klavi_overd.config.subscribeBtnColor"
-                                        @update:modelValue="props.updateCurrentValue">
+                                        @update:value="props.updateCurrentValue">
                                 </sw-colorpicker>
                             </template>
                         </sw-inherit-wrapper>
@@ -609,7 +612,7 @@
                                         :modelValue="props.currentValue"
                                         :disabled="props.isInherited"
                                         name="klavi_overd.config.subscribeBtnBgColor"
-                                        @update:modelValue="props.updateCurrentValue">
+                                        @update:value="props.updateCurrentValue">
                                 </sw-colorpicker>
                             </template>
                         </sw-inherit-wrapper>
@@ -699,7 +702,7 @@
                                         :value="props.currentValue"
                                         :disabled="props.isInherited"
                                         name="klavi_overd.config.popUpAdditionalClasses"
-                                        @update:modelValue="props.updateCurrentValue">
+                                        @update:value="props.updateCurrentValue">
                                 </sw-text-field>
                             </template>
                         </sw-inherit-wrapper>
