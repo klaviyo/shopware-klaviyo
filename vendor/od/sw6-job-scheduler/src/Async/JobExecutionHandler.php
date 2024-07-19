@@ -2,7 +2,6 @@
 
 namespace Od\Scheduler\Async;
 
-use Od\Scheduler\Async\JobMessageInterface;
 use Od\Scheduler\Model\Job\JobRunner;
 use Psr\Log\LoggerInterface;
 

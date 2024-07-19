@@ -29,17 +29,17 @@
 
                     <template #column-startedAt="{ item }">
                         {% block job_list_grid_job_started_at %}
-                            {{ item.startedAt|date() }}
+                            <sw-time-ago :date="item.startedAt" />
                         {% endblock %}
                     </template>
                     <template #column-finishedAt="{ item }">
                         {% block job_list_grid_job_finished_at %}
-                            {{ item.finishedAt|date() }}
+                            <sw-time-ago :date="item.finishedAt" />
                         {% endblock %}
                     </template>
                     <template #column-createdAt="{ item }">
                         {% block job_list_grid_job_created_at %}
-                            {{ item.createdAt|date() }}
+                            <sw-time-ago :date="item.createdAt" />
                         {% endblock %}
                     </template>
                     <template #column-messages="{ item }">
@@ -100,27 +100,27 @@
                 <div v-if="currentJobMessages" class="job_list_grid_job_messages-information" style="width:100%;">
                     <div class="messages-content" v-for="item in currentJobMessages">
                         <sw-alert class="od-alert"
-                                v-if="item.type == 'info-message'"
-                                variant="info"
-                                appearance="default"
-                                :showIcon="true"
-                                :closable="false">
+                                  v-if="item.type == 'info-message'"
+                                  variant="info"
+                                  appearance="default"
+                                  :showIcon="true"
+                                  :closable="false">
                             {{ item.message }}
                         </sw-alert>
                         <sw-alert class="od-alert"
-                                v-if="item.type == 'error-message'"
-                                variant="error"
-                                appearance="default"
-                                :showIcon="true"
-                                :closable="false">
+                                  v-if="item.type == 'error-message'"
+                                  variant="error"
+                                  appearance="default"
+                                  :showIcon="true"
+                                  :closable="false">
                             {{ item.message }}
                         </sw-alert>
                         <sw-alert class="od-alert"
-                                v-if="item.type == 'warning-message'"
-                                variant="warning"
-                                appearance="default"
-                                :showIcon="true"
-                                :closable="false">
+                                  v-if="item.type == 'warning-message'"
+                                  variant="warning"
+                                  appearance="default"
+                                  :showIcon="true"
+                                  :closable="false">
                             {{ item.message }}
                         </sw-alert>
                     </div>

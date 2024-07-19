@@ -31,17 +31,17 @@
                         </template>
                         <template #column-startedAt="{ item }">
                             {% block od_job_list_grid_job_started_date %}
-                                {{ item.startedAt|date() }}
+                                <sw-time-ago :date="item.startedAt" />
                             {% endblock %}
                         </template>
                         <template #column-finishedAt="{ item }">
                             {% block od_job_list_grid_job_finished_date %}
-                                {{ item.finishedAt|date() }}
+                                <sw-time-ago :date="item.finishedAt" />
                             {% endblock %}
                         </template>
                         <template #column-createdAt="{ item }">
                             {% block od_job_list_grid_job_created_date %}
-                                {{ item.createdAt|date() }}
+                                <sw-time-ago :date="item.createdAt" />
                             {% endblock %}
                         </template>
                         <template class="sub-jobs-column" #column-subJobs="{ item }">

@@ -1,256 +1,258 @@
 {% block od_entity_listing_base %}
-  <div class="od-entity-listing-wrapper">
-    <div class="od-job-listing-actions-bar">
-      <div class="action-item">
-        {% block od_scheduler_job_view_mode %}
-          <sw-select-field v-model="jobDisplayType" :label="$tc('job-listing.page.listing.index.display-mode')">
-            <option v-for="option in jobDisplayMode" :value="option.value">{{ option.name }}</option>
-          </sw-select-field>
+    <div class="od-entity-listing-wrapper">
+        <div class="od-job-listing-actions-bar">
+            <div class="action-item">
+                {% block od_scheduler_job_view_mode %}
+                    <sw-select-field v-model:value="jobDisplayType" :label="$tc('job-listing.page.listing.index.display-mode')">
+                        <option v-for="option in jobDisplayMode" :value="option.value">{{ option.name }}</option>
+                    </sw-select-field>
 
-          <sw-select-field v-if="jobDisplayType !== 'list'" v-model="sortType" :label="$tc('job-listing.page.listing.index.group-by')">
-              <option value="status">{{ $tc('job-listing.page.listing.index.status') }}</option>
-              <option value="type">{{ $tc('job-listing.page.listing.index.job-type') }}</option>
-          </sw-select-field>
+                    <sw-select-field v-if="jobDisplayType !== 'list'" v-model:value="sortType" :label="$tc('job-listing.page.listing.index.group-by')">
+                        <option value="status">{{ $tc('job-listing.page.listing.index.status') }}</option>
+                        <option value="type">{{ $tc('job-listing.page.listing.index.job-type') }}</option>
+                    </sw-select-field>
 
-          <sw-datepicker
-            :label="$tc('job-listing.page.listing.index.date-from')"
-            v-if="jobDisplayType == 'grouped'"
-            v-model="groupCreationDate.fromDate"
-          />
+                    <sw-datepicker
+                            :label="$tc('job-listing.page.listing.index.date-from')"
+                            v-if="jobDisplayType == 'grouped'"
+                            v-model:value="groupCreationDate.fromDate"
+                    />
 
-          <sw-datepicker
-            :label="$tc('job-listing.page.listing.index.date-to')"
-            v-if="jobDisplayType == 'grouped'"
-            v-model="groupCreationDate.toDate"
-          />
+                    <sw-datepicker
+                            :label="$tc('job-listing.page.listing.index.date-to')"
+                            v-if="jobDisplayType == 'grouped'"
+                            v-model:value="groupCreationDate.toDate"
+                    />
 
+                {% endblock %}
+            </div>
+            <div class="cation-item">
+                {% block od_scheduler_job_auto_load_switcher %}
+                    <sw-switch-field class="job-listing-auto-loading-switch" v-model="autoLoadIsActive"
+                                     :label="$tc('job-listing.page.listing.index.auto-load')">
+                    </sw-switch-field>
+                {% endblock %}
+            </div>
+        </div>
+
+        <sw-container v-if="!jobItems" columns="1fr 1fr">
+            <sw-loader size="50px">
+            </sw-loader>
+        </sw-container>
+
+        {% block od_job_charts %}
+            <od-scheduler-charts ref="jobCharts"
+                                 v-if="jobDisplayType === 'chart'"
+                                 :jobTypes="jobTypes"
+                                 :sortType="sortType">
+            </od-scheduler-charts>
         {% endblock %}
-      </div>
-      <div class="cation-item">
-        {% block od_scheduler_job_auto_load_switcher %}
-          <sw-switch-field class="job-listing-auto-loading-switch" v-model="autoLoadIsActive"
-                           :label="$tc('job-listing.page.listing.index.auto-load')"></sw-switch-field>
+
+        {% block od_job_grouped_component %}
+
+            <od-grouped-view v-if="jobDisplayType === 'grouped'"
+                             ref="jobGroups"
+                             :groupCreationDate="groupCreationDate"
+                             :jobTypes="jobTypes"
+                             :sortType="sortType">
+            </od-grouped-view>
         {% endblock %}
-      </div>
-    </div>
-      
-    <sw-container v-if="!jobItems" columns="1fr 1fr">
-        <sw-loader size="50px">
-        </sw-loader>
-    </sw-container>
 
-    {% block od_job_charts %}
-      <od-scheduler-charts ref="jobCharts"
-                           v-if="jobDisplayType === 'chart'"
-                           :jobTypes="jobTypes"
-                           :sortType="sortType"></od-scheduler-charts>
-    {% endblock %}
-
-    {% block od_job_grouped_component %}
-
-      <od-grouped-view v-if="jobDisplayType === 'grouped'"
-                       ref="jobGroups"
-                       :groupCreationDate="groupCreationDate"
-                       :jobTypes="jobTypes"
-                       :sortType="sortType">
-      </od-grouped-view>
-    {% endblock %}
-
-    {% block od_job_list_grid %}
-      <od-entity-listing
-              v-if="jobItems && jobDisplayType === 'list'"
-              :items="jobItems"
-              :repository="jobRepository"
-              :sort-by="currentSortBy"
-              :sort-direction="sortDirection"
-              :is-loading="isLoading"
-              :showSelection="true"
-              :allowColumnEdit="false"
-              :allowDelete="true"
-              :criteriaLimit="25"
-              :limit="25"
-              :allowEdit="false"
-              :jobTypes="jobTypes"
-              :isGroupedView="isGroupedView"
-              @page-change="pageChange"
-              :columns="columns">
-            {% block sw_data_grid_slot_pagination %}
-                <sw-pagination
-                    v-bind="{ page, limit, total }"
-                    :total-visible="6"
-                    @page-change="paginate"
-                />
-            {% endblock %}
-        <template #column-status="{ item }">
-          {% block od_job_list_grid_job_status_link %}
-            <template>
-              <od-job-status-badge :status="item.status"></od-job-status-badge>
-              {{ $tc('job-listing.page.listing.grid.job-status.' + item.status) }}
-            </template>
-          {% endblock %}
-        </template>
-        <template #column-name="{ item }">
-          {% block od_job_list_grid_job_name_link %}
-            {{ item.name }}
-          {% endblock %}
-        </template>
-        <template #column-startedAt="{ item }">
-          {% block od_job_list_grid_job_started_date %}
-            {{ item.startedAt|date() }}
-          {% endblock %}
-        </template>
-        <template #column-finishedAt="{ item }">
-          {% block od_job_list_grid_job_finished_date %}
-            {{ item.finishedAt|date() }}
-          {% endblock %}
-        </template>
-        <template #column-createdAt="{ item }">
-          {% block od_job_list_grid_job_created_date %}
-            {{ item.createdAt|date() }}
-          {% endblock %}
-        </template>
-        <template class="sub-jobs-column" #column-subJobs="{ item }">
-          {% block od_job_list_grid_job_sub_jobs %}
-            <div :class="item.subJobs.length > 0 ? 'has-subjobs' : ''"
-                 class="sub-jobs-counters-container jobs-info-counter">
-              <div class="count-container" v-if="item.subJobs">
+        {% block od_job_list_grid %}
+            <od-entity-listing
+                    v-if="jobItems && jobDisplayType === 'list'"
+                    :items="jobItems"
+                    :repository="jobRepository"
+                    :sort-by="currentSortBy"
+                    :sort-direction="sortDirection"
+                    :is-loading="isLoading"
+                    :showSelection="true"
+                    :allowColumnEdit="false"
+                    :allowDelete="true"
+                    :criteriaLimit="25"
+                    :limit="25"
+                    :allowEdit="false"
+                    :jobTypes="jobTypes"
+                    :isGroupedView="isGroupedView"
+                    @page-change="pageChange"
+                    :columns="columns">
+                {% block sw_data_grid_slot_pagination %}
+                    <sw-pagination
+                            v-bind="{ page, limit, total }"
+                            :total-visible="6"
+                            @page-change="paginate"
+                    />
+                {% endblock %}
+                <template #column-status="{ item }">
+                    {% block od_job_list_grid_job_status_link %}
+                        <template>
+                            <od-job-status-badge :status="item.status"></od-job-status-badge>
+                            {{ $tc('job-listing.page.listing.grid.job-status.' + item.status) }}
+                        </template>
+                    {% endblock %}
+                </template>
+                <template #column-name="{ item }">
+                    {% block od_job_list_grid_job_name_link %}
+                        {{ item.name }}
+                    {% endblock %}
+                </template>
+                <template #column-startedAt="{ item }">
+                    {% block od_job_list_grid_job_started_date %}
+                        <sw-time-ago :date="item.startedAt" />
+                    {% endblock %}
+                </template>
+                <template #column-finishedAt="{ item }">
+                    {% block od_job_list_grid_job_finished_date %}
+                        <sw-time-ago :date="item.finishedAt" />
+                    {% endblock %}
+                </template>
+                <template #column-createdAt="{ item }">
+                    {% block od_job_list_grid_job_created_date %}
+                        <sw-time-ago :date="item.createdAt" />
+                    {% endblock %}
+                </template>
+                <template class="sub-jobs-column" #column-subJobs="{ item }">
+                    {% block od_job_list_grid_job_sub_jobs %}
+                        <div :class="item.subJobs.length > 0 ? 'has-subjobs' : ''"
+                             class="sub-jobs-counters-container jobs-info-counter">
+                            <div class="count-container" v-if="item.subJobs">
                             <span class="info-container">
                                 <span class="count" v-html="getChildrenCount(item, 'succeed')"></span>
                             </span>
-                <od-job-status-badge status="succeed"></od-job-status-badge>
-              </div>
+                                <od-job-status-badge status="succeed"></od-job-status-badge>
+                            </div>
 
-              <div class="count-container" v-if="item.subJobs">
+                            <div class="count-container" v-if="item.subJobs">
                             <span class="warning-container">
                                 <span class="count" v-html="getChildrenCount(item, 'pending')"></span>
                             </span>
-                <od-job-status-badge status="pending"></od-job-status-badge>
-              </div>
+                                <od-job-status-badge status="pending"></od-job-status-badge>
+                            </div>
 
-              <div class="count-container" v-if="item.subJobs">
+                            <div class="count-container" v-if="item.subJobs">
                             <span class="error-counter">
                                 <span class="count" v-html="getChildrenCount(item, 'error')"></span>
                             </span>
-                <od-job-status-badge status="error"></od-job-status-badge>
-              </div>
-            </div>
-          {% endblock %}
-          <sw-button v-if="item.subJobs.length > 0"
-                     class="sub-job-show-modal"
-                     size="small"
-                     variant="primary"
-                     :disabled="item.subJobs.length <= 0"
-                     @click="showSubJobs(item.id)">
-            <sw-icon name="regular-cog" color="#fff" :small="true" :decorative="true"></sw-icon>
-              {{ $tc('job-listing.page.listing.index.show-sub-jobs') }}
-          </sw-button>
-        </template>
-        <template #column-messages="{ item }">
-          {% block od_job_list_grid_job_messages %}
-            <div :class="item.messages.length > 0 ? 'has-messages' : ''"
-                 class="message-counters-container jobs-info-counter">
-              <div class="count-container" v-if="item.messages">
+                                <od-job-status-badge status="error"></od-job-status-badge>
+                            </div>
+                        </div>
+                    {% endblock %}
+                    <sw-button v-if="item.subJobs.length > 0"
+                               class="sub-job-show-modal"
+                               size="small"
+                               variant="primary"
+                               :disabled="item.subJobs.length <= 0"
+                               @click="showSubJobs(item.id)">
+                        <sw-icon name="regular-cog" color="#fff" :small="true" :decorative="true"></sw-icon>
+                        {{ $tc('job-listing.page.listing.index.show-sub-jobs') }}
+                    </sw-button>
+                </template>
+                <template #column-messages="{ item }">
+                    {% block od_job_list_grid_job_messages %}
+                        <div :class="item.messages.length > 0 ? 'has-messages' : ''"
+                             class="message-counters-container jobs-info-counter">
+                            <div class="count-container" v-if="item.messages">
                             <span class="info-counter">
                                 <span class="count" v-html="getMessagesCount(item, 'info')"></span>
                             </span>
-                <sw-icon :small="true" name="regular-info-circle" color="#3498db"></sw-icon>
-              </div>
+                                <sw-icon :small="true" name="regular-info-circle" color="#3498db"></sw-icon>
+                            </div>
 
-              <div class="count-container" v-if="item.messages">
+                            <div class="count-container" v-if="item.messages">
                             <span class="warning-counter">
                                 <span class="count" v-html="getMessagesCount(item, 'warning')"></span>
                             </span>
-                <sw-icon :small="true" name="regular-exclamation-triangle" color="#f39c12"></sw-icon>
-              </div>
+                                <sw-icon :small="true" name="regular-exclamation-triangle" color="#f39c12"></sw-icon>
+                            </div>
 
-              <div class="count-container" v-if="item.messages">
+                            <div class="count-container" v-if="item.messages">
                             <span class="error-counter">
                                 <span class="count" v-html="getMessagesCount(item, 'error')"></span>
                             </span>
-                <sw-icon :small="true" name="regular-times-hexagon" color="#c0392b"></sw-icon>
-              </div>
-            </div>
-            <sw-button v-if="item.messages.length > 0"
-                       class="job-messages-show-modal"
-                       size="small"
-                       variant="primary"
-                       :disabled="item.messages.length <= 0"
-                       @click="showJobMessages(item)">
-              <sw-icon name="regular-envelope" color="#fff" :small="true" :decorative="true"></sw-icon>
-                {{ $tc('job-listing.page.listing.index.show-job-messages') }}
-            </sw-button>
-          {% endblock %}
-        </template>
-        <template #actions="{ item }">
-          <sw-context-menu-item :disabled="item.status !== 'error'"
-                                @click="rescheduleJob(item.id)">
-            {{ $tc('job-listing.actions.reschedule-job.button.label') }}
-          </sw-context-menu-item>
-          <sw-context-menu-item class="sw-context-menu-item--danger"
-                                :disabled="!canDelete(item)"
-                                @click="onDeleteJob(item.id)">
-            {{ $tc('job-listing.actions.delete-job.button.label') }}
-          </sw-context-menu-item>
-        </template>
-      </od-entity-listing>
-    {% endblock %}
-
-    {% block od_entity_listing_job_subs_modal %}
-      <sw-modal class="od-job-sub-jobs-modal" v-if="showJobSubsModal" :title="$tc('job-listing.page.listing.grid.column.child-jobs')"
-                @modal-close="showJobSubsModal = false">
-        <od-job-sub-jobs v-if="currentJobID" :jobId="currentJobID">
-
-        </od-job-sub-jobs>
-        <template #modal-footer>
-          <sw-button variant="primary"
-                     @click="showJobSubsModal = false">
-              {{ $tc('job-listing.page.listing.index.close') }}
-          </sw-button>
-        </template>
-      </sw-modal>
-    {% endblock %}
-
-    {% block od_entity_listing_job_messages_modal %}
-      <sw-modal class="od-job-messages-modal" v-if="showMessagesModal"
-                :title="$tc('job-listing.page.listing.grid.column.messages')"
-                @modal-close="showMessagesModal = false">
-        {% block job_messages_listing %}
-          <div v-if="currentJobMessages" class="job_list_grid_job_messages-information" style="width:100%;">
-            <div class="messages-content" v-for="item in currentJobMessages">
-              <sw-alert class="od-alert"
-                        v-if="item.type == 'info-message'"
-                        variant="info"
-                        appearance="default"
-                        :showIcon="true"
-                        :closable="false">
-                {{ item.message }}
-              </sw-alert>
-              <sw-alert class="od-alert"
-                        v-if="item.type == 'error-message'"
-                        variant="error"
-                        appearance="default"
-                        :showIcon="true"
-                        :closable="false">
-                {{ item.message }}
-              </sw-alert>
-              <sw-alert class="od-alert"
-                        v-if="item.type == 'warning-message'"
-                        variant="warning"
-                        appearance="default"
-                        :showIcon="true"
-                        :closable="false">
-                {{ item.message }}
-              </sw-alert>
-            </div>
-          </div>
+                                <sw-icon :small="true" name="regular-times-hexagon" color="#c0392b"></sw-icon>
+                            </div>
+                        </div>
+                        <sw-button v-if="item.messages.length > 0"
+                                   class="job-messages-show-modal"
+                                   size="small"
+                                   variant="primary"
+                                   :disabled="item.messages.length <= 0"
+                                   @click="showJobMessages(item)">
+                            <sw-icon name="regular-envelope" color="#fff" :small="true" :decorative="true"></sw-icon>
+                            {{ $tc('job-listing.page.listing.index.show-job-messages') }}
+                        </sw-button>
+                    {% endblock %}
+                </template>
+                <template #actions="{ item }">
+                    <sw-context-menu-item :disabled="item.status !== 'error'"
+                                          @click="rescheduleJob(item.id)">
+                        {{ $tc('job-listing.actions.reschedule-job.button.label') }}
+                    </sw-context-menu-item>
+                    <sw-context-menu-item class="sw-context-menu-item--danger"
+                                          :disabled="!canDelete(item)"
+                                          @click="onDeleteJob(item.id)">
+                        {{ $tc('job-listing.actions.delete-job.button.label') }}
+                    </sw-context-menu-item>
+                </template>
+            </od-entity-listing>
         {% endblock %}
-        <template #modal-footer>
-          <sw-button variant="primary"
-                     @click="showMessagesModal = false">
-              {{ $tc('job-listing.page.listing.index.close') }}
-          </sw-button>
-        </template>
-      </sw-modal>
-    {% endblock %}
-  </div>
+
+        {% block od_entity_listing_job_subs_modal %}
+            <sw-modal class="od-job-sub-jobs-modal" v-if="showJobSubsModal" :title="$tc('job-listing.page.listing.grid.column.child-jobs')"
+                      @modal-close="showJobSubsModal = false">
+                <od-job-sub-jobs v-if="currentJobID" :jobId="currentJobID">
+
+                </od-job-sub-jobs>
+                <template #modal-footer>
+                    <sw-button variant="primary"
+                               @click="showJobSubsModal = false">
+                        {{ $tc('job-listing.page.listing.index.close') }}
+                    </sw-button>
+                </template>
+            </sw-modal>
+        {% endblock %}
+
+        {% block od_entity_listing_job_messages_modal %}
+            <sw-modal class="od-job-messages-modal" v-if="showMessagesModal"
+                      :title="$tc('job-listing.page.listing.grid.column.messages')"
+                      @modal-close="showMessagesModal = false">
+                {% block job_messages_listing %}
+                    <div v-if="currentJobMessages" class="job_list_grid_job_messages-information" style="width:100%;">
+                        <div class="messages-content" v-for="item in currentJobMessages">
+                            <sw-alert class="od-alert"
+                                      v-if="item.type == 'info-message'"
+                                      variant="info"
+                                      appearance="default"
+                                      :showIcon="true"
+                                      :closable="false">
+                                {{ item.message }}
+                            </sw-alert>
+                            <sw-alert class="od-alert"
+                                      v-if="item.type == 'error-message'"
+                                      variant="error"
+                                      appearance="default"
+                                      :showIcon="true"
+                                      :closable="false">
+                                {{ item.message }}
+                            </sw-alert>
+                            <sw-alert class="od-alert"
+                                      v-if="item.type == 'warning-message'"
+                                      variant="warning"
+                                      appearance="default"
+                                      :showIcon="true"
+                                      :closable="false">
+                                {{ item.message }}
+                            </sw-alert>
+                        </div>
+                    </div>
+                {% endblock %}
+                <template #modal-footer>
+                    <sw-button variant="primary"
+                               @click="showMessagesModal = false">
+                        {{ $tc('job-listing.page.listing.index.close') }}
+                    </sw-button>
+                </template>
+            </sw-modal>
+        {% endblock %}
+    </div>
 {% endblock %}

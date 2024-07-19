@@ -134,7 +134,7 @@ Component.register('od-scheduler-charts', {
         initChartData() {
             const criteria = new Criteria();
             criteria.addFilter(Criteria.equals('parentId', null));
-            criteria.setLimit(999999);
+            criteria.setLimit(500);
 
             if (this.jobTypes !== []) {
                 criteria.addFilter(Criteria.equalsAny('type', this.jobTypes));
@@ -229,7 +229,7 @@ Component.register('od-scheduler-charts', {
             items.forEach((item, index) => {
 
                 let type = chartSeries.find((chart) => {
-                   return chart.name === item.name
+                    return chart.name === item.name
                 })
 
                 if (!type) {

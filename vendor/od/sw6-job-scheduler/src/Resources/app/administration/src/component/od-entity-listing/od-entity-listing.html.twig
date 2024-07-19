@@ -453,7 +453,7 @@
                                             <template v-if="column.inlineEdit === 'boolean'">
                                                 {% block sw_data_grid_columns_boolean %}
                                                     <sw-data-grid-column-boolean
-                                                            v-model="item[column.property]"
+                                                            v-model:value="item[column.property]"
                                                             :is-inline-edit="isInlineEdit(item) && column.hasOwnProperty('inlineEdit')"
                                                     />
                                                 {% endblock %}

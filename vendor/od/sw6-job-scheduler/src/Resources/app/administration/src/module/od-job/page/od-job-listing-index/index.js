@@ -2,7 +2,7 @@ import template from './od-job-listing-index.html.twig';
 import JobHelper from "../../../../util/job.helper";
 import './od-job-listing-index.scss';
 
-const { Component } = Shopware;
+const { Component, Mixin } = Shopware;
 const { Criteria } = Shopware.Data;
 
 Component.register('od-job-listing-index', {
@@ -16,7 +16,7 @@ Component.register('od-job-listing-index', {
     ],
 
     mixins: [
-        'notification',
+        Mixin.getByName('notification'),
     ],
 
     props: {
@@ -112,12 +112,14 @@ Component.register('od-job-listing-index', {
                     label: this.$tc('job-listing.page.listing.grid.column.finished-at'),
                     allowResize: true,
                     width: '170px',
+                    sortable: true
                 },
                 {
                     property: 'createdAt',
                     label: this.$tc('job-listing.page.listing.grid.column.created-at'),
                     allowResize: true,
                     width: '170px',
+                    sortable: true
                 },
                 {
                     property: 'subJobs',
@@ -208,8 +210,7 @@ Component.register('od-job-listing-index', {
             };
         },
 
-        async updateList(filterCriteria) {
-
+        updateList(filterCriteria) {
             const criteria = new Criteria(this.page, this.limit);
             criteria.addFilter(Criteria.equals('parentId', null));
             criteria.addSorting(Criteria.sort('createdAt', 'DESC', false));
