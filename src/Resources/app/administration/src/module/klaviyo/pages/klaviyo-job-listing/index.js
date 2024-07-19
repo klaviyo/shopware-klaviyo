@@ -86,7 +86,7 @@ Component.register('klaviyo-job-listing', {
                 'job-date-filter': {
                     property: 'createdAt',
                     label: this.$tc('klaviyo-job-listing.page.job-listing.filter.created-at'),
-                    dateType: 'datetime-local',
+                    dateType: 'date',
                     fromFieldLabel: this.$tc('klaviyo-job-listing.page.job-listing.filter.from'),
                     toFieldLabel: this.$tc('klaviyo-job-listing.page.job-listing.filter.to'),
                     showTimeframe: true,
@@ -123,7 +123,7 @@ Component.register('klaviyo-job-listing', {
         },
 
         onRefresh() {
-            this.$refs.jobListing.onRefresh(this.filterCriteria);
+            this.$refs.jobListing?.onRefresh(this.filterCriteria);
         },
 
         updateCriteria(criteria) {
