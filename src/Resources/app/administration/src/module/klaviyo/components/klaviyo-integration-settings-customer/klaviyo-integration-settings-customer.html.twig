@@ -10,10 +10,10 @@
                             :label="$tc('sw-boolean-filter.active')"
                             :disabled="isLoading"
                             size="small"
-                            v-model="mappedField.active">
+                            v-model:value="mappedField.active">
                     </sw-switch-field>
 
-                    <sw-text-field v-model="mappedField.customLabel"
+                    <sw-text-field v-model:value="mappedField.customLabel"
                                    :disabled="!mappedField.active"
                                    :placeholder="$tc('klaviyo-integration-settings.customer.fieldMapping.item.fieldNamePlaceholder')"
                                    :error="mappingErrorStates[mappedKey]?.code !== undefined ? mappingErrorStates[mappedKey] : null"

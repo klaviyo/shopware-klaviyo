@@ -186,20 +186,6 @@ Component.register('klaviyo-integration-settings', {
             }).finally(() => {
                 this.isLoading = false;
             });
-
-/*
-
-            this.isLoading = true;
-            return this.systemConfigApiService.saveValues(this.config, null)
-                .then(() => {
-                    if (this.setDefault) {
-                        return this.SwagPaypalPaymentMethodService.setDefaultPaymentForSalesChannel();
-                    }
-
-                    return Promise.resolve();
-                }).then(() => {
-                    this.isLoading = false;
-                });*/
         },
 
         async validateNewsletterListId(newsletterListId) {
