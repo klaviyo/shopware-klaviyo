@@ -103,7 +103,6 @@
                         :helpText="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.helpText')"
                         :disabled="selectedSalesChannelId === null"
                         :error="listIdErrorState"
-                        @update:value="onCredentialsChanged"
                         required>
                 </sw-text-field>
             {% endblock %}

@@ -59,7 +59,7 @@ Component.register('klaviyo-integration-settings', {
         },
 
         privateKeyErrorState() {
-            if (!this.privateKeyFilled) {
+            if (this.privateKeyFilled) {
                 return null;
             }
 
@@ -67,7 +67,7 @@ Component.register('klaviyo-integration-settings', {
         },
 
         publicKeyErrorState() {
-            if (!this.publicKeyFilled) {
+            if (this.publicKeyFilled) {
                 return null;
             }
 
@@ -75,7 +75,7 @@ Component.register('klaviyo-integration-settings', {
         },
 
         listIdErrorState() {
-            if (!this.listIdFilled) {
+            if (this.listIdFilled) {
                 return null;
             }
 
