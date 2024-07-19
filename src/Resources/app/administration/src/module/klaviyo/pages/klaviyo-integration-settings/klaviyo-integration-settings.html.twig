@@ -46,7 +46,7 @@
                                              :title="$tc('global.entities.sales_channel', 2)">
                                         <div class="card-container klaviyo-integration-settings-sales-channel">
                                             {% block klaviyo_integration_settings_content_sales_channel_config_channel_card_select %}
-                                                <sw-single-select v-model="selectedSalesChannelId"
+                                                <sw-single-select v-model:value="selectedSalesChannelId"
                                                                   labelProperty="translated.name"
                                                                   valueProperty="id"
                                                                   :isLoading="isLoading"
