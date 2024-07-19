@@ -1,5 +1,5 @@
 # 3.0.0
-# Compatibility release with shopwrae 6.6^
+# Compatibility release with Shopware 6.6^
 # Fix: Fixed an error in saving plugin settings when inserting a value into the List ID for subscribers sync field
 
 # 2.13.3

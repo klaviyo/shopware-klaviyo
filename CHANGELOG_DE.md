@@ -1,5 +1,5 @@
 # 3.0.0
-# Kompatibilitätsfreigabe mit Shopwrae 6.6^
+# Kompatibilitätsfreigabe mit Shopware 6.6^
 # Fix: Fehler beim Speichern der Plugin-Einstellungen behoben, wenn ein Wert in das Feld Listen-ID für Abonnenten-Synchronisation eingefügt wurde.
 
 # 2.13.3
