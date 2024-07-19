@@ -1,3 +1,7 @@
+# 3.0.0
+# Compatibility release with shopwrae 6.6^
+# Fix: Fixed an error in saving plugin settings when inserting a value into the List ID for subscribers sync field
+
 # 2.13.3
 # Fix: Correction of multiple loading records in listing.
 # Fix: Changing the type of data when transferring product categories in order events.
