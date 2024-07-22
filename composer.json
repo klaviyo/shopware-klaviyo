@@ -43,5 +43,10 @@
         "shopware/core": "6.6.*",
         "shopware/storefront": "6.6.*",
         "ext-json": "*"
+    },
+    "config": {
+        "allow-plugins": {
+            "symfony/runtime": false
+        }
     }
 }
