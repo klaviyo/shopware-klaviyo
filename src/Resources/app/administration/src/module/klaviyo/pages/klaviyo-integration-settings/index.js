@@ -167,7 +167,7 @@ Component.register('klaviyo-integration-settings', {
             });
         },
 
-        onSave() {
+        async onSave() {
             if (this.hasError) {
                 return;
             }
@@ -177,7 +177,9 @@ Component.register('klaviyo-integration-settings', {
             const newsletterListId = this.config['klavi_overd.config.klaviyoListForSubscribersSync'];
 
             if (newsletterListId) {
-               if (!this.isListIdPresent) {
+                await this.validateNewsletterListId(newsletterListId);
+
+                if (!this.isListIdPresent) {
                    this.isLoading = false;
                    this.isSaveSuccessful = false;
                    return;
@@ -191,29 +193,29 @@ Component.register('klaviyo-integration-settings', {
             });
         },
 
-        validateNewsletterListId(newsletterListId) {
+        async validateNewsletterListId(newsletterListId) {
             const privateKey = this.config['klavi_overd.config.privateApiKey'];
             const publicKey = this.config['klavi_overd.config.publicApiKey'];
             this.isListIdPresent = false;
 
-            this.klaviyoApiKeyValidatorService.validateListById(privateKey, publicKey, newsletterListId).then((response) => {
+            try {
+                const response = await this.klaviyoApiKeyValidatorService.validateListById(privateKey, publicKey, newsletterListId);
+
                 if (!response.data || !response.data.data) {
                     this.isListIdPresent = false;
                     this.createNotificationError({
                         message: this.$tc('klaviyo-integration-settings.configs.apiValidation.listNotExistMessage'),
                     });
-                }
-
-                if (response.data && response.data.data && response.data.data[0].value === newsletterListId) {
+                } else if (response.data.data[0].value === newsletterListId) {
                     this.isListIdPresent = true;
                 }
 
-            }).catch(() => {
+            } catch (error) {
                 this.isListIdPresent = false;
                 this.createNotificationError({
                     message: this.$tc('klaviyo-integration-settings.configs.apiValidation.listNotExistMessage'),
                 });
-            });
+            };
         }
     }
 });
