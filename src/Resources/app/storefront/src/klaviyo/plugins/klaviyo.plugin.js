@@ -104,6 +104,7 @@ export default class KlaviyoTracking extends Plugin {
                 return true;
             case 'shopware':
             case 'consentmanager':
+            case 'usercentrics':
                 // In this config, shopware default cookies is checked
                 return KlaviyoCookie.getCookie('od-klaviyo-track-allow');
             case 'cookiebot':
