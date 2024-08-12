@@ -17,6 +17,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\{AndFilter, EqualsAnyFilter, EqualsFilter};
 use Shopware\Core\Framework\Uuid\Uuid;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class ScheduleBackgroundJob
 {
@@ -96,13 +97,35 @@ class ScheduleBackgroundJob
     public function scheduleFullOrderSyncJob(Context $context): void
     {
         $this->checkJobStatus(FullOrderSyncOperation::OPERATION_HANDLER_CODE, $context);
-        $jobMessage = new Message\FullOrderSyncMessage(Uuid::randomHex(), null, $context);
+        $jobMessage = new Message\FullOrderSyncMessage(Uuid::randomHex(), null, $context, 0);
+        $this->scheduler->schedule($jobMessage);
+    }
+
+    /**
+     * @throws JobAlreadyRunningException
+     */
+    public function scheduleFullOrderSyncJobPart(Context $context, int $offset = 0): void
+    {
+        $jobMessage = new Message\FullOrderSyncMessage(Uuid::randomHex(), null, $context, $offset);
         $this->scheduler->schedule($jobMessage);
     }
 
     public function scheduleOrderSyncJob(array $orderIds, string $parentJobId, Context $context): void
     {
         $jobMessage = new Message\OrderSyncMessage(Uuid::randomHex(), $parentJobId, $orderIds, null, $context);
+        $this->scheduler->schedule($jobMessage);
+    }
+
+    public function scheduleOrderSync(array $orderIds, string $parentJobId, Context $context): void
+    {
+        $jobMessage = new Message\OrderSyncMessage(
+            Uuid::randomHex(),
+            $parentJobId,
+            $orderIds,
+            null,
+            $context
+        );
+
         $this->scheduler->schedule($jobMessage);
     }
 
