@@ -1,11 +1,14 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Model\UseCase\Operation;
 
-use Klaviyo\Integration\Async\Message\FullOrderSyncMessage;
+use Klaviyo\Integration\Async\Message\OrderSyncMessage;
 use Klaviyo\Integration\Model\Channel\GetValidChannels;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
 use Od\Scheduler\Model\Job\{GeneratingHandlerInterface, JobHandlerInterface, JobResult, Message};
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\{EntityRepositoryInterface, Search};
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
@@ -18,45 +21,61 @@ class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerIn
     private ScheduleBackgroundJob $scheduleBackgroundJob;
     private EntityRepositoryInterface $orderRepository;
     private GetValidChannels $getValidChannels;
+    private LoggerInterface $logger;
 
     public function __construct(
         ScheduleBackgroundJob $scheduleBackgroundJob,
         EntityRepositoryInterface $orderRepository,
-        GetValidChannels $getValidChannels
-    ) {
+        GetValidChannels $getValidChannels,
+        LoggerInterface $logger
+    )
+    {
         $this->scheduleBackgroundJob = $scheduleBackgroundJob;
         $this->orderRepository = $orderRepository;
         $this->getValidChannels = $getValidChannels;
+        $this->logger = $logger;
     }
 
     /**
-     * @param FullOrderSyncMessage $message
+     * @param OrderSyncMessage $message
      * @return JobResult
      */
     public function execute(object $message): JobResult
     {
+        $this->logger->notice("Starting Partial Order Sync Operation...");
         $result = new JobResult();
-        $result->addMessage(new Message\InfoMessage('Starting Full Order Sync Operation...'));
-        $subOperationCount = 0;
+        $result->addMessage(new Message\InfoMessage('Starting Partial Order Sync Operation...'));
 
-        $channelIds = $this->getValidChannels->execute($message->getContext())->map(fn(SalesChannelEntity $channel) => $channel->getId());
+        $channelIds = $this->getValidChannels->execute($message->getContext())
+            ->map(fn(SalesChannelEntity $channel) => $channel->getId());
+
         if (empty($channelIds)) {
             $result->addMessage(new Message\WarningMessage('There are no configured channels - skipping.'));
-
             return $result;
         }
+
+        $offset = $message->getOffset() ?? 0;
 
         $criteria = new Search\Criteria();
         $criteria->addFilter(new Search\Filter\EqualsAnyFilter('salesChannelId', \array_values($channelIds)));
         $criteria->setLimit(self::ORDER_BATCH_SIZE);
+        $criteria->setOffset($offset);
+
         $iterator = new RepositoryIterator($this->orderRepository, $message->getContext(), $criteria);
 
-        while (($orderIds = $iterator->fetchIds()) !== null) {
-            $subOperationCount++;
-            $this->scheduleBackgroundJob->scheduleOrderSyncJob($orderIds, $message->getJobId(), $message->getContext());
-        }
+        $orderIds = $iterator->fetchIds();
 
-        $result->addMessage(new Message\InfoMessage(\sprintf('Total %s jobs has been scheduled.', $subOperationCount)));
+        $this->logger->debug("orderIds", ['orderIds' => $orderIds]);
+
+        if (!empty($orderIds)) {
+            $this->scheduleBackgroundJob->scheduleOrderSync($orderIds, $message->getJobId(), $message->getContext());
+            $result->addMessage(new Message\InfoMessage(\sprintf('Scheduled job for %d orders.', count($orderIds))));
+
+            $this->scheduleBackgroundJob->scheduleFullOrderSyncJobPart($message->getContext(), $offset + self::ORDER_BATCH_SIZE);
+        } else {
+            $result->addMessage(new Message\InfoMessage('All orders have been processed.'));
+            $this->logger->notice("All orders have been processed.");
+        }
 
         return $result;
     }
