@@ -9,7 +9,16 @@
         <service id="Klaviyo\Integration\Async\Task\ScheduleEventJobsTask">
             <tag name="shopware.scheduled.task"/>
         </service>
+        <service id="Klaviyo\Integration\Async\Task\ScheduleFullHistoricalSyncTask">
+            <tag name="shopware.scheduled.task"/>
+        </service>
         <service id="Klaviyo\Integration\Async\TaskHandler\ScheduleEventJobsHandler">
+            <argument type="service" id="scheduled_task.repository"/>
+            <argument type="service" id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob"/>
+            <argument type="service" id="monolog.logger.od_klaviyo"/>
+            <tag name="messenger.message_handler"/>
+        </service>
+        <service id="Klaviyo\Integration\Async\TaskHandler\ScheduleFullHistoricalSyncTaskHandler">
             <argument type="service" id="scheduled_task.repository"/>
             <argument type="service" id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob"/>
             <argument type="service" id="monolog.logger.od_klaviyo"/>
@@ -64,6 +73,7 @@
             <argument type="service" id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob"/>
             <argument type="service" id="order.repository"/>
             <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannels"/>
+            <argument type="service" id="monolog.logger.od_klaviyo"/>
             <tag name="od.job_handler" code="od-klaviyo-full-order-sync-handler"/>
         </service>
         <service id="Klaviyo\Integration\Model\UseCase\Operation\FullSubscriberSyncOperation">
