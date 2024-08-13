@@ -66,11 +66,10 @@ class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerIn
 
         $orderIds = $iterator->fetchIds();
 
-        $this->logger->debug("orderIds", ['orderIds' => $orderIds]);
-
         if (!empty($orderIds)) {
             $this->scheduleBackgroundJob->scheduleOrderSync($orderIds, $message->getJobId(), $message->getContext());
             $result->addMessage(new Message\InfoMessage(\sprintf('Scheduled job for %d orders.', count($orderIds))));
+            $this->logger->notice(\sprintf('Scheduled job for %d orders. Offset: %d', count($orderIds), $offset));
 
             $this->scheduleBackgroundJob->scheduleFullOrderSyncJobPart($message->getContext(), $offset + self::ORDER_BATCH_SIZE);
         } else {
