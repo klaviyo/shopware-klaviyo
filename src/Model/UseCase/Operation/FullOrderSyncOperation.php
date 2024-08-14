@@ -46,34 +46,42 @@ class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerIn
         $result = new JobResult();
         $result->addMessage(new Message\InfoMessage('Starting Partial Order Sync Operation...'));
 
-        $channelIds = $this->getValidChannels->execute($message->getContext())
-            ->map(fn(SalesChannelEntity $channel) => $channel->getId());
+        try {
 
-        if (empty($channelIds)) {
-            $result->addMessage(new Message\WarningMessage('There are no configured channels - skipping.'));
-            return $result;
-        }
+            $channelIds = $this->getValidChannels->execute($message->getContext())
+                ->map(fn(SalesChannelEntity $channel) => $channel->getId());
 
-        $offset = $message->getOffset() ?? 0;
+            if (empty($channelIds)) {
+                $result->addMessage(new Message\WarningMessage('There are no configured channels - skipping.'));
+                return $result;
+            }
 
-        $criteria = new Search\Criteria();
-        $criteria->addFilter(new Search\Filter\EqualsAnyFilter('salesChannelId', \array_values($channelIds)));
-        $criteria->setLimit(self::ORDER_BATCH_SIZE);
-        $criteria->setOffset($offset);
+            $offset = $message->getOffset() ?? 0;
 
-        $iterator = new RepositoryIterator($this->orderRepository, $message->getContext(), $criteria);
+            $criteria = new Search\Criteria();
+            $criteria->addFilter(new Search\Filter\EqualsAnyFilter('salesChannelId', \array_values($channelIds)));
+            $criteria->setLimit(self::ORDER_BATCH_SIZE);
+            $criteria->setOffset($offset);
 
-        $orderIds = $iterator->fetchIds();
+            $iterator = new RepositoryIterator($this->orderRepository, $message->getContext(), $criteria);
 
-        if (!empty($orderIds)) {
-            $this->scheduleBackgroundJob->scheduleOrderSync($orderIds, $message->getJobId(), $message->getContext());
-            $result->addMessage(new Message\InfoMessage(\sprintf('Scheduled job for %d orders.', count($orderIds))));
-            $this->logger->notice(\sprintf('Scheduled job for %d orders. Offset: %d', count($orderIds), $offset));
+            for ($i = 0; $i < 10; $i++) {
+                $orderIds = $iterator->fetchIds();
+                if (!empty($orderIds)) {
+                    $this->scheduleBackgroundJob->scheduleOrderSync($orderIds, $message->getJobId(), $message->getContext());
+                    $result->addMessage(new Message\InfoMessage(\sprintf('Scheduled job for %d orders.', count($orderIds))));
+                    $this->logger->notice(\sprintf('Scheduled job for %d orders. Offset: %d', count($orderIds), $offset));
 
-            $this->scheduleBackgroundJob->scheduleFullOrderSyncJobPart($message->getContext(), $offset + self::ORDER_BATCH_SIZE);
-        } else {
-            $result->addMessage(new Message\InfoMessage('All orders have been processed.'));
-            $this->logger->notice("All orders have been processed.");
+                } else {
+                    $result->addMessage(new Message\InfoMessage('All orders have been processed.'));
+                    $this->logger->notice("All orders have been processed.");
+                    return $result;
+                }
+            }
+
+            $this->scheduleBackgroundJob->scheduleFullOrderSyncJobPart($message->getContext(), $offset + (self::ORDER_BATCH_SIZE * 10));
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage(), ['data' => json_encode($e)]);
         }
 
         return $result;
