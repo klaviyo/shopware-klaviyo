@@ -17,7 +17,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerInterface
 {
     public const OPERATION_HANDLER_CODE = 'od-klaviyo-full-order-sync-handler';
-    private const ORDER_BATCH_SIZE = 50;
+    private const ORDER_BATCH_SIZE = 100;
 
     private ScheduleBackgroundJob $scheduleBackgroundJob;
     private EntityRepository $orderRepository;
@@ -59,6 +59,8 @@ class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerIn
 
             $offset = $message->getOffset() ?? 0;
 
+            $this->logger->notice("Offset: $offset");
+
             $criteria = new Search\Criteria();
             $criteria->addFilter(new Search\Filter\EqualsAnyFilter('salesChannelId', \array_values($channelIds)));
             $criteria->setLimit(self::ORDER_BATCH_SIZE);
@@ -66,7 +68,7 @@ class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerIn
 
             $iterator = new RepositoryIterator($this->orderRepository, $message->getContext(), $criteria);
 
-            for ($i = 0; $i < 10; $i++) {
+            for ($i = 0; $i < 500; $i++) {
                 $orderIds = $iterator->fetchIds();
                 if (!empty($orderIds)) {
                     $this->scheduleBackgroundJob->scheduleOrderSync($orderIds, $message->getJobId(), $message->getContext());
