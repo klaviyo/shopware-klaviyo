@@ -16,7 +16,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerInterface
 {
     public const OPERATION_HANDLER_CODE = 'od-klaviyo-full-order-sync-handler';
-    private const ORDER_BATCH_SIZE = 100;
+    private const ORDER_BATCH_SIZE = 50;
 
     private ScheduleBackgroundJob $scheduleBackgroundJob;
     private EntityRepositoryInterface $orderRepository;
