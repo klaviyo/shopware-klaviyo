@@ -70,9 +70,8 @@ class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerIn
                 $orderIds = $iterator->fetchIds();
                 if (!empty($orderIds)) {
                     $this->scheduleBackgroundJob->scheduleOrderSync($orderIds, $message->getJobId(), $message->getContext());
-                    $result->addMessage(new Message\InfoMessage(\sprintf('Scheduled job for %d orders.', count($orderIds))));
-                    $this->logger->notice(\sprintf('Scheduled job for %d orders. Offset: %d', count($orderIds), $offset));
-
+                    $result->addMessage(new Message\InfoMessage(\sprintf('Scheduled job for %d orders. Offset: %d', count($orderIds), $offset)));
+                    $offset += self::ORDER_BATCH_SIZE;
                 } else {
                     $result->addMessage(new Message\InfoMessage('All orders have been processed.'));
                     $this->logger->notice("All orders have been processed.");
@@ -80,7 +79,7 @@ class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerIn
                 }
             }
 
-            $this->scheduleBackgroundJob->scheduleFullOrderSyncJobPart($message->getContext(), $offset + (self::ORDER_BATCH_SIZE * 10));
+            $this->scheduleBackgroundJob->scheduleFullOrderSyncJobPart($message->getContext(), $offset);
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage(), ['data' => json_encode($e)]);
         }
