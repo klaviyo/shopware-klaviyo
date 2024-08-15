@@ -18,6 +18,6 @@ class ScheduleFullHistoricalSyncTask extends ScheduledTask
      */
     public static function getDefaultInterval(): int
     {
-        return 60 * 60 * 24 * 365;
+        return 60 * 2;
     }
 }
