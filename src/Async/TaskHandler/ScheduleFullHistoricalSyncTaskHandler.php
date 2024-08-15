@@ -11,6 +11,7 @@ use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler(handles: ScheduleFullHistoricalSyncTask::class)]
@@ -24,7 +25,8 @@ final class ScheduleFullHistoricalSyncTaskHandler extends ScheduledTaskHandler
     public function __construct(
         protected EntityRepository $scheduledTaskRepository,
         private readonly ScheduleBackgroundJob $scheduleBackgroundJob,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        private readonly SystemConfigService $systemConfigService
     ) {
         parent::__construct($scheduledTaskRepository, $logger);
     }
@@ -36,8 +38,13 @@ final class ScheduleFullHistoricalSyncTaskHandler extends ScheduledTaskHandler
     {
         try {
             $context = new Context(new SystemSource());
-            $this->logger->notice("ScheduleFullHistoricalSyncTask started");
-            $this->scheduleBackgroundJob->scheduleFullOrderSyncJob($context);
+            $offset = $this->systemConfigService->get('klavi_overd.cron.fullOrderSyncOffset');
+            if ($offset >= 0) {
+                $this->logger->notice("ScheduleFullHistoricalSyncTask started");
+                $this->scheduleBackgroundJob->scheduleFullOrderSyncJob($context);
+            } else {
+                $this->logger->notice("ScheduleFullHistoricalSyncTask skipped");
+            }
         } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
         }

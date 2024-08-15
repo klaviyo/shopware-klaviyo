@@ -21,7 +21,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\AndFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Symfony\Component\Messenger\MessageBusInterface;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class ScheduleBackgroundJob
 {
@@ -30,19 +30,22 @@ class ScheduleBackgroundJob
     private ExcludedSubscribersProvider $excludedSubscribersProvider;
     private LoggerInterface $logger;
     private EntityRepository $subscriberRepository;
+    private SystemConfigService $systemConfigService;
 
     public function __construct(
         EntityRepository $jobRepository,
         JobScheduler $scheduler,
         ExcludedSubscribersProvider $excludedSubscribersProvider,
         EntityRepository $subscriberRepository,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        SystemConfigService $systemConfigService
     ) {
         $this->jobRepository = $jobRepository;
         $this->scheduler = $scheduler;
         $this->excludedSubscribersProvider = $excludedSubscribersProvider;
         $this->subscriberRepository = $subscriberRepository;
         $this->logger = $logger;
+        $this->systemConfigService = $systemConfigService;
     }
 
     /**
@@ -102,7 +105,12 @@ class ScheduleBackgroundJob
     public function scheduleFullOrderSyncJob(Context $context): void
     {
         $this->checkJobStatus(FullOrderSyncOperation::OPERATION_HANDLER_CODE, $context);
-        $jobMessage = new Message\FullOrderSyncMessage(Uuid::randomHex(), null, $context, 0);
+        $currentOffset = $this->systemConfigService->get('klavi_overd.cron.fullOrderSyncOffset') ?? -1;
+        if ($currentOffset < 0) {
+            $this->systemConfigService->set('klavi_overd.cron.fullOrderSyncOffset', 0);
+            $currentOffset = 0;
+        }
+        $jobMessage = new Message\FullOrderSyncMessage(Uuid::randomHex(), null, $context, $currentOffset);
         $this->scheduler->schedule($jobMessage);
     }
 
