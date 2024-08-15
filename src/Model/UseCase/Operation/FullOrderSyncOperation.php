@@ -12,6 +12,7 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\{EntityRepositoryInterface, Search};
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerInterface
 {
@@ -22,18 +23,21 @@ class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerIn
     private EntityRepositoryInterface $orderRepository;
     private GetValidChannels $getValidChannels;
     private LoggerInterface $logger;
+    private SystemConfigService $systemConfigService;
 
     public function __construct(
         ScheduleBackgroundJob $scheduleBackgroundJob,
         EntityRepositoryInterface $orderRepository,
         GetValidChannels $getValidChannels,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        SystemConfigService $systemConfigService
     )
     {
         $this->scheduleBackgroundJob = $scheduleBackgroundJob;
         $this->orderRepository = $orderRepository;
         $this->getValidChannels = $getValidChannels;
         $this->logger = $logger;
+        $this->systemConfigService = $systemConfigService;
     }
 
     /**
@@ -56,7 +60,7 @@ class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerIn
                 return $result;
             }
 
-            $offset = $message->getOffset() ?? 0;
+            $offset = $this->systemConfigService->get('klavi_overd.cron.fullOrderSyncOffset');
 
             $this->logger->notice("Offset: $offset");
 
@@ -66,21 +70,22 @@ class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerIn
             $criteria->setOffset($offset);
 
             $iterator = new RepositoryIterator($this->orderRepository, $message->getContext(), $criteria);
-
-            for ($i = 0; $i < 500; $i++) {
+            for ($i = 0; $i < 10; $i++) {
                 $orderIds = $iterator->fetchIds();
                 if (!empty($orderIds)) {
                     $this->scheduleBackgroundJob->scheduleOrderSync($orderIds, $message->getJobId(), $message->getContext());
                     $result->addMessage(new Message\InfoMessage(\sprintf('Scheduled job for %d orders. Offset: %d', count($orderIds), $offset)));
-                    $offset += self::ORDER_BATCH_SIZE;
+                    $offset = (int)$offset + self::ORDER_BATCH_SIZE;
                 } else {
-                    $result->addMessage(new Message\InfoMessage('All orders have been processed.'));
                     $this->logger->notice("All orders have been processed.");
+                    $this->systemConfigService->set('klavi_overd.cron.fullOrderSyncOffset', -1);
+                    $result->addMessage(new Message\InfoMessage('All orders have been processed.'));
                     return $result;
                 }
             }
 
-            $this->scheduleBackgroundJob->scheduleFullOrderSyncJobPart($message->getContext(), $offset);
+            $this->logger->notice("End offset: $offset");
+            $this->systemConfigService->set('klavi_overd.cron.fullOrderSyncOffset', $offset);
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage(), ['data' => json_encode($e)]);
         }
