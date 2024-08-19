@@ -9,7 +9,6 @@ use Klaviyo\Integration\Model\Channel\GetValidChannels;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
 use Od\Scheduler\Model\Job\{GeneratingHandlerInterface, JobHandlerInterface, JobResult, Message};
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
@@ -65,14 +64,15 @@ class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerIn
 
             $this->logger->notice("Offset: $offset");
 
-            $criteria = new Search\Criteria();
-            $criteria->addFilter(new Search\Filter\EqualsAnyFilter('salesChannelId', \array_values($channelIds)));
-            $criteria->setLimit(self::ORDER_BATCH_SIZE);
-            $criteria->setOffset($offset);
+            for ($i = 0; $i < 5; $i++) {
 
-            $iterator = new RepositoryIterator($this->orderRepository, $message->getContext(), $criteria);
-            for ($i = 0; $i < 10; $i++) {
-                $orderIds = $iterator->fetchIds();
+                $criteria = new Search\Criteria();
+                $criteria->addFilter(new Search\Filter\EqualsAnyFilter('salesChannelId', \array_values($channelIds)));
+                $criteria->setLimit(self::ORDER_BATCH_SIZE);
+                $criteria->setOffset($offset);
+
+                $orders = $this->orderRepository->search($criteria, $message->getContext());
+                $orderIds = $orders->getIds();
                 if (!empty($orderIds)) {
                     $this->scheduleBackgroundJob->scheduleOrderSync($orderIds, $message->getJobId(), $message->getContext());
                     $result->addMessage(new Message\InfoMessage(\sprintf('Scheduled job for %d orders. Offset: %d', count($orderIds), $offset)));
@@ -85,7 +85,6 @@ class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerIn
                 }
             }
 
-            $this->logger->notice("End offset: $offset");
             $this->systemConfigService->set('klavi_overd.cron.fullOrderSyncOffset', $offset);
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage(), ['data' => json_encode($e)]);
