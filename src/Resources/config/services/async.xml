@@ -15,7 +15,6 @@
             <argument type="service" id="monolog.logger.od_klaviyo"/>
             <tag name="messenger.message_handler"/>
         </service>
-
         <service id="Klaviyo\Integration\Async\Task\OldJobCleanupScheduledTask">
             <tag name="shopware.scheduled.task"/>
         </service>
