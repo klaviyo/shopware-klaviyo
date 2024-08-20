@@ -8,13 +8,13 @@ use Klaviyo\Integration\Async\Message\FullSubscriberSyncMessage;
 use Klaviyo\Integration\Model\Channel\GetValidChannels;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
 use Od\Scheduler\Model\Job\{GeneratingHandlerInterface, JobHandlerInterface, JobResult, Message};
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Newsletter\SalesChannel\NewsletterSubscribeRoute;
-use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHandlerInterface
 {
@@ -24,15 +24,21 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
     private ScheduleBackgroundJob $scheduleBackgroundJob;
     private EntityRepositoryInterface $subscriberRepository;
     private GetValidChannels $getValidChannels;
+    private LoggerInterface $logger;
+    private SystemConfigService $systemConfigService;
 
     public function __construct(
         ScheduleBackgroundJob $scheduleBackgroundJob,
         EntityRepositoryInterface $subscriberRepository,
-        GetValidChannels $getValidChannels
+        GetValidChannels      $getValidChannels,
+        LoggerInterface       $logger,
+        SystemConfigService   $systemConfigService
     ) {
         $this->scheduleBackgroundJob = $scheduleBackgroundJob;
         $this->subscriberRepository = $subscriberRepository;
         $this->getValidChannels = $getValidChannels;
+        $this->logger = $logger;
+        $this->systemConfigService = $systemConfigService;
     }
 
     /**
@@ -42,10 +48,9 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
      */
     public function execute(object $message): JobResult
     {
-        $subOperationCount = 0;
         $result = new JobResult();
         $channelIds = $this->getValidChannels->execute($message->getContext())->map(
-            fn (SalesChannelEntity $channel) => $channel->getId()
+            fn(SalesChannelEntity $channel) => $channel->getId()
         );
         $channelIds = \array_values($channelIds);
 
@@ -68,6 +73,9 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
             ),
             new EqualsAnyFilter('salesChannelId', $channelIds)
         );
+        $offset = $this->systemConfigService->get('klavi_overd.cron.fullSubscriberSyncOffset');
+
+        $this->logger->notice("Sub offset : $offset");
 
         $schedulingResult = $this->scheduleBackgroundJob->scheduleExcludedSubscribersSyncJobs(
             $message->getContext(),
@@ -86,21 +94,44 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
             );
         }
 
-        $iterator = new RepositoryIterator($this->subscriberRepository, $message->getContext(), $criteria);
+        for ($i = 0; $i < 5; $i++) {
+            try {
+                $criteria = new Criteria();
+                $criteria->setLimit(self::SUBSCRIBER_BATCH_SIZE);
+                $criteria->setOffset($offset);
+                $criteria->addFilter(
+                    new EqualsAnyFilter(
+                        'status',
+                        [
+                            NewsletterSubscribeRoute::STATUS_OPT_OUT,
+                            NewsletterSubscribeRoute::STATUS_OPT_IN,
+                            NewsletterSubscribeRoute::STATUS_DIRECT,
+                        ]
+                    ),
+                    new EqualsAnyFilter('salesChannelId', $channelIds)
+                );
+                $subscribers = $this->subscriberRepository->search($criteria, $message->getContext());
+                $subscriberIds = $subscribers->getIds();
+                if (!empty($subscriberIds)) {
+                    $subscriberIds = \array_values(\array_diff($subscriberIds, $excludedSubscriberIds));
 
-        while (($subscriberIds = $iterator->fetchIds()) !== null) {
-            $subscriberIds = \array_values(\array_diff($subscriberIds, $excludedSubscriberIds));
-
-            ++$subOperationCount;
-
-            $this->scheduleBackgroundJob->scheduleSubscriberSyncJob(
-                $subscriberIds,
-                $message->getJobId(),
-                $message->getContext()
-            );
+                    $this->scheduleBackgroundJob->scheduleSubscriberSyncJob(
+                        $subscriberIds,
+                        $message->getJobId(),
+                        $message->getContext()
+                    );
+                    $result->addMessage(new Message\InfoMessage(\sprintf('Scheduled job for %d subscribers. Offset: %d', count($subscriberIds), $offset)));
+                } else {
+                    $this->logger->notice("All subscribers have been processed.");
+                    $this->systemConfigService->set('klavi_overd.cron.fullSubscriberSyncOffset', -1);
+                    $result->addMessage(new Message\InfoMessage('All subscribers have been processed.'));
+                    return $result;
+                }
+            } catch (\Exception $e) {
+                $this->logger->error($e->getMessage(), ['data' => json_encode($e)]);
+                $result->addMessage(new Message\WarningMessage($e->getMessage()));
+            }
         }
-
-        $result->addMessage(new Message\InfoMessage(\sprintf('Total %s jobs has been scheduled.', $subOperationCount)));
 
         foreach ($schedulingResult->getErrors() as $error) {
             $result->addMessage(new Message\ErrorMessage($error->getMessage()));
