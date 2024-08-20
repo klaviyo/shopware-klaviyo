@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Klaviyo\Integration\Async\TaskHandler;
 
-use Klaviyo\Integration\Async\Task\ScheduleFullHistoricalSyncTask;
+use Klaviyo\Integration\Async\Task\ScheduleFullSubscriberSyncTask;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Api\Context\SystemSource;
@@ -14,8 +14,8 @@ use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-#[AsMessageHandler(handles: ScheduleFullHistoricalSyncTask::class)]
-final class ScheduleFullHistoricalSyncTaskHandler extends ScheduledTaskHandler
+#[AsMessageHandler(handles: ScheduleFullSubscriberSyncTask::class)]
+final class ScheduleFullSubscriberSyncTaskHandler extends ScheduledTaskHandler
 {
     /**
      * @param EntityRepository $scheduledTaskRepository
@@ -38,10 +38,10 @@ final class ScheduleFullHistoricalSyncTaskHandler extends ScheduledTaskHandler
     {
         try {
             $context = new Context(new SystemSource());
-            $offset = $this->systemConfigService->get('klavi_overd.cron.fullOrderSyncOffset');
+            $offset = $this->systemConfigService->get('klavi_overd.cron.fullSubscriberSyncOffset');
             if ($offset >= 0) {
-                $this->logger->notice("ScheduleFullHistoricalSyncTask started");
-                $this->scheduleBackgroundJob->scheduleFullOrderSyncJob($context);
+                $this->logger->notice("ScheduleFullSubscriberSyncTask started");
+                $this->scheduleBackgroundJob->scheduleFullSubscriberSyncJob($context);
             }
         } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());

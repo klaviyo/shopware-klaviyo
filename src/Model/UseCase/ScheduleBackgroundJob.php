@@ -55,7 +55,12 @@ class ScheduleBackgroundJob
     public function scheduleFullSubscriberSyncJob(Context $context): void
     {
         $this->checkJobStatus(FullSubscriberSyncOperation::OPERATION_HANDLER_CODE, $context);
-        $jobMessage = new Message\FullSubscriberSyncMessage(Uuid::randomHex(), null, $context);
+        $currentOffset = $this->systemConfigService->get('klavi_overd.cron.fullSubscriberSyncOffset') ?? -1;
+        if ($currentOffset < 0) {
+            $this->systemConfigService->set('klavi_overd.cron.fullSubscriberSyncOffset', 0);
+            $currentOffset = 0;
+        }
+        $jobMessage = new Message\FullSubscriberSyncMessage(Uuid::randomHex(), null, $context, $currentOffset);
         $this->scheduler->schedule($jobMessage);
     }
 
