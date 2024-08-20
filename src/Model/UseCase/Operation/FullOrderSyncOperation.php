@@ -46,26 +46,22 @@ class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerIn
      */
     public function execute(object $message): JobResult
     {
-        $this->logger->notice("Starting Partial Order Sync Operation...");
         $result = new JobResult();
-        $result->addMessage(new Message\InfoMessage('Starting Partial Order Sync Operation...'));
 
-        try {
+        $channelIds = $this->getValidChannels->execute($message->getContext())
+            ->map(fn(SalesChannelEntity $channel) => $channel->getId());
 
-            $channelIds = $this->getValidChannels->execute($message->getContext())
-                ->map(fn(SalesChannelEntity $channel) => $channel->getId());
+        if (empty($channelIds)) {
+            $result->addMessage(new Message\WarningMessage('There are no configured channels - skipping.'));
+            return $result;
+        }
 
-            if (empty($channelIds)) {
-                $result->addMessage(new Message\WarningMessage('There are no configured channels - skipping.'));
-                return $result;
-            }
+        $offset = $this->systemConfigService->get('klavi_overd.cron.fullOrderSyncOffset');
 
-            $offset = $this->systemConfigService->get('klavi_overd.cron.fullOrderSyncOffset');
+        $this->logger->notice("Offset: $offset");
 
-            $this->logger->notice("Offset: $offset");
-
-            for ($i = 0; $i < 5; $i++) {
-
+        for ($i = 0; $i < 5; $i++) {
+            try {
                 $criteria = new Search\Criteria();
                 $criteria->addFilter(new Search\Filter\EqualsAnyFilter('salesChannelId', \array_values($channelIds)));
                 $criteria->setLimit(self::ORDER_BATCH_SIZE);
@@ -83,12 +79,13 @@ class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerIn
                     $result->addMessage(new Message\InfoMessage('All orders have been processed.'));
                     return $result;
                 }
+            } catch (\Exception $e) {
+                $this->logger->error($e->getMessage(), ['data' => json_encode($e)]);
+                $result->addMessage(new Message\WarningMessage($e->getMessage()));
             }
-
-            $this->systemConfigService->set('klavi_overd.cron.fullOrderSyncOffset', $offset);
-        } catch (\Exception $e) {
-            $this->logger->error($e->getMessage(), ['data' => json_encode($e)]);
         }
+
+        $this->systemConfigService->set('klavi_overd.cron.fullOrderSyncOffset', $offset);
 
         return $result;
     }
