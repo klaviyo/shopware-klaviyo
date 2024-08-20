@@ -121,6 +121,7 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
                         $message->getContext()
                     );
                     $result->addMessage(new Message\InfoMessage(\sprintf('Scheduled job for %d subscribers. Offset: %d', count($subscriberIds), $offset)));
+                    $offset = (int)$offset + self::SUBSCRIBER_BATCH_SIZE;
                 } else {
                     $this->logger->notice("All subscribers have been processed.");
                     $this->systemConfigService->set('klavi_overd.cron.fullSubscriberSyncOffset', -1);
