@@ -10,25 +10,30 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-#[AsMessageHandler(handles: ScheduleFullSubscriberSyncTask::class)]
-final class ScheduleFullSubscriberSyncTaskHandler extends ScheduledTaskHandler
+class ScheduleFullSubscriberSyncTaskHandler extends ScheduledTaskHandler
 {
+    private ScheduleBackgroundJob $scheduleBackgroundJob;
+    private LoggerInterface $logger;
+    private SystemConfigService $systemConfigService;
     /**
      * @param EntityRepository $scheduledTaskRepository
      * @param ScheduleBackgroundJob $scheduleBackgroundJob
      * @param LoggerInterface $logger
      */
     public function __construct(
-        protected EntityRepository $scheduledTaskRepository,
-        private readonly ScheduleBackgroundJob $scheduleBackgroundJob,
-        private readonly LoggerInterface $logger,
-        private readonly SystemConfigService $systemConfigService
+        EntityRepositoryInterface $scheduledTaskRepository,
+        ScheduleBackgroundJob $scheduleBackgroundJob,
+        LoggerInterface $logger,
+        SystemConfigService $systemConfigService
     ) {
-        parent::__construct($scheduledTaskRepository, $logger);
+        parent::__construct($scheduledTaskRepository);
+        $this->scheduleBackgroundJob = $scheduleBackgroundJob;
+        $this->logger = $logger;
+        $this->systemConfigService = $systemConfigService;
     }
 
     /**
@@ -46,5 +51,10 @@ final class ScheduleFullSubscriberSyncTaskHandler extends ScheduledTaskHandler
         } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
         }
+    }
+
+    public static function getHandledMessages(): iterable
+    {
+        return [ScheduleFullSubscriberSyncTask::class];
     }
 }
