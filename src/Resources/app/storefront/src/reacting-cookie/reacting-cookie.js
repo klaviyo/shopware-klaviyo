@@ -6,21 +6,18 @@ document.$emitter.subscribe(COOKIE_CONFIGURATION_UPDATE, eventCallback);
 function setCookieConsentAllowed() {
     Iterator.iterate(PluginManager.getPluginInstances('KlaviyoTracking'), (plugin) => {
         plugin.onKlaviyoCookieConsentAllowed();
-        console.log('setCookieConsentAllowed');
     })
 }
 
 function setCookieConsentManagerAllowed() {
     Iterator.iterate(PluginManager.getPluginInstances('KlaviyoTracking'), (plugin) => {
         plugin.onKlaviyoCookieConsentManagerAllowed();
-        console.log('setCookieConsentManagerAllowed');
     })
 }
 
 function setCookieOnDecline() {
     Iterator.iterate(PluginManager.getPluginInstances('KlaviyoTracking'), (plugin) => {
         plugin.cookiebotOnDecline();
-        console.log('setCookieOnDecline');
     })
 }
 
@@ -44,7 +41,7 @@ window.addEventListener('UC_UI_CMP_EVENT', function(event) {
                 setCookieOnDecline();
                 break;
             default:
-                setCookieConsentAllowed();
+                break;
         }
     }
 });
