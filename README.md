@@ -14,11 +14,11 @@ The plugin offers the following features:
 
 Requirements
 ---
-* Shopware >= 6.4.0.0
+* Shopware >= 6.6.0.0
 
 Embedded Dependencies:
 ---
-* OD Scheduler ^1.0.0
+* OD Scheduler ^3.0.0
 
 Documentation
 ---
