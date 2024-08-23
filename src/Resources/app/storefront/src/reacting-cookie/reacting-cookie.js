@@ -30,6 +30,22 @@ function eventCallback(updatedCookies) {
 window.addEventListener('CookiebotOnAccept', setCookieConsentAllowed);
 window.addEventListener('CookiebotOnDecline', setCookieOnDecline);
 
+window.addEventListener('UC_UI_CMP_EVENT', function(event) {
+
+    if (event.detail) {
+        switch (event.detail.type) {
+            case 'ACCEPT_ALL':
+                setCookieConsentAllowed();
+                break;
+            case 'DENY_ALL':
+                setCookieOnDecline();
+                break;
+            default:
+                break;
+        }
+    }
+});
+
 if (window.cmp_id) {
     __cmp("addEventListener", ["consentrejected", setCookieOnDecline, false], null);
     __cmp("addEventListener", ["consentapproved", setCookieConsentManagerAllowed, false], null);
