@@ -12,8 +12,6 @@ class ScheduleFullSubscriberSyncTask extends ScheduledTask
     }
 
     /**
-     * 5 min interval
-     *
      * @return int
      */
     public static function getDefaultInterval(): int
