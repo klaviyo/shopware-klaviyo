@@ -125,7 +125,7 @@ Component.register('klaviyo-integration-settings-general', {
                     value: 'consentmanager'
                 },
                 {
-                    label: this.$tc('klaviyo-integration-settings.configs.cookieConsent.Usercentrics'),
+                    label: this.$tc('klaviyo-integration-settings.configs.cookieConsent.usercentricsLabel'),
                     value: 'usercentrics'
                 }
             ]
