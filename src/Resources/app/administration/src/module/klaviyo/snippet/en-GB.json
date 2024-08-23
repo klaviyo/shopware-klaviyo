@@ -122,7 +122,8 @@
                 "nothingLabel": "Nothing",
                 "shopwareLabel": "Shopware Default",
                 "cookieBotLabel": "CookieBot",
-                "consentManagerLabel": "Consent Manager"
+                "consentManagerLabel": "Consent Manager",
+                "usercentricsLabel": "Usercentrics"
             },
             "trackDeletedAccountOrders": {
                 "label": "Track Deleted Account's Orders",
