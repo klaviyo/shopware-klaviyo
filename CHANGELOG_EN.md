@@ -1,3 +1,8 @@
+# 2.14.0
+# New: Added compatibility with Usercentrics CMP.
+# New: Creating a separate cron process for synchronizing historical events. Refactoring the code to handle large amounts of data.
+# Fix: Fixed an error in saving plugin settings when inserting a value into the List ID for subscribers sync field.
+
 # 2.13.3
 # Fix: Correction of multiple loading records in listing.
 # Fix: Changing the type of data when transferring product categories in order events.
