@@ -1,3 +1,7 @@
+# 1.12.0
+# Neu: Kompatibilität mit Usercentrics CMP hinzugefügt.
+# Neu: Erstellung eines separaten Cron-Prozesses für die Synchronisierung historischer Ereignisse. Überarbeitung des Codes zur Verarbeitung großer Datenmengen.
+
 # 1.11.3
 # Fix: Korrektur von mehrfachen Ladesätzen in der Auflistung.
 # Fix: Ändern des Datentyps bei der Übertragung von Produktkategorien in Bestellvorgängen.
