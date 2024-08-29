@@ -1,3 +1,7 @@
+# 3.1.0
+# Neu: Kompatibilität mit Usercentrics CMP hinzugefügt.
+# Neu: Erstellung eines separaten Cron-Prozesses für die Synchronisierung historischer Ereignisse. Überarbeitung des Codes zur Verarbeitung großer Datenmengen.
+
 # 3.0.0
 # Kompatibilitätsfreigabe mit Shopware 6.6^
 # Fix: Fehler beim Speichern der Plugin-Einstellungen behoben, wenn ein Wert in das Feld Listen-ID für Abonnenten-Synchronisation eingefügt wurde.

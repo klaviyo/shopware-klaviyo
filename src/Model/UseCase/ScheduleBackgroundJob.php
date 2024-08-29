@@ -21,6 +21,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\AndFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class ScheduleBackgroundJob
 {
@@ -29,19 +30,22 @@ class ScheduleBackgroundJob
     private ExcludedSubscribersProvider $excludedSubscribersProvider;
     private LoggerInterface $logger;
     private EntityRepository $subscriberRepository;
+    private SystemConfigService $systemConfigService;
 
     public function __construct(
         EntityRepository $jobRepository,
         JobScheduler $scheduler,
         ExcludedSubscribersProvider $excludedSubscribersProvider,
         EntityRepository $subscriberRepository,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        SystemConfigService $systemConfigService
     ) {
         $this->jobRepository = $jobRepository;
         $this->scheduler = $scheduler;
         $this->excludedSubscribersProvider = $excludedSubscribersProvider;
         $this->subscriberRepository = $subscriberRepository;
         $this->logger = $logger;
+        $this->systemConfigService = $systemConfigService;
     }
 
     /**
@@ -51,7 +55,12 @@ class ScheduleBackgroundJob
     public function scheduleFullSubscriberSyncJob(Context $context): void
     {
         $this->checkJobStatus(FullSubscriberSyncOperation::OPERATION_HANDLER_CODE, $context);
-        $jobMessage = new Message\FullSubscriberSyncMessage(Uuid::randomHex(), null, $context);
+        $currentOffset = $this->systemConfigService->get('klavi_overd.cron.fullSubscriberSyncOffset') ?? -1;
+        if ($currentOffset < 0) {
+            $this->systemConfigService->set('klavi_overd.cron.fullSubscriberSyncOffset', 0);
+            $currentOffset = 0;
+        }
+        $jobMessage = new Message\FullSubscriberSyncMessage(Uuid::randomHex(), null, $context, $currentOffset);
         $this->scheduler->schedule($jobMessage);
     }
 
@@ -101,13 +110,40 @@ class ScheduleBackgroundJob
     public function scheduleFullOrderSyncJob(Context $context): void
     {
         $this->checkJobStatus(FullOrderSyncOperation::OPERATION_HANDLER_CODE, $context);
-        $jobMessage = new Message\FullOrderSyncMessage(Uuid::randomHex(), null, $context);
+        $currentOffset = $this->systemConfigService->get('klavi_overd.cron.fullOrderSyncOffset') ?? -1;
+        if ($currentOffset < 0) {
+            $this->systemConfigService->set('klavi_overd.cron.fullOrderSyncOffset', 0);
+            $currentOffset = 0;
+        }
+        $jobMessage = new Message\FullOrderSyncMessage(Uuid::randomHex(), null, $context, $currentOffset);
+        $this->scheduler->schedule($jobMessage);
+    }
+
+    /**
+     * @throws JobAlreadyRunningException
+     */
+    public function scheduleFullOrderSyncJobPart(Context $context, int $offset = 0): void
+    {
+        $jobMessage = new Message\FullOrderSyncMessage(Uuid::randomHex(), null, $context, $offset);
         $this->scheduler->schedule($jobMessage);
     }
 
     public function scheduleOrderSyncJob(array $orderIds, string $parentJobId, Context $context): void
     {
         $jobMessage = new Message\OrderSyncMessage(Uuid::randomHex(), $parentJobId, $orderIds, null, $context);
+        $this->scheduler->schedule($jobMessage);
+    }
+
+    public function scheduleOrderSync(array $orderIds, string $parentJobId, Context $context): void
+    {
+        $jobMessage = new Message\OrderSyncMessage(
+            Uuid::randomHex(),
+            $parentJobId,
+            $orderIds,
+            null,
+            $context
+        );
+
         $this->scheduler->schedule($jobMessage);
     }
 

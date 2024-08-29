@@ -14,6 +14,10 @@ class ProfileInfoDenormalizer extends AbstractDenormalizer
     {
         $this->assertResultRow($data);
 
+        if (!isset($data['id']) && !isset($data['type'])) {
+            return new ProfileInfo('', '');
+        }
+
         if ('profile-bulk-import-job' !== $data['type']) {
             return new ProfileInfo($data['id'], $data['attributes']['email']);
         } else {
@@ -30,7 +34,7 @@ class ProfileInfoDenormalizer extends AbstractDenormalizer
             throw new DeserializationException('Decoded profile info value expected to be an array');
         }
 
-        if (empty($resultRow['id'])) {
+        if (isset($resultRow['id']) && empty($resultRow['id'])) {
             throw new DeserializationException('Decoded profile info array expected to have an id key');
         }
 
