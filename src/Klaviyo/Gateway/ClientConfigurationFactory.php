@@ -15,7 +15,7 @@ class ClientConfigurationFactory
     private const IDENTIFY_ENDPOINT_URL = 'https://a.klaviyo.com/api/profiles';
     private const GLOBAL_NEW_ENDPOINT_URL = 'https://a.klaviyo.com/api';
     private const REQUEST_TIMEOUT = 30;
-    private const CONNECTION_TIMEOUT = 15;
+    private const CONNECTION_TIMEOUT = 30;
 
     private ConfigurationRegistry $pluginConfigurationRegistry;
 

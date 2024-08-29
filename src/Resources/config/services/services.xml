@@ -28,6 +28,7 @@
             <argument type="service" id="Klaviyo\Integration\Entity\Helper\ExcludedSubscribersProvider"/>
             <argument type="service" id="newsletter_recipient.repository"/>
             <argument type="service" id="monolog.logger.od_klaviyo"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
         </service>
 
         <!-- Controllers -->
