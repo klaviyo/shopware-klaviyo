@@ -15,6 +15,10 @@ Shopware.Component.override('sw-promotion-v2-list', {
                 return;
             }
             window.location.href = this.getExportUrl() + '?id=' + promotionId;
+        },
+
+        sendGlobalPromotionToExport() {
+            window.location.href = this.getExportUrl();
         }
     }
 });
