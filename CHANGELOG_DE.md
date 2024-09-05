@@ -1,3 +1,6 @@
+# 3.1.1
+# Fix: Behebung von Problemen beim Laden der Promotionsseite.
+
 # 3.1.0
 # Neu: Kompatibilität mit Usercentrics CMP hinzugefügt.
 # Neu: Erstellung eines separaten Cron-Prozesses für die Synchronisierung historischer Ereignisse. Überarbeitung des Codes zur Verarbeitung großer Datenmengen.
