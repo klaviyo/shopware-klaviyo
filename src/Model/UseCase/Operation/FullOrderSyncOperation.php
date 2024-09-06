@@ -58,6 +58,10 @@ class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerIn
 
         $offset = $this->systemConfigService->get('klavi_overd.cron.fullOrderSyncOffset');
 
+        if ($offset == -1) {
+            $offset = 0;
+        }
+
         $this->logger->notice("Offset: $offset");
 
         for ($i = 0; $i < 5; $i++) {
@@ -69,6 +73,7 @@ class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerIn
 
                 $orders = $this->orderRepository->search($criteria, $message->getContext());
                 $orderIds = $orders->getIds();
+
                 if (!empty($orderIds)) {
                     $this->scheduleBackgroundJob->scheduleOrderSync($orderIds, $message->getJobId(), $message->getContext());
                     $result->addMessage(new Message\InfoMessage(\sprintf('Scheduled job for %d orders. Offset: %d', count($orderIds), $offset)));
