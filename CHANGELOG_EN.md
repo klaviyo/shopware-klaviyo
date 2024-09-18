@@ -1,3 +1,6 @@
+# 3.1.1
+# Fix: Fixing problems with loading the promotions page.
+
 # 3.1.0
 # New: Added compatibility with Usercentrics CMP.
 # New: Creating a separate cron process for synchronizing historical events. Refactoring the code to handle large amounts of data.
