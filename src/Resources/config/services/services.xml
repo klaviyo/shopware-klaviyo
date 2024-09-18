@@ -29,6 +29,7 @@
             <argument type="service" id="newsletter_recipient.repository"/>
             <argument type="service" id="monolog.logger.od_klaviyo"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Klaviyo\Integration\System\ConfigService"/>
         </service>
 
         <!-- Controllers -->
@@ -210,6 +211,10 @@
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
+        </service>
+
+        <service id="Klaviyo\Integration\System\ConfigService">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
         </service>
     </services>
 

@@ -8,6 +8,7 @@ use Klaviyo\Integration\Async\Message\FullSubscriberSyncMessage;
 use Klaviyo\Integration\Model\Channel\GetValidChannels;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
 use Od\Scheduler\Model\Job\{GeneratingHandlerInterface, JobHandlerInterface, JobResult, Message};
+use Klaviyo\Integration\System\ConfigService;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Newsletter\SalesChannel\NewsletterSubscribeRoute;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -19,6 +20,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHandlerInterface
 {
     public const OPERATION_HANDLER_CODE = 'od-klaviyo-full-subscriber-sync-handler';
+    public const SYNC_SUBSCRIBER_OFFSET_CONFIG_KEY = 'klavi_overd.cron.fullSubscriberSyncOffset';
     private const SUBSCRIBER_BATCH_SIZE = 100;
 
     public function __construct(
@@ -26,9 +28,9 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
         private readonly EntityRepository      $subscriberRepository,
         private readonly GetValidChannels      $getValidChannels,
         private readonly LoggerInterface       $logger,
-        private readonly SystemConfigService   $systemConfigService
-    )
-    {
+        private readonly SystemConfigService   $systemConfigService,
+        private readonly ConfigService   $configService
+    ) {
     }
 
     /**
@@ -50,7 +52,7 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
             return $result;
         }
 
-        $offset = $this->systemConfigService->get('klavi_overd.cron.fullSubscriberSyncOffset');
+        $offset = $this->configService->getConfigValueWithoutCache(self::SYNC_SUBSCRIBER_OFFSET_CONFIG_KEY);
 
         $this->logger->notice("Sub offset : $offset");
 
@@ -101,7 +103,7 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
                     $offset = (int)$offset + self::SUBSCRIBER_BATCH_SIZE;
                 } else {
                     $this->logger->notice("All subscribers have been processed.");
-                    $this->systemConfigService->set('klavi_overd.cron.fullSubscriberSyncOffset', -1);
+                    $this->systemConfigService->set(self::SYNC_SUBSCRIBER_OFFSET_CONFIG_KEY, -1);
                     $result->addMessage(new Message\InfoMessage('All subscribers have been processed.'));
                     return $result;
                 }
