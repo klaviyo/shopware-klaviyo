@@ -1,3 +1,10 @@
+# 3.1.1
+# Fix: Fixing problems with loading the promotions page.
+
+# 3.1.0
+# New: Added compatibility with Usercentrics CMP.
+# New: Creating a separate cron process for synchronizing historical events. Refactoring the code to handle large amounts of data.
+
 # 3.0.0
 # Compatibility release with Shopware 6.6^
 # Fix: Fixed an error in saving plugin settings when inserting a value into the List ID for subscribers sync field
