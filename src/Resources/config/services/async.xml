@@ -25,14 +25,14 @@
             <argument type="service" id="scheduled_task.repository"/>
             <argument type="service" id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob"/>
             <argument type="service" id="monolog.logger.od_klaviyo"/>
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Klaviyo\Integration\System\ConfigService"/>
             <tag name="messenger.message_handler"/>
         </service>
         <service id="Klaviyo\Integration\Async\TaskHandler\ScheduleFullSubscriberSyncTaskHandler">
             <argument type="service" id="scheduled_task.repository"/>
             <argument type="service" id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob"/>
             <argument type="service" id="monolog.logger.od_klaviyo"/>
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Klaviyo\Integration\System\ConfigService"/>
             <tag name="messenger.message_handler"/>
         </service>
         <service id="Klaviyo\Integration\Async\Task\OldJobCleanupScheduledTask">
@@ -86,6 +86,7 @@
             <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannels"/>
             <argument type="service" id="monolog.logger.od_klaviyo"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Klaviyo\Integration\System\ConfigService"/>
             <tag name="od.job_handler" code="od-klaviyo-full-order-sync-handler"/>
         </service>
         <service id="Klaviyo\Integration\Model\UseCase\Operation\FullSubscriberSyncOperation">
@@ -94,6 +95,7 @@
             <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannels"/>
             <argument type="service" id="monolog.logger.od_klaviyo"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Klaviyo\Integration\System\ConfigService"/>
             <tag name="od.job_handler" code="od-klaviyo-full-subscriber-sync-handler"/>
         </service>
         <service id="Klaviyo\Integration\Model\UseCase\Operation\ExcludedSubscriberSyncOperation">
