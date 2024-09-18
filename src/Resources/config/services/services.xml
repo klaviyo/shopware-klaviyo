@@ -29,6 +29,7 @@
             <argument type="service" id="newsletter_recipient.repository"/>
             <argument type="service" id="monolog.logger.od_klaviyo"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Klaviyo\Integration\System\ConfigService"/>
         </service>
 
         <!-- Controllers -->
@@ -213,6 +214,10 @@
         <service id="Klaviyo\Integration\EventListener\CheckoutRegisterPageLoadedEventListener">
             <argument type="service" id="customer.repository"/>
             <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Klaviyo\Integration\System\ConfigService">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
         </service>
     </services>
 
