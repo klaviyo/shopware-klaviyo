@@ -8,9 +8,13 @@ use Doctrine\DBAL\Exception;
 
 class ConfigService
 {
+    private Connection $connection;
+
     public function __construct(
-        private readonly Connection $connection
-    ){}
+        Connection $connection
+    ){
+        $this->connection = $connection;
+    }
 
     /**
      * @throws Exception
