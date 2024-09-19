@@ -6,9 +6,8 @@ use Od\Scheduler\Async\JobMessageInterface;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\MessageQueue\AsyncMessageInterface;
 
-abstract class AbstractBasicMessage implements JobMessageInterface, AsyncMessageInterface
+abstract class AbstractBasicMessage implements JobMessageInterface
 {
     private string $jobId;
     protected string $name;
