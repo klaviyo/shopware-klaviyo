@@ -1,5 +1,5 @@
 # 1.12.1
-# Fix: Added a fix for asynchronous data synchronization and a fix for the problem of getting the current offset during historical synchronizations.
+# Fix: Added a fix for the problem of getting the current offset during historical synchronizations.
 
 # 1.12.0
 # New: Added compatibility with Usercentrics CMP.
