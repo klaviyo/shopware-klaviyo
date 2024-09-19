@@ -1,3 +1,6 @@
+# 1.12.1
+# Fix: Added a fix for asynchronous data synchronization and a fix for the problem of getting the current offset during historical synchronizations.
+
 # 1.12.0
 # New: Added compatibility with Usercentrics CMP.
 # New: Creating a separate cron process for synchronizing historical events. Refactoring the code to handle large amounts of data.
