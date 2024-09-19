@@ -6,34 +6,37 @@ namespace Klaviyo\Integration\Async\TaskHandler;
 
 use Klaviyo\Integration\Async\Task\ScheduleFullSubscriberSyncTask;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
+use Klaviyo\Integration\System\ConfigService;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
-use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Klaviyo\Integration\Model\UseCase\Operation\FullSubscriberSyncOperation;
 
 class ScheduleFullSubscriberSyncTaskHandler extends ScheduledTaskHandler
 {
     private ScheduleBackgroundJob $scheduleBackgroundJob;
     private LoggerInterface $logger;
-    private SystemConfigService $systemConfigService;
+    private ConfigService $configService;
+
     /**
      * @param EntityRepository $scheduledTaskRepository
      * @param ScheduleBackgroundJob $scheduleBackgroundJob
      * @param LoggerInterface $logger
+     * @param ConfigService $configService
      */
     public function __construct(
         EntityRepositoryInterface $scheduledTaskRepository,
         ScheduleBackgroundJob $scheduleBackgroundJob,
         LoggerInterface $logger,
-        SystemConfigService $systemConfigService
+        ConfigService   $configService
     ) {
         parent::__construct($scheduledTaskRepository);
         $this->scheduleBackgroundJob = $scheduleBackgroundJob;
         $this->logger = $logger;
-        $this->systemConfigService = $systemConfigService;
+        $this->configService = $configService;
     }
 
     /**
@@ -43,7 +46,8 @@ class ScheduleFullSubscriberSyncTaskHandler extends ScheduledTaskHandler
     {
         try {
             $context = new Context(new SystemSource());
-            $offset = $this->systemConfigService->get('klavi_overd.cron.fullSubscriberSyncOffset');
+            $offset = $this->configService->getConfigValueWithoutCache(FullSubscriberSyncOperation::SYNC_SUBSCRIBER_OFFSET_CONFIG_KEY);
+
             if ($offset >= 0) {
                 $this->logger->notice("ScheduleFullSubscriberSyncTask started");
                 $this->scheduleBackgroundJob->scheduleFullSubscriberSyncJob($context);
