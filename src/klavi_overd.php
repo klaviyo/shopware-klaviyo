@@ -35,10 +35,10 @@ class klavi_overd extends Plugin
         /** @var MigrationHelper $migrationHelper */
         $migrationHelper = $this->container->get(MigrationHelper::class);
 
-        $odScheduler = new OdScheduler();
-
-        $migrationHelper->getMigrationCollection($odScheduler)->migrateInPlace();
-        $assetService->copyAssetsFromBundle((new \ReflectionClass($odScheduler))->getShortName());
+        foreach ($this->getDependencyBundles() as $bundle) {
+            $migrationHelper->getMigrationCollection($bundle)->migrateInPlace();
+            $assetService->copyAssetsFromBundle((new \ReflectionClass($bundle))->getShortName());
+        }
     }
 
     public function update(UpdateContext $updateContext): void
@@ -67,15 +67,10 @@ class klavi_overd extends Plugin
         }
 
         $hasOtherSchedulerDependency = false;
+        $bundleParameters = new AdditionalBundleParameters(new ClassLoader(), new Plugin\KernelPluginCollection(), []);
         $kernel = $this->container->get('kernel');
-        $pluginLoader = $kernel->getPluginLoader();
-        $pluginInstances = $pluginLoader->getPluginInstances();
-        $classLoader = new ClassLoader();
-        $kernelParameters = [];
 
-        $bundleParameters = new AdditionalBundleParameters($classLoader, $pluginInstances, $kernelParameters);
-
-        foreach ($pluginInstances->getActives() as $bundle) {
+        foreach ($kernel->getPluginLoader()->getPluginInstances()->getActives() as $bundle) {
             if (!$bundle instanceof Plugin || $bundle instanceof self) {
                 continue;
             }
@@ -98,9 +93,27 @@ class klavi_overd extends Plugin
 
     public function getAdditionalBundles(AdditionalBundleParameters $parameters): array
     {
-        return [
-            new OdScheduler(),
-        ];
+        self::classLoader();
+
+        return $this->getDependencyBundles();
+    }
+
+    public static function classLoader(): void
+    {
+        $file = __DIR__ . '/../vendor/autoload.php';
+        if (!is_file($file)) {
+            return;
+        }
+
+        /** @noinspection UsingInclusionOnceReturnValueInspection */
+        $classLoader = require_once $file;
+
+        if (!$classLoader instanceof ClassLoader) {
+            return;
+        }
+
+        $classLoader->unregister();
+        $classLoader->register(false);
     }
 
     public function build(ContainerBuilder $container): void
@@ -119,6 +132,13 @@ class klavi_overd extends Plugin
 
         $confDir = \rtrim($this->getPath(), '/') . '/Resources/config';
         $configLoader->load($confDir . '/{packages}/*.yaml', 'glob');
+    }
+
+    private function getDependencyBundles(): array
+    {
+        return [
+            new OdScheduler(),
+        ];
     }
 
     public function executeComposerCommands(): bool
