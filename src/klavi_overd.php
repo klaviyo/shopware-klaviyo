@@ -123,6 +123,6 @@ class klavi_overd extends Plugin
 
     public function executeComposerCommands(): bool
     {
-        return false;
+        return true;
     }
 }
