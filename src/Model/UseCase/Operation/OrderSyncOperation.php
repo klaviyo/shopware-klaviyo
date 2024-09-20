@@ -56,6 +56,8 @@ class OrderSyncOperation implements JobHandlerInterface
         $orderCriteria->addAssociation('orderCustomer.customer.defaultShippingAddress');
         $orderCriteria->addAssociation('deliveries');
         $orderCriteria->addAssociation('transactions');
+        $orderCriteria->addAssociation('transactions.stateMachineState');
+        $orderCriteria->addAssociation('deliveries.stateMachineState');
 
         $orderCollection = $this->orderRepository->search($orderCriteria, $message->getContext());
 
