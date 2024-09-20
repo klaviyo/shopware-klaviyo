@@ -27,6 +27,20 @@ use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 
 class klavi_overd extends Plugin
 {
+    public function activate(ActivateContext $activateContext): void
+    {
+        parent::activate($activateContext);
+        /** @var AssetService $assetService */
+        $assetService = $this->container->get('klaviyo.plugin.assetservice.public');
+        /** @var MigrationHelper $migrationHelper */
+        $migrationHelper = $this->container->get(MigrationHelper::class);
+
+        foreach ($this->getDependencyBundles() as $bundle) {
+            $migrationHelper->getMigrationCollection($bundle)->migrateInPlace();
+            $assetService->copyAssetsFromBundle((new \ReflectionClass($bundle))->getShortName());
+        }
+    }
+
     public function update(UpdateContext $updateContext): void
     {
         if (\version_compare($updateContext->getCurrentPluginVersion(), '1.0.5', '<=')) {
@@ -52,7 +66,34 @@ class klavi_overd extends Plugin
             return;
         }
 
-        (new Lifecycle($this->container, true))->uninstall($uninstallContext);
+        $hasOtherSchedulerDependency = false;
+        $bundleParameters = new AdditionalBundleParameters(new ClassLoader(), new Plugin\KernelPluginCollection(), []);
+        $kernel = $this->container->get('kernel');
+
+        foreach ($kernel->getPluginLoader()->getPluginInstances()->getActives() as $bundle) {
+            if (!$bundle instanceof Plugin || $bundle instanceof self) {
+                continue;
+            }
+
+            $schedulerDependencies = \array_filter(
+                $bundle->getAdditionalBundles($bundleParameters),
+                function (BundleInterface $bundle) {
+                    return $bundle instanceof OdScheduler;
+                }
+            );
+
+            if (0 !== \count($schedulerDependencies)) {
+                $hasOtherSchedulerDependency = true;
+                break;
+            }
+        }
+
+        (new Lifecycle($this->container, $hasOtherSchedulerDependency))->uninstall($uninstallContext);
+    }
+
+    public function getAdditionalBundles(AdditionalBundleParameters $parameters): array
+    {
+        return $this->getDependencyBundles();
     }
 
     public function build(ContainerBuilder $container): void
@@ -71,6 +112,13 @@ class klavi_overd extends Plugin
 
         $confDir = \rtrim($this->getPath(), '/') . '/Resources/config';
         $configLoader->load($confDir . '/{packages}/*.yaml', 'glob');
+    }
+
+    private function getDependencyBundles(): array
+    {
+        return [
+            new OdScheduler(),
+        ];
     }
 
     public function executeComposerCommands(): bool
