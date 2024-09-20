@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Klaviyo\Integration\Model\UseCase;
 
+use Doctrine\DBAL\Exception;
 use Klaviyo\Integration\Async\Message;
 use Klaviyo\Integration\Entity\Helper\ExcludedSubscribersProvider;
 use Klaviyo\Integration\Exception\JobAlreadyRunningException;
 use Klaviyo\Integration\Exception\JobAlreadyScheduledException;
 use Klaviyo\Integration\Model\UseCase\Operation\FullOrderSyncOperation;
 use Klaviyo\Integration\Model\UseCase\Operation\FullSubscriberSyncOperation;
+use Klaviyo\Integration\System\ConfigService;
 use Klaviyo\Integration\System\Scheduling\ExcludedSubscriberSync;
 use Od\Scheduler\Entity\Job\JobEntity;
 use Od\Scheduler\Model\JobScheduler;
@@ -31,6 +33,7 @@ class ScheduleBackgroundJob
     private LoggerInterface $logger;
     private EntityRepository $subscriberRepository;
     private SystemConfigService $systemConfigService;
+    private ConfigService $configService;
 
     public function __construct(
         EntityRepository $jobRepository,
@@ -38,7 +41,8 @@ class ScheduleBackgroundJob
         ExcludedSubscribersProvider $excludedSubscribersProvider,
         EntityRepository $subscriberRepository,
         LoggerInterface $logger,
-        SystemConfigService $systemConfigService
+        SystemConfigService $systemConfigService,
+        ConfigService   $configService
     ) {
         $this->jobRepository = $jobRepository;
         $this->scheduler = $scheduler;
@@ -46,18 +50,21 @@ class ScheduleBackgroundJob
         $this->subscriberRepository = $subscriberRepository;
         $this->logger = $logger;
         $this->systemConfigService = $systemConfigService;
+        $this->configService = $configService;
     }
 
     /**
      * @throws JobAlreadyRunningException
      * @throws JobAlreadyScheduledException
+     * @throws Exception
      */
     public function scheduleFullSubscriberSyncJob(Context $context): void
     {
         $this->checkJobStatus(FullSubscriberSyncOperation::OPERATION_HANDLER_CODE, $context);
-        $currentOffset = $this->systemConfigService->get('klavi_overd.cron.fullSubscriberSyncOffset') ?? -1;
+        $currentOffset = $this->configService->getConfigValueWithoutCache(FullSubscriberSyncOperation::SYNC_SUBSCRIBER_OFFSET_CONFIG_KEY) ?? -1;
+
         if ($currentOffset < 0) {
-            $this->systemConfigService->set('klavi_overd.cron.fullSubscriberSyncOffset', 0);
+            $this->systemConfigService->set(FullSubscriberSyncOperation::SYNC_SUBSCRIBER_OFFSET_CONFIG_KEY, 0);
             $currentOffset = 0;
         }
         $jobMessage = new Message\FullSubscriberSyncMessage(Uuid::randomHex(), null, $context, $currentOffset);
@@ -106,13 +113,15 @@ class ScheduleBackgroundJob
     /**
      * @throws JobAlreadyRunningException
      * @throws JobAlreadyScheduledException
+     * @throws Exception
      */
     public function scheduleFullOrderSyncJob(Context $context): void
     {
         $this->checkJobStatus(FullOrderSyncOperation::OPERATION_HANDLER_CODE, $context);
-        $currentOffset = $this->systemConfigService->get('klavi_overd.cron.fullOrderSyncOffset') ?? -1;
+        $currentOffset = $this->configService->getConfigValueWithoutCache(FullOrderSyncOperation::SYNC_ORDER_OFFSET_CONFIG_KEY) ?? -1;
+
         if ($currentOffset < 0) {
-            $this->systemConfigService->set('klavi_overd.cron.fullOrderSyncOffset', 0);
+            $this->systemConfigService->set(FullOrderSyncOperation::SYNC_ORDER_OFFSET_CONFIG_KEY, 0);
             $currentOffset = 0;
         }
         $jobMessage = new Message\FullOrderSyncMessage(Uuid::randomHex(), null, $context, $currentOffset);
