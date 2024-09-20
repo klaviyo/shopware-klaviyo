@@ -6,10 +6,10 @@ namespace Klaviyo\Integration\System;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 
-class ConfigService
+readonly class ConfigService
 {
     public function __construct(
-        private readonly Connection $connection
+        private Connection $connection
     ){}
 
     /**
@@ -36,5 +36,4 @@ class ConfigService
 
         return null;
     }
-
 }

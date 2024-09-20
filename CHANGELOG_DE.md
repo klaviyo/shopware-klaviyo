@@ -1,3 +1,6 @@
+# 3.1.2
+# Fix: Es wurde ein Fix für die asynchrone Datensynchronisation und ein Fix für das Problem der Ermittlung des aktuellen Offsets bei historischen Synchronisationen hinzugefügt.
+
 # 3.1.1
 # Fix: Behebung von Problemen beim Laden der Promotionsseite.
 
