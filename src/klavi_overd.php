@@ -66,29 +66,7 @@ class klavi_overd extends Plugin
             return;
         }
 
-        $hasOtherSchedulerDependency = false;
-        $bundleParameters = new AdditionalBundleParameters(new ClassLoader(), new Plugin\KernelPluginCollection(), []);
-        $kernel = $this->container->get('kernel');
-
-        foreach ($kernel->getPluginLoader()->getPluginInstances()->getActives() as $bundle) {
-            if (!$bundle instanceof Plugin || $bundle instanceof self) {
-                continue;
-            }
-
-            $schedulerDependencies = \array_filter(
-                $bundle->getAdditionalBundles($bundleParameters),
-                function (BundleInterface $bundle) {
-                    return $bundle instanceof OdScheduler;
-                }
-            );
-
-            if (0 !== \count($schedulerDependencies)) {
-                $hasOtherSchedulerDependency = true;
-                break;
-            }
-        }
-
-        (new Lifecycle($this->container, $hasOtherSchedulerDependency))->uninstall($uninstallContext);
+        (new Lifecycle($this->container, true))->uninstall($uninstallContext);
     }
 
     public function getAdditionalBundles(AdditionalBundleParameters $parameters): array
