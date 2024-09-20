@@ -69,10 +69,6 @@ class klavi_overd extends Plugin
         $hasOtherSchedulerDependency = false;
         $bundleParameters = new AdditionalBundleParameters(new ClassLoader(), new Plugin\KernelPluginCollection(), []);
         $kernel = $this->container->get('kernel');
-        $pluginLoader = $kernel->getPluginLoader();
-        $pluginInstances = $pluginLoader->getPluginInstances();
-        $classLoader = new ClassLoader();
-        $kernelParameters = [];
 
         foreach ($kernel->getPluginLoader()->getPluginInstances()->getActives() as $bundle) {
             if (!$bundle instanceof Plugin || $bundle instanceof self) {
