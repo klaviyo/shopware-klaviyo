@@ -1,3 +1,6 @@
+# 3.1.3
+# Fix: Fixing errors with loading plugin dependencies when installing and enabling it.
+
 # 3.1.2
 # Fix: Added a fix for asynchronous data synchronization and a fix for the problem of getting the current offset during historical synchronizations.
 # Fix: Fix sending shipping events and paid events in historical order synchronization.
