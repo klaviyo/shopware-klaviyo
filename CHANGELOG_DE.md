@@ -1,3 +1,6 @@
+# 3.1.3
+# Fix: Behebung von Fehlern beim Laden von Plugin-Abhängigkeiten bei der Installation und Aktivierung des Plugins.
+
 # 3.1.2
 # Fix: Es wurde ein Fix für die asynchrone Datensynchronisation und ein Fix für das Problem der Ermittlung des aktuellen Offsets bei historischen Synchronisationen hinzugefügt.
 # Fix: Fix für das Senden von Versandereignissen und bezahlten Ereignissen in der historischen Auftragssynchronisation.

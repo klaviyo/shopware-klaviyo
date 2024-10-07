@@ -93,27 +93,7 @@ class klavi_overd extends Plugin
 
     public function getAdditionalBundles(AdditionalBundleParameters $parameters): array
     {
-        self::classLoader();
-
         return $this->getDependencyBundles();
-    }
-
-    public static function classLoader(): void
-    {
-        $file = __DIR__ . '/../vendor/autoload.php';
-        if (!is_file($file)) {
-            return;
-        }
-
-        /** @noinspection UsingInclusionOnceReturnValueInspection */
-        $classLoader = require_once $file;
-
-        if (!$classLoader instanceof ClassLoader) {
-            return;
-        }
-
-        $classLoader->unregister();
-        $classLoader->register(false);
     }
 
     public function build(ContainerBuilder $container): void
@@ -139,5 +119,10 @@ class klavi_overd extends Plugin
         return [
             new OdScheduler(),
         ];
+    }
+
+    public function executeComposerCommands(): bool
+    {
+        return true;
     }
 }
