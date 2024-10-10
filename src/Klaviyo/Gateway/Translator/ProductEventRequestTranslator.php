@@ -29,6 +29,14 @@ class ProductEventRequestTranslator
         $languageId
     ): OrderedProductEventTrackingRequest {
         try {
+            $rowTotalPrice = $lineItem->getPrice()->getTotalPrice();
+            $customOptionsData = null;
+
+            if ($lineItem->getType() === 'customized-products') {
+                $customProductData = $this->productDataHelper->preparingCustomProductOptions($lineItem);
+                list('main' => $lineItem, 'options' => $customOptionsData, 'rowTotalPrice' => $rowTotalPrice) = $customProductData;
+            }
+
             $product = $this->productDataHelper->getLineItemProduct($context, $lineItem);
             $productUrl = $this->productDataHelper->getProductViewPageUrlByChannelId(
                 $product,
