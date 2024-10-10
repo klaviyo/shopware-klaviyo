@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Klaviyo\Integration\Entity\Helper;
 
 use Klaviyo\Integration\Klaviyo\Client\Exception\OrderItemProductNotFound;
+use Klaviyo\Integration\Klaviyo\Gateway\Exception\TranslationException;
+use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Category\CategoryDefinition;
@@ -335,5 +337,33 @@ class ProductDataHelper
         }
 
         return null;
+    }
+
+    public function preparingCustomProductOptions(LineItem $lineItem): array
+    {
+        $customOptionsData = null;
+        $rowTotalPrice = $lineItem->getPrice()->getTotalPrice();
+
+        if (($lineItem->getType() === 'customized-products') && (count($lineItem->getChildren()->getElements()) > 0)) {
+            foreach ($lineItem->getChildren()->getElements() as $element) {
+                if ($element->getType() === 'product') {
+                    $lineItem = $element;
+                    $rowTotalPrice = $lineItem->getPrice()->getTotalPrice();
+                } else {
+                    $price = $element->getPrice()->getTotalPrice();
+                    $customOptionsData[] = [
+                        'label' => $element->getLabel(),
+                        'price' => $price,
+                    ];
+                    $rowTotalPrice+= $price;
+                }
+            }
+        }
+
+        if ($lineItem->getType() === 'customized-products' && !$customOptionsData) {
+            throw new TranslationException(\sprintf('Custom Product Template[id: %s] without options', $lineItem->getReferencedId()));
+        }
+
+        return ['main' => $lineItem, 'options' => $customOptionsData, 'rowTotalPrice' => $rowTotalPrice];
     }
 }
