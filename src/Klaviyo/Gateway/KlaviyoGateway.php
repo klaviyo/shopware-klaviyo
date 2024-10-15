@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Klaviyo\Integration\Klaviyo\Gateway;
 
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribers;
-use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribers\Response;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\AddMembersToList\AddProfilesToListResponse;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Common\ProfileContactInfoCollection;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\RemoveProfilesFromList\RemoveProfilesFromListRequest;
@@ -165,30 +164,10 @@ class KlaviyoGateway
         string $channelId,
         CustomerCollection $customers
     ): ClientResult {
-        $updateRequests = $createRequests = $updatedCustomerIds = [];
-        $profileIdSearchResult = $this->searchProfileIds($context, $channelId, $customers);
-
-        /* First of all - update existing customer's sensitive fields - id, email, and phone_number */
-        foreach ($profileIdSearchResult->getMapping() as $personId => $customerId) {
-            $customer = $customers->get($customerId);
-            $updatedCustomerIds[] = $customerId;
-            $updateRequests[] = $this->updateProfileRequestTranslator->translateToProfileRequest(
-                $context,
-                $customer,
-                $personId
-            );
-        }
-
-        if (!empty($updateRequests)) {
-            $this->trackEvents($channelId, $updateRequests);
-        }
+        $createRequests = [];
 
         /* Update/create customer profiles */
         foreach ($customers as $customer) {
-            if (in_array($customer->getId(), $updatedCustomerIds)) {
-                continue;
-            }
-
             $createRequests[] = $this->identifyProfileRequestTranslator->translateToProfileRequest($context, $customer);
         }
 
@@ -391,11 +370,6 @@ class KlaviyoGateway
         return $trackingResult;
     }
 
-    /**
-     * @return Response
-     *
-     * @throws \Exception
-     */
     public function getExcludedSubscribersFromList(
         string $channelId,
         int $count,
