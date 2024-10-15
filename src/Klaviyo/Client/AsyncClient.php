@@ -58,9 +58,13 @@ class AsyncClient implements ClientInterface
                                 $orderId = $this->requests[$index]->getOrderId();
 
                                 if (
-                                    ('The phone number provided either does not exist or is ineligible to receive SMS' ===
+                                    (('The phone number provided either does not exist or is ineligible to receive SMS' ===
                                         $errorDetail)
-                                    || (false !== strpos($errorDetail, 'Invalid phone number format'))
+                                    || (false !== strpos($errorDetail, 'Invalid phone number format')))
+                                    ||
+                                    (('Invalid email address' ===
+                                            $errorDetail)
+                                        || (false !== strpos($errorDetail, 'Invalid email address')))
                                 ) {
                                     $exceptionType = new JobRuntimeWarningException(
                                         \sprintf('Order[id: %s] error: %s', $orderId, $errorDetail)
