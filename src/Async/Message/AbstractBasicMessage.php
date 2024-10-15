@@ -26,13 +26,13 @@ abstract class AbstractBasicMessage implements JobMessageInterface
 
     protected function setContext(?Context $context)
     {
-        // All values should be sent to nosto with the default currency and language
+        // All values should be sent to Klaviyo with the default currency and language
         if ($context === null) {
             $this->context = new Context(new SystemSource());
             return;
         }
 
-        // All values should be sent to nosto with the default currency and language
+        // All values should be sent to Klaviyo with the default currency and language
         if ($context->getLanguageId() !== Defaults::LANGUAGE_SYSTEM || $context->getCurrencyId() !== Defaults::CURRENCY) {
             $this->context = new Context(
                 $context->getSource(),
