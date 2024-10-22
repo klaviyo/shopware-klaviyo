@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Klaviyo\Integration\System\Tracking;
 
 use Klaviyo\Integration\Configuration\ConfigurationRegistry;
+use Klaviyo\Integration\Exception\JobRuntimeWarningException;
 use Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway;
 use Klaviyo\Integration\Klaviyo\Gateway\Result\OrderTrackingResult;
 use Klaviyo\Integration\System\Tracking\Event\Cart\CartEventRequestBag;
@@ -134,18 +135,29 @@ class EventsTracker implements EventsTrackerInterface
         }
     }
 
-    public function trackCustomerWritten(Context $context, ProfileEventsBag $trackingBag): void
+    public function trackCustomerWritten(Context $context, ProfileEventsBag $trackingBag): array
     {
+        $warningMessages = [];
+
         foreach ($trackingBag->all() as $channelId => $customerEntities) {
             // TODO: maybe add enable/disable setting in future?
             $customerCollection = new CustomerCollection();
 
             foreach ($customerEntities as $customer) {
+                $customerEmail = $customer->getEmail();
+
+                if (!filter_var($customerEmail, FILTER_VALIDATE_EMAIL)) {
+                    $warningMessages[] = \sprintf('Unable to track customer with invalid email: %s', $customerEmail);
+                    continue;
+                }
+
                 $customerCollection->add($customer);
             }
 
             $this->gateway->upsertCustomerProfiles($context, $channelId, $customerCollection);
         }
+
+        return $warningMessages;
     }
 
     public function trackShippedOrder(Context $context, OrderTrackingEventsBag $trackingBag): OrderTrackingResult
