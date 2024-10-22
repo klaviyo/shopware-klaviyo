@@ -54,9 +54,18 @@ class SubscriberSyncOperation implements JobHandlerInterface
         /** @var SalesChannelEntity $channel */
         foreach ($this->getValidChannels->execute($message->getContext()) as $channel) {
             try {
-                $errors = $this->doOperation($message, $context, $channel);
-                foreach ($errors as $error) {
-                    $result->addMessage(new Message\ErrorMessage($error->getMessage()));
+                list ('errors' => $errors, 'warnings' => $warnings) = $this->doOperation($message, $context, $channel);
+
+                if (!empty($errors)) {
+                    foreach ($errors as $error) {
+                        $result->addMessage(new Message\ErrorMessage($error->getMessage()));
+                    }
+                }
+
+                if (!empty($warnings)) {
+                    foreach ($warnings as $warning) {
+                        $result->addMessage(new Message\WarningMessage($warning));
+                    }
                 }
             } catch (\Throwable $e) {
                 $result->addError($e);
@@ -90,6 +99,7 @@ class SubscriberSyncOperation implements JobHandlerInterface
         // This limit corresponds to the maximum number of entries for some Klaviyo endpoints.
         // Change only after making sure that this will not lead to data loss
         $criteria->setLimit(100);
+        $result = ['warnings' => [], 'errors' => []];
 
         /** @var NewsletterRecipientCollection $subscribersCollection */
         $subscribersCollectionIterator = new RepositoryIterator($this->subscriberRepository, $context, $criteria);
@@ -98,6 +108,15 @@ class SubscriberSyncOperation implements JobHandlerInterface
             $subscribersCollection = $collectionPart->getEntities();
 
             foreach ($subscribersCollection as $key => $recipient) {
+                if (!filter_var($recipient->getEmail(), FILTER_VALIDATE_EMAIL)) {
+                    $result['warnings'][] = \sprintf(
+                        'Unable to track subscriber with invalid email: %s',
+                        $recipient->getEmail()
+                    );
+                    $subscribersCollection->remove($key);
+                    continue;
+                }
+
                 if (NewsletterSubscribeRoute::STATUS_OPT_OUT === $recipient->getStatus()) {
                     $unsubscribedRecipients->add(new ProfileContactInfo($recipient->getId(), $recipient->getEmail()));
                     $subscribersCollection->remove($key);
@@ -109,13 +128,13 @@ class SubscriberSyncOperation implements JobHandlerInterface
 
                 if (0 !== $subscribersCollection->count()) {
                     if (EventsProcessingOperation::REALTIME_SUBSCRIBERS_OPERATION_LABEL === $message->getJobName()) {
-                        $result = $this->klaviyoGateway->subscribeToKlaviyoList(
+                        $result['errors'] = $this->klaviyoGateway->subscribeToKlaviyoList(
                             $channel,
                             $subscribersCollection,
                             $listId
                         );
                     } else {
-                        $result = $this->klaviyoGateway->addToKlaviyoProfilesList(
+                        $result['errors'] = $this->klaviyoGateway->addToKlaviyoProfilesList(
                             $channel,
                             $context,
                             $subscribersCollection,
@@ -130,6 +149,6 @@ class SubscriberSyncOperation implements JobHandlerInterface
             }
         }
 
-        return $result ?? [];
+        return $result;
     }
 }
