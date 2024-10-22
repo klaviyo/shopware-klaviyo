@@ -14,6 +14,7 @@ use Shopware\Core\Checkout\Customer\CustomerCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
+use Od\Scheduler\Model\Job\Message\WarningMessage;
 
 class CustomerProfileSyncOperation implements JobHandlerInterface
 {
@@ -46,10 +47,18 @@ class CustomerProfileSyncOperation implements JobHandlerInterface
 
         /** @var CustomerCollection $customers */
         $customers = $this->customerRepository->search($criteria, $message->getContext())->getEntities();
-        $this->eventsTracker->trackCustomerWritten(
+        $messageResult = $this->eventsTracker->trackCustomerWritten(
             $message->getContext(),
             ProfileEventsBag::fromCollection($customers)
         );
+
+        if (!empty($messageResult)) {
+            foreach ($messageResult as $message) {
+                $result->addMessage(new WarningMessage($message));
+            }
+
+            return $result;
+        }
 
         return new JobResult();
     }
