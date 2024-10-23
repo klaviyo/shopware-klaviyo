@@ -40,4 +40,15 @@ class JobResult
             return $k->getType() === MessageManager::TYPE_ERROR;
         });
     }
+
+    public function hasWarningMessages(): bool
+    {
+        if (!empty($this->getMessages())) {
+            return !empty(array_filter($this->messages, function ($k) {
+                return ($k->getType() === MessageManager::TYPE_WARNING);
+            }));
+        }
+
+        return false;
+    }
 }
