@@ -12,6 +12,7 @@ class JobEntity extends Entity
     const TYPE_RUNNING = 'running';
     const TYPE_SUCCEED = 'succeed';
     const TYPE_FAILED = 'error';
+    const TYPE_PARTIALLY = 'partially';
 
     use EntityIdTrait;
 

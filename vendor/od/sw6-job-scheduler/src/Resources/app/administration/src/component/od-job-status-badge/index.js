@@ -24,6 +24,8 @@ Component.register('od-job-status-badge', {
                 case 'succeed':
                 case 'running':
                     return 'success';
+                case 'partially':
+                    return 'warning';
                 default:
                     return '';
             }
