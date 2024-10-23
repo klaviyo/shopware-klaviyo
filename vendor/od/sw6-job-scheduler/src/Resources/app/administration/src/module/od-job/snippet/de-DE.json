@@ -39,7 +39,8 @@
                         "succeed": "erfolgreich",
                         "error": "fehlgeschlagen",
                         "pending": "ausstehend",
-                        "running": "in Bearbeitung"
+                        "running": "in Bearbeitung",
+                        "partially": "Teilweiser Erfolg"
                     },
                     "column": {
                         "type": "Typ",
