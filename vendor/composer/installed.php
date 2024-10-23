@@ -11,8 +11,8 @@
     ),
     'versions' => array(
         'od/sw6-job-scheduler' => array(
-            'pretty_version' => '1.0.6',
-            'version' => '1.0.6.0',
+            'pretty_version' => '1.0.7',
+            'version' => '1.0.7.0',
             'reference' => '3c44a5318739419ef6d86ac85bcfab3875c5d138',
             'type' => 'library',
             'install_path' => __DIR__ . '/../od/sw6-job-scheduler',
