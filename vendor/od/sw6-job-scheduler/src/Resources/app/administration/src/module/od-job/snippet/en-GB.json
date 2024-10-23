@@ -39,7 +39,8 @@
                         "succeed": "Success",
                         "error": "Failed",
                         "pending": "Pending",
-                        "running": "Running"
+                        "running": "Running",
+                        "partially": "Partially Successful"
                     },
                     "column": {
                         "type": "Type",
