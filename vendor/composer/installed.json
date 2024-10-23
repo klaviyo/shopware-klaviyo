@@ -3279,7 +3279,7 @@
             "description": "System library for async job scheduling for Shopware 6",
             "homepage": "https://bitbucket.org/overdosedigital/shopware-job-scheduler",
             "support": {
-                "source": "https://bitbucket.org/overdosedigital/shopware-job-scheduler/src/ea7550346dfeea01a820538d768f4f09ceffadd8/?at=3.0.0"
+                "source": "https://bitbucket.org/overdosedigital/shopware-job-scheduler/src/ea7550346dfeea01a820538d768f4f09ceffadd8/?at=3.0.1"
             },
             "install-path": "../od/sw6-job-scheduler"
         },

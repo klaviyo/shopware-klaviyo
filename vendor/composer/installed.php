@@ -404,8 +404,8 @@
             ),
         ),
         'od/sw6-job-scheduler' => array(
-            'pretty_version' => '3.0.0',
-            'version' => '3.0.0.0',
+            'pretty_version' => '3.0.1',
+            'version' => '3.0.1.0',
             'reference' => 'ea7550346dfeea01a820538d768f4f09ceffadd8',
             'type' => 'library',
             'install_path' => __DIR__ . '/../od/sw6-job-scheduler',
