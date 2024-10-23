@@ -77,6 +77,10 @@ class JobRunner
 
         if ($this->jobHelper->getChildJobs($message->getJobId(), self::NOT_FINISHED_STATUSES)->count() === 0) {
             $status = $result->hasErrors() ? JobEntity::TYPE_FAILED : JobEntity::TYPE_SUCCEED;
+
+            if ($status === JobEntity::TYPE_SUCCEED && $result->hasWarningMessages()) {
+                $status = JobEntity::TYPE_PARTIALLY;
+            }
         }
         else {
             $status = JobEntity::TYPE_RUNNING ;
