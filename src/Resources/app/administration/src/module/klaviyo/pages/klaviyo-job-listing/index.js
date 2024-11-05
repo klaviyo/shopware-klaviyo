@@ -59,7 +59,9 @@ Component.register('klaviyo-job-listing', {
                 'od-klaviyo-order-event-sync-handler',
                 'od-klaviyo-order-sync-handler',
                 'od-klaviyo-subscriber-sync-handler',
-                'od-klaviyo-daily-excluded-subscriber-sync-handler'
+                'od-klaviyo-daily-excluded-subscriber-sync-handler',
+                'od-klaviyo-full-customer-order-sync-handler',
+                'od-klaviyo-full-customer-subs-sync-handler',
             ];
         },
 
@@ -148,7 +150,9 @@ Component.register('klaviyo-job-listing', {
                 'od-klaviyo-order-event-sync-handler',
                 'od-klaviyo-order-sync-handler',
                 'od-klaviyo-subscriber-sync-handler',
-                'od-klaviyo-daily-excluded-subscriber-sync-handler'
+                'od-klaviyo-daily-excluded-subscriber-sync-handler',
+                'od-klaviyo-full-customer-order-sync-handler',
+                'od-klaviyo-full-customer-subs-sync-handler',
             ]));
 
             return this.jobRepository.search(criteria, Shopware.Context.api).then((items) => {
@@ -157,7 +161,8 @@ Component.register('klaviyo-job-listing', {
                     'Full Order Sync Operation',
                     'Excluded Subscribers Daily Sync',
                     'Full Subscriber Sync Operation',
-                    'Scheduled Events Sync'
+                    'Scheduled Events Sync',
+                    'Full Customer Sync Operation',
                 ];
 
                 this.statusFilterOptions = [];

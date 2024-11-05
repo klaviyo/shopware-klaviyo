@@ -4,11 +4,12 @@ namespace Klaviyo\Integration\Controller\Backoffice;
 
 use Klaviyo\Integration\Exception\JobAlreadyRunningException;
 use Klaviyo\Integration\Exception\JobAlreadyScheduledException;
+use Klaviyo\Integration\Model\UseCase\Operation\FullCustomerOrderSyncOperation;
+use Klaviyo\Integration\Model\UseCase\Operation\FullCustomerSubsSyncOperation;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @RouteScope(scopes={"api"})
@@ -19,10 +20,14 @@ use Symfony\Component\Routing\Annotation\Route;
 class JobController
 {
     private ScheduleBackgroundJob $scheduleBackgroundJob;
+    private SystemConfigService $systemConfigService;
 
-    public function __construct(ScheduleBackgroundJob $scheduleBackgroundJob)
-    {
+    public function __construct(
+        ScheduleBackgroundJob $scheduleBackgroundJob,
+        SystemConfigService   $systemConfigService
+    ) {
         $this->scheduleBackgroundJob = $scheduleBackgroundJob;
+        $this->systemConfigService = $systemConfigService;
     }
 
     /**
@@ -38,6 +43,13 @@ class JobController
     {
         return $this->doScheduleJob(function () use ($context) {
             $this->scheduleBackgroundJob->scheduleFullOrderSyncJob($context);
+            $isCustomerSyncOn = $this->systemConfigService->getBool(
+                FullCustomerOrderSyncOperation::IS_ENABLED_WITHOUT_ORDERS_SYNC
+            );
+
+            if ($isCustomerSyncOn) {
+                $this->scheduleBackgroundJob->scheduleFullCustomerOrderSyncJob($context);
+            }
         });
     }
 
@@ -54,6 +66,13 @@ class JobController
     {
         return $this->doScheduleJob(function () use ($context) {
             $this->scheduleBackgroundJob->scheduleFullSubscriberSyncJob($context);
+            $isCustomerSyncOn = $this->systemConfigService->getBool(
+                FullCustomerSubsSyncOperation::IS_ENABLED_WITHOUT_SUBSCRIBERS_SYNC
+            );
+
+            if ($isCustomerSyncOn) {
+                $this->scheduleBackgroundJob->scheduleFullCustomerSubsSyncJob($context);
+            }
         });
     }
 
