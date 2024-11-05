@@ -9,6 +9,8 @@ use Klaviyo\Integration\Async\Message;
 use Klaviyo\Integration\Entity\Helper\ExcludedSubscribersProvider;
 use Klaviyo\Integration\Exception\{JobAlreadyRunningException, JobAlreadyScheduledException};
 use Klaviyo\Integration\Model\UseCase\Operation\{FullOrderSyncOperation, FullSubscriberSyncOperation};
+use Klaviyo\Integration\Model\UseCase\Operation\FullCustomerSubsSyncOperation;
+use Klaviyo\Integration\Model\UseCase\Operation\FullCustomerOrderSyncOperation;
 use Klaviyo\Integration\System\ConfigService;
 use Klaviyo\Integration\System\Scheduling\ExcludedSubscriberSync;
 use Od\Scheduler\Entity\Job\JobEntity;
@@ -64,6 +66,44 @@ class ScheduleBackgroundJob
             $currentOffset = 0;
         }
         $jobMessage = new Message\FullSubscriberSyncMessage(Uuid::randomHex(), null, $context, $currentOffset);
+        $this->scheduler->schedule($jobMessage);
+    }
+
+    /**
+     * @throws JobAlreadyRunningException
+     * @throws JobAlreadyScheduledException
+     * @throws Exception
+     */
+    public function scheduleFullCustomerOrderSyncJob(Context $context): void
+    {
+        $this->checkJobStatus(FullCustomerOrderSyncOperation::OPERATION_HANDLER_CODE, $context);
+        $currentOffset = $this->configService->getConfigValueWithoutCache(FullCustomerOrderSyncOperation::SYNC_CUSTOMER_OFFSET_CONFIG_KEY) ?? -1;
+
+        if ($currentOffset < 0) {
+            $this->systemConfigService->set(FullCustomerOrderSyncOperation::SYNC_CUSTOMER_OFFSET_CONFIG_KEY, 0);
+            $currentOffset = 0;
+        }
+
+        $jobMessage = new Message\FullCustomerOrderSyncMessage(Uuid::randomHex(), null, $context, $currentOffset);
+        $this->scheduler->schedule($jobMessage);
+    }
+
+    /**
+     * @throws JobAlreadyRunningException
+     * @throws JobAlreadyScheduledException
+     * @throws Exception
+     */
+    public function scheduleFullCustomerSubsSyncJob(Context $context): void
+    {
+        $this->checkJobStatus(FullCustomerSubsSyncOperation::OPERATION_HANDLER_CODE, $context);
+        $currentOffset = $this->configService->getConfigValueWithoutCache(FullCustomerSubsSyncOperation::SYNC_CUSTOMER_OFFSET_CONFIG_KEY) ?? -1;
+
+        if ($currentOffset < 0) {
+            $this->systemConfigService->set(FullCustomerSubsSyncOperation::SYNC_CUSTOMER_OFFSET_CONFIG_KEY, 0);
+            $currentOffset = 0;
+        }
+
+        $jobMessage = new Message\FullCustomerSubsSyncMessage(Uuid::randomHex(), null, $context, $currentOffset);
         $this->scheduler->schedule($jobMessage);
     }
 
