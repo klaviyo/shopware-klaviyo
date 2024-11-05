@@ -200,6 +200,14 @@
             "excludedSubscribersSynchronization": {
                 "label": "Tägliche Synchronisierung der ausgeschlossenen Abonnenten aktivieren",
                 "helpText": "Mit dieser Option können Sie die tägliche geplante Synchronisierung der ausgeschlossenen Abonnenten aktivieren."
+            },
+            "withoutSubscribersSync": {
+                "label": "Kunden ohne Abonnement für die Synchronisierung aktivieren",
+                "helpText": "Mit dieser Option können Sie in Klaviyo Profile von Kunden erstellen, die kein Abonnement haben, wenn Sie Abonnenten synchronisieren"
+            },
+            "withoutOrdersSync": {
+                "label": "Synchronisation aktivieren Kunden ohne Auftrag",
+                "helpText": "Diese Option erlaubt es, beim Start der historischen Synchronisation, in Klaviyo Profile von Kunden zu erstellen, die keine Bestellungen haben"
             }
         },
         "customer": {
