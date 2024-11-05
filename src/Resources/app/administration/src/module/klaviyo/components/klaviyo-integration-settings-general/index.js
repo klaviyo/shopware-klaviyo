@@ -190,7 +190,8 @@ Component.register('klaviyo-integration-settings-general', {
                     cookieConsent: 'shopware',
                     dailySynchronizationTime: false,
                     oldJobCleanupPeriod: 5,
-                    excludedSubscribersSynchronization: true
+                    withoutSubscribersSync: false,
+                    withoutOrdersSync: false
                 };
 
             /**
