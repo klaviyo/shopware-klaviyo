@@ -35,6 +35,7 @@
         <!-- Controllers -->
         <service id="Klaviyo\Integration\Controller\Backoffice\JobController" public="true">
             <argument type="service" id="Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="monolog.logger.od_klaviyo"/>
         </service>
         <service id="Klaviyo\Integration\Controller\Backoffice\PromotionsExportController" public="true">
