@@ -392,7 +392,7 @@
                     <sw-container>
 
                         {% block klaviyo_integration_settings_general_without_orders_sync %}
-                            <sw-inherit-wrapper v-model="actualConfigData['klavi_overd.config.withoutOrdersSync']"
+                            <sw-inherit-wrapper v-model:value="actualConfigData['klavi_overd.config.withoutOrdersSync']"
                                                 :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['klavi_overd.config.withoutOrdersSync']"
                                                 :customInheritationCheckFunction="checkBoolFieldInheritance">
                                 <template #content="props">
@@ -401,8 +401,8 @@
                                                      :label="$tc('klaviyo-integration-settings.configs.withoutOrdersSync.label')"
                                                      :helpText="$tc('klaviyo-integration-settings.configs.withoutOrdersSync.helpText')"
                                                      :disabled="props.isInherited"
-                                                     :value="props.currentValue"
-                                                     @change="props.updateCurrentValue">
+                                                     :modelValue="props.currentValue"
+                                                     @update:value="props.updateCurrentValue">
                                     </sw-switch-field>
                                 </template>
                             </sw-inherit-wrapper>
@@ -420,7 +420,7 @@
                     <sw-container>
 
                         {% block klaviyo_integration_settings_general_without_subscribers_sync %}
-                            <sw-inherit-wrapper v-model="actualConfigData['klavi_overd.config.withoutSubscribersSync']"
+                            <sw-inherit-wrapper v-model:value="actualConfigData['klavi_overd.config.withoutSubscribersSync']"
                                                 :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['klavi_overd.config.withoutSubscribersSync']"
                                                 :customInheritationCheckFunction="checkBoolFieldInheritance">
                                 <template #content="props">
@@ -429,8 +429,8 @@
                                                      :label="$tc('klaviyo-integration-settings.configs.withoutSubscribersSync.label')"
                                                      :helpText="$tc('klaviyo-integration-settings.configs.withoutSubscribersSync.helpText')"
                                                      :disabled="props.isInherited"
-                                                     :value="props.currentValue"
-                                                     @change="props.updateCurrentValue">
+                                                     :modelValue="props.currentValue"
+                                                     @update:value="props.updateCurrentValue">
                                     </sw-switch-field>
                                 </template>
                             </sw-inherit-wrapper>
