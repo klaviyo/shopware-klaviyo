@@ -10,6 +10,8 @@ use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Routing\Annotation\Route;
+use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 
 /**
  * @RouteScope(scopes={"api"})
