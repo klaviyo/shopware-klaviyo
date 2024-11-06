@@ -395,11 +395,11 @@
                     <sw-container>
 
                         {% block klaviyo_integration_settings_general_without_orders_sync %}
-                            <sw-inherit-wrapper v-model="actualConfigData['klavi_overd.config.withoutOrdersSync']"
-                                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['klavi_overd.config.withoutOrdersSync']"
+                            <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.withoutOrdersSync']"
+                                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.withoutOrdersSync']"
                                                 :customInheritationCheckFunction="checkBoolFieldInheritance">
                                 <template #content="props">
-                                    <sw-switch-field name="klavi_overd.config.withoutOrdersSync"
+                                    <sw-switch-field name="KlaviyoIntegrationPlugin.config.withoutOrdersSync"
                                                      :mapInheritance="props"
                                                      :label="$tc('klaviyo-integration-settings.configs.withoutOrdersSync.label')"
                                                      :helpText="$tc('klaviyo-integration-settings.configs.withoutOrdersSync.helpText')"
@@ -423,11 +423,11 @@
                     <sw-container>
 
                         {% block klaviyo_integration_settings_general_without_subscribers_sync %}
-                            <sw-inherit-wrapper v-model="actualConfigData['klavi_overd.config.withoutSubscribersSync']"
-                                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['klavi_overd.config.withoutSubscribersSync']"
+                            <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.withoutSubscribersSync']"
+                                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.withoutSubscribersSync']"
                                                 :customInheritationCheckFunction="checkBoolFieldInheritance">
                                 <template #content="props">
-                                    <sw-switch-field name="klavi_overd.config.withoutSubscribersSync"
+                                    <sw-switch-field name="KlaviyoIntegrationPlugin.config.withoutSubscribersSync"
                                                      :mapInheritance="props"
                                                      :label="$tc('klaviyo-integration-settings.configs.withoutSubscribersSync.label')"
                                                      :helpText="$tc('klaviyo-integration-settings.configs.withoutSubscribersSync.helpText')"
