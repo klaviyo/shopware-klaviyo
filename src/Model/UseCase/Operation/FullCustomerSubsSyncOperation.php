@@ -19,18 +19,31 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 class FullCustomerSubsSyncOperation implements JobHandlerInterface, GeneratingHandlerInterface
 {
     public const OPERATION_HANDLER_CODE = 'od-klaviyo-full-customer-subs-sync-handler';
-    public const SYNC_CUSTOMER_OFFSET_CONFIG_KEY = 'klavi_overd.cron.fullCustomerSubsSyncOffset';
-    public const IS_ENABLED_WITHOUT_SUBSCRIBERS_SYNC = 'klavi_overd.config.withoutSubscribersSync';
+    public const SYNC_CUSTOMER_OFFSET_CONFIG_KEY = 'KlaviyoIntegrationPlugin.cron.fullCustomerSubsSyncOffset';
+    public const IS_ENABLED_WITHOUT_SUBSCRIBERS_SYNC = 'KlaviyoIntegrationPlugin.config.withoutSubscribersSync';
     private const CUSTOMER_BATCH_SIZE = 100;
 
+    private ScheduleBackgroundJob $scheduleBackgroundJob;
+    private EntityRepository      $customerRepository;
+    private GetValidChannels      $getValidChannels;
+    private LoggerInterface       $logger;
+    private SystemConfigService   $systemConfigService;
+    private ConfigService   $configService;
+
     public function __construct(
-        private readonly ScheduleBackgroundJob $scheduleBackgroundJob,
-        private readonly EntityRepository      $customerRepository,
-        private readonly GetValidChannels      $getValidChannels,
-        private readonly LoggerInterface       $logger,
-        private readonly SystemConfigService   $systemConfigService,
-        private readonly ConfigService   $configService
+        ScheduleBackgroundJob $scheduleBackgroundJob,
+        EntityRepository      $customerRepository,
+        GetValidChannels      $getValidChannels,
+        LoggerInterface       $logger,
+        SystemConfigService   $systemConfigService,
+        ConfigService   $configService
     ) {
+        $this->scheduleBackgroundJob = $scheduleBackgroundJob;
+        $this->customerRepository = $customerRepository;
+        $this->getValidChannels = $getValidChannels;
+        $this->logger = $logger;
+        $this->systemConfigService = $systemConfigService;
+        $this->configService = $configService;
     }
 
     /**
