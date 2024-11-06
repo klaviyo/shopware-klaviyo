@@ -12,18 +12,23 @@ use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
-use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-#[AsMessageHandler(handles: ScheduleFullCustomerSubsSyncTask::class)]
-final class ScheduleFullCustomerSubsSyncTaskHandler extends ScheduledTaskHandler
+class ScheduleFullCustomerSubsSyncTaskHandler extends ScheduledTaskHandler
 {
+    private  ScheduleBackgroundJob $scheduleBackgroundJob;
+    private  LoggerInterface $logger;
+    private  ConfigService   $configService;
+
     public function __construct(
-        protected EntityRepository $scheduledTaskRepository,
-        private readonly ScheduleBackgroundJob $scheduleBackgroundJob,
-        private readonly LoggerInterface $logger,
-        private readonly ConfigService   $configService
+        EntityRepository $scheduledTaskRepository,
+        ScheduleBackgroundJob $scheduleBackgroundJob,
+        LoggerInterface $logger,
+        ConfigService   $configService
     ) {
         parent::__construct($scheduledTaskRepository, $logger);
+        $this->scheduleBackgroundJob = $scheduleBackgroundJob;
+        $this->logger = $logger;
+        $this->configService = $configService;
     }
 
     /**
@@ -42,5 +47,10 @@ final class ScheduleFullCustomerSubsSyncTaskHandler extends ScheduledTaskHandler
         } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
         }
+    }
+
+    public static function getHandledMessages(): iterable
+    {
+        return [ScheduleFullCustomerSubsSyncTask::class];
     }
 }
