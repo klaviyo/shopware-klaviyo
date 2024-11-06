@@ -37,9 +37,10 @@ class JobController
      *     methods={"POST"},
      *     requirements={"version"="\d+"}
      * )
+     * @param Context $context
      * @return JsonResponse
      */
-    public function scheduleHistoricalEventTrackingSynchronizationAction(Context $context)
+    public function scheduleHistoricalEventTrackingSynchronizationAction(Context $context): JsonResponse
     {
         return $this->doScheduleJob(function () use ($context) {
             $this->scheduleBackgroundJob->scheduleFullOrderSyncJob($context);
@@ -60,9 +61,10 @@ class JobController
      *     methods={"POST"},
      *     requirements={"version"="\d+"}
      * )
+     * @param Context $context
      * @return JsonResponse
      */
-    public function scheduleSubscribersSynchronizationAction(Context $context)
+    public function scheduleSubscribersSynchronizationAction(Context $context): JsonResponse
     {
         return $this->doScheduleJob(function () use ($context) {
             $this->scheduleBackgroundJob->scheduleFullSubscriberSyncJob($context);
@@ -76,7 +78,7 @@ class JobController
         });
     }
 
-    private function doScheduleJob(\Closure $scheduler)
+    private function doScheduleJob(\Closure $scheduler): JsonResponse
     {
         try {
             $scheduler();
