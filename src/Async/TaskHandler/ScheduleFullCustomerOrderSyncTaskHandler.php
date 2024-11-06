@@ -10,7 +10,7 @@ use Klaviyo\Integration\System\ConfigService;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
 
 class ScheduleFullCustomerOrderSyncTaskHandler extends ScheduledTaskHandler
@@ -20,12 +20,12 @@ class ScheduleFullCustomerOrderSyncTaskHandler extends ScheduledTaskHandler
     private  ConfigService   $configService;
 
     public function __construct(
-        EntityRepository $scheduledTaskRepository,
+        EntityRepositoryInterface $scheduledTaskRepository,
         ScheduleBackgroundJob $scheduleBackgroundJob,
         LoggerInterface $logger,
         ConfigService   $configService
     ) {
-        parent::__construct($scheduledTaskRepository, $logger);
+        parent::__construct($scheduledTaskRepository);
         $this->scheduleBackgroundJob = $scheduleBackgroundJob;
         $this->logger = $logger;
         $this->configService = $configService;
