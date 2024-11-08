@@ -1,10 +1,16 @@
 # 3.2.0
-# Neu: Die Synchronisierung von Kunden, die keine Bestellungen oder Abonnements haben, wurde hinzugefügt, wenn die entsprechenden historischen Synchronisierungen initiiert werden.
-# Neu: Der Job Scheduler wurde um den neuen Status Teilweise erfolgreich erweitert. Er signalisiert, dass die Aufgabe teilweise abgeschlossen wurde.
-# Neu: Aktualisierung der API-Revision auf die neueste Version. Verbesserte Leistung bei der Erstellung und Aktualisierung von Kunden - zusätzliche Anfragen wurden entfernt.
-# Fix: Fehler bei der Profilverdopplung beim Senden von Kundendaten an Klaviyo behoben.
-# Fix: Es wurde ein Problem behoben, das in der Antwort auftrat, wenn ein Profil von Klaviyo identifiziert wurde.
-
+# New: Added synchronization of customers who do not have orders or subscriptions when initiating the corresponding historical synchronizations. Two new Cron Jobs have been added: _**klaviyo.job.full_customer_subs_sync_processing**_ and **_klaviyo.job.full_customer_order_sync_processing_**
+## Documentation:
+https://overdosedigital.atlassian.net/wiki/spaces/KS6PUG/pages/3495821316/Synchronize+Historical+Data
+# New: A new status Partially Successful has been added to the Job Scheduler. It signals that the task has been partially completed.
+## Documentation:
+https://overdosedigital.atlassian.net/wiki/spaces/KS6PUG/pages/3031007243/Job+Scheduling+Overview
+# New: Updating the API revision to the latest one - **2024-10-15**. Improved performance of customer creation and update - additional requests removed.
+# New: Added check for invalid emails when synchronizing customers and subscribers.
+# Fix: Fixed profile duplication bug when sending customer data to Klaviyo.
+### Fixed error: "A profile already exist with one of these identifiers"
+# Fix: Fixed an issue that occurred in the response when identifying a profile from Klaviyo.
+### Fixed error: "Identify Profile API response expected to be a JSON"
 
 # 3.1.3
 # Fix: Fixing errors with loading plugin dependencies when installing and enabling it.
