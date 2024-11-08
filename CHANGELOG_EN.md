@@ -1,3 +1,10 @@
+# 1.13.0
+# New: Added synchronization of customers who do not have orders or subscriptions when initiating the corresponding historical synchronizations.
+# New: A new status Partially Successful has been added to the Job Scheduler. It signals that the task has been partially completed.
+# New: Updating the API revision to the latest one. Improved performance of customer creation and update - additional requests removed.
+# Fix: Fixed profile duplication bug when sending customer data to Klaviyo.
+# Fix: Fixed an issue that occurred in the response when identifying a profile from Klaviyo.
+
 # 1.12.1
 # Fix: Added a fix for the problem of getting the current offset during historical synchronizations.
 
