@@ -1,3 +1,11 @@
+# 3.2.0
+# Neu: Die Synchronisierung von Kunden, die keine Bestellungen oder Abonnements haben, wurde hinzugefügt, wenn die entsprechenden historischen Synchronisierungen initiiert werden.
+# Neu: Der Job Scheduler wurde um den neuen Status Teilweise erfolgreich erweitert. Er signalisiert, dass die Aufgabe teilweise abgeschlossen wurde.
+# Neu: Aktualisierung der API-Revision auf die neueste Version. Verbesserte Leistung bei der Erstellung und Aktualisierung von Kunden - zusätzliche Anfragen wurden entfernt.
+# Fix: Fehler bei der Profilverdopplung beim Senden von Kundendaten an Klaviyo behoben.
+# Fix: Es wurde ein Problem behoben, das in der Antwort auftrat, wenn ein Profil von Klaviyo identifiziert wurde.
+
+
 # 3.1.3
 # Fix: Fixing errors with loading plugin dependencies when installing and enabling it.
 
