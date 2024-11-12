@@ -1,3 +1,17 @@
+# 3.2.0
+# Neu: Hinzufügen der Synchronisation von Kunden, die keine Bestellungen oder Abonnements haben, wenn die entsprechenden historischen Synchronisationen initiiert werden. Zwei neue Cron Jobs wurden hinzugefügt: _**klaviyo.job.full_customer_subs_sync_processing**_ und **_klaviyo.job.full_customer_order_sync_processing_**
+## Dokumentation:
+https://overdosedigital.atlassian.net/wiki/spaces/KS6PUG/pages/3495821316/Synchronize+Historical+Data
+# Neu: Der Job Scheduler wurde um den neuen Status Teilweise erfolgreich erweitert. Er signalisiert, dass die Aufgabe teilweise abgeschlossen wurde.
+## Dokumentation:
+https://overdosedigital.atlassian.net/wiki/spaces/KS6PUG/pages/3031007243/Job+Scheduling+Overview
+# Neu: Aktualisierung der API-Revision auf die neueste Version - 2024-10-15. Verbesserte Leistung bei der Erstellung und Aktualisierung von Kunden - zusätzliche Anfragen wurden entfernt.
+# Neu: Überprüfung auf ungültige E-Mails bei der Synchronisierung von Kunden und Abonnenten hinzugefügt.
+# Fix: Fehler bei der Profilverdopplung beim Senden von Kundendaten an Klaviyo behoben.
+### Fehler behoben: "A profile already exist with one of these identifiers"
+# Fix: Es wurde ein Problem behoben, das in der Antwort auftrat, wenn ein Profil von Klaviyo identifiziert wurde.
+### Fehler behoben: "Identify Profile API response expected to be a JSON"
+
 # 3.1.3
 # Fix: Behebung von Fehlern beim Laden von Plugin-Abhängigkeiten bei der Installation und Aktivierung des Plugins.
 
