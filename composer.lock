@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "73b66583e780417474cdab2950ec45c6",
+    "content-hash": "f8f0ce5099e0a86381eaa33f02ebdf69",
     "packages": [
         {
             "name": "od/sw6-job-scheduler",
-            "version": "1.0.6",
+            "version": "1.0.7",
             "source": {
                 "type": "git",
                 "url": "https://bitbucket.org/overdosedigital/shopware-job-scheduler.git",
-                "reference": "3c44a5318739419ef6d86ac85bcfab3875c5d138"
+                "reference": "090ba4622aa0c75a00e4965895ad37b2bd655cec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://bitbucket.org/overdosedigital/shopware-job-scheduler/get/3c44a5318739419ef6d86ac85bcfab3875c5d138.zip",
-                "reference": "3c44a5318739419ef6d86ac85bcfab3875c5d138",
+                "url": "https://bitbucket.org/overdosedigital/shopware-job-scheduler/get/090ba4622aa0c75a00e4965895ad37b2bd655cec.zip",
+                "reference": "090ba4622aa0c75a00e4965895ad37b2bd655cec",
                 "shasum": ""
             },
             "require": {
@@ -48,8 +48,9 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "^7.4 || ^8.0"
+        "php": "^7.4 || ^8.0",
+        "ext-json": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.2.0"
 }
