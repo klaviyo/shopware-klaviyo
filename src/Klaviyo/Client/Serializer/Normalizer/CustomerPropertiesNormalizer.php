@@ -30,7 +30,6 @@ class CustomerPropertiesNormalizer implements NormalizerInterface
         );
 
         return [
-                'external_id' => $object->getId(),
                 'email' => $object->getEmail(),
                 'first_name' => $object->getFirstName(),
                 'last_name' => $object->getLastName(),
