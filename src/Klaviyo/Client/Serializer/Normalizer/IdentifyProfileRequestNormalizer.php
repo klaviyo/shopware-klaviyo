@@ -24,7 +24,6 @@ class IdentifyProfileRequestNormalizer extends AbstractNormalizer
         return ['data' => ['type' => 'profile', 'attributes' => [
             'email' => $customerProperties->getEmail(),
             'phone_number' => $customerProperties->getPhoneNumber(),
-            'external_id' => $customerProperties->getId(),
             'first_name' => $customerProperties->getFirstName(),
             'last_name' => $customerProperties->getLastName(),
             'location' => [
