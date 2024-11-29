@@ -1,3 +1,8 @@
+# 1.13.1
+# Fix: A problem was fixed, due to which in some cases there was an error with the status of 409.
+### Fixed error: "Conflict trying to update profile"
+### Fixed error: "A profile already exists with one of these identifiers."
+
 # 1.13.0
 # New: Added synchronization of customers who do not have orders or subscriptions when initiating the corresponding historical synchronizations. Two new Cron Jobs have been added: _**klaviyo.job.full_customer_subs_sync_processing**_ and **_klaviyo.job.full_customer_order_sync_processing_**
 ## Documentation:
