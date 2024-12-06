@@ -15,8 +15,8 @@ class AddProfilesToListRequestsNormalizer extends AbstractNormalizer
         $profiles = [];
         $data = [
             'data' => [
-                'type' => 'profile-bulk-import-job',
-                'relationships' => ['lists' => ['data' => [['type' => 'list', 'id' => $object->getListId()]]]],
+                'type' => 'profile-subscription-bulk-create-job',
+                'relationships' => ['list' => ['data' => ['type' => 'list', 'id' => $object->getListId()]]],
             ],
         ];
 
@@ -26,14 +26,19 @@ class AddProfilesToListRequestsNormalizer extends AbstractNormalizer
                 'type' => 'profile',
                 'attributes' => [
                     'email' => $profile->getEmail(),
-                    'first_name' => $profile->getFirstname(),
-                    'last_name' => $profile->getLastname(),
-                    'title' => $profile->getSalutation(),
+                    'subscriptions' => [
+                        'email' => [
+                            'marketing' => [
+                                'consent' => 'SUBSCRIBED',
+                            ]
+                        ]
+                    ]
                 ],
             ];
         }
 
         $data['data']['attributes']['profiles']['data'] = $profiles;
+        $data['data']['attributes']['historical_import'] = false;
 
         return $data;
     }
