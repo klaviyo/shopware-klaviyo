@@ -35,7 +35,8 @@ class SubscribersToKlaviyoRequestsTranslator
                 $recipientEntity->getEmail(),
                 $recipientEntity->getFirstName(),
                 $recipientEntity->getLastName(),
-                $salutation
+                $salutation,
+                $recipientEntity->getCreatedAt()
             ));
         }
 
