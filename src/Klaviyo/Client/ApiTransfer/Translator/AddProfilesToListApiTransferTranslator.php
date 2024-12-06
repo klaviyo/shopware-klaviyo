@@ -10,6 +10,9 @@ use Klaviyo\Integration\Klaviyo\Gateway\ClientConfigurationFactory;
 use Psr\Http\Message\ResponseInterface;
 use Shopware\Core\Framework\Context;
 
+/**
+ * Mass Subscribers Update
+ */
 class AddProfilesToListApiTransferTranslator extends AbstractApiTransferMessageTranslator
 {
     /**
@@ -20,7 +23,7 @@ class AddProfilesToListApiTransferTranslator extends AbstractApiTransferMessageT
         $body = $this->serialize($request);
 
         $url = \sprintf(
-            '%s/profile-bulk-import-jobs',
+            '%s/profile-subscription-bulk-create-jobs',
             $this->configuration->getGlobalNewEndpointUrl()
         );
 
