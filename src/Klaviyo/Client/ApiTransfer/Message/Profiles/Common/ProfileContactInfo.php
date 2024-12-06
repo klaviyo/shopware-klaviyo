@@ -2,6 +2,8 @@
 
 namespace Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Common;
 
+use DateTimeInterface;
+
 class ProfileContactInfo
 {
     private string $customerId;
@@ -9,19 +11,22 @@ class ProfileContactInfo
     private ?string $firstname;
     private ?string $lastname;
     private ?string $salutation;
+    private ?DateTimeInterface $createdAt;
 
     public function __construct(
         string $customerId,
         string $email = null,
         string $firstname = null,
         string $lastname = null,
-        string $salutation = null
+        string $salutation = null,
+        DateTimeInterface $createdAt = null
     ) {
         $this->customerId = $customerId;
         $this->email = $email;
         $this->firstname = $firstname;
         $this->lastname = $lastname;
         $this->salutation = $salutation;
+        $this->createdAt = $createdAt;
     }
 
     public function getCustomerId(): ?string
@@ -47,5 +52,10 @@ class ProfileContactInfo
     public function getSalutation(): ?string
     {
         return $this->salutation;
+    }
+
+    public function getCreatedAt(): ?DateTimeInterface
+    {
+        return $this->createdAt;
     }
 }
