@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Klaviyo\Integration\Klaviyo\Gateway\Translator;
 
+use Klaviyo\Integration\Configuration\ConfigurationRegistry;
 use Klaviyo\Integration\Storefront\Checkout\Cart\RestoreUrlService\RestoreUrlServiceInterface;
 use Klaviyo\Integration\Entity\Helper\{NewsletterSubscriberHelper, ProductDataHelper};
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\CartEvent\AddedToCartEventTrackingRequest;
@@ -22,6 +23,8 @@ class CartEventRequestTranslator
     private NewsletterSubscriberHelper $newsletterSubscriberHelper;
     private RequestStack $requestStack;
     private NewsletterSubscriberPropertiesTranslator $newsletterSubscriberPropertiesTranslator;
+    private ConfigurationRegistry $configurationRegistry;
+    private string $productTypeNumber;
 
     public function __construct(
         CustomerPropertiesTranslator $customerPropertiesTranslator,
@@ -29,7 +32,8 @@ class CartEventRequestTranslator
         RestoreUrlServiceInterface $urlGenerator,
         NewsletterSubscriberHelper $newsletterSubscriberHelper,
         RequestStack $requestStack,
-        NewsletterSubscriberPropertiesTranslator $newsletterSubscriberPropertiesTranslator
+        NewsletterSubscriberPropertiesTranslator $newsletterSubscriberPropertiesTranslator,
+        ConfigurationRegistry $configurationRegistry
     ) {
         $this->customerPropertiesTranslator = $customerPropertiesTranslator;
         $this->productDataHelper = $productDataHelper;
@@ -37,6 +41,7 @@ class CartEventRequestTranslator
         $this->newsletterSubscriberHelper = $newsletterSubscriberHelper;
         $this->requestStack = $requestStack;
         $this->newsletterSubscriberPropertiesTranslator = $newsletterSubscriberPropertiesTranslator;
+        $this->configurationRegistry = $configurationRegistry;
     }
 
     /**
@@ -50,6 +55,10 @@ class CartEventRequestTranslator
     ): AddedToCartEventTrackingRequest {
         $request = $this->requestStack->getCurrentRequest();
         $subscriberId = (string) $request->cookies->get('klaviyo_subscriber');
+
+        $this->productTypeNumber = $this->configurationRegistry->getConfiguration(
+            $context->getSalesChannelId()
+        )->getBisVariantField();
 
         if ($context->getCustomer()) {
             $customerProperties = $this->customerPropertiesTranslator->translateCustomer(
@@ -86,7 +95,7 @@ class CartEventRequestTranslator
             $cart->getPrice()->getTotalPrice(),
             $lineItem->getPrice()->getTotalPrice(),
             $lineItem->getLabel(),
-            $lineItem->getReferencedId(),
+            $this->productTypeNumber == 'product-id' ? $lineItem->getReferencedId() : $addedProductInfo->getSku(),
             $addedProductInfo->getSku(),
             $addedProductInfo->getProductCategories(),
             $addedProductInfo->getImageUrl(),
@@ -113,7 +122,7 @@ class CartEventRequestTranslator
         $price = $lineItem->getPrice();
 
         return new CartEventDTO\CartProductInfo(
-            $lineItem->getReferencedId(),
+            $this->productTypeNumber == 'product-id' ? $lineItem->getReferencedId() : $product->getProductNumber(),
             $product->getProductNumber(),
             $lineItem->getLabel(),
             $lineItem->getQuantity(),

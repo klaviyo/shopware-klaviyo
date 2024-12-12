@@ -100,6 +100,14 @@
                                                                             } %}
                                                                         </div>
                                                                     {% endblock %}
+                                                                    {% block klaviyo_back_in_stock_modal_variant_error_message %}
+                                                                        <div class="klaviyo-error-variant klaviyo-message d-none mb-4">
+                                                                                {% sw_include '@Storefront/storefront/utilities/alert.html.twig' with {
+                                                                                        type: 'danger',
+                                                                                        content: 'klaviyo.back-in-stock.messages.response-error-variant-message'|trans|sw_sanitize
+                                                                                } %}
+                                                                        </div>
+                                                                    {% endblock %}
                                                                     {% block klaviyo_back_in_stock_modal_not_valid_email_message %}
                                                                         <div class="klaviyo-email-not-valid klaviyo-message d-none mb-4">
                                                                             {% sw_include '@Storefront/storefront/utilities/alert.html.twig' with {

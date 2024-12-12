@@ -14,7 +14,8 @@
             "messages": {
                 "not-valid-email": "Kein korrektes E-Mail Format!",
                 "response-error-message": "Etwas ist schief gelaufen. Bitte nocheinmal probieren!",
-                "response-success-message": "Erfolgreich angemeldet!"
+                "response-success-message": "Erfolgreich angemeldet!",
+                "response-error-variant-message": "Dieses Produkt ist nicht in Klaviyo verfügbar. Bitte synchronisieren Sie Produkte."
             }
         },
         "cookie": {
