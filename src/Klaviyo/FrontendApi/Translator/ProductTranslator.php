@@ -46,31 +46,29 @@ class ProductTranslator
             $name = $parentProduct->getName();
         }
 
-        $productIdType = $this->configurationRegistry->getConfiguration(
-            $salesChannelContext->getSalesChannelId()
-        )->getBisVariantField();
-
         if ($name == null) {
-            if ($productIdType === 'product-number') {
-                if (isset($parentProduct)) {
-                    $prodId = $parentProduct->getProductNumber();
-                } else {
-                    $prodId = $product->getProductNumber();
-                }
+            if (isset($parentProduct)) {
+                $prodId = $parentProduct->getId();
             } else {
-                if (isset($parentProduct)) {
-                    $prodId = $parentProduct->getId();
-                } else {
-                    $prodId = $product->getId();
-                }
+                $prodId = $product->getId();
             }
 
             $name = $this->productDataHelper->getProductNameById($prodId);
         }
 
+        $productIdType = $this->configurationRegistry->getConfiguration(
+            $salesChannelContext->getSalesChannelId()
+        )->getBisVariantField();
+
+        if ($productIdType === 'product-number') {
+            $productId = $product->getProductNumber();
+        } else {
+            $productId = $product->getId();
+        }
+
         return new ProductInfo(
             $name,
-            $product->getId(),
+            $productId,
             $product->getProductNumber(),
             $categories,
             $imageUrl,
