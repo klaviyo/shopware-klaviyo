@@ -14,7 +14,8 @@
             "messages": {
                 "not-valid-email": "Email isn't valid formatted email address!",
                 "response-error-message": "Something went wrong, please try again later!",
-                "response-success-message": "You've successfully subscribed!"
+                "response-success-message": "You've successfully subscribed!",
+                "response-error-variant-message": "This product is not available in Klaviyo. Please sync products."
             }
         },
         "cookie": {
