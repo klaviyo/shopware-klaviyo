@@ -2,22 +2,24 @@
 
 namespace Klaviyo\Integration\Klaviyo\FrontendApi\Translator;
 
+use Klaviyo\Integration\Configuration\ConfigurationRegistry;
 use Klaviyo\Integration\Entity\Helper\ProductDataHelper;
 use Klaviyo\Integration\Klaviyo\FrontendApi\DTO\ProductInfo;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Api\Context\SystemSource;
 
 class ProductTranslator
 {
     private ProductDataHelper $productDataHelper;
+    private ConfigurationRegistry $configurationRegistry;
 
-    public function __construct(ProductDataHelper $productDataHelper)
-    {
+    public function __construct(
+        ProductDataHelper $productDataHelper,
+        ConfigurationRegistry $configurationRegistry,
+    ) {
         $this->productDataHelper = $productDataHelper;
+        $this->configurationRegistry = $configurationRegistry;
     }
 
     public function translateToProductInfo(
@@ -44,11 +46,23 @@ class ProductTranslator
             $name = $parentProduct->getName();
         }
 
+        $productIdType = $this->configurationRegistry->getConfiguration(
+            $salesChannelContext->getSalesChannelId()
+        )->getBisVariantField();
+
         if ($name == null) {
-            if (isset($parentProduct)) {
-                $prodId = $parentProduct->getId();
+            if ($productIdType === 'product-number') {
+                if (isset($parentProduct)) {
+                    $prodId = $parentProduct->getProductNumber();
+                } else {
+                    $prodId = $product->getProductNumber();
+                }
             } else {
-                $prodId = $product->getId();
+                if (isset($parentProduct)) {
+                    $prodId = $parentProduct->getId();
+                } else {
+                    $prodId = $product->getId();
+                }
             }
 
             $name = $this->productDataHelper->getProductNameById($prodId);
