@@ -379,7 +379,7 @@ class OrderEventRequestTranslator
 
                 $products->add(
                     new OrderProductItemInfo(
-                        $lineItem->getId(),
+                        $context->productIdentificationType == 'product-id' ? $lineItem->getId() : $productNumber,
                         $productNumber,
                         $lineItem->getLabel(),
                         $lineItem->getQuantity(),

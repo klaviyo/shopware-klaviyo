@@ -11,6 +11,12 @@ export default class KlaviyoProductViewedEventTrackingComponent extends Plugin {
             console.error('[Klaviyo] Product info configuration was not set.');
             return;
         }
+        console.log(this);
+        // if (data.get('variant')) {
+        //     productId = data.get('variant');
+        // } else {
+        //     productId = data.get('product');
+        // }
 
         KlaviyoGateway.push(["track", "Viewed Product", this.options.productInfo]);
         KlaviyoGateway.push([
