@@ -47,4 +47,6 @@ interface ConfigurationInterface
     public function isDailySubscribersSynchronization(): bool;
 
     public function getDailySubscribersSyncTime(): string;
+
+    public function getBisVariantField(): string;
 }
