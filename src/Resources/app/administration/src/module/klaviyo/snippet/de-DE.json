@@ -107,7 +107,7 @@
             },
             "bisVariantField": {
                 "label": "Zuordnung von Produktidentifikationsfeldern",
-                "helpText": "Zuordnung der Produktidentifikation",
+                "helpText": "Zuordnung der Produktidentifikation. Mit dieser Option können Sie den Typ des Produktidentifikators in allen Ereignissen in Klaviyo auswählen, in denen Produktdaten erwähnt werden.",
                 "productId": "Produkt ID"
             },
             "orderIdentification": {

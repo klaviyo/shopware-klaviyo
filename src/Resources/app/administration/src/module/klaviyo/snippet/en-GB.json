@@ -107,7 +107,7 @@
             },
             "bisVariantField": {
                 "label": "Product identification field mapping",
-                "helpText": "Product identification mapping",
+                "helpText": "Product identification mapping.This option allows you to select the type of product identifier in all events in Klaviyo where product data is mentioned.",
                 "productId": "Product ID"
             },
             "orderIdentification": {
