@@ -38,6 +38,7 @@ class EventsTracker implements EventsTrackerInterface
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
             $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+            $context->productIdentificationType = $configuration->getBisVariantField();
 
             if ($configuration->isTrackPlacedOrder()) {
                 $placedOrderTrackingResult = $this->gateway->trackPlacedOrders($context, $channelId, $events);
@@ -55,6 +56,7 @@ class EventsTracker implements EventsTrackerInterface
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
             $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+            $context->productIdentificationType = $configuration->getBisVariantField();
 
             if ($configuration->isTrackOrderedProduct()) {
                 $orderedProductTrackingResult = $this->gateway->trackOrderedProducts($context, $channelId, $events);
@@ -72,6 +74,7 @@ class EventsTracker implements EventsTrackerInterface
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
             $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+            $context->productIdentificationType = $configuration->getBisVariantField();
 
             if (!$configuration->isTrackFulfilledOrder()) {
                 continue;
@@ -91,6 +94,7 @@ class EventsTracker implements EventsTrackerInterface
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
             $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+            $context->productIdentificationType = $configuration->getBisVariantField();
 
             if (!$configuration->isTrackCanceledOrder()) {
                 continue;
@@ -110,6 +114,7 @@ class EventsTracker implements EventsTrackerInterface
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
             $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+            $context->productIdentificationType = $configuration->getBisVariantField();
 
             if (!$configuration->isTrackRefundedOrder()) {
                 continue;
@@ -166,6 +171,7 @@ class EventsTracker implements EventsTrackerInterface
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
             $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+            $context->productIdentificationType = $configuration->getBisVariantField();
 
             if (!$configuration->isTrackShippedOrder()) {
                 continue;
@@ -185,6 +191,7 @@ class EventsTracker implements EventsTrackerInterface
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
             $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+            $context->productIdentificationType = $configuration->getBisVariantField();
 
             // Added paid config or not
             if (!$configuration->isTrackPaidOrder()) {
@@ -205,6 +212,7 @@ class EventsTracker implements EventsTrackerInterface
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
             $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+            $context->productIdentificationType = $configuration->getBisVariantField();
 
             // Added paid config or not
             if (!$configuration->isTrackPaidOrder()) {
@@ -227,6 +235,7 @@ class EventsTracker implements EventsTrackerInterface
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
             $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+            $context->productIdentificationType = $configuration->getBisVariantField();
 
             if (!$configuration->isTrackShippedOrder()) {
                 continue;
