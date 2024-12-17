@@ -1,3 +1,8 @@
+# 3.2.2
+# Fix: Die API-Anfrage für die Übertragung von Abonnenten während der historischen Synchronisierung wurde geändert. Denn es wirkte sich auf das Erscheinungsbild des Zustimmungsstatus aus, dass der Abonnent abonniert ist.
+## Wichtige Änderungen: Historische Synchronisierung funktioniert jetzt über Double Opt-in.
+# Fix: Die Funktionalität des Schalters für die Zuordnung von Produktidentifikationsfeldern wurde korrigiert. Er wirkt sich nun auf alle Ereignisse aus, bei denen Produktdaten betroffen sind.
+
 # 3.2.1
 # Fix: Es wurde ein Problem behoben, durch das in einigen Fällen ein Fehler mit dem Status 409 auftrat.
 ### Fehler behoben: "Conflict trying to update profile"
