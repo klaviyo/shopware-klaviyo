@@ -1,3 +1,8 @@
+# 1.13.2
+# Fix: API request for transferring subscribers during Historical synchronization was changed. Because it affected the appearance of Consent status that the subscriber is subscribed.
+## Important changes: Now Historical synchronization works via double opt-in.
+# Fix: The functionality of the Product identification field mapping switch has been fixed. Now it affects all events where product data is involved.
+
 # 1.13.1
 # Fix: A problem was fixed, due to which in some cases there was an error with the status of 409.
 ### Fixed error: "Conflict trying to update profile"
