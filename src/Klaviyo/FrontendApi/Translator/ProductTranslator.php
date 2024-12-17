@@ -16,7 +16,7 @@ class ProductTranslator
 
     public function __construct(
         ProductDataHelper $productDataHelper,
-        ConfigurationRegistry $configurationRegistry,
+        ConfigurationRegistry $configurationRegistry
     ) {
         $this->productDataHelper = $productDataHelper;
         $this->configurationRegistry = $configurationRegistry;
