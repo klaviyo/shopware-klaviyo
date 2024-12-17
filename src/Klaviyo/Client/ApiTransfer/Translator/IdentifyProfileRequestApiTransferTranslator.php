@@ -32,8 +32,8 @@ class IdentifyProfileRequestApiTransferTranslator extends AbstractApiTransferMes
         }
 
         $this->assertStatusCode($response);
-        // Throw different exception in case if response is 200 but not a json
-        throw new TranslationException($response, 'Identify Profile API response expected to be a JSON');
+
+        return new IdentifyProfileResponse(true);
     }
 
     private function constructGuzzleRequestToKlaviyoAPI(string $endpoint, $body): Request
