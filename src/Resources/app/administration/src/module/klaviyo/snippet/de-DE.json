@@ -207,6 +207,15 @@
             "withoutOrdersSync": {
                 "label": "Synchronisation aktivieren Kunden ohne Auftrag",
                 "helpText": "Diese Option erlaubt es, beim Start der historischen Synchronisation, in Klaviyo Profile von Kunden zu erstellen, die keine Bestellungen haben"
+            },
+            "doubleProcessLaunchWarning": {
+                "label": "\"{entityName}\" wird gerade ausgeführt. Bitte beachten Sie, dass das parallele Starten mehrerer Synchronisationen zu Unterbrechungen führen kann, da die Klaviyo-Rate begrenzt ist \"{docUrl}\". Wollen Sie fortfahren?",
+                "actionCanceled": "Aktion abgebrochen."
+            },
+            "doubleProcessLaunchWarningPopup": {
+                "confirmActionTitle": "Aktion bestätigen",
+                "confirmLabel": "Bestätigen",
+                "cancelLabel": "Abbrechen"
             }
         },
         "customer": {
