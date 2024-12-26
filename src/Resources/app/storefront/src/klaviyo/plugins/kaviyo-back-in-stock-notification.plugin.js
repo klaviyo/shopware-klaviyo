@@ -12,10 +12,11 @@ export default class KlaviyoBackInStockNotification extends Plugin {
         newsletterSubscribeApiURL: 'https://a.klaviyo.com/client/subscriptions',
         apiURL: 'https://a.klaviyo.com/client/back-in-stock-subscriptions',
         contentType: 'application/json',
-        revision: '2024-02-15',
+        revision: '2024-10-15',
         hiddenCls: 'd-none',
         successMessageSelector: '.klaviyo-success',
         errorMessageSelector: '.klaviyo-error',
+        errorVariantMessageSelector: '.klaviyo-error-variant',
         notValidEmailMessageSelector: '.klaviyo-email-not-valid',
         fetchHeaderAccept: "application/json"
     };
@@ -34,6 +35,7 @@ export default class KlaviyoBackInStockNotification extends Plugin {
         this._successMessage = DomAccess.querySelector(this.el, this.options.successMessageSelector);
         this._errorMessage = DomAccess.querySelector(this.el, this.options.errorMessageSelector);
         this._emailNotValid = DomAccess.querySelector(this.el, this.options.notValidEmailMessageSelector);
+        this._errorVariantMessage = DomAccess.querySelector(this.el, this.options.errorVariantMessageSelector);
     }
 
     registerEvents() {
@@ -49,7 +51,7 @@ export default class KlaviyoBackInStockNotification extends Plugin {
         return this._showEmailValidationErrorMessage();
     }
 
-    _proceedSubscription() {
+    async _proceedSubscription() {
         const data = this._createFormData();
         let productId;
         let email = data.get('email');
@@ -85,8 +87,7 @@ export default class KlaviyoBackInStockNotification extends Plugin {
             }
         });
 
-
-        fetch(this.options.apiURL + '/?company_id=' + this.options.publicApiKey, {
+        await fetch(this.options.apiURL + '/?company_id=' + this.options.publicApiKey, {
             "headers": {
                 "accept": this.options.fetchHeaderAccept,
                 "content-type": this.options.contentType,
@@ -108,6 +109,10 @@ export default class KlaviyoBackInStockNotification extends Plugin {
     _handleResponse(response) {
         if (response.ok) {
             return this._showSuccessMessage();
+        }
+
+        if (!response.ok && response.status === 404) {
+            return this._showErrorVariantMessage();
         }
 
         return this._showErrorMessage();
@@ -168,6 +173,13 @@ export default class KlaviyoBackInStockNotification extends Plugin {
 
     _showErrorMessage() {
         this._errorMessage.classList.remove(this.options.hiddenCls);
+        this._emailNotValid.classList.add(this.options.hiddenCls);
+        this._successMessage.classList.add(this.options.hiddenCls);
+    }
+
+    _showErrorVariantMessage() {
+        this._errorVariantMessage.classList.remove(this.options.hiddenCls);
+        this._errorMessage.classList.add(this.options.hiddenCls);
         this._emailNotValid.classList.add(this.options.hiddenCls);
         this._successMessage.classList.add(this.options.hiddenCls);
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Klaviyo\Integration\System\Tracking;
 
 use Klaviyo\Integration\Configuration\ConfigurationRegistry;
+use Klaviyo\Integration\Exception\JobRuntimeWarningException;
 use Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway;
 use Klaviyo\Integration\Klaviyo\Gateway\Result\OrderTrackingResult;
 use Klaviyo\Integration\System\Tracking\Event\Cart\CartEventRequestBag;
@@ -37,6 +38,7 @@ class EventsTracker implements EventsTrackerInterface
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
             $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+            $context->productIdentificationType = $configuration->getBisVariantField();
 
             if ($configuration->isTrackPlacedOrder()) {
                 $placedOrderTrackingResult = $this->gateway->trackPlacedOrders($context, $channelId, $events);
@@ -54,6 +56,7 @@ class EventsTracker implements EventsTrackerInterface
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
             $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+            $context->productIdentificationType = $configuration->getBisVariantField();
 
             if ($configuration->isTrackOrderedProduct()) {
                 $orderedProductTrackingResult = $this->gateway->trackOrderedProducts($context, $channelId, $events);
@@ -71,6 +74,7 @@ class EventsTracker implements EventsTrackerInterface
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
             $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+            $context->productIdentificationType = $configuration->getBisVariantField();
 
             if (!$configuration->isTrackFulfilledOrder()) {
                 continue;
@@ -90,6 +94,7 @@ class EventsTracker implements EventsTrackerInterface
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
             $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+            $context->productIdentificationType = $configuration->getBisVariantField();
 
             if (!$configuration->isTrackCanceledOrder()) {
                 continue;
@@ -109,6 +114,7 @@ class EventsTracker implements EventsTrackerInterface
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
             $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+            $context->productIdentificationType = $configuration->getBisVariantField();
 
             if (!$configuration->isTrackRefundedOrder()) {
                 continue;
@@ -133,18 +139,29 @@ class EventsTracker implements EventsTrackerInterface
         }
     }
 
-    public function trackCustomerWritten(Context $context, ProfileEventsBag $trackingBag): void
+    public function trackCustomerWritten(Context $context, ProfileEventsBag $trackingBag): array
     {
+        $warningMessages = [];
+
         foreach ($trackingBag->all() as $channelId => $customerEntities) {
             // TODO: maybe add enable/disable setting in future?
             $customerCollection = new CustomerCollection();
 
             foreach ($customerEntities as $customer) {
+                $customerEmail = $customer->getEmail();
+
+                if (!filter_var($customerEmail, FILTER_VALIDATE_EMAIL)) {
+                    $warningMessages[] = \sprintf('Unable to track customer with invalid email: %s', $customerEmail);
+                    continue;
+                }
+
                 $customerCollection->add($customer);
             }
 
             $this->gateway->upsertCustomerProfiles($context, $channelId, $customerCollection);
         }
+
+        return $warningMessages;
     }
 
     public function trackShippedOrder(Context $context, OrderTrackingEventsBag $trackingBag): OrderTrackingResult
@@ -154,6 +171,7 @@ class EventsTracker implements EventsTrackerInterface
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
             $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+            $context->productIdentificationType = $configuration->getBisVariantField();
 
             if (!$configuration->isTrackShippedOrder()) {
                 continue;
@@ -173,6 +191,7 @@ class EventsTracker implements EventsTrackerInterface
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
             $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+            $context->productIdentificationType = $configuration->getBisVariantField();
 
             // Added paid config or not
             if (!$configuration->isTrackPaidOrder()) {
@@ -193,6 +212,7 @@ class EventsTracker implements EventsTrackerInterface
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
             $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+            $context->productIdentificationType = $configuration->getBisVariantField();
 
             // Added paid config or not
             if (!$configuration->isTrackPaidOrder()) {
@@ -215,6 +235,7 @@ class EventsTracker implements EventsTrackerInterface
         foreach ($trackingBag->all() as $channelId => $events) {
             $configuration = $this->configurationRegistry->getConfiguration($channelId);
             $context->orderIdentificationFlag = $configuration->getOrderIdentification();
+            $context->productIdentificationType = $configuration->getBisVariantField();
 
             if (!$configuration->isTrackShippedOrder()) {
                 continue;

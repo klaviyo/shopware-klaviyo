@@ -1,3 +1,27 @@
+# 1.13.2
+# Fix: API request for transferring subscribers during Historical synchronization was changed. Because it affected the appearance of Consent status that the subscriber is subscribed.
+## Important changes: Now Historical synchronization works via double opt-in.
+# Fix: The functionality of the Product identification field mapping switch has been fixed. Now it affects all events where product data is involved.
+
+# 1.13.1
+# Fix: A problem was fixed, due to which in some cases there was an error with the status of 409.
+### Fixed error: "Conflict trying to update profile"
+### Fixed error: "A profile already exists with one of these identifiers."
+
+# 1.13.0
+# New: Added synchronization of customers who do not have orders or subscriptions when initiating the corresponding historical synchronizations. Two new Cron Jobs have been added: _**klaviyo.job.full_customer_subs_sync_processing**_ and **_klaviyo.job.full_customer_order_sync_processing_**
+## Documentation:
+https://overdosedigital.atlassian.net/wiki/spaces/KS6PUG/pages/3495821316/Synchronize+Historical+Data
+# New: A new status Partially Successful has been added to the Job Scheduler. It signals that the task has been partially completed.
+## Documentation:
+https://overdosedigital.atlassian.net/wiki/spaces/KS6PUG/pages/3031007243/Job+Scheduling+Overview
+# New: Updating the API revision to the latest one - **2024-10-15**. Improved performance of customer creation and update - additional requests removed.
+# New: Added check for invalid emails when synchronizing customers and subscribers. 
+# Fix: Fixed profile duplication bug when sending customer data to Klaviyo.
+### Fixed error: "A profile already exist with one of these identifiers"
+# Fix: Fixed an issue that occurred in the response when identifying a profile from Klaviyo.
+### Fixed error: "Identify Profile API response expected to be a JSON"
+
 # 1.12.1
 # Fix: Added a fix for the problem of getting the current offset during historical synchronizations.
 

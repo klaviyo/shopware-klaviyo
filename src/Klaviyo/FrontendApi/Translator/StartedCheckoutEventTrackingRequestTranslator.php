@@ -2,6 +2,7 @@
 
 namespace Klaviyo\Integration\Klaviyo\FrontendApi\Translator;
 
+use Klaviyo\Integration\Configuration\ConfigurationRegistry;
 use Klaviyo\Integration\Entity\Helper\ProductDataHelper;
 use Klaviyo\Integration\Klaviyo\FrontendApi\DTO\CheckoutLineItemInfo;
 use Klaviyo\Integration\Klaviyo\FrontendApi\DTO\CheckoutLineItemInfoCollection;
@@ -18,15 +19,18 @@ class StartedCheckoutEventTrackingRequestTranslator
     private RestoreUrlServiceInterface $urlGenerator;
     private ProductDataHelper $productDataHelper;
     private CustomerPropertiesTranslator $customerPropertiesTranslator;
+    private ConfigurationRegistry $configurationRegistry;
 
     public function __construct(
         RestoreUrlServiceInterface $urlGenerator,
         ProductDataHelper $productDataHelper,
-        CustomerPropertiesTranslator $customerPropertiesTranslator
+        CustomerPropertiesTranslator $customerPropertiesTranslator,
+        ConfigurationRegistry $configurationRegistry
     ) {
         $this->urlGenerator = $urlGenerator;
         $this->productDataHelper = $productDataHelper;
         $this->customerPropertiesTranslator = $customerPropertiesTranslator;
+        $this->configurationRegistry = $configurationRegistry;
     }
 
     /**
@@ -95,9 +99,13 @@ class StartedCheckoutEventTrackingRequestTranslator
         $viewPageUrl = $this->productDataHelper->getProductViewPageUrlByContext($product, $context);
         $categories = $this->productDataHelper->getCategoryNames($context->getContext(), $product);
 
+        $productIdType = $this->configurationRegistry->getConfiguration(
+            $context->getSalesChannelId()
+        )->getBisVariantField();
+
         return new CheckoutLineItemInfo(
             $lineItem->getLabel(),
-            $lineItem->getReferencedId(),
+            $productIdType == 'product-id' ? $lineItem->getReferencedId() : $product->getProductNumber(),
             $product->getProductNumber(),
             $categories,
             $imageUrl,

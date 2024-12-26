@@ -1,3 +1,27 @@
+# 1.13.2
+# Fix: Die API-Anfrage für die Übertragung von Abonnenten während der historischen Synchronisierung wurde geändert. Denn es wirkte sich auf das Erscheinungsbild des Zustimmungsstatus aus, dass der Abonnent abonniert ist.
+## Wichtige Änderungen: Historische Synchronisierung funktioniert jetzt über Double Opt-in.
+# Fix: Die Funktionalität des Schalters für die Zuordnung von Produktidentifikationsfeldern wurde korrigiert. Er wirkt sich nun auf alle Ereignisse aus, bei denen Produktdaten betroffen sind.
+
+# 1.13.1
+# Fix: Es wurde ein Problem behoben, durch das in einigen Fällen ein Fehler mit dem Status 409 auftrat.
+### Fehler behoben: "Conflict trying to update profile"
+### Fehler behoben: "A profile already exists with one of these identifiers."
+
+# 1.13.0
+# Neu: Hinzufügen der Synchronisation von Kunden, die keine Bestellungen oder Abonnements haben, wenn die entsprechenden historischen Synchronisationen initiiert werden. Zwei neue Cron Jobs wurden hinzugefügt: _**klaviyo.job.full_customer_subs_sync_processing**_ und **_klaviyo.job.full_customer_order_sync_processing_**
+## Dokumentation:
+https://overdosedigital.atlassian.net/wiki/spaces/KS6PUG/pages/3495821316/Synchronize+Historical+Data
+# Neu: Der Job Scheduler wurde um den neuen Status Teilweise erfolgreich erweitert. Er signalisiert, dass die Aufgabe teilweise abgeschlossen wurde.
+## Dokumentation:
+https://overdosedigital.atlassian.net/wiki/spaces/KS6PUG/pages/3031007243/Job+Scheduling+Overview
+# Neu: Aktualisierung der API-Revision auf die neueste Version - 2024-10-15. Verbesserte Leistung bei der Erstellung und Aktualisierung von Kunden - zusätzliche Anfragen wurden entfernt.
+# Neu: Überprüfung auf ungültige E-Mails bei der Synchronisierung von Kunden und Abonnenten hinzugefügt.
+# Fix: Fehler bei der Profilverdopplung beim Senden von Kundendaten an Klaviyo behoben.
+### Fehler behoben: "A profile already exist with one of these identifiers"
+# Fix: Es wurde ein Problem behoben, das in der Antwort auftrat, wenn ein Profil von Klaviyo identifiziert wurde.
+### Fehler behoben: "Identify Profile API response expected to be a JSON"
+
 # 1.12.1
 # Fix: Es wurde eine Lösung für das Problem der Ermittlung des aktuellen Offsets bei historischen Synchronisationen hinzugefügt.
 

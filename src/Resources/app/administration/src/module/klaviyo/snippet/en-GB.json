@@ -107,7 +107,7 @@
             },
             "bisVariantField": {
                 "label": "Product identification field mapping",
-                "helpText": "Product identification mapping",
+                "helpText": "Product identification mapping.This option allows you to select the type of product identifier in all events in Klaviyo where product data is mentioned.",
                 "productId": "Product ID"
             },
             "orderIdentification": {
@@ -204,6 +204,14 @@
             "excludedSubscribersSynchronization": {
                 "label": "Enable Daily Excluded Subscribers Synchronization",
                 "helpText": "This option allows you to enable daily scheduled synchronization of excluded subscribers"
+            },
+            "withoutSubscribersSync": {
+                "label": "Enable Synchronization Customers Without Subscription",
+                "helpText": "This option allows you to create in Klaviyo profiles of those customers who do not have a subscription when synchronizing subscribers"
+            },
+            "withoutOrdersSync": {
+                "label": "Enable Synchronization Customers Without Orders",
+                "helpText": "This option allows, when starting historical synchronization, to create in Klaviyo profiles of those customers who do not have orders"
             }
         },
         "customer": {

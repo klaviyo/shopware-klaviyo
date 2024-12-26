@@ -388,6 +388,62 @@
                 </fieldset>
             {% endblock %}
 
+            {% block klaviyo_integration_settings_general_full_order_sync %}
+                <fieldset>
+                    <legend>Historical Sync Settings</legend>
+
+                    <sw-container>
+
+                        {% block klaviyo_integration_settings_general_without_orders_sync %}
+                            <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.withoutOrdersSync']"
+                                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.withoutOrdersSync']"
+                                                :customInheritationCheckFunction="checkBoolFieldInheritance">
+                                <template #content="props">
+                                    <sw-switch-field name="KlaviyoIntegrationPlugin.config.withoutOrdersSync"
+                                                     :mapInheritance="props"
+                                                     :label="$tc('klaviyo-integration-settings.configs.withoutOrdersSync.label')"
+                                                     :helpText="$tc('klaviyo-integration-settings.configs.withoutOrdersSync.helpText')"
+                                                     :disabled="props.isInherited"
+                                                     :value="props.currentValue"
+                                                     @change="props.updateCurrentValue">
+                                    </sw-switch-field>
+                                </template>
+                            </sw-inherit-wrapper>
+                        {% endblock %}
+
+                    </sw-container>
+
+                </fieldset>
+            {% endblock %}
+
+            {% block klaviyo_integration_settings_general_full_subscriber_sync %}
+                <fieldset>
+                    <legend>Subscribers Sync Settings</legend>
+
+                    <sw-container>
+
+                        {% block klaviyo_integration_settings_general_without_subscribers_sync %}
+                            <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.withoutSubscribersSync']"
+                                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.withoutSubscribersSync']"
+                                                :customInheritationCheckFunction="checkBoolFieldInheritance">
+                                <template #content="props">
+                                    <sw-switch-field name="KlaviyoIntegrationPlugin.config.withoutSubscribersSync"
+                                                     :mapInheritance="props"
+                                                     :label="$tc('klaviyo-integration-settings.configs.withoutSubscribersSync.label')"
+                                                     :helpText="$tc('klaviyo-integration-settings.configs.withoutSubscribersSync.helpText')"
+                                                     :disabled="props.isInherited"
+                                                     :value="props.currentValue"
+                                                     @change="props.updateCurrentValue">
+                                    </sw-switch-field>
+                                </template>
+                            </sw-inherit-wrapper>
+                        {% endblock %}
+
+                    </sw-container>
+
+                </fieldset>
+            {% endblock %}
+
 
 
             {% block klaviyo_integration_settings_general_track_back_in_stock %}
