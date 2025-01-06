@@ -75,7 +75,7 @@ class ConfigurableOrderEventTrackingRequestNormalizer extends AbstractNormalizer
 
             $itemNames[] = $product->getProductName();
             $brands[] = $product->getBrand();
-            $normalizedItems[] = [
+            $productData = [
                 'ProductID' => $product->getProductId(),
                 'SKU' => $product->getSku(),
                 'ProductName' => $product->getProductName(),
@@ -87,6 +87,12 @@ class ConfigurableOrderEventTrackingRequestNormalizer extends AbstractNormalizer
                 'Categories' => $productCategories,
                 'Brand' => $product->getBrand(),
             ];
+
+            if ($product->getCustomOptions()) {
+                $productData['CustomOptions'] = $product->getCustomOptions();
+            }
+
+            $normalizedItems[] = $productData;
         }
 
         $discountCodes = [];

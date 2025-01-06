@@ -17,6 +17,7 @@ class OrderedProductEventTrackingRequest extends EventTrackingRequest
     private string $imageURL;
     private array $categories;
     private string $productBrand;
+    private array $customOptions;
 
     public function __construct(
         string $eventId,
@@ -31,7 +32,8 @@ class OrderedProductEventTrackingRequest extends EventTrackingRequest
         string $productURL,
         string $imageURL,
         array $categories,
-        string $productBrand
+        string $productBrand,
+        array $customOptions
     ) {
         $this->value = $value;
         $this->orderId = $orderId;
@@ -43,6 +45,7 @@ class OrderedProductEventTrackingRequest extends EventTrackingRequest
         $this->imageURL = $imageURL;
         $this->categories = $categories;
         $this->productBrand = $productBrand;
+        $this->customOptions = $customOptions;
 
         parent::__construct($eventId, $time, $customerProperties);
     }
@@ -95,5 +98,10 @@ class OrderedProductEventTrackingRequest extends EventTrackingRequest
     public function getProductBrand(): string
     {
         return $this->productBrand;
+    }
+
+    public function getCustomOptions(): array
+    {
+        return $this->customOptions;
     }
 }
