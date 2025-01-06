@@ -25,7 +25,6 @@ use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Framework\Routing\RequestTransformer;
-use Swag\CustomizedProducts\Core\Checkout\CustomizedProductsCartDataCollector;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Klaviyo\Integration\Entity\CustomOptions\CustomOptionsResult;
@@ -354,7 +353,7 @@ class ProductDataHelper
     {
         $customOptionsData = null;
 
-        if (($lineItem->getType() === CustomizedProductsCartDataCollector::CUSTOMIZED_PRODUCTS_TEMPLATE_LINE_ITEM_TYPE) &&
+        if (($lineItem->getType() === 'customized-products') &&
         ($lineItem->getChildren() && $lineItem->getChildren()->getElements()) &&
             (count($lineItem->getChildren()->getElements()) > 0)) {
             foreach ($lineItem->getChildren()->getElements() as $element) {
@@ -372,9 +371,7 @@ class ProductDataHelper
             }
         }
 
-        if ($lineItem->getType() === CustomizedProductsCartDataCollector::CUSTOMIZED_PRODUCTS_TEMPLATE_LINE_ITEM_TYPE &&
-            !$customOptionsData
-        ) {
+        if ($lineItem->getType() === 'customized-products' && !$customOptionsData) {
             throw new TranslationException(\sprintf('Custom Product Template[id: %s] without options', $lineItem->getReferencedId()));
         }
 
@@ -390,14 +387,10 @@ class ProductDataHelper
     {
         $result = null;
 
-        $customOptionsCollection = $lineItems->filterByType(
-            CustomizedProductsCartDataCollector::CUSTOMIZED_PRODUCTS_OPTION_LINE_ITEM_TYPE
-        );
-        $customProductsCollection = $lineItems->filterByType(
-            CustomizedProductsCartDataCollector::CUSTOMIZED_PRODUCTS_TEMPLATE_LINE_ITEM_TYPE
-        );
+        $customOptionsCollection = $lineItems->filterByType('customized-products-option');
+        $customProductsCollection = $lineItems->filterByType('customized-products');
 
-        $optionProducts = $this->preparingCustomProductOptions($customOptionsCollection, $eventType);
+        $optionProducts = $this->preparingCustomProductOptions($customOptionsCollection);
         $customProducts = $this->preparingCustomProductData($customProductsCollection, $eventType);
 
         if (!empty($customProducts) && !empty($optionProducts)) {
