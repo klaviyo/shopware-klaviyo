@@ -4,6 +4,7 @@ namespace Klaviyo\Integration\Klaviyo\Gateway\Translator;
 
 use Klaviyo\Integration\Entity\Helper\AddressDataHelper;
 use Klaviyo\Integration\Entity\Helper\ProductDataHelper;
+use Klaviyo\Integration\Exception\JobRuntimeWarningException;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\Common\Address;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\AbstractOrderEventTrackingRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderEvent\CanceledOrderEventTrackingRequest;
@@ -25,7 +26,6 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -38,7 +38,6 @@ class OrderEventRequestTranslator
     private const ORDER_REFUND_REASON = 'Refund by shopware 6';
     private const ORDER_PAID_REASON = 'Paid by shopware 6';
 
-    private EntityRepositoryInterface $productRepository;
     private EntityRepositoryInterface $orderAddressRepository;
     private EntityRepositoryInterface $orderDeliveryRepository;
     private EntityRepositoryInterface $orderLineItemRepository;
@@ -47,7 +46,6 @@ class OrderEventRequestTranslator
     private ProductDataHelper $productDataHelper;
 
     public function __construct(
-        EntityRepositoryInterface $productRepository,
         EntityRepositoryInterface $orderAddressRepository,
         EntityRepositoryInterface $orderDeliveryRepository,
         EntityRepositoryInterface $orderLineItemRepository,
@@ -55,7 +53,6 @@ class OrderEventRequestTranslator
         ProductDataHelper $productDataHelper,
         CustomerPropertiesTranslator $orderCustomerPropertiesTranslator
     ) {
-        $this->productRepository = $productRepository;
         $this->orderAddressRepository = $orderAddressRepository;
         $this->orderDeliveryRepository = $orderDeliveryRepository;
         $this->orderLineItemRepository = $orderLineItemRepository;
@@ -64,6 +61,9 @@ class OrderEventRequestTranslator
         $this->orderCustomerPropertiesTranslator = $orderCustomerPropertiesTranslator;
     }
 
+    /**
+     * @throws JobRuntimeWarningException
+     */
     public function translateToPlacedOrderEventRequest(
         Context $context,
         OrderEntity $orderEntity
@@ -160,113 +160,69 @@ class OrderEventRequestTranslator
         return $address;
     }
 
+    /**
+     * @throws JobRuntimeWarningException
+     */
     public function translateToCanceledOrderEventRequest(
         Context $context,
         OrderEntity $orderEntity,
         \DateTimeInterface $eventHappenedDateTime
     ): CanceledOrderEventTrackingRequest {
-        $customerProperties = $this->orderCustomerPropertiesTranslator
-            ->translateOrder($context, $orderEntity);
-
-        $discounts = $this->translateToDiscountInfoCollection($context, $orderEntity);
-        $products = $this->translateToOrderInfoCollection($context, $orderEntity);
-
-        $billingAddressEntity = $this->getOrderBillingAddress($context, $orderEntity);
-        $billingAddress = $this->translateOrderAddress($context, $billingAddressEntity);
-
-        $shippingAddressEntity = $this->getOrderShippingAddress($context, $orderEntity);
-        if ($shippingAddressEntity) {
-            $shippingAddress = $this->translateOrderAddress($context, $shippingAddressEntity);
-        } else {
-            $shippingAddress = $billingAddress;
-        }
-
-        return new CanceledOrderEventTrackingRequest(
-            $orderEntity->getId(),
+        /** @var CanceledOrderEventTrackingRequest $result */
+        $result = $this->translateToOrderEventTrackingRequest(
+            $context,
+            CanceledOrderEventTrackingRequest::class,
+            $orderEntity,
             $eventHappenedDateTime,
-            $customerProperties,
-            $orderEntity->getAmountTotal(),
-            $orderEntity->getShippingCosts()->getTotalPrice(),
-            $context->orderIdentificationFlag == 'order-id' ? $orderEntity->getId() : $orderEntity->getOrderNumber(),
-            $discounts,
-            $products,
-            $billingAddress,
-            $shippingAddress,
             self::ORDER_CANCELLED_REASON
         );
+
+        return $result;
     }
 
+    /**
+     * @throws JobRuntimeWarningException
+     */
     public function translateToPaidOrderEventRequest(
         Context $context,
         OrderEntity $orderEntity,
         \DateTimeInterface $eventHappenedDateTime
     ): PaidOrderEventTrackingRequest {
-        $customerProperties = $this->orderCustomerPropertiesTranslator
-            ->translateOrder($context, $orderEntity);
-
-        $discounts = $this->translateToDiscountInfoCollection($context, $orderEntity);
-        $products = $this->translateToOrderInfoCollection($context, $orderEntity);
-
-        $billingAddressEntity = $this->getOrderBillingAddress($context, $orderEntity);
-        $billingAddress = $this->translateOrderAddress($context, $billingAddressEntity);
-
-        $shippingAddressEntity = $this->getOrderShippingAddress($context, $orderEntity);
-        if ($shippingAddressEntity) {
-            $shippingAddress = $this->translateOrderAddress($context, $shippingAddressEntity);
-        } else {
-            $shippingAddress = $billingAddress;
-        }
-
-        return new PaidOrderEventTrackingRequest(
-            $orderEntity->getId(),
+        /** @var PaidOrderEventTrackingRequest $result */
+        $result = $this->translateToOrderEventTrackingRequest(
+            $context,
+            PaidOrderEventTrackingRequest::class,
+            $orderEntity,
             $eventHappenedDateTime,
-            $customerProperties,
-            $orderEntity->getAmountTotal(),
-            $orderEntity->getShippingCosts()->getTotalPrice(),
-            $context->orderIdentificationFlag == 'order-id' ? $orderEntity->getId() : $orderEntity->getOrderNumber(),
-            $discounts,
-            $products,
-            $billingAddress,
-            $shippingAddress,
             self::ORDER_PAID_REASON
         );
+
+        return $result;
     }
 
+    /**
+     * @throws JobRuntimeWarningException
+     */
     public function translateToRefundedOrderEventRequest(
         Context $context,
         OrderEntity $orderEntity,
         \DateTimeInterface $eventHappenedDateTime
     ): RefundedOrderEventTrackingRequest {
-        $customerProperties = $this->orderCustomerPropertiesTranslator->translateOrder($context, $orderEntity);
-
-        $discounts = $this->translateToDiscountInfoCollection($context, $orderEntity);
-        $products = $this->translateToOrderInfoCollection($context, $orderEntity);
-
-        $billingAddressEntity = $this->getOrderBillingAddress($context, $orderEntity);
-        $billingAddress = $this->translateOrderAddress($context, $billingAddressEntity);
-
-        $shippingAddressEntity = $this->getOrderShippingAddress($context, $orderEntity);
-        if ($shippingAddressEntity) {
-            $shippingAddress = $this->translateOrderAddress($context, $shippingAddressEntity);
-        } else {
-            $shippingAddress = $billingAddress;
-        }
-
-        return new RefundedOrderEventTrackingRequest(
-            $orderEntity->getId(),
+        /** @var RefundedOrderEventTrackingRequest $result */
+        $result = $this->translateToOrderEventTrackingRequest(
+            $context,
+            RefundedOrderEventTrackingRequest::class,
+            $orderEntity,
             $eventHappenedDateTime,
-            $customerProperties,
-            $orderEntity->getAmountTotal(),
-            $orderEntity->getShippingCosts()->getTotalPrice(),
-            $context->orderIdentificationFlag == 'order-id' ? $orderEntity->getId() : $orderEntity->getOrderNumber(),
-            $discounts,
-            $products,
-            $billingAddress,
-            $shippingAddress,
             self::ORDER_REFUND_REASON
         );
+
+        return $result;
     }
 
+    /**
+     * @throws JobRuntimeWarningException
+     */
     public function translateToFulfilledOrderEventRequest(
         Context $context,
         OrderEntity $orderEntity,
@@ -283,6 +239,9 @@ class OrderEventRequestTranslator
         return $result;
     }
 
+    /**
+     * @throws JobRuntimeWarningException
+     */
     public function translateToShippedOrderEventRequest(
         Context $context,
         OrderEntity $orderEntity,
@@ -299,11 +258,15 @@ class OrderEventRequestTranslator
         return $result;
     }
 
+    /**
+     * @throws JobRuntimeWarningException
+     */
     private function translateToOrderEventTrackingRequest(
         Context $context,
         string $className,
         OrderEntity $orderEntity,
-        \DateTimeInterface $eventHappenedDateTime
+        \DateTimeInterface $eventHappenedDateTime,
+        ?string $reasonMessage = null
     ): AbstractOrderEventTrackingRequest {
         if (!ReflectionHelper::isClassInstanceOf($className, AbstractOrderEventTrackingRequest::class)) {
             throw new TranslationException(
@@ -342,7 +305,8 @@ class OrderEventRequestTranslator
             $discounts,
             $products,
             $billingAddress,
-            $shippingAddress
+            $shippingAddress,
+            $reasonMessage
         );
 
         return $request;
@@ -355,10 +319,28 @@ class OrderEventRequestTranslator
         $products = new OrderProductItemInfoCollection();
 
         $this->ensureOrderLineItemsLoaded($context, $orderEntity);
+
+        $customOptions = $this->productDataHelper->getCustomOptionsFromOrderItems(
+            $orderEntity->getLineItems() ?? [],
+            'OrderedProductEvent'
+        );
+        if (!empty($customOptions)) {
+            $customOptionsData = $customOptions->getCustomOptions();
+            $customOptionsProductsData = $customOptions->getCustomOptionsProductsData();
+        }
+
         /** @var OrderLineItemEntity $lineItem */
         foreach ($orderEntity->getLineItems() ?? [] as $lineItem) {
             if ($lineItem->getType() === 'product') {
                 try {
+                    $parentId = $lineItem->getParentId();
+                    $customOption = [];
+
+                    if ($parentId && !empty($customOptionsData[$parentId]) && !empty($customOptionsProductsData[$parentId])) {
+                        $customOption =  $customOptionsData[$lineItem->getParentId()];
+                        $lineItem->setTotalPrice($customOptionsProductsData[$parentId]);
+                    }
+
                     $product = $this->productDataHelper->getLineItemProduct($context, $lineItem);
                     $productUrl = $this->productDataHelper->getProductViewPageUrlByChannelId(
                         $product,
@@ -388,7 +370,8 @@ class OrderEventRequestTranslator
                         $productUrl,
                         $imageUrl,
                         $categories,
-                        $manufacturerName
+                        $manufacturerName,
+                        $customOption
                     )
                 );
             }

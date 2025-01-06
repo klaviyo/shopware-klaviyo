@@ -12,7 +12,9 @@ use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\CartEve
 use Klaviyo\Integration\Klaviyo\Gateway\Exception\TranslationException;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
+use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Swag\CustomizedProducts\Core\Checkout\CustomizedProductsCartDataCollector;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class CartEventRequestTranslator
@@ -75,13 +77,37 @@ class CartEventRequestTranslator
             }
         }
 
+        $rowTotalPrice = $lineItem->getPrice()->getTotalPrice();
+        $customOptionsData = null;
+        $quantity = $lineItem->getQuantity();
+
+        if ($lineItem->getType() === CustomizedProductsCartDataCollector::CUSTOMIZED_PRODUCTS_TEMPLATE_LINE_ITEM_TYPE) {
+            $customProductData = $this->productDataHelper->preparingSingleCustomProductOptions($lineItem);
+            $lineItem = $customProductData->getMainLineItem();
+            $customOptionsData = $customProductData->getCustomOptions();
+        }
+
         $addedProductInfo = $this->translateToCartProductInfo($context, $lineItem);
         $checkoutUrl = $this->urlGenerator
             ->getCurrentRestoreUrl($context);
 
         $collection = new CartEventDTO\CartProductInfoCollection();
+
         foreach ($cart->getLineItems() as $cartLineItem) {
-            if ('product' !== $cartLineItem->getType()) {
+            if ($cartLineItem->getType() === CustomizedProductsCartDataCollector::CUSTOMIZED_PRODUCTS_TEMPLATE_LINE_ITEM_TYPE) {
+                $cartLineItemQty = $cartLineItem->getQuantity();
+                $cartLineItemTotalPrice = $cartLineItem->getPrice()->getTotalPrice();
+
+                $customProductData = $this->productDataHelper->preparingSingleCustomProductOptions($cartLineItem);
+                $cartLineItem = $customProductData->getMainLineItem();
+                $customOptionsCartItemData = $customProductData->getCustomOptions();
+
+                $cartLineItem->assign(['customOptions' => $customOptionsCartItemData]);
+                $cartLineItem->assign(['customProductTotalPrice' => $cartLineItemTotalPrice]);
+                $cartLineItem->assign(['customProductQty' => $cartLineItemQty]);
+            }
+
+            if (LineItem::PRODUCT_LINE_ITEM_TYPE !== $cartLineItem->getType()) {
                 continue;
             }
 
@@ -93,16 +119,17 @@ class CartEventRequestTranslator
             $time,
             $customerProperties,
             $cart->getPrice()->getTotalPrice(),
-            $lineItem->getPrice()->getTotalPrice(),
+            $rowTotalPrice,
             $lineItem->getLabel(),
             $this->productTypeNumber == 'product-id' ? $lineItem->getReferencedId() : $addedProductInfo->getSku(),
             $addedProductInfo->getSku(),
             $addedProductInfo->getProductCategories(),
             $addedProductInfo->getImageUrl(),
             $addedProductInfo->getViewPageUrl(),
-            $lineItem->getQuantity(),
+            $quantity,
             $checkoutUrl,
-            $collection
+            $collection,
+            $customOptionsData
         );
     }
 
@@ -110,28 +137,53 @@ class CartEventRequestTranslator
         SalesChannelContext $context,
         LineItem $lineItem
     ): CartEventDTO\CartProductInfo {
-        $product = $this->productDataHelper->getProductById($context->getContext(), $lineItem->getReferencedId());
-
-        if (!$product) {
-            throw new TranslationException(\sprintf('Product[id: %s] was not found', $lineItem->getReferencedId()));
-        }
+        $product = $this->getProductByReferenceId($context, $lineItem->getReferencedId());
 
         $imageUrl = $this->productDataHelper->getCoverImageUrl($context->getContext(), $product);
         $viewPageUrl = $this->productDataHelper->getProductViewPageUrlByContext($product, $context);
         $categories = $this->productDataHelper->getCategoryNames($context->getContext(), $product);
         $price = $lineItem->getPrice();
+        $customOptions = [];
+
+        $rowTotalPrice = $price ? $lineItem->getPrice()->getTotalPrice() : 0.0;
+        $qty = $lineItem->getQuantity();
+
+        if (!empty($lineItem->customOptions)) {
+            $customOptions = $lineItem->customOptions;
+        }
+
+        if (!empty($lineItem->customProductTotalPrice)) {
+            $rowTotalPrice = $lineItem->customProductTotalPrice;
+        }
+
+        if (!empty($lineItem->customProductQty)) {
+            $qty = $lineItem->customProductQty;
+        }
+
 
         return new CartEventDTO\CartProductInfo(
             $this->productTypeNumber == 'product-id' ? $lineItem->getReferencedId() : $product->getProductNumber(),
             $product->getProductNumber(),
             $lineItem->getLabel(),
-            $lineItem->getQuantity(),
+            $qty,
             $price ? $price->getUnitPrice() : 0.0,
-            $price ? $lineItem->getPrice()->getTotalPrice() : 0.0,
+            $rowTotalPrice,
             $imageUrl,
             $viewPageUrl,
             $categories,
-            $this->productDataHelper->getManufacturerName($context->getContext(), $product) ?: ''
+            $this->productDataHelper->getManufacturerName($context->getContext(), $product) ?: '',
+            $customOptions
         );
+    }
+
+    private function getProductByReferenceId(SalesChannelContext $context, ?string $lineItemRefId): ProductEntity
+    {
+        $product = $this->productDataHelper->getProductById($context->getContext(), $lineItemRefId);
+
+        if (!$product) {
+            throw new TranslationException(\sprintf('Product[id: %s] was not found', $lineItemRefId));
+        }
+
+        return $product;
     }
 }

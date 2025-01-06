@@ -13,6 +13,7 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\Event\AfterLineItemAddedEvent;
 use Shopware\Core\Checkout\Cart\Event\AfterLineItemQuantityChangedEvent;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
+use Swag\CustomizedProducts\Core\Checkout\CustomizedProductsCartDataCollector;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -83,7 +84,16 @@ class AddedToCartEventListener implements EventSubscriberInterface
 
             /** @var LineItem $lineItem */
             foreach ($event->getLineItems() as $lineItem) {
-                if (LineItem::PRODUCT_LINE_ITEM_TYPE !== $lineItem->getType()) {
+                if (!in_array($lineItem->getType(), [
+                    LineItem::PRODUCT_LINE_ITEM_TYPE,
+                    CustomizedProductsCartDataCollector::CUSTOMIZED_PRODUCTS_TEMPLATE_LINE_ITEM_TYPE
+                ])) {
+                    continue;
+                }
+
+                if (($lineItem->getType() ===
+                    CustomizedProductsCartDataCollector::CUSTOMIZED_PRODUCTS_TEMPLATE_LINE_ITEM_TYPE) &&
+                    !$lineItem->hasExtension(CustomizedProductsCartDataCollector::CUSTOMIZED_PRODUCT_CONFIGURATION_KEY)) {
                     continue;
                 }
 
