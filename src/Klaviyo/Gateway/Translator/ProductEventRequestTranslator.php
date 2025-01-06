@@ -28,13 +28,11 @@ class ProductEventRequestTranslator
         OrderEntity $orderEntity,
         $languageId
     ): OrderedProductEventTrackingRequest {
-        try {
-            $rowTotalPrice = $lineItem->getPrice()->getTotalPrice();
-            $customOptionsData = null;
+        $customOptionsData = [];
 
-            if ($lineItem->getType() === 'customized-products') {
-                $customProductData = $this->productDataHelper->preparingCustomProductOptions($lineItem);
-                list('main' => $lineItem, 'options' => $customOptionsData, 'rowTotalPrice' => $rowTotalPrice) = $customProductData;
+        try {
+            if (!empty($lineItem->customOptions)) {
+                $customOptionsData = $lineItem->customOptions;
             }
 
             $product = $this->productDataHelper->getLineItemProduct($context, $lineItem);
@@ -70,7 +68,8 @@ class ProductEventRequestTranslator
             $productUrl,
             $imageUrl,
             $categories,
-            $manufacturerName
+            $manufacturerName,
+            $customOptionsData
         );
     }
 }

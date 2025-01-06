@@ -35,6 +35,10 @@ class OrderedProductEventTrackingRequestNormalizer extends AbstractNormalizer
             'ProductBrand' => $object->getProductBrand()
         ];
 
+        if ($object->getCustomOptions()) {
+            $properties['CustomOptions'] = $object->getCustomOptions();
+        }
+
         return [
             'data' => [
                 'type' => 'event',

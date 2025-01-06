@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Klaviyo\Integration\Klaviyo\Gateway;
 
+use Klaviyo\Integration\Entity\Helper\ProductDataHelper;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\ExcludedSubscribers\GetExcludedSubscribers;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\AddMembersToList\AddProfilesToListResponse;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\Profiles\Common\ProfileContactInfoCollection;
@@ -15,13 +16,11 @@ use Klaviyo\Integration\Klaviyo\Gateway\Domain\Profile\Search\ProfileIdSearchRes
 use Klaviyo\Integration\Klaviyo\Gateway\Domain\Profile\Search\Strategy\SearchStrategyInterface;
 use Klaviyo\Integration\Klaviyo\Gateway\Exception\ProfilesListNotFoundException;
 use Klaviyo\Integration\Klaviyo\Gateway\Result\OrderTrackingResult;
-use Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\IdentifyProfileRequestTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\OrderEventRequestTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\ProductEventRequestTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\RealSubscribersToKlaviyoRequestsTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\SubscribersToKlaviyoRequestsTranslator;
-use Klaviyo\Integration\Klaviyo\Gateway\Translator\UpdateProfileRequestTranslator;
 use Klaviyo\Integration\System\Tracking\Event\Order\OrderEventInterface;
 use Klaviyo\Integration\Utils\Logger\ContextHelper;
 use Psr\Log\LoggerInterface;
@@ -38,36 +37,33 @@ class KlaviyoGateway
     private ClientRegistry $clientRegistry;
     private OrderEventRequestTranslator $orderEventRequestTranslator;
     private ProductEventRequestTranslator $productEventTranslator;
-    private CartEventRequestTranslator $cartEventRequestTranslator;
     private SubscribersToKlaviyoRequestsTranslator $subscribersTranslator;
     private IdentifyProfileRequestTranslator $identifyProfileRequestTranslator;
     private SearchStrategyInterface $profileIdSearchStrategy;
-    private UpdateProfileRequestTranslator $updateProfileRequestTranslator;
     private LoggerInterface $logger;
     private RealSubscribersToKlaviyoRequestsTranslator $realSubscribersTranslator;
+    private ProductDataHelper $productDataHelper;
 
     public function __construct(
         ClientRegistry $clientRegistry,
         OrderEventRequestTranslator $placedOrderEventRequestTranslator,
         ProductEventRequestTranslator $productEventTranslator,
-        CartEventRequestTranslator $cartEventRequestTranslator,
         SubscribersToKlaviyoRequestsTranslator $subscribersTranslator,
         IdentifyProfileRequestTranslator $identifyProfileRequestTranslator,
         SearchStrategyInterface $profileIdSearchStrategy,
-        UpdateProfileRequestTranslator $updateProfileRequestTranslator,
         LoggerInterface $logger,
-        RealSubscribersToKlaviyoRequestsTranslator $realSubscribersTranslator
+        RealSubscribersToKlaviyoRequestsTranslator $realSubscribersTranslator,
+        ProductDataHelper $productDataHelper
     ) {
         $this->clientRegistry = $clientRegistry;
         $this->orderEventRequestTranslator = $placedOrderEventRequestTranslator;
         $this->productEventTranslator = $productEventTranslator;
-        $this->cartEventRequestTranslator = $cartEventRequestTranslator;
         $this->subscribersTranslator = $subscribersTranslator;
         $this->identifyProfileRequestTranslator = $identifyProfileRequestTranslator;
         $this->profileIdSearchStrategy = $profileIdSearchStrategy;
-        $this->updateProfileRequestTranslator = $updateProfileRequestTranslator;
         $this->logger = $logger;
         $this->realSubscribersTranslator = $realSubscribersTranslator;
+        $this->productDataHelper = $productDataHelper;
     }
 
     public function trackPlacedOrders(Context $context, string $channelId, array $orderEvents): OrderTrackingResult
@@ -81,12 +77,29 @@ class KlaviyoGateway
         $requestOrderIdMap = $requests = [];
         /** @var OrderEventInterface $event */
         foreach ($orderEvents as $event) {
+            $customOptions = $this->productDataHelper->getCustomOptionsFromOrderItems(
+                $event->getOrder()->getLineItems(),
+                'OrderedProductEvent'
+            );
+            if (!empty($customOptions)) {
+                $customOptionsData = $customOptions->getCustomOptions();
+                $customOptionsProductsData = $customOptions->getCustomOptionsProductsData();
+            }
+
             foreach ($event->getOrder()->getLineItems() ?? [] as $lineItem) {
                 if ($lineItem->getType() !== 'product') {
                     continue;
                 }
 
+                $parentId = $lineItem->getParentId();
+
                 try {
+                    if ($parentId && !empty($customOptionsData[$parentId]) &&
+                        !empty($customOptionsProductsData[$parentId])) {
+                        $lineItem->assign(['customOptions' => $customOptionsData[$lineItem->getParentId()]]);
+                        $lineItem->setQuantity($customOptionsProductsData[$parentId]);
+                    }
+
                     $request = $this->productEventTranslator
                         ->translateToOrderedProductEventRequest($context, $lineItem, $event->getOrder(), $event->getOrder()->getLanguageId());
                     $requestOrderIdMap[spl_object_id($request)] = $event->getOrder()->getId();

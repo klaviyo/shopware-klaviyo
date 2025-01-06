@@ -92,7 +92,7 @@ class CheckoutLineItemInfo implements \JsonSerializable
         return $this->brand;
     }
 
-    public function getCustomOptions(): array
+    public function getCustomOptions(): ?array
     {
         return $this->customOptions;
     }

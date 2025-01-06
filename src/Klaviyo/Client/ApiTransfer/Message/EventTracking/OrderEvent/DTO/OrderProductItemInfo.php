@@ -14,6 +14,7 @@ class OrderProductItemInfo
     private string $imageUrl;
     private array $categories;
     private string $brand;
+    private ?array $customOptions;
 
     public function __construct(
         string $productId,
@@ -25,7 +26,8 @@ class OrderProductItemInfo
         string $productUrl,
         string $imageUrl,
         array $categories,
-        string $brand
+        string $brand,
+        ?array $customOptions
     ) {
         $this->productId = $productId;
         $this->sku = $sku;
@@ -37,6 +39,7 @@ class OrderProductItemInfo
         $this->imageUrl = $imageUrl;
         $this->categories = $categories;
         $this->brand = $brand;
+        $this->customOptions = $customOptions;
     }
 
     public function getProductId(): string
@@ -87,5 +90,10 @@ class OrderProductItemInfo
     public function getBrand(): string
     {
         return $this->brand;
+    }
+
+    public function getCustomOptions(): ?array
+    {
+        return $this->customOptions;
     }
 }
