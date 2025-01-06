@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Klaviyo\Integration\Entity\Helper;
 
 use Klaviyo\Integration\Klaviyo\Client\Exception\OrderItemProductNotFound;
+use Klaviyo\Integration\Klaviyo\Gateway\Exception\TranslationException;
+use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Category\CategoryDefinition;
@@ -23,8 +25,11 @@ use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Framework\Routing\RequestTransformer;
+use Swag\CustomizedProducts\Core\Checkout\CustomizedProductsCartDataCollector;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Klaviyo\Integration\Entity\CustomOptions\CustomOptionsResult;
+use Klaviyo\Integration\Entity\CustomOptions\CartCustomOptionsResult;
 
 class ProductDataHelper
 {
@@ -230,7 +235,7 @@ class ProductDataHelper
         return $categoriesCollection;
     }
 
-    private function getCategoriesWithDynamicProductGroups(Context $context): CategoryCollection
+    private function getCategoriesWithDynamicProductGroups(Context $context)
     {
         $criteria = new Criteria();
         $criteria->addFilter(
@@ -318,7 +323,11 @@ class ProductDataHelper
         return $channelId . '-' . $languageId;
     }
 
-    public function getProductNameById(string $productId)
+    /**
+     * @param string $productId
+     * @return string|null
+     */
+    public function getProductNameById(string $productId): ?string
     {
         $context = Context::createDefaultContext();
 
@@ -335,5 +344,122 @@ class ProductDataHelper
         }
 
         return null;
+    }
+
+    /**
+     * @param object $lineItem
+     * @return CartCustomOptionsResult
+     */
+    public function preparingSingleCustomProductOptions(object $lineItem): CartCustomOptionsResult
+    {
+        $customOptionsData = null;
+
+        if (($lineItem->getType() === CustomizedProductsCartDataCollector::CUSTOMIZED_PRODUCTS_TEMPLATE_LINE_ITEM_TYPE) &&
+        ($lineItem->getChildren() && $lineItem->getChildren()->getElements()) &&
+            (count($lineItem->getChildren()->getElements()) > 0)) {
+            foreach ($lineItem->getChildren()->getElements() as $element) {
+                if ($element->getType() === 'product') {
+                    $lineItem = $element;
+                } else {
+                    $price = $element->getPrice()->getUnitPrice();
+                    $totalPrice = $element->getPrice()->getTotalPrice();
+                    $customOptionsData[] = [
+                        'label' => $element->getLabel(),
+                        'unitPrice' => $price,
+                        'totalPrice' => $totalPrice,
+                    ];
+                }
+            }
+        }
+
+        if ($lineItem->getType() === CustomizedProductsCartDataCollector::CUSTOMIZED_PRODUCTS_TEMPLATE_LINE_ITEM_TYPE &&
+            !$customOptionsData
+        ) {
+            throw new TranslationException(\sprintf('Custom Product Template[id: %s] without options', $lineItem->getReferencedId()));
+        }
+
+        return new CartCustomOptionsResult($lineItem, $customOptionsData);
+    }
+
+    /**
+     * @param OrderLineItemCollection $lineItems
+     * @param string $eventType
+     * @return CustomOptionsResult|null
+     */
+    public function getCustomOptionsFromOrderItems(OrderLineItemCollection $lineItems, string $eventType): ?CustomOptionsResult
+    {
+        $result = null;
+
+        $customOptionsCollection = $lineItems->filterByType(
+            CustomizedProductsCartDataCollector::CUSTOMIZED_PRODUCTS_OPTION_LINE_ITEM_TYPE
+        );
+        $customProductsCollection = $lineItems->filterByType(
+            CustomizedProductsCartDataCollector::CUSTOMIZED_PRODUCTS_TEMPLATE_LINE_ITEM_TYPE
+        );
+
+        $optionProducts = $this->preparingCustomProductOptions($customOptionsCollection, $eventType);
+        $customProducts = $this->preparingCustomProductData($customProductsCollection, $eventType);
+
+        if (!empty($customProducts) && !empty($optionProducts)) {
+            $result = new CustomOptionsResult(
+                $optionProducts,
+                $customProducts
+            );
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param $customOptionsCollection
+     * @return array
+     */
+    private function preparingCustomProductOptions(
+        $customOptionsCollection
+    ): array
+    {
+        $optionProducts = [];
+
+        if (count($customOptionsCollection) > 0) {
+            foreach($customOptionsCollection as $customOption) {
+                if ($customOption->getParentId()) {
+                    $optionProducts[$customOption->getParentId()][] = [
+                        'label' => $customOption->getLabel(),
+                        'price' => $customOption->getPrice()->getUnitPrice(),
+                        'totalPrice' => $customOption->getPrice()->getTotalPrice(),
+                    ];
+                }
+            }
+        }
+
+        return $optionProducts;
+    }
+
+    /**
+     * @param $customProductsCollection
+     * @param string $eventType
+     * @return array
+     */
+    private function preparingCustomProductData($customProductsCollection, string $eventType): array {
+        $customProducts = [];
+
+        if (count($customProductsCollection) > 0) {
+            foreach($customProductsCollection as $customProduct) {
+                if ($customProduct->getId()) {
+                    switch ($eventType) {
+                        case 'OrderedProductEvent':
+                        case 'CartEvent':
+                            $customProducts[$customProduct->getId()] = $customProduct->getQuantity();
+                            break;
+                        case 'OrderEvent':
+                        case 'StartedCheckoutEvent':
+                            $customProducts[$customProduct->getId()] = $customProduct->getPrice()->getTotalPrice();
+                            break;
+                    }
+                }
+            }
+        }
+
+        return $customProducts;
     }
 }

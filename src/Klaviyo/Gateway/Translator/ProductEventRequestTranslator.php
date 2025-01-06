@@ -28,7 +28,13 @@ class ProductEventRequestTranslator
         OrderEntity $orderEntity,
         $languageId
     ): OrderedProductEventTrackingRequest {
+        $customOptionsData = [];
+
         try {
+            if (!empty($lineItem->customOptions)) {
+                $customOptionsData = $lineItem->customOptions;
+            }
+
             $product = $this->productDataHelper->getLineItemProduct($context, $lineItem);
             $productUrl = $this->productDataHelper->getProductViewPageUrlByChannelId(
                 $product,
@@ -62,7 +68,8 @@ class ProductEventRequestTranslator
             $productUrl,
             $imageUrl,
             $categories,
-            $manufacturerName
+            $manufacturerName,
+            $customOptionsData
         );
     }
 }

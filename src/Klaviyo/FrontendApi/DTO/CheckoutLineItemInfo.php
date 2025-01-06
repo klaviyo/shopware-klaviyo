@@ -14,6 +14,7 @@ class CheckoutLineItemInfo implements \JsonSerializable
     private ?float $itemPrice;
     private ?float $rowTotal;
     private string $brand;
+    private ?array $customOptions;
 
     public function __construct(
         string $name,
@@ -25,7 +26,8 @@ class CheckoutLineItemInfo implements \JsonSerializable
         float $quantity,
         ?float $itemPrice,
         ?float $rowTotal,
-        string $brand
+        string $brand,
+        ?array $customOptions
     ) {
         $this->name = $name;
         $this->id = $id;
@@ -37,6 +39,7 @@ class CheckoutLineItemInfo implements \JsonSerializable
         $this->itemPrice = $itemPrice;
         $this->rowTotal = $rowTotal;
         $this->brand = $brand;
+        $this->customOptions = $customOptions;
     }
 
     public function getName(): string
@@ -89,10 +92,15 @@ class CheckoutLineItemInfo implements \JsonSerializable
         return $this->brand;
     }
 
+    public function getCustomOptions(): ?array
+    {
+        return $this->customOptions;
+    }
+
 
     public function jsonSerialize()
     {
-        return [
+        $result = [
             'ProductID' => $this->getId(),
             'SKU' => $this->getSku(),
             'ProductName' => $this->getName(),
@@ -104,5 +112,11 @@ class CheckoutLineItemInfo implements \JsonSerializable
             'ProductCategories' => $this->getCategoryNames(),
             'Brand' => $this->getBrand()
         ];
+
+        if ($this->getCustomOptions()) {
+            $result['CustomOptions'] = $this->getCustomOptions();
+        }
+
+        return $result;
     }
 }

@@ -68,7 +68,7 @@ class StartedCheckoutEventTrackingRequestTranslator
         $collection = new CheckoutLineItemInfoCollection();
 
         foreach ($cart->getLineItems() as $lineItem) {
-            if ('product' !== $lineItem->getType()) {
+            if (!in_array($lineItem->getType(), ['customized-products', 'product'])) {
                 continue;
             }
 
@@ -81,6 +81,16 @@ class StartedCheckoutEventTrackingRequestTranslator
 
     private function translateLineItem(SalesChannelContext $context, LineItem $lineItem): CheckoutLineItemInfo
     {
+        $rowTotalPrice = $lineItem->getPrice()->getTotalPrice();
+        $customOptionsData = null;
+        $quantity = $lineItem->getQuantity();
+
+        if ($lineItem->getType() === 'customized-products') {
+            $customProductData = $this->productDataHelper->preparingSingleCustomProductOptions($lineItem);
+            $lineItem = $customProductData->getMainLineItem();
+            $customOptionsData = $customProductData->getCustomOptions();
+        }
+
         $product = $this->productDataHelper->getProductById($context->getContext(), $lineItem->getReferencedId());
 
         if (!$product) {
@@ -102,10 +112,11 @@ class StartedCheckoutEventTrackingRequestTranslator
             $categories,
             $imageUrl,
             $viewPageUrl,
-            $lineItem->getQuantity(),
+            $quantity,
             $lineItem->getPrice()->getUnitPrice(),
-            $lineItem->getPrice()->getTotalPrice(),
-            $this->productDataHelper->getManufacturerName($context->getContext(), $product) ?: ''
+            $rowTotalPrice,
+            $this->productDataHelper->getManufacturerName($context->getContext(), $product) ?: '',
+            $customOptionsData
         );
     }
 }
