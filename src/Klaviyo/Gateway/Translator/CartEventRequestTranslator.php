@@ -14,7 +14,6 @@ use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swag\CustomizedProducts\Core\Checkout\CustomizedProductsCartDataCollector;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class CartEventRequestTranslator
@@ -81,7 +80,7 @@ class CartEventRequestTranslator
         $customOptionsData = null;
         $quantity = $lineItem->getQuantity();
 
-        if ($lineItem->getType() === CustomizedProductsCartDataCollector::CUSTOMIZED_PRODUCTS_TEMPLATE_LINE_ITEM_TYPE) {
+        if ($lineItem->getType() === 'customized-products') {
             $customProductData = $this->productDataHelper->preparingSingleCustomProductOptions($lineItem);
             $lineItem = $customProductData->getMainLineItem();
             $customOptionsData = $customProductData->getCustomOptions();
@@ -94,7 +93,7 @@ class CartEventRequestTranslator
         $collection = new CartEventDTO\CartProductInfoCollection();
 
         foreach ($cart->getLineItems() as $cartLineItem) {
-            if ($cartLineItem->getType() === CustomizedProductsCartDataCollector::CUSTOMIZED_PRODUCTS_TEMPLATE_LINE_ITEM_TYPE) {
+            if ($cartLineItem->getType() === 'customized-products') {
                 $cartLineItemQty = $cartLineItem->getQuantity();
                 $cartLineItemTotalPrice = $cartLineItem->getPrice()->getTotalPrice();
 
