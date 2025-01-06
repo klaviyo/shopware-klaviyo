@@ -83,10 +83,12 @@ class StartedCheckoutEventTrackingRequestTranslator
     {
         $rowTotalPrice = $lineItem->getPrice()->getTotalPrice();
         $customOptionsData = null;
+        $quantity = $lineItem->getQuantity();
 
         if ($lineItem->getType() === 'customized-products') {
-            $customProductData = $this->productDataHelper->preparingCustomProductOptions($lineItem);
-            list('main' => $lineItem, 'options' => $customOptionsData, 'rowTotalPrice' => $rowTotalPrice) = $customProductData;
+            $customProductData = $this->productDataHelper->preparingSingleCustomProductOptions($lineItem);
+            $lineItem = $customProductData->getMainLineItem();
+            $customOptionsData = $customProductData->getCustomOptions();
         }
 
         $product = $this->productDataHelper->getProductById($context->getContext(), $lineItem->getReferencedId());
@@ -110,7 +112,7 @@ class StartedCheckoutEventTrackingRequestTranslator
             $categories,
             $imageUrl,
             $viewPageUrl,
-            $lineItem->getQuantity(),
+            $quantity,
             $lineItem->getPrice()->getUnitPrice(),
             $rowTotalPrice,
             $this->productDataHelper->getManufacturerName($context->getContext(), $product) ?: '',

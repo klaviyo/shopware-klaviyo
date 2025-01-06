@@ -14,6 +14,7 @@ class CartProductInfo
     private string $viewPageUrl;
     private array $productCategories;
     private string $brand;
+    private array  $customOptions;
 
     public function __construct(
         string $id,
@@ -25,7 +26,8 @@ class CartProductInfo
         string $imageUrl,
         string $viewPageUrl,
         array $productCategories,
-        string $brand
+        string $brand,
+        array $customOptions
     ) {
         $this->id = $id;
         $this->sku = $sku;
@@ -37,6 +39,7 @@ class CartProductInfo
         $this->viewPageUrl = $viewPageUrl;
         $this->productCategories = $productCategories;
         $this->brand = $brand;
+        $this->customOptions = $customOptions;
     }
 
     public function getId(): string
@@ -87,5 +90,10 @@ class CartProductInfo
     public function getBrand(): string
     {
         return $this->brand;
+    }
+
+    public function getCustomOptions(): array
+    {
+        return $this->customOptions;
     }
 }

@@ -19,6 +19,7 @@ class AddedToCartEventTrackingRequest extends EventTrackingRequest
     private int $addedItemQty;
     private string $checkoutURL;
     private CartProductInfoCollection $cartProductInfoCollection;
+    private ?array $customOptions;
 
     public function __construct(
         string $eventId,
@@ -34,7 +35,8 @@ class AddedToCartEventTrackingRequest extends EventTrackingRequest
         string $addedItemUrl,
         int $addedItemQty,
         string $checkoutURL,
-        CartProductInfoCollection $cartProductInfoCollection
+        CartProductInfoCollection $cartProductInfoCollection,
+        ?array $customOptions
     ) {
         parent::__construct($eventId, $time, $customerProperties);
 
@@ -49,6 +51,7 @@ class AddedToCartEventTrackingRequest extends EventTrackingRequest
         $this->addedItemQty = $addedItemQty;
         $this->checkoutURL = $checkoutURL;
         $this->cartProductInfoCollection = $cartProductInfoCollection;
+        $this->customOptions = $customOptions;
     }
 
     public function getCartTotal(): float
@@ -104,5 +107,10 @@ class AddedToCartEventTrackingRequest extends EventTrackingRequest
     public function getCartProductInfoCollection(): CartProductInfoCollection
     {
         return $this->cartProductInfoCollection;
+    }
+
+    public function getCustomOptions(): ?array
+    {
+        return $this->customOptions;
     }
 }
