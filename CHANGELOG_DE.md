@@ -1,3 +1,6 @@
+# 3.3.0
+# Neu: Es wurde ein Popup-Fenster mit einer Warnung für Administratoren hinzugefügt, die gleichzeitig historische Synchronisationen von Bestellungen und Abonnenten durchführen können.
+
 # 3.2.2
 # Fix: Die API-Anfrage für die Übertragung von Abonnenten während der historischen Synchronisierung wurde geändert. Denn es wirkte sich auf das Erscheinungsbild des Zustimmungsstatus aus, dass der Abonnent abonniert ist.
 ## Wichtige Änderungen: Historische Synchronisierung funktioniert jetzt über Double Opt-in.

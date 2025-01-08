@@ -1,3 +1,6 @@
+# 3.3.0
+# New: Added an admin warning popup for admins who might be running historical syncs of orders and subscribers at the same time.
+
 # 3.2.2
 # Fix: API request for transferring subscribers during Historical synchronization was changed. Because it affected the appearance of Consent status that the subscriber is subscribed.
 ## Important changes: Now Historical synchronization works via double opt-in.
