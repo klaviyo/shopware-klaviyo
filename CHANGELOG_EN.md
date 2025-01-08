@@ -1,3 +1,9 @@
+# 1.14.0
+# New: Added support for the **SwagCustomizedProducts** plugin, which adds custom options to products.
+## Documentation:
+https://overdosedigital.atlassian.net/wiki/x/GQBY-g
+# New: Added an admin warning popup for admins who might be running historical syncs of orders and subscribers at the same time.
+
 # 1.13.2
 # Fix: API request for transferring subscribers during Historical synchronization was changed. Because it affected the appearance of Consent status that the subscriber is subscribed.
 ## Important changes: Now Historical synchronization works via double opt-in.

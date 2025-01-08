@@ -1,3 +1,9 @@
+# 1.14.0
+# Neu: Unterstützung für das Plugin **SwagCustomizedProducts** hinzugefügt, das Produkte mit benutzerdefinierten Optionen versieht.
+## Dokumentation:
+https://overdosedigital.atlassian.net/wiki/x/GQBY-g
+# Neu: Es wurde ein Popup-Fenster mit einer Warnung für Administratoren hinzugefügt, die gleichzeitig historische Synchronisationen von Bestellungen und Abonnenten durchführen können.]()
+
 # 1.13.2
 # Fix: Die API-Anfrage für die Übertragung von Abonnenten während der historischen Synchronisierung wurde geändert. Denn es wirkte sich auf das Erscheinungsbild des Zustimmungsstatus aus, dass der Abonnent abonniert ist.
 ## Wichtige Änderungen: Historische Synchronisierung funktioniert jetzt über Double Opt-in.
