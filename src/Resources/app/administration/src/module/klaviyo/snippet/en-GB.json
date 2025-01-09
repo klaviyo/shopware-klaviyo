@@ -212,6 +212,15 @@
             "withoutOrdersSync": {
                 "label": "Enable Synchronization Customers Without Orders",
                 "helpText": "This option allows, when starting historical synchronization, to create in Klaviyo profiles of those customers who do not have orders"
+            },
+            "doubleProcessLaunchWarning": {
+                "label": "\"{entityName}\" is currently running. Please be aware that launching multiple synchronizations in parallel can cause interruptions following Klaviyo rate limits \"{docUrl}\". Do you want to proceed?",
+                "actionCanceled": "Action canceled."
+            },
+            "doubleProcessLaunchWarningPopup": {
+                "confirmActionTitle": "Confirm Action",
+                "confirmLabel": "Confirm",
+                "cancelLabel": "Cancel"
             }
         },
         "customer": {
