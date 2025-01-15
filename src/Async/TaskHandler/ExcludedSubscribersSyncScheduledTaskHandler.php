@@ -10,8 +10,10 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-class ExcludedSubscribersSyncScheduledTaskHandler extends ScheduledTaskHandler
+#[AsMessageHandler(handles: ExcludedSubscribersSyncScheduledTask::class)]
+final class ExcludedSubscribersSyncScheduledTaskHandler extends ScheduledTaskHandler
 {
     public function __construct(
         protected EntityRepository $scheduledTaskRepository,
