@@ -13,7 +13,7 @@ use Shopware\Core\Framework\Context;
 
 class GetExcludedSubscribersApiTransferTranslator extends AbstractApiTransferMessageTranslator
 {
-    private const SUPPRESSION_REASON = 'USER_SUPPRESSED';
+    private const UNSUBSCRIBE_REASON = 'UNSUBSCRIBE';
 
     /**
      * @param GetExcludedSubscribers\Request $request
@@ -27,7 +27,7 @@ class GetExcludedSubscribersApiTransferTranslator extends AbstractApiTransferMes
                 '%s/profiles?page[size]=%s&additional-fields[profile]=subscriptions&filter=equals(subscriptions.email.marketing.suppression.reason,"%s")',
                 $this->configuration->getGlobalNewEndpointUrl(),
                 $request->getCount(),
-                self::SUPPRESSION_REASON
+                self::UNSUBSCRIBE_REASON
             );
         }
 
