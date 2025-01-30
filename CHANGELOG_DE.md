@@ -1,3 +1,8 @@
+# 3.3.1
+# Fix: Die Synchronisation von abgemeldeten Abonnenten von Klaviyo zu Shopware wurde korrigiert.
+# Fix: Das Problem mit dem Erstellungsdatum des Ereignisses in den Metriken während der historischen Synchronisierung von Aufträgen wurde behoben.
+### Behobenes Problem: Wenn das Ereignis kein **updated_at** enthielt, wurde der Wert Null übergeben und das historische Ereignis wurde mit dem Datum und der Uhrzeit der Synchronisierung gespeichert.
+
 # 3.3.0
 # Neu: Es wurde ein Popup-Fenster mit einer Warnung für Administratoren hinzugefügt, die gleichzeitig historische Synchronisationen von Bestellungen und Abonnenten durchführen können.
 
