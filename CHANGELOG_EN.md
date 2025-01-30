@@ -1,3 +1,8 @@
+# 1.14.1
+# Fix: Fixed synchronization of unsubscribed subscribers from Klaviyo to Shopware.
+# Fix: Fixed the problem with the event creation date in metrics during historical synchronization of orders.
+### Fixed issue: If there was no **updated_at** in the event, then the null value was passed and the historical event was saved with the date and time of synchronization.
+
 # 1.14.0
 # New: Added support for the **SwagCustomizedProducts** plugin, which adds custom options to products.
 ## Documentation:

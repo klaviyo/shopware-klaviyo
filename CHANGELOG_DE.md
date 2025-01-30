@@ -1,3 +1,8 @@
+# 1.14.1
+# Fix: Die Synchronisation von abgemeldeten Abonnenten von Klaviyo zu Shopware wurde korrigiert.
+# Fix: Das Problem mit dem Erstellungsdatum des Ereignisses in den Metriken während der historischen Synchronisierung von Aufträgen wurde behoben.
+### Behobenes Problem: Wenn das Ereignis kein **updated_at** enthielt, wurde der Wert Null übergeben und das historische Ereignis wurde mit dem Datum und der Uhrzeit der Synchronisierung gespeichert.
+
 # 1.14.0
 # Neu: Unterstützung für das Plugin **SwagCustomizedProducts** hinzugefügt, das Produkte mit benutzerdefinierten Optionen versieht.
 ## Dokumentation:
