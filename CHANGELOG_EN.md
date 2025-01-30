@@ -1,3 +1,8 @@
+# 3.3.1
+# Fix: Fixed synchronization of unsubscribed subscribers from Klaviyo to Shopware.
+# Fix: Fixed the problem with the event creation date in metrics during historical synchronization of orders.
+### Fixed issue: If there was no **updated_at** in the event, then the null value was passed and the historical event was saved with the date and time of synchronization.
+
 # 3.3.0
 # New: Added an admin warning popup for admins who might be running historical syncs of orders and subscribers at the same time.
 
