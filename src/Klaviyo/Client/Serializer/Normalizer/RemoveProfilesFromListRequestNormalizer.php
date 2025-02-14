@@ -38,7 +38,14 @@ class RemoveProfilesFromListRequestNormalizer extends AbstractNormalizer
             $data['attributes']['profiles']['data'][] = [
                 'type' => 'profile',
                 'attributes' => [
-                    'email' => $profile->getEmail()
+                    'email' => $profile->getEmail(),
+                    'subscriptions' => [
+                        'email' => [
+                            'marketing' => [
+                                'consent' => 'UNSUBSCRIBED',
+                            ]
+                        ]
+                    ]
                 ]
             ];
         }
