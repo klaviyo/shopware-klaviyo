@@ -1,3 +1,6 @@
+# 1.14.2
+# Fix:Ein neues erforderliches Feld `subscriptions` wurde zu den Bulk Unsubscribe Profiles hinzugefügt, in Übereinstimmung mit den letzten Änderungen von Breaking.
+
 # 1.14.1
 # Fix: Die Synchronisation von abgemeldeten Abonnenten von Klaviyo zu Shopware wurde korrigiert.
 # Fix: Das Problem mit dem Erstellungsdatum des Ereignisses in den Metriken während der historischen Synchronisierung von Aufträgen wurde behoben.
