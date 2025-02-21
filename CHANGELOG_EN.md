@@ -1,3 +1,7 @@
+# 3.3.2
+# Fix:A new required field `subscriptions` has been added to Bulk Unsubscribe Profiles, in accordance with the latest Breaking changes.
+
+
 # 3.3.1
 # Fix: Fixed synchronization of unsubscribed subscribers from Klaviyo to Shopware.
 # Fix: Fixed the problem with the event creation date in metrics during historical synchronization of orders.
