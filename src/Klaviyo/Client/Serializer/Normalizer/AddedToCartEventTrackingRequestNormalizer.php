@@ -4,8 +4,6 @@ namespace Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer;
 
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\CartEvent\AddedToCartEventTrackingRequest;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\CartEvent\DTO\CartProductInfo;
-use Klaviyo\Integration\Klaviyo\Client\Exception\SerializationException;
-use Symfony\Component\Serializer\Exception\ExceptionInterface;
 
 class AddedToCartEventTrackingRequestNormalizer extends AbstractNormalizer
 {
@@ -13,15 +11,10 @@ class AddedToCartEventTrackingRequestNormalizer extends AbstractNormalizer
      * @param AddedToCartEventTrackingRequest $object
      * @param string|null $format
      * @param array $context
-     *
      * @return array
-     * @throws SerializationException|ExceptionInterface
      */
     public function normalize($object, string $format = null, array $context = []): array
     {
-        $customerProperties = $this->normalizeObject($object->getCustomerProperties());
-        unset($customerProperties['phone_number']);
-
         $itemNames = [];
         $productItems = [];
 
@@ -84,7 +77,9 @@ class AddedToCartEventTrackingRequestNormalizer extends AbstractNormalizer
                         'data' => [
                             'type' => 'profile',
                             'id' => '',
-                            'attributes' => $customerProperties
+                            'attributes' => [
+                                'email' => $object->getCustomerProperties()->getEmail()
+                            ]
                         ]
                     ]
                 ]
