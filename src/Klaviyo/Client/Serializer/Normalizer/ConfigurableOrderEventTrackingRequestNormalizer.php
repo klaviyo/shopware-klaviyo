@@ -24,14 +24,14 @@ class ConfigurableOrderEventTrackingRequestNormalizer extends AbstractNormalizer
 
     /**
      * @param AbstractOrderEventTrackingRequest $object
-     *
-     * @throws SerializationException
+     * @param string|null $format
+     * @param array $context
+     * @return array[]
      * @throws ExceptionInterface
+     * @throws SerializationException
      */
     public function normalize($object, string $format = null, array $context = []): array
     {
-        $customerProperties = $this->normalizeObject($object->getCustomerProperties());
-
         if (
             !empty($context) && !empty($context['eventType'])
             && in_array(
@@ -47,8 +47,6 @@ class ConfigurableOrderEventTrackingRequestNormalizer extends AbstractNormalizer
                 ]
             )
         ) {
-            unset($customerProperties['phone_number']);
-
             if ('PartiallyShippedOrder' === $context['eventType']) {
                 $this->eventName = 'Partially Shipped Order';
             }
@@ -141,7 +139,9 @@ class ConfigurableOrderEventTrackingRequestNormalizer extends AbstractNormalizer
                     'profile' => [
                         'data' => [
                             'type' => 'profile',
-                            'attributes' => $customerProperties,
+                            'attributes' => [
+                                'email' => $object->getCustomerProperties()->getEmail()
+                            ]
                         ],
                     ],
                 ],
