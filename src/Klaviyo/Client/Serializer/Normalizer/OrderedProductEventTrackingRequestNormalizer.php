@@ -3,20 +3,16 @@
 namespace Klaviyo\Integration\Klaviyo\Client\Serializer\Normalizer;
 
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\OrderedProductEvent\OrderedProductEventTrackingRequest;
-
 class OrderedProductEventTrackingRequestNormalizer extends AbstractNormalizer
 {
     /**
      * @param OrderedProductEventTrackingRequest $object
-     *
-     * @return array
+     * @param string|null $format
+     * @param array $context
+     * @return array[]
      */
     public function normalize($object, string $format = null, array $context = []): array
     {
-        $customerProperties = $this->normalizeObject($object->getCustomerProperties());
-
-        unset($customerProperties['phone_number']);
-
         $categories = '';
 
         if (!empty($object->getCategories())) {
@@ -59,7 +55,9 @@ class OrderedProductEventTrackingRequestNormalizer extends AbstractNormalizer
                         'data' => [
                             'type' => 'profile',
                             'id' => '',
-                            'attributes' => $customerProperties
+                            'attributes' => [
+                                'email' => $object->getCustomerProperties()->getEmail()
+                            ]
                         ]
                     ]
                 ]
