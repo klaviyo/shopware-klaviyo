@@ -13,13 +13,9 @@ class AddedToCartEventTrackingRequestNormalizer extends AbstractNormalizer
      * @param array $context
      *
      * @return array
-     * @throws \Klaviyo\Integration\Klaviyo\Client\Exception\SerializationException
      */
     public function normalize($object, string $format = null, array $context = []): array
     {
-        $customerProperties = $this->normalizeObject($object->getCustomerProperties());
-        unset($customerProperties['phone_number']);
-
         $itemNames = [];
         $productItems = [];
 
@@ -74,7 +70,9 @@ class AddedToCartEventTrackingRequestNormalizer extends AbstractNormalizer
                         'data' => [
                             'type' => 'profile',
                             'id' => '',
-                            'attributes' => $customerProperties
+                            'attributes' => [
+                                'email' => $object->getCustomerProperties()->getEmail()
+                            ]
                         ]
                     ]
                 ]
