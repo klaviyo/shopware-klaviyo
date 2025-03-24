@@ -16,18 +16,30 @@ use Shopware\Core\Checkout\Customer\Event\GuestCustomerRegisterEvent;
 
 class GuestCustomerRegisterEventListener implements EventSubscriberInterface
 {
+    private CartEventRequestTranslator $cartEventRequestTranslator;
+    private EventsTrackerInterface $eventsTracker;
+    private LoggerInterface $logger;
+    private GetValidChannelConfig $getValidChannelConfig;
+    private CartService $cartService;
+
     public function __construct(
-        private readonly CartEventRequestTranslator $cartEventRequestTranslator,
-        private readonly EventsTrackerInterface $eventsTracker,
-        private readonly LoggerInterface $logger,
-        private readonly GetValidChannelConfig $getValidChannelConfig,
-        private readonly CartService $cartService
-    ) {}
+       CartEventRequestTranslator $cartEventRequestTranslator,
+       EventsTrackerInterface $eventsTracker,
+       LoggerInterface $logger,
+       GetValidChannelConfig $getValidChannelConfig,
+       CartService $cartService
+    ) {
+        $this->cartEventRequestTranslator = $cartEventRequestTranslator;
+        $this->eventsTracker = $eventsTracker;
+        $this->logger = $logger;
+        $this->getValidChannelConfig = $getValidChannelConfig;
+        $this->cartService = $cartService;
+    }
 
     public static function getSubscribedEvents(): array
     {
         return [
-            GuestCustomerRegisterEvent::class => 'onGuestRegister',
+            GuestCustomerRegisterEvent::class => 'onGuestRegister'
         ];
     }
 
