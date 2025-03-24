@@ -21,6 +21,11 @@
         "cookie": {
             "value": "Klaviyo Cookies",
             "description": "Ermöglicht die Identifizierung des Benutzers, wenn er nicht angemeldet ist!"
+        },
+        "cart-restore": {
+            "missing-cart-data": "Ihre bisherigen Warenkorbdaten fehlen.",
+            "missing-cart-data-guest": "Die Daten Ihres bisherigen Warenkorbs fehlen.",
+            "missing-cart-data-error": "Bei der Wiederherstellung der Warenkorbdaten ist ein Fehler aufgetreten."
         }
     }
 }
