@@ -69,16 +69,17 @@ readonly class NewsletterControllerDecorator
 
     private function isCookieAllowed(SalesChannelContext $context, Request $request)
     {
-        $cookieType = $this->validChannelConfig->execute($context->getSalesChannelId())->getCookieConsent();
-        switch ($cookieType) {
-            case 'shopware':
-            case 'consentmanager':
-                return $request->cookies->get('od-klaviyo-track-allow');
-            case 'cookiebot':
-                return $this->isCookieBotAllowed($request);
-            default:
-                return true;
+        $cookieType = $this->validChannelConfig->execute($context->getSalesChannelId())?->getCookieConsent();
+
+        if (null == $cookieType) {
+            return false;
         }
+
+        return match ($cookieType) {
+            'shopware', 'consentmanager', 'usercentrics' => $request->cookies->get('od-klaviyo-track-allow'),
+            'cookiebot' => $this->isCookieBotAllowed($request),
+            default => true,
+        };
     }
 
     private function isCookieBotAllowed(Request $request): bool
