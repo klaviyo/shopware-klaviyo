@@ -39,7 +39,7 @@ class CartController extends StorefrontController
     {
         $this->restorerService->restore($mappingId, $context);
 
-        if (isset($context->customerId)) {
+        if ($context->getCustomer() && isset($context->customerId)) {
             $request->getSession()->set('customerId', $context->customerId);
             $data = $this->restorerService->registerCustomerByRestoreCartLink($context);
 
@@ -52,8 +52,16 @@ class CartController extends StorefrontController
                     );
                 } catch (\Exception $exception) {
                     $this->logger->error($exception->getMessage());
+                    $this->addFlash(self::DANGER, $this->trans('klaviyo.cart-restore.missing-cart-data-error'));
+                    return $this->redirectToRoute('frontend.home.page');
                 }
+            } else {
+                $this->addFlash(self::WARNING, $this->trans('klaviyo.cart-restore.missing-cart-data'));
+                return $this->redirectToRoute('frontend.home.page');
             }
+        } else {
+            $this->addFlash(self::WARNING, $this->trans('klaviyo.cart-restore.missing-cart-data-guest'));
+            return $this->redirectToRoute('frontend.home.page');
         }
 
         return $this->redirectToRoute('frontend.checkout.confirm.page');
