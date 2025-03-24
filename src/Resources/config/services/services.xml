@@ -127,6 +127,15 @@
             <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannelConfig"/>
             <tag name="kernel.event_subscriber"/>
         </service>
+
+        <service id="Klaviyo\Integration\EventListener\GuestCustomerRegisterEventListener">
+            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator"/>
+            <argument type="service" id="Klaviyo\Integration\System\Tracking\EventsTracker"/>
+            <argument type="service" id="monolog.logger.od_klaviyo"/>
+            <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannelConfig"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
         <!-- /Listeners -->
 
         <service id="Klaviyo\Integration\Entity\Helper\AddressDataHelper">
