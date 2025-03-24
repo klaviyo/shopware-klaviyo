@@ -44,10 +44,22 @@ class NewsletterSubscribePageLoadedEventListener implements EventSubscriberInter
 
     private function isCookieAllowed(SalesChannelContext $context, Request $request)
     {
-        $cookieType = $this->validChannelConfig->execute($context->getSalesChannelId())->getCookieConsent();
+        $cookieTypeConfig = $this->validChannelConfig->execute($context->getSalesChannelId());
+
+        if (!$cookieTypeConfig) {
+            return false;
+        }
+
+        $cookieType = $cookieTypeConfig->getCookieConsent();
+
+        if (null == $cookieType) {
+            return false;
+        }
+
         switch ($cookieType) {
             case 'shopware':
             case 'consentmanager':
+            case 'usercentrics':
                 return $request->cookies->get('od-klaviyo-track-allow');
             case 'cookiebot':
                 return $this->isCookieBotAllowed($request);
