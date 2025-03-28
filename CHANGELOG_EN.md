@@ -1,6 +1,12 @@
+# 3.3.3
+# Fix: Corrected requests related to orders. Customer profile data was removed from order requests, which was constantly transmitted, which was optional.
+# Fix: When a guest adds items to the cart, then after authorization at checkout, an event is also triggered: **Added to Cart**.
+# Fix: Fixed an error when confirming a subscription from Shopware's double-opt-in.
+### Fixed error: "Call to a member function getCookieConsent() on null".
+# Fix: Fixed plugin generation js files.
+
 # 3.3.2
 # Fix:A new required field `subscriptions` has been added to Bulk Unsubscribe Profiles, in accordance with the latest Breaking changes.
-
 
 # 3.3.1
 # Fix: Fixed synchronization of unsubscribed subscribers from Klaviyo to Shopware.
