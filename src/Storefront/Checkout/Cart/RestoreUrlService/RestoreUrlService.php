@@ -55,12 +55,8 @@ class RestoreUrlService implements RestoreUrlServiceInterface
     private function generate(string $id): string
     {
         return $this->requestStack->getCurrentRequest()->attributes->get(
-                RequestTransformer::STOREFRONT_URL
-            ).$this->urlGenerator->generate(
-                'frontend.cart.od-restore-cart',
-                ['mappingId' => $id],
-                UrlGeneratorInterface::ABSOLUTE_PATH
-            );
+            RequestTransformer::STOREFRONT_URL
+        ) . $this->urlGenerator->generate('frontend.cart.od-restore-cart', ['mappingId' => $id]);
     }
 
     protected function createNew(string $token, Context $context): string
