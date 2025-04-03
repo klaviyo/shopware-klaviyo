@@ -8,17 +8,16 @@
     </sw-button>
 {% endblock %}
 
-{% block sw_promotion_v2_list_grid_columns_actions %}
+{% block sw_promotion_v2_list_grid_columns_actions_duplicate %}
     {% parent %}
+
     {% block sw_promotion_v2_list_grid_columns_actions_klaviyo_export %}
-        <template #more-actions="{ item }">
-            <sw-context-menu-item
-                    :disabled="(item && item.orderCount > 0)"
-                    @click="sendPromotionToExport(item.id)"
-            >
-                {{ $tc('klaviyo_integration_plugin.promotion.exportInKlaviyoFormatButtonLabel') }}
-            </sw-context-menu-item>
-        </template>
+        <sw-context-menu-item
+                :disabled="(item && item.orderCount > 0)"
+                @click="sendPromotionToExport(item.id)"
+        >
+            {{ $tc('klaviyo_integration_plugin.promotion.exportInKlaviyoFormatButtonLabel') }}
+        </sw-context-menu-item>
     {% endblock %}
 {% endblock %}
 
