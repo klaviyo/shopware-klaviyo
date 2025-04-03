@@ -11,7 +11,7 @@
 {% block sw_promotion_v2_list_grid_columns_actions %}
     {% parent %}
     {% block sw_promotion_v2_list_grid_columns_actions_klaviyo_export %}
-        <template #more-actions="{ item }">
+        <template #klaviyo-more-actions="{ item }">
             <sw-context-menu-item
                     :disabled="(item && item.orderCount > 0)"
                     @click="sendPromotionToExport(item.id)"
