@@ -46,25 +46,27 @@ class AsyncClient implements ClientInterface
                 'concurrency' => $concurrency,
                 'fulfilled' => function (Response $response, $index) {
                     if (isset($this->requests[$index])) {
-                        $translator = $this->translatorsRegistry->getTranslatorForRequest($this->requests[$index]);
+                        $currentRequest = $this->requests[$index];
+                        $translator = $this->translatorsRegistry->getTranslatorForRequest($currentRequest);
 
                         $translateResponseResult = $translator->translateResponse($response);
 
+                        $this->clientResult->addRequestResponse($currentRequest, $translateResponseResult);
+
                         if (false === $translateResponseResult->isSuccess()) {
-                            $currentRequest = $this->requests[$index];
                             $errorDetail = $translateResponseResult->getErrorDetails();
 
                             if (\method_exists($currentRequest, 'getOrderId')) {
-                                $orderId = $this->requests[$index]->getOrderId();
+                                $orderId = $currentRequest->getOrderId();
 
                                 if (
                                     (('The phone number provided either does not exist or is ineligible to receive SMS' ===
-                                        $errorDetail)
-                                    || (false !== strpos($errorDetail, 'Invalid phone number format')))
+                                            $errorDetail)
+                                        || (str_contains($errorDetail, 'Invalid phone number format')))
                                     ||
                                     (('Invalid email address' ===
                                             $errorDetail)
-                                        || (false !== strpos($errorDetail, 'Invalid email address')))
+                                        || (str_contains($errorDetail, 'Invalid email address')))
                                 ) {
                                     $exceptionType = new JobRuntimeWarningException(
                                         \sprintf('Order[id: %s] error: %s', $orderId, $errorDetail)
@@ -74,16 +76,24 @@ class AsyncClient implements ClientInterface
                                     throw new TranslationException($response, $throwText);
                                 }
 
-                                $this->clientResult->addRequestError($this->requests[$index], $exceptionType);
+                                $this->clientResult->addRequestError($currentRequest, $exceptionType);
+                            } else if (\method_exists($currentRequest, 'getListId')) {
+                                $listId = $currentRequest->getListId();
+
+                                if ('Duplicate email subscribe found' === $errorDetail) {
+                                    $exceptionType = new JobRuntimeWarningException(
+                                        \sprintf('List[id: %s] error: %s', $listId, $errorDetail)
+                                    );
+                                } else {
+                                    $throwText = \sprintf('List[id: %s] error: %s', $listId, $errorDetail);
+                                    throw new TranslationException($response, $throwText);
+                                }
+
+                                $this->clientResult->addRequestError($currentRequest, $exceptionType);
                             } else {
                                 $throwText = \sprintf('Event error: %s', $errorDetail);
                                 throw new TranslationException($response, $throwText);
                             }
-                        } else {
-                            $this->clientResult->addRequestResponse(
-                                $this->requests[$index],
-                                $translateResponseResult
-                            );
                         }
                     }
                 },
