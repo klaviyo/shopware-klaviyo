@@ -11,6 +11,7 @@ class SubscriberSyncMessage extends AbstractBasicMessage implements ParentAwareM
     protected static string $defaultName = 'Subscriber Sync Operation';
     private array $subscriberIds;
     private string $parentJobId;
+    protected string $name;
 
     public function __construct(
         string $jobId,
@@ -22,6 +23,7 @@ class SubscriberSyncMessage extends AbstractBasicMessage implements ParentAwareM
         parent::__construct($jobId, $name, $context);
         $this->subscriberIds = $subscriberIds;
         $this->parentJobId = $parentJobId;
+        $this->name = $name;
     }
 
     public function getHandlerCode(): string
@@ -37,5 +39,10 @@ class SubscriberSyncMessage extends AbstractBasicMessage implements ParentAwareM
     public function getParentJobId(): string
     {
         return $this->parentJobId;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
     }
 }
