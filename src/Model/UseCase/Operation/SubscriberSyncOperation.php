@@ -127,6 +127,7 @@ class SubscriberSyncOperation implements JobHandlerInterface
                 $listId = $this->configurationRegistry->getConfiguration($channel->getId())->getSubscribersListId();
 
                 if (0 !== $subscribersCollection->count()) {
+                    //Realtime subscriber sync
                     if (EventsProcessingOperation::REALTIME_SUBSCRIBERS_OPERATION_LABEL === $message->getJobName()) {
                         $result['errors'] = $this->klaviyoGateway->subscribeToKlaviyoList(
                             $channel,
@@ -134,6 +135,7 @@ class SubscriberSyncOperation implements JobHandlerInterface
                             $listId
                         );
                     } else {
+                        //Full historical subscriber sync
                         $result['errors'] = $this->klaviyoGateway->addToKlaviyoProfilesList(
                             $channel,
                             $context,

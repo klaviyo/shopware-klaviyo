@@ -124,7 +124,8 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
                     $this->scheduleBackgroundJob->scheduleSubscriberSyncJob(
                         $subscriberIds,
                         $message->getJobId(),
-                        $message->getContext()
+                        $message->getContext(),
+                        self::OPERATION_HANDLER_CODE
                     );
                     $result->addMessage(new Message\InfoMessage(\sprintf('Scheduled job for %d subscribers. Offset: %d', count($subscriberIds), $offset)));
                     $offset = (int)$offset + self::SUBSCRIBER_BATCH_SIZE;
