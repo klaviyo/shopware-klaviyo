@@ -21,16 +21,22 @@ class RealSubscribersToKlaviyoRequestNormalizer extends AbstractNormalizer
             ],
         ];
 
-        $profiles = [];
+        $profiles = $emails = [];
 
         /** @var ProfileContactInfo $profile */
         foreach ($object->getProfiles() as $profile) {
+            if (in_array($profile->getEmail(), $emails)) {
+                continue;
+            }
+
             $profiles['data'][] = [
                 'type' => 'profile',
                 'attributes' => [
                     'email' => $profile->getEmail(),
                 ],
             ];
+
+            $emails[] = $profile->getEmail();
         }
 
         $data['data']['attributes'] = ['custom_source' => 'Marketing Event', 'profiles' => $profiles];
