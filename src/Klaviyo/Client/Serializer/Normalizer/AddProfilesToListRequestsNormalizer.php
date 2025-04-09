@@ -12,7 +12,7 @@ class AddProfilesToListRequestsNormalizer extends AbstractNormalizer
      */
     public function normalize($object, string $format = null, array $context = []): array
     {
-        $profiles = [];
+        $profiles = $emails = [];
         $data = [
             'data' => [
                 'type' => 'profile-subscription-bulk-create-job',
@@ -22,6 +22,12 @@ class AddProfilesToListRequestsNormalizer extends AbstractNormalizer
 
         /** @var ProfileContactInfo $profile */
         foreach ($object->getProfiles() as $profile) {
+            if (in_array($profile->getEmail(), $emails)) {
+                continue;
+            }
+
+            $emails[] = $profile->getEmail();
+
             $profiles[] = [
                 'type' => 'profile',
                 'attributes' => [
@@ -30,6 +36,8 @@ class AddProfilesToListRequestsNormalizer extends AbstractNormalizer
                         'email' => [
                             'marketing' => [
                                 'consent' => 'SUBSCRIBED',
+                                //TODO Possibly will be added later
+                                //'consented_at' => $profile->getCreatedAt()?->format('Y-m-d\TH:i:s'),
                             ]
                         ]
                     ]
