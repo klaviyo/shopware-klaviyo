@@ -211,16 +211,19 @@ class KlaviyoGateway
                 ));
                 $errors[] = $error;
                 $this->logger->error($error->getMessage());
-                $failedEmail = str_replace(' is not a valid email.', '', $result->getErrorDetails());
-                $newCollection = $recipientCollection->filter(
-                    fn (Recipient $recipient) => $recipient->getEmail() !== $failedEmail
-                );
 
-                if ($newCollection->count()) {
-                    $errors = array_merge(
-                        $errors,
-                        $this->addToKlaviyoProfilesList($salesChannelEntity, $context, $newCollection, $profilesListId)
+                if (str_contains($result->getErrorDetails(), ' is not a valid email.')) {
+                    $failedEmail = str_replace(' is not a valid email.', '', $result->getErrorDetails());
+                    $newCollection = $recipientCollection->filter(
+                        fn (Recipient $recipient) => $recipient->getEmail() !== $failedEmail
                     );
+
+                    if ($newCollection->count()) {
+                        $errors = array_merge(
+                            $errors,
+                            $this->addToKlaviyoProfilesList($salesChannelEntity, $context, $newCollection, $profilesListId)
+                        );
+                    }
                 }
             }
 
