@@ -59,12 +59,12 @@ class AsyncClient implements ClientInterface
 
                                 if (
                                     (('The phone number provided either does not exist or is ineligible to receive SMS' ===
-                                            $errorDetail)
-                                        || (str_contains($errorDetail, 'Invalid phone number format')))
+                                        $errorDetail)
+                                    || (false !== strpos($errorDetail, 'Invalid phone number format')))
                                     ||
                                     (('Invalid email address' ===
                                             $errorDetail)
-                                        || (str_contains($errorDetail, 'Invalid email address')))
+                                        || (false !== strpos($errorDetail, 'Invalid email address')))
                                 ) {
                                     $exceptionType = new JobRuntimeWarningException(
                                         \sprintf('Order[id: %s] error: %s', $orderId, $errorDetail)
