@@ -1,3 +1,9 @@
+# 3.3.4
+# Fix: Erstellen einer zusätzlichen Bedingung, um das Datum der Auftragserstellung während der Synchronisierung historischer Aufträge zu erhalten.
+# Fix: Fehlerbehebung für doppelte E-Mails unter den Abonnenten bei der Synchronisierung von Abonnenten.
+### Fehler behoben: "Duplicate email found".
+# Fix: Behebung eines Problems beim Laden der Seite Rabatte & Aktionen.
+
 # 3.3.3
 # Fix: Korrigierte Anfragen in Bezug auf Bestellungen. Kundenprofildaten wurden aus den Bestellanforderungen entfernt, die ständig übermittelt wurden, was optional war.
 # Fix: Wenn ein Gast Artikel in den Warenkorb legt, wird nach der Autorisierung an der Kasse ebenfalls ein Ereignis ausgelöst: **Added to Cart**.
