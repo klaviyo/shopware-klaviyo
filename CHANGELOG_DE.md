@@ -1,10 +1,14 @@
+# 1.14.4
+# Fix: Erstellen einer zusätzlichen Bedingung, um das Datum der Auftragserstellung während der Synchronisierung historischer Aufträge zu erhalten.
+# Fix: Fehlerbehebung für doppelte E-Mails unter den Abonnenten bei der Synchronisierung von Abonnenten.
+### Fehler behoben: "Duplicate email found".
+
 # 1.14.3
 # Fix: Korrigierte Anfragen in Bezug auf Bestellungen. Kundenprofildaten wurden aus den Bestellanforderungen entfernt, die ständig übermittelt wurden, was optional war.
 # Fix: Wenn ein Gast Artikel in den Warenkorb legt, wird nach der Autorisierung an der Kasse ebenfalls ein Ereignis ausgelöst: **Added to Cart**.
 # Fix: Es wurde ein Fehler bei der Bestätigung eines Abonnements von Shopware's double-opt-in behoben.
 ### Fehler behoben: "Call to a member function getCookieConsent() on null".
 # Fix: Die js-Dateien der Plugin-Generierung wurden korrigiert.
-
 
 # 1.14.2
 # Fix:Ein neues erforderliches Feld `subscriptions` wurde zu den Bulk Unsubscribe Profiles hinzugefügt, in Übereinstimmung mit den letzten Änderungen von Breaking.
