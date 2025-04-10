@@ -1,3 +1,8 @@
+# 2.16.4
+# Fix: Creating an additional condition to get the order creation date during historical order synchronization.
+# Fix: Fix for duplicate emails among subscribers, when synchronizing subscribers.
+### Fixed error: "Duplicate email found".
+
 # 2.16.3
 # Fix: Corrected requests related to orders. Customer profile data was removed from order requests, which was constantly transmitted, which was optional.
 # Fix: When a guest adds items to the cart, then after authorization at checkout, an event is also triggered: **Added to Cart**.
