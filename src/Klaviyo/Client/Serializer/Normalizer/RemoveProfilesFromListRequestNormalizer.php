@@ -33,8 +33,16 @@ class RemoveProfilesFromListRequestNormalizer extends AbstractNormalizer
             ]
         ];
 
+        $emails = [];
+
         /** @var ProfileContactInfo $profile */
         foreach ($object->getProfiles() as $profile) {
+            if (in_array($profile->getEmail(), $emails)) {
+                continue;
+            }
+
+            $emails[] = $profile->getEmail();
+
             $data['attributes']['profiles']['data'][] = [
                 'type' => 'profile',
                 'attributes' => [
