@@ -79,6 +79,12 @@
                                         </klaviyo-integration-settings-customer>
                                     {% endblock %}
 
+                                    {% block klaviyo_integration_settings_content_sales_channel_order %}
+                                        <klaviyo-integration-settings-order :allConfigs="allConfigs"
+                                                                               :mappingErrorStates="mappingErrorStates">
+                                        </klaviyo-integration-settings-order>
+                                    {% endblock %}
+
                                 </div>
                             </template>
                         {% endblock %}
