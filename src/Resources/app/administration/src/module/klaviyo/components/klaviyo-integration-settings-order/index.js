@@ -32,7 +32,7 @@ Component.register('klaviyo-integration-settings-order', {
             isSomeMappingsNotFilled: false,
             systemCustomFields: null,
             // mappingErrorStates: {},
-            configPath: 'klavi_overd.config.orderFieldMapping'
+            configPath: 'KlaviyoIntegrationPlugin.config.orderFieldMapping'
         }
     },
 

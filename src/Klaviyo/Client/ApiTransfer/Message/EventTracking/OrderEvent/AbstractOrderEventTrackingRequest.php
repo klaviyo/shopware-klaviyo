@@ -17,7 +17,7 @@ class AbstractOrderEventTrackingRequest extends EventTrackingRequest
     private OrderProductItemInfoCollection $products;
     private ?Address $billingAddress;
     private ?Address $shippingAddress;
-    private array $customFields;
+    private ?array $customFields;
 
     public function __construct(
         string $eventId,
@@ -30,7 +30,7 @@ class AbstractOrderEventTrackingRequest extends EventTrackingRequest
         OrderProductItemInfoCollection $products,
         ?Address $billingAddress,
         ?Address $shippingAddress,
-        array $customFields = []
+        ?array $customFields
     ) {
         $this->orderTotal = $orderTotal;
         $this->shippingTotal = $shippingTotal;
@@ -78,7 +78,7 @@ class AbstractOrderEventTrackingRequest extends EventTrackingRequest
         return $this->shippingTotal;
     }
 
-    public function getCustomFields(): array
+    public function getCustomFields(): ?array
     {
         return $this->customFields;
     }
