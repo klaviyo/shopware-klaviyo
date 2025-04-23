@@ -31,6 +31,7 @@ class Configuration implements ConfigurationInterface
     private string $cookieConsent;
     private bool $isDailySubscribersSynchronization;
     private string $dailySubscribersSyncTime;
+    private array $orderCustomFieldMapping;
 
     public function __construct(
         bool $accountEnabled,
@@ -57,7 +58,8 @@ class Configuration implements ConfigurationInterface
         PopUpConfiguration $popUpConfiguration,
         string $cookieConsent,
         bool $isDailySubscribersSynchronization,
-        string $dailySubscribersSyncTime
+        string $dailySubscribersSyncTime,
+        array $orderCustomFieldMapping
     ) {
         $this->accountEnabled = $accountEnabled;
         $this->privateApiKey = $privateApiKey;
@@ -84,6 +86,7 @@ class Configuration implements ConfigurationInterface
         $this->cookieConsent = $cookieConsent;
         $this->isDailySubscribersSynchronization = $isDailySubscribersSynchronization;
         $this->dailySubscribersSyncTime = $dailySubscribersSyncTime;
+        $this->orderCustomFieldMapping = $orderCustomFieldMapping;
     }
 
     public function isAccountEnabled(): bool
@@ -209,5 +212,10 @@ class Configuration implements ConfigurationInterface
     public function getDailySubscribersSyncTime(): string
     {
         return $this->dailySubscribersSyncTime;
+    }
+
+    public function getOrderCustomFieldMapping(): array
+    {
+        return $this->orderCustomFieldMapping;
     }
 }

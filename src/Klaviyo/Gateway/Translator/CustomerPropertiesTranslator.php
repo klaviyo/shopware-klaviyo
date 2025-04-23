@@ -71,7 +71,7 @@ class CustomerPropertiesTranslator
         $state = $this->addressHelper->getAddressRegion($context, $customerAddress);
         $country = $this->addressHelper->getAddressCountry($context, $customerAddress);
 
-        $customFields = $this->prepareCustomFields($customer, $orderEntity->getSalesChannelId());
+        $customerCustomFields = $this->prepareCustomerCustomFields($customer, $orderEntity->getSalesChannelId());
         $birthday = $customer?->getBirthday();
 
         return new CustomerProperties(
@@ -85,7 +85,7 @@ class CustomerPropertiesTranslator
             $customerAddress ? $customerAddress->getZipcode() : null,
             $state ? $state->getShortCode() : null,
             $country ? $country->getIso() : null,
-            $customFields,
+            $customerCustomFields,
             $birthday ? $birthday->format(Defaults::STORAGE_DATE_FORMAT) : null,
             $customer ? $customer->getSalesChannelId() : null,
             $customer ? $this->getSalesChannelName(
@@ -151,7 +151,7 @@ class CustomerPropertiesTranslator
         return $customerEntity->getActiveShippingAddress();
     }
 
-    private function prepareCustomFields(?CustomerEntity $customer, string $channelId): array
+    private function prepareCustomerCustomFields(?CustomerEntity $customer, string $channelId): array
     {
         if (null === $customer) {
             return [];
@@ -231,7 +231,7 @@ class CustomerPropertiesTranslator
         $state = $this->addressHelper->getAddressRegion($context, $customerAddress);
         $country = $this->addressHelper->getAddressCountry($context, $customerAddress);
         $birthday = $customerEntity->getBirthday();
-        $customFields = $this->prepareCustomFields($customerEntity, $customerEntity->getSalesChannelId());
+        $customFields = $this->prepareCustomerCustomFields($customerEntity, $customerEntity->getSalesChannelId());
         $localeCode = $this->localeCodeProducer->getLocaleCodeFromContext($customerEntity->getLanguageId(), $context);
 
         return new CustomerProperties(

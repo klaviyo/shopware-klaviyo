@@ -116,6 +116,12 @@ class ConfigurableOrderEventTrackingRequestNormalizer extends AbstractNormalizer
             'ShippingAddress' => $shippingAddress,
         ];
 
+        if (!empty($object->getCustomFields())) {
+            foreach ($object->getCustomFields() as $key => $value) {
+                $properties[$key] = $value;
+            }
+        }
+
         if (property_exists($object, 'reason')) {
             $properties['Reason'] = $object->getReason();
         }

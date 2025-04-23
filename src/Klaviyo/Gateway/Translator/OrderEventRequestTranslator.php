@@ -2,6 +2,7 @@
 
 namespace Klaviyo\Integration\Klaviyo\Gateway\Translator;
 
+use Klaviyo\Integration\Configuration\ConfigurationRegistry;
 use Klaviyo\Integration\Entity\Helper\AddressDataHelper;
 use Klaviyo\Integration\Entity\Helper\ProductDataHelper;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Message\EventTracking\Common\Address;
@@ -44,6 +45,7 @@ class OrderEventRequestTranslator
     private AddressDataHelper $addressDataHelper;
     private CustomerPropertiesTranslator $orderCustomerPropertiesTranslator;
     private ProductDataHelper $productDataHelper;
+    private ConfigurationRegistry $configurationRegistry;
 
     public function __construct(
         EntityRepository $productRepository,
@@ -52,7 +54,8 @@ class OrderEventRequestTranslator
         EntityRepository $orderLineItemRepository,
         AddressDataHelper $addressDataHelper,
         ProductDataHelper $productDataHelper,
-        CustomerPropertiesTranslator $orderCustomerPropertiesTranslator
+        CustomerPropertiesTranslator $orderCustomerPropertiesTranslator,
+        ConfigurationRegistry $configurationRegistry
     ) {
         $this->productRepository = $productRepository;
         $this->orderAddressRepository = $orderAddressRepository;
@@ -61,13 +64,14 @@ class OrderEventRequestTranslator
         $this->addressDataHelper = $addressDataHelper;
         $this->productDataHelper = $productDataHelper;
         $this->orderCustomerPropertiesTranslator = $orderCustomerPropertiesTranslator;
+        $this->configurationRegistry = $configurationRegistry;
     }
 
     public function translateToPlacedOrderEventRequest(
         Context $context,
         OrderEntity $orderEntity
     ): PlacedOrderEventTrackingRequest {
-        $orderTransaction = $orderEntity->getTransactions()->first();
+        $orderTransaction = $orderEntity->getTransactions()?->first();
         $actualOrderTime = $orderTransaction ? $orderTransaction->getCreatedAt() : $orderEntity->getCreatedAt();
 
         /** @var PlacedOrderEventTrackingRequest $result */
@@ -329,6 +333,12 @@ class OrderEventRequestTranslator
             $shippingAddress = $billingAddress;
         }
 
+        $orderCustomFields = [];
+
+        if ($className === PlacedOrderEventTrackingRequest::class) {
+            $orderCustomFields = $this->prepareOrderCustomFields($orderEntity);
+        }
+
         /** @var AbstractOrderEventTrackingRequest $request */
         $request = new $className(
             $orderEntity->getId(),
@@ -340,7 +350,8 @@ class OrderEventRequestTranslator
             $discounts,
             $products,
             $billingAddress,
-            $shippingAddress
+            $shippingAddress,
+            $orderCustomFields
         );
 
         return $request;
@@ -411,5 +422,26 @@ class OrderEventRequestTranslator
         /** @var OrderLineItemCollection $collection */
         $collection = $this->orderLineItemRepository->search($criteria, $context)->getEntities();
         $orderEntity->setLineItems($collection);
+    }
+
+    private function prepareOrderCustomFields(OrderEntity $order): array
+    {
+        if (null === $order) {
+            return [];
+        }
+
+        $channelId = $order->getSalesChannelId();
+
+        $configuration = $this->configurationRegistry->getConfiguration($channelId);
+        $fieldMapping = $configuration->getOrderCustomFieldMapping();
+        $customFields = [];
+
+        foreach ($order->getCustomFields() ?? [] as $fieldName => $fieldValue) {
+            if (isset($fieldMapping[$fieldName]) && $fieldValue) {
+                $customFields[$fieldMapping[$fieldName]] = $fieldValue;
+            }
+        }
+
+        return $customFields;
     }
 }
