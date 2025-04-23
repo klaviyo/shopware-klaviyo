@@ -49,4 +49,6 @@ interface ConfigurationInterface
     public function getDailySubscribersSyncTime(): string;
 
     public function getBisVariantField(): string;
+
+    public function getOrderCustomFieldMapping(): array;
 }
