@@ -228,6 +228,17 @@
                     "fieldNamePlaceholder": "Zusatzfeld Typ"
                 }
             }
+        },
+        "order": {
+            "title": "Zusatzfelder Mapping",
+            "fieldMapping": {
+                "labelNotFilledError": "Feldname muss ausgefüllt sein.",
+                "noMappingFieldsError": "Es gibt keine benutzerdefinierten Bestellfelder für die Zuordnung.",
+                "item": {
+                    "fieldName": "Zusatzfeld Name",
+                    "fieldNamePlaceholder": "Zusatzfeld Typ"
+                }
+            }
         }
     },
     "klaviyo_integration_plugin": {
