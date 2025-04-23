@@ -64,8 +64,10 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
             $salesChannelId
         );
 
-        $mapping = $this->systemConfigService
+        $customerMapping = $this->systemConfigService
                 ->get('KlaviyoIntegrationPlugin.config.customerFieldMapping', $salesChannelId) ?? [];
+        $orderMapping = $this->systemConfigService
+            ->get('KlaviyoIntegrationPlugin.config.orderFieldMapping', $salesChannelId) ?? [];
 
         $popUpConfiguration = new PopUpConfiguration(
             $this->systemConfigService->getString('KlaviyoIntegrationPlugin.config.popUpOpenBtnColor', $salesChannelId),
@@ -80,12 +82,22 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
         $cookieConsent =
             $this->systemConfigService->get('KlaviyoIntegrationPlugin.config.cookieConsent', $salesChannelId) ?? 'shopware';
 
-        if (is_array($mapping)) {
-            foreach ($mapping as $mappingId => $mappingAssociation) {
-                unset($mapping[$mappingId]);
+        if (is_array($customerMapping)) {
+            foreach ($customerMapping as $mappingId => $mappingAssociation) {
+                unset($customerMapping[$mappingId]);
 
                 if (!empty($mappingAssociation['customLabel']) && !empty($mappingAssociation['customFieldName'])) {
-                    $mapping[$mappingAssociation['customFieldName']] = $mappingAssociation['customLabel'];
+                    $customerMapping[$mappingAssociation['customFieldName']] = $mappingAssociation['customLabel'];
+                }
+            }
+        }
+
+        if (is_array($orderMapping)) {
+            foreach ($orderMapping as $mappingId => $mappingAssociation) {
+                unset($orderMapping[$mappingId]);
+
+                if (!empty($mappingAssociation['customLabel']) && !empty($mappingAssociation['customFieldName'])) {
+                    $orderMapping[$mappingAssociation['customFieldName']] = $mappingAssociation['customLabel'];
                 }
             }
         }
@@ -109,13 +121,14 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
             $trackRefundedOrder,
             $trackPaidOrder,
             $trackShippedOrder,
-            $mapping,
+            $customerMapping,
             $afterInteraction,
             $trackSubscribedToBackInStock,
             $popUpConfiguration,
             $cookieConsent,
             $dailySubscribersSynchronization,
-            $dailySubscribersSyncTime
+            $dailySubscribersSyncTime,
+            $orderMapping
         );
     }
 
