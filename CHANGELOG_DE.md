@@ -1,3 +1,6 @@
+# 2.17.0
+# Neu: Übertragung von benutzerdefinierten Bestellfeldern für das Ereignis „Placed Order“ hinzugefügt.
+
 # 2.16.4
 # Fix: Erstellen einer zusätzlichen Bedingung, um das Datum der Auftragserstellung während der Synchronisierung historischer Aufträge zu erhalten.
 # Fix: Fehlerbehebung für doppelte E-Mails unter den Abonnenten bei der Synchronisierung von Abonnenten.
