@@ -1,3 +1,6 @@
+# 3.4.0
+# New: Added transfer of custom order fields for the Placed Order event.
+
 # 3.3.4
 # Fix: Creating an additional condition to get the order creation date during historical order synchronization.
 # Fix: Fix for duplicate emails among subscribers, when synchronizing subscribers.
