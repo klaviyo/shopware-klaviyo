@@ -1,0 +1,36 @@
+{% block klaviyo_integration_settings_order %}
+    <sw-card :title="$tc('klaviyo-integration-settings.order.title')">
+
+        {% block klaviyo_integration_settings_order_custom_field_mapping %}
+
+            <template v-if="!isLoading" v-for="mappedField, mappedKey in customFieldMapping">
+                <sw-container columns="2fr 5fr 5fr" gap="16px">
+
+                    <sw-switch-field
+                            :label="$tc('sw-boolean-filter.active')"
+                            :disabled="isLoading"
+                            size="small"
+                            v-model:value="mappedField.active">
+                    </sw-switch-field>
+
+                    <sw-text-field v-model:value="mappedField.customLabel"
+                                   :disabled="!mappedField.active"
+                                   :placeholder="$tc('klaviyo-integration-settings.order.fieldMapping.item.fieldNamePlaceholder')"
+                                   :error="mappingErrorStates[mappedKey]?.code !== undefined ? mappingErrorStates[mappedKey] : null"
+                                   :label="$tc('klaviyo-integration-settings.order.fieldMapping.item.fieldName')">
+                    </sw-text-field>
+                    <div class="custom-field-hint-container">
+                        <span>{{ getCustomFieldHint(mappedKey) }}</span>
+                    </div>
+                </sw-container>
+            </template>
+
+            <div v-if="!isLoading && noCustomFieldsError" class="klaviyo-fieldmapping-notice-block">
+                {{ $tc(noCustomFieldsError) }}
+            </div>
+
+        {% endblock %}
+        <sw-loader v-if="isLoading"/>
+
+    </sw-card>
+{% endblock %}
