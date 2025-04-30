@@ -1,0 +1,21 @@
+{% block od_job_charts_base %}
+    <div class="od-scheduler-charts">
+        <div class="sw-dashboard-statistics__card-headline-select">
+            <mt-select
+                    class="charts-date-range"
+                    v-model="statisticDateRanges.value"
+                    size="small"
+                    :options="statisticDateRangesOptions"
+            />
+        </div>
+        <sw-chart
+                type="area"
+                :series="chartSeries"
+                :options="chartOptionsCount"
+                :fill-empty-values="getTimeUnitInterval"
+                :fillEmptyDates="false"
+                :sort="true"
+        >
+        </sw-chart>
+    </div>
+{% endblock %}

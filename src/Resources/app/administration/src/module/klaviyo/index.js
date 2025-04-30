@@ -16,7 +16,7 @@ Module.register('klaviyo-plugin', {
     title: 'klaviyo-integration-settings.title',
     description: 'klaviyo-job-listing.general.description',
     color: '#F88962',
-    icon: 'default-avatar-multiple',
+    icon: 'regular-bars',
 
     snippets: {
         'de-DE': deDE,
@@ -42,7 +42,7 @@ Module.register('klaviyo-plugin', {
         to: 'klaviyo.plugin.settings',
         label: "klaviyo-integration-settings.label",
         iconComponent: 'klaviyo-integration-settings-icon',
-        backgroundEnabled: true
+        backgroundEnabled: true,
     },
 
     navigation: [
@@ -50,7 +50,7 @@ Module.register('klaviyo-plugin', {
             id: 'klaviyo',
             label: 'klaviyo-job-listing.menu.title',
             color: '#F88962',
-            icon: 'default-avatar-multiple',
+            icon: 'regular-bars',
             parent: 'sw-marketing',
             path: 'klaviyo.plugin.index',
             position: 100

@@ -8,6 +8,7 @@ use Klaviyo\Integration\Model\UseCase\Operation\FullCustomerOrderSyncOperation;
 use Klaviyo\Integration\Model\UseCase\Operation\FullCustomerSubsSyncOperation;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
@@ -27,16 +28,19 @@ class JobController
     }
 
     #[Route(path:"/api/_action/klaviyo/historical-event-tracking/synchronization/schedule", name:"api.action.klaviyo.historical.event.tracking.synchronization.schedule", requirements: ['version' => '\d+'], methods:["POST"])]
-    public function scheduleHistoricalEventTrackingSynchronizationAction(Context $context): JsonResponse
+    public function scheduleHistoricalEventTrackingSynchronizationAction(RequestDataBag $post, Context $context): JsonResponse
     {
-        return $this->doScheduleJob(function () use ($context) {
-            $this->scheduleBackgroundJob->scheduleFullOrderSyncJob($context);
+        $fromDate = $post->get('fromDate') ?: null;
+        $tillDate = $post->get('tillDate') ?: null;
+        
+        return $this->doScheduleJob(function () use ($context, $fromDate, $tillDate) {
+            $this->scheduleBackgroundJob->scheduleFullOrderSyncJob($context, $fromDate, $tillDate);
             $isCustomerSyncOn = $this->systemConfigService->getBool(
                 FullCustomerOrderSyncOperation::IS_ENABLED_WITHOUT_ORDERS_SYNC
             );
 
             if ($isCustomerSyncOn) {
-                $this->scheduleBackgroundJob->scheduleFullCustomerOrderSyncJob($context);
+                $this->scheduleBackgroundJob->scheduleFullCustomerOrderSyncJob($context, $fromDate, $tillDate);
             }
         });
     }

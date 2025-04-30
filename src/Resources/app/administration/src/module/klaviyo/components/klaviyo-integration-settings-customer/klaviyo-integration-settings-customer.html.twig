@@ -1,5 +1,5 @@
 {% block klaviyo_integration_settings_customer %}
-    <sw-card :title="$tc('klaviyo-integration-settings.customer.title')">
+    <mt-card :title="$tc('klaviyo-integration-settings.customer.title')">
 
         {% block klaviyo_integration_settings_customer_custom_field_mapping %}
 
@@ -13,12 +13,12 @@
                             v-model:value="mappedField.active">
                     </sw-switch-field>
 
-                    <sw-text-field v-model:value="mappedField.customLabel"
+                    <mt-text-field v-model="mappedField.customLabel"
                                    :disabled="!mappedField.active"
                                    :placeholder="$tc('klaviyo-integration-settings.customer.fieldMapping.item.fieldNamePlaceholder')"
                                    :error="mappingErrorStates[mappedKey]?.code !== undefined ? mappingErrorStates[mappedKey] : null"
                                    :label="$tc('klaviyo-integration-settings.customer.fieldMapping.item.fieldName')">
-                    </sw-text-field>
+                    </mt-text-field>
                     <div class="custom-field-hint-container">
                         <span>{{ getCustomFieldHint(mappedKey) }}</span>
                     </div>
@@ -30,7 +30,7 @@
             </div>
 
         {% endblock %}
-        <sw-loader v-if="isLoading"/>
+        <mt-loader v-if="isLoading"/>
 
-    </sw-card>
+    </mt-card>
 {% endblock %}

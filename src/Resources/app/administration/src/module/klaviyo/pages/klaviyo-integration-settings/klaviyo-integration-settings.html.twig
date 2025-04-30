@@ -4,7 +4,7 @@
             <template #smart-bar-header>
                 <h2>
                     {{ $tc('sw-settings.index.title') }}
-                    <sw-icon name="small-arrow-medium-right" small></sw-icon>
+                    <mt-icon name="long-arrow-right" size="16px"></mt-icon>
                     {{ $tc('klaviyo-integration-settings.title') }}
                 </h2>
             </template>
@@ -18,7 +18,7 @@
 
                 {% block klaviyo_integration_settings_actions_save %}
                     <sw-button-process
-                             v-model:value="isSaveSuccessful"
+                             v-model="isSaveSuccessful"
                                :process-success="isSaveSuccessful"
                                class="klaviyo-integration-settings-save"
                                variant="primary"
@@ -42,7 +42,7 @@
                         {% block klaviyo_integration_settings_content_sales_channel_config_channel %}
                             <template #select="{ onInput, selectedSalesChannelId }">
                                 {% block klaviyo_integration_settings_content_sales_channel_config_channel_card %}
-                                    <sw-card class="sw-card--grid"
+                                    <mt-card class="sw-card--grid"
                                              :title="$tc('global.entities.sales_channel', 2)">
                                         <div class="card-container klaviyo-integration-settings-sales-channel">
                                             {% block klaviyo_integration_settings_content_sales_channel_config_channel_card_select %}
@@ -55,7 +55,7 @@
                                                 </sw-single-select>
                                             {% endblock %}
                                         </div>
-                                    </sw-card>
+                                    </mt-card>
                                 {% endblock %}
                             </template>
                         {% endblock %}
@@ -83,10 +83,9 @@
 
                                     {% block klaviyo_integration_settings_content_sales_channel_order %}
                                         <klaviyo-integration-settings-order :allConfigs="allConfigs"
-                                                                               :mappingErrorStates="mappingErrorStates">
+                                                                            :mappingErrorStates="mappingErrorStates">
                                         </klaviyo-integration-settings-order>
                                     {% endblock %}
-
                                 </div>
                             </template>
                         {% endblock %}
@@ -95,7 +94,7 @@
                 {% endblock %}
 
                 {% block klaviyo_integration_settings_content_loading %}
-                    <sw-loader v-if="isLoading"></sw-loader>
+                    <mt-loader v-if="isLoading"></mt-loader>
                 {% endblock %}
             </template>
         {% endblock %}

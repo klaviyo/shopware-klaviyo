@@ -1,8 +1,8 @@
 import template from './klaviyo-integration-settings-customer.html.twig';
 import './klaviyo-integration-settings-customer.scss';
 
-const {Component, Context} = Shopware;
-const {Criteria} = Shopware.Data;
+const { Component, Context } = Shopware;
+const { Criteria } = Shopware.Data;
 
 Component.register('klaviyo-integration-settings-customer', {
     template,
@@ -15,12 +15,10 @@ Component.register('klaviyo-integration-settings-customer', {
         mappingErrorStates: {
             type: Object,
             required: true,
-        }
+        },
     },
 
-    inject: [
-        'repositoryFactory',
-    ],
+    inject: ['repositoryFactory'],
 
     created() {
         this.createdComponent();
@@ -31,9 +29,8 @@ Component.register('klaviyo-integration-settings-customer', {
             isLoading: false,
             isSomeMappingsNotFilled: false,
             systemCustomFields: null,
-            // mappingErrorStates: {},
-            configPath: 'klavi_overd.config.customerFieldMapping'
-        }
+            configPath: 'klavi_overd.config.customerFieldMapping',
+        };
     },
 
     computed: {
@@ -52,7 +49,7 @@ Component.register('klaviyo-integration-settings-customer', {
         },
 
         noCustomFieldsError() {
-            if (this.systemCustomFields.total === 0) {
+            if (this.systemCustomFields?.total === 0) {
                 return this.$tc('klaviyo-integration-settings.customer.fieldMapping.noMappingFieldsError');
             }
 
@@ -60,10 +57,10 @@ Component.register('klaviyo-integration-settings-customer', {
         },
 
         customFieldMapping: {
-            get: function () {
+            get() {
                 return this.allConfigs['null'][this.configPath];
-            }
-        }
+            },
+        },
     },
 
     watch: {
@@ -71,16 +68,15 @@ Component.register('klaviyo-integration-settings-customer', {
             handler() {
                 const mappingConfig = this.allConfigs['null'][this.configPath];
 
-                Object.keys(mappingConfig).every((mappingKey) => {
+                Object.keys(mappingConfig).forEach((mappingKey) => {
                     if (mappingConfig[mappingKey].active && !mappingConfig[mappingKey].customLabel) {
-                        this.$set(this.mappingErrorStates, mappingKey, {
+                        this.mappingErrorStates[mappingKey] = {
                             code: 1,
                             detail: this.$tc('klaviyo-integration-settings.customer.fieldMapping.labelNotFilledError'),
-                        });
+                        };
                     } else {
-                        this.$delete(this.mappingErrorStates, mappingKey);
+                        delete this.mappingErrorStates[mappingKey];
                     }
-                    return true;
                 });
             },
             deep: true,
@@ -93,13 +89,12 @@ Component.register('klaviyo-integration-settings-customer', {
             this.localeIso = Context.app.fallbackLocale;
 
             if (this.customFieldMapping === undefined || Array.isArray(this.customFieldMapping)) {
-                /**
-                 * Initialize configuration.
-                 */
-                this.$set(this.allConfigs['null'], this.configPath, {});
+                // Initialize configuration
+                this.allConfigs['null'][this.configPath] = {};
             }
 
-            this.customFieldRepository.search(this.customFieldCriteria, Context.api)
+            this.customFieldRepository
+                .search(this.customFieldCriteria, Context.api)
                 .then((customFields) => {
                     this.systemCustomFields = customFields;
                 })
@@ -113,56 +108,57 @@ Component.register('klaviyo-integration-settings-customer', {
             let existingCustomFieldNames = [];
             const systemFieldNames = this.systemCustomFields.map((systemField) => systemField.name);
 
-            Object.keys(this.customFieldMapping).forEach(mappingKey => {
+            Object.keys(this.customFieldMapping).forEach((mappingKey) => {
                 if (this.customFieldMapping[mappingKey].active && !this.customFieldMapping[mappingKey].customLabel) {
-                    this.$set(this.mappingErrorStates, mappingKey, {
+                    this.mappingErrorStates[mappingKey] = {
                         code: 1,
                         detail: this.$tc('klaviyo-integration-settings.customer.fieldMapping.labelNotFilledError'),
-                    });
+                    };
                 } else {
-                    this.$set(this.mappingErrorStates, mappingKey, {});
+                    this.mappingErrorStates[mappingKey] = {};
                 }
 
                 existingCustomFieldNames.push(this.customFieldMapping[mappingKey].customFieldName);
 
-                if (systemFieldNames.indexOf(this.customFieldMapping[mappingKey]['customFieldName']) === -1) {
-                    this.$delete(this.mappingErrorStates, mappingKey);
-                    this.$delete(this.customFieldMapping, mappingKey);
+                if (!systemFieldNames.includes(this.customFieldMapping[mappingKey].customFieldName)) {
+                    delete this.mappingErrorStates[mappingKey];
+                    delete this.customFieldMapping[mappingKey];
                 }
             });
 
             systemFieldNames.forEach((systemFieldName) => {
                 if (!existingCustomFieldNames.includes(systemFieldName)) {
-                    this.addNewEmptyFieldMapping(this.systemCustomFields.filter((systemField) => systemField.name === systemFieldName)[0]);
+                    this.addNewEmptyFieldMapping(
+                        this.systemCustomFields.find((systemField) => systemField.name === systemFieldName)
+                    );
                 }
             });
         },
 
         getCustomFieldHint(mappingKey) {
-            const systemFieldName = this.customFieldMapping[mappingKey]['customFieldName'];
-            const systemField = this.systemCustomFields.filter((systemField) => systemField.name === systemFieldName)[0] ?? {};
+            const systemFieldName = this.customFieldMapping[mappingKey].customFieldName;
+            const systemField = this.systemCustomFields.find((systemField) => systemField.name === systemFieldName) ?? {};
 
             return systemField?.config?.label[this.localeIso] ?? systemField?.name ?? '<not_found>';
         },
 
         addNewEmptyFieldMapping(field) {
             const mappingKey = 'mapping_' + this.generateGuid();
-            this.$set(this.customFieldMapping, mappingKey, {
+            this.customFieldMapping[mappingKey] = {
                 customLabel: '',
                 customFieldName: field.name,
-                active: false
-            });
-            this.$set(this.mappingErrorStates, mappingKey, {});
+                active: false,
+            };
+            this.mappingErrorStates[mappingKey] = {};
         },
 
         generateGuid() {
-            let s4 = () => {
-                return Math.floor((1 + Math.random()) * 0x10000)
+            const s4 = () =>
+                Math.floor((1 + Math.random()) * 0x10000)
                     .toString(16)
                     .substring(1);
-            }
 
-            return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
-        }
+            return `${s4()}${s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
+        },
     },
 });

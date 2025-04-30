@@ -1,27 +1,26 @@
-export default (() => {
-    const context = require.context('./svg', false, /svg$/);
+import { h } from 'vue';
 
-    return context.keys().reduce((accumulator, item) => {
-        const componentName = item.split('.')[1].split('/')[1];
-        const component = {
-            name: componentName,
-            functional: true,
-            render(createElement, elementContext) {
-                const data = elementContext.data;
+const svgModules = import.meta.glob('./svg/*.svg', { as: 'raw', eager: true });
 
-                return createElement('span', {
-                    class: [data.staticClass, data.class],
-                    style: data.style,
-                    attrs: data.attrs,
-                    on: data.on,
-                    domProps: {
-                        innerHTML: context(item),
-                    },
-                });
-            },
-        };
+const components = Object.entries(svgModules).reduce((accumulator, [filePath, svgContent]) => {
+    const componentName = filePath.split('/').pop().split('.')[0];
 
-        accumulator.push(component);
-        return accumulator;
-    }, []);
-})();
+    const component = {
+        name: componentName,
+        functional: true, 
+        render() {
+            return h('span', {
+                class: this.$attrs.class,
+                style: this.$attrs.style,
+                attrs: this.$attrs,
+                on: this.$listeners,
+                innerHTML: svgContent,
+            });
+        },
+    };
+
+    accumulator.push(component);
+    return accumulator;
+}, []);
+
+export default components;

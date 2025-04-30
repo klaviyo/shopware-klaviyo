@@ -2,17 +2,46 @@
     <div class="klaviyo-integration-settings-synchronization-control">
 
         {% block klaviyo_integration_settings_synchronization_control_historical_events_tracking %}
-            <sw-button-process variant="ghost"
+            <sw-button-process variant="primary" ghost
                                :isLoading="historicalEventsJobInteractor.isSynchronizationInProgress"
                                :processSuccess="historicalEventsJobInteractor.isSynchronizationSuccess"
-                               @click="scheduleHistoricalEventsSynchronization"
+                               @click="openHistoricalEventsModal"
                                @process-finish="resetHistoricalEventsSynchronizationState">
                 {{ $tc('klaviyo_integration_plugin.historical_events_tracking.schedule_synchronization.button_label') }}
             </sw-button-process>
+
+            <sw-modal v-show="isHistoricalEventsModalOpen"
+                      :title="$tc('klaviyo_integration_plugin.historical_events_tracking.modal.title')"
+                      variant="small"
+                      @modal-close="closeHistoricalEventsModal">
+                <template #default>
+                    <mt-datepicker
+                            v-model="historicalEventsFromDate"
+                            :label="$tc('klaviyo_integration_plugin.historical_events_tracking.modal.from_date')"
+                            date-type="date"
+                            placeholder="d/m/Y">
+                    </mt-datepicker>
+                    <br/>
+                    <mt-datepicker
+                            v-model="historicalEventsTillDate"
+                            :label="$tc('klaviyo_integration_plugin.historical_events_tracking.modal.until_date')"
+                            date-type="date"
+                            placeholder="d/m/Y">
+                    </mt-datepicker>
+                </template>
+                <template #modal-footer>
+                    <mt-button variant="primary" ghost @click="closeHistoricalEventsModal">
+                        {{ $tc('klaviyo_integration_plugin.historical_events_tracking.modal.cancel_button') }}
+                    </mt-button>
+                    <mt-button variant="primary" @click="proceedHistoricalEventsSynchronization">
+                        {{ $tc('klaviyo_integration_plugin.historical_events_tracking.modal.proceed_button') }}
+                    </mt-button>
+                </template>
+            </sw-modal>
         {% endblock %}
 
         {% block klaviyo_integration_settings_synchronization_control_subscribers %}
-            <sw-button-process variant="ghost"
+            <sw-button-process variant="primary" ghost
                                :isLoading="subscribersSynchronizationJobInteractor.isSynchronizationInProgress"
                                :processSuccess="subscribersSynchronizationJobInteractor.isSynchronizationSuccess"
                                @click="scheduleSubscribersSynchronization"

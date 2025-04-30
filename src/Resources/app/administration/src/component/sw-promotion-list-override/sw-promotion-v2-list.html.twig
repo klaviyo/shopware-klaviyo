@@ -1,11 +1,11 @@
 {% block sw_promotion_v2_list_smart_bar_actions_add %}
     {% parent %}
-    <sw-button
+    <mt-button
             @click="sendGlobalPromotionToExport()"
             variant="primary"
     >
         {{ $tc('klaviyo_integration_plugin.promotion.exportInKlaviyoFormatButtonLabel') }}
-    </sw-button>
+    </mt-button>
 {% endblock %}
 
 {% block sw_promotion_v2_list_grid_columns_actions %}

@@ -1,13 +1,13 @@
 {
-    "version": "3.4.0",
+    "version": "4.0.0",
     "name": "klaviyo/shopware-klaviyo",
     "description": "Shopware 6 plugin for Klaviyo integration",
     "type": "shopware-platform-plugin",
     "license": "proprietary",
     "authors": [
         {
-            "name": "Overdose",
-            "homepage": "https://overdose.digital/"
+            "name": "H1",
+            "homepage": "https://h1.nl/"
         }
     ],
     "autoload": {
@@ -37,11 +37,10 @@
         }
     },
     "require": {
-        "od/sw6-job-scheduler": "3.0.1",
         "php": "^8.2",
-        "shopware/administration": "6.6.*",
-        "shopware/core": "6.6.*",
-        "shopware/storefront": "6.6.*",
+        "shopware/administration": "6.7.*",
+        "shopware/core": "6.7.*",
+        "shopware/storefront": "6.7.*",
         "ext-json": "*"
     },
     "config": {

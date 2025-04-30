@@ -1,0 +1,11 @@
+{
+  "main.js": {
+    "file": "assets/od-scheduler-CA9FY699.js",
+    "name": "od-scheduler",
+    "src": "main.js",
+    "isEntry": true,
+    "css": [
+      "assets/od-scheduler-CSJ4bNu8.css"
+    ]
+  }
+}

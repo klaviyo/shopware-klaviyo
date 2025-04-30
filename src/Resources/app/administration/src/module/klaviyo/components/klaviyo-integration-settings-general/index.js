@@ -1,7 +1,7 @@
 import template from './klaviyo-integration-settings-general.html.twig';
 import './klaviyo-integration-settings-general.scss';
 
-const {Component, Mixin, Utils} = Shopware;
+const { Component, Mixin } = Shopware;
 
 Component.register('klaviyo-integration-settings-general', {
     template,
@@ -44,9 +44,22 @@ Component.register('klaviyo-integration-settings-general', {
         selectedSalesChannelId: {
             deep: true,
             immediate: true,
-            handler: function(v) {
-                this.salesChannelSwitched(v);
-            }
+            handler(value) {
+                this.salesChannelSwitched(value);
+            },
+        },
+        apiKeys: {
+            deep: true,
+            handler: function(newValue, oldValue) {
+                if (newValue.privateKey && (newValue !== oldValue)) {
+                    this.debounce(() => {
+                        this.areListsLoading = true;
+                        this.fetchKlaviyoLists().then(() => { this.areListsLoading = false; })
+                    }, 500);
+                } else {
+                    this.listsOptions = [];
+                }
+            },
         },
     },
 
@@ -55,161 +68,142 @@ Component.register('klaviyo-integration-settings-general', {
             selectedSubscriptionList: null,
             subscriptionListOptions: [],
             isLoading: false,
+            areListsLoading: true,
             apiValidationInProgress: false,
+            listsOptions: [],
+            debounceTimeoutId: null,
             cookieConsentOptions: [
-                {
-                    name: 'Nothing',
-                    value: 'nothing'
-                },
-                {
-                    name: 'Shopware default',
-                    value: 'shopware'
-                },
-                {
-                    name: 'CookieBot',
-                    value: 'cookiebot'
-                },
-                {
-                    name: 'ConsentManager',
-                    value: 'consentmanager'
-                },
-                {
-                    name: 'Usercentrics',
-                    value: 'usercentrics'
-                }
-            ]
+                { name: 'Nothing', value: 'nothing' },
+                { name: 'Shopware default', value: 'shopware' },
+                { name: 'CookieBot', value: 'cookiebot' },
+                { name: 'ConsentManager', value: 'consentmanager' },
+                { name: 'Usercentrics', value: 'usercentrics' },
+            ],
         };
     },
 
-    computed : {
+    computed: {
+        apiKeys() {
+            return {
+                privateKey: this.actualConfigData['klavi_overd.config.privateApiKey'],
+            };
+        },
         createBisVariantFieldOptions() {
             return [
                 {
-                    label: Shopware.Snippet.tc('klaviyo-integration-settings.configs.bisVariantField.productId'),
-                    value: 'product-id'
+                    label: this.$tc('klaviyo-integration-settings.configs.bisVariantField.productId'),
+                    value: 'product-id',
                 },
                 {
-                    label: Shopware.Snippet.tc('sw-product.basicForm.labelProductNumber'),
-                    value: 'product-number'
-                }
-            ]
+                    label: this.$tc('sw-product.basicForm.labelProductNumber'),
+                    value: 'product-number',
+                },
+            ];
         },
         createOrderIdentificationFieldOptions() {
             return [
                 {
-                    label: Shopware.Snippet.tc('klaviyo-integration-settings.configs.orderIdentification.orderId'),
-                    value: 'order-id'
+                    label: this.$tc('klaviyo-integration-settings.configs.orderIdentification.orderId'),
+                    value: 'order-id',
                 },
                 {
-                    label: Shopware.Snippet.tc('klaviyo-integration-settings.configs.orderIdentification.orderNumber'),
-                    value: 'order-number'
-                }
-            ]
+                    label: this.$tc('klaviyo-integration-settings.configs.orderIdentification.orderNumber'),
+                    value: 'order-number',
+                },
+            ];
         },
         createCookieConsentOptions() {
             return [
                 {
-                    label: Shopware.Snippet.tc('klaviyo-integration-settings.configs.cookieConsent.nothingLabel'),
-                    value: 'nothing'
+                    label: this.$tc('klaviyo-integration-settings.configs.cookieConsent.nothingLabel'),
+                    value: 'nothing',
                 },
                 {
-                    label: Shopware.Snippet.tc('klaviyo-integration-settings.configs.cookieConsent.shopwareLabel'),
-                    value: 'shopware'
+                    label: this.$tc('klaviyo-integration-settings.configs.cookieConsent.shopwareLabel'),
+                    value: 'shopware',
                 },
                 {
-                    label: Shopware.Snippet.tc('klaviyo-integration-settings.configs.cookieConsent.cookieBotLabel'),
-                    value: 'cookiebot'
+                    label: this.$tc('klaviyo-integration-settings.configs.cookieConsent.cookieBotLabel'),
+                    value: 'cookiebot',
                 },
                 {
-                    label: Shopware.Snippet.tc('klaviyo-integration-settings.configs.cookieConsent.consentManagerLabel'),
-                    value: 'consentmanager'
+                    label: this.$tc('klaviyo-integration-settings.configs.cookieConsent.consentManagerLabel'),
+                    value: 'consentmanager',
                 },
                 {
                     label: this.$tc('klaviyo-integration-settings.configs.cookieConsent.usercentricsLabel'),
-                    value: 'usercentrics'
-                }
-            ]
+                    value: 'usercentrics',
+                },
+            ];
         },
         createOldJobCleanupPeriodOptions() {
-            let dayPeriods = [5, 10, 15, 20, 30, 60, 90];
-            let options = [];
-
-            for (let dayPeriodsKey in dayPeriods) {
-                options.push(
-                    {
-                        label: Shopware.Snippet.tc('klaviyo-integration-settings.configs.oldJobCleanupPeriod.after') + ' ' +
-                            dayPeriods[dayPeriodsKey] + ' ' +
-                            Shopware.Snippet.tc('klaviyo-integration-settings.configs.oldJobCleanupPeriod.days'),
-                        value: dayPeriods[dayPeriodsKey]
-                    }
-                )
-            }
-
-            return options;
+            const dayPeriods = [5, 10, 15, 20, 30, 60, 90];
+            return dayPeriods.map((days) => ({
+                label: `${this.$tc('klaviyo-integration-settings.configs.oldJobCleanupPeriod.after')} ${days} ${this.$tc('klaviyo-integration-settings.configs.oldJobCleanupPeriod.days')}`,
+                value: days,
+            }));
+        },
+        createListsOptions() {
+            return this.listsOptions;
         }
     },
 
     created() {
         this.createdComponent();
+        this.fetchKlaviyoLists().then(() => { this.areListsLoading = false; })
     },
 
     methods: {
-        salesChannelSwitched(v) {
-            if (!v) {
+        salesChannelSwitched(value) {
+            if (!value) {
                 this.selectedSubscriptionList = null;
             }
         },
 
         createdComponent() {
-            const configPrefix = 'klavi_overd.config.',
-                defaultConfigs = {
-                    enabled: false,
-                    bisVariantField: 'product-number',
-                    orderIdentification: 'order-id',
-                    trackDeletedAccountOrders: false,
-                    trackViewedProduct: true,
-                    trackRecentlyViewedItems: true,
-                    trackAddedToCart: true,
-                    trackStartedCheckout: true,
-                    trackPlacedOrder: true,
-                    trackOrderedProduct: true,
-                    trackFulfilledOrder: true,
-                    trackCancelledOrder: true,
-                    trackRefundedOrder: true,
-                    trackPaidOrder: false,
-                    trackShippedOrder: false,
-                    trackSubscribedToBackInStock: true,
-                    isInitializeKlaviyoAfterInteraction: true,
-                    popUpOpenBtnColor: '',
-                    popUpOpenBtnBgColor: '',
-                    popUpCloseBtnColor: '',
-                    popUpCloseBtnBgColor: '',
-                    subscribeBtnColor: '',
-                    subscribeBtnBgColor: '',
-                    popUpAdditionalClasses: '',
-                    cookieConsent: 'shopware',
-                    dailySynchronizationTime: false,
-                    oldJobCleanupPeriod: 5,
-                    withoutSubscribersSync: false,
-                    withoutOrdersSync: false
-                };
+            const configPrefix = 'klavi_overd.config.';
+            const defaultConfigs = {
+                enabled: false,
+                bisVariantField: 'product-number',
+                orderIdentification: 'order-id',
+                trackDeletedAccountOrders: false,
+                trackViewedProduct: true,
+                trackRecentlyViewedItems: true,
+                trackAddedToCart: true,
+                trackStartedCheckout: true,
+                trackPlacedOrder: true,
+                trackOrderedProduct: true,
+                trackFulfilledOrder: true,
+                trackCancelledOrder: true,
+                trackRefundedOrder: true,
+                trackPaidOrder: false,
+                trackShippedOrder: false,
+                trackSubscribedToBackInStock: true,
+                isInitializeKlaviyoAfterInteraction: true,
+                popUpOpenBtnColor: '',
+                popUpOpenBtnBgColor: '',
+                popUpCloseBtnColor: '',
+                popUpCloseBtnBgColor: '',
+                subscribeBtnColor: '',
+                subscribeBtnBgColor: '',
+                popUpAdditionalClasses: '',
+                cookieConsent: 'shopware',
+                dailySynchronizationTime: false,
+                oldJobCleanupPeriod: 5,
+                withoutSubscribersSync: false,
+                withoutOrdersSync: false,
+            };
 
-            /**
-             * Initialize config data with default values.
-             */
+            // Initialize config data with default values
             for (const [key, defaultValue] of Object.entries(defaultConfigs)) {
                 if (this.allConfigs['null'][configPrefix + key] === undefined) {
-                    this.$set(this.allConfigs['null'], configPrefix + key, defaultValue);
+                    this.allConfigs['null'][configPrefix + key] = defaultValue;
                 }
             }
         },
 
         checkTextFieldInheritance(value) {
-            if (typeof value !== 'string') {
-                return true;
-            }
-
-            return value.length <= 0;
+            return typeof value !== 'string' || value.length <= 0;
         },
 
         checkBoolFieldInheritance(value) {
@@ -222,54 +216,121 @@ Component.register('klaviyo-integration-settings-general', {
             const publicKey = this.actualConfigData['klavi_overd.config.publicApiKey'];
             const listId = this.actualConfigData['klavi_overd.config.klaviyoListForSubscribersSync'];
 
-            if (!(this.credentialsEmptyValidation('privateApiKey', privateKey) * this.credentialsEmptyValidation('publicApiKey', publicKey))) {
+            if (
+                !(
+                    this.credentialsEmptyValidation('privateApiKey', privateKey) &&
+                    this.credentialsEmptyValidation('publicApiKey', publicKey)
+                )
+            ) {
                 this.apiValidationInProgress = false;
                 return;
             }
 
-            this.klaviyoApiKeyValidatorService.validate(privateKey, publicKey, listId).then((response) => {
-                if (response.status !== 200) {
-                    this.createNotificationError({
-                        message: Shopware.Snippet.tc('klaviyo-integration-settings.configs.apiValidation.generalErrorMessage'),
-                    });
-                    return;
-                }
-                const data = response.data;
+            this.klaviyoApiKeyValidatorService
+                .validate(privateKey, publicKey, listId)
+                .then((response) => {
+                    if (response.status !== 200) {
+                        this.createNotificationError({
+                            message: this.$tc('klaviyo-integration-settings.configs.apiValidation.generalErrorMessage'),
+                        });
+                        return;
+                    }
+                    const data = response.data;
 
-                if (data.success) {
-                    this.createNotificationSuccess({
-                        title: this.$root.$tc('global.default.success'),
-                        message: Shopware.Snippet.tc('klaviyo-integration-settings.configs.apiValidation.correctApiMessage'),
-                    });
-                } else if (data.general_error) {
+                    if (data.success) {
+                        this.createNotificationSuccess({
+                            title: this.$tc('global.default.success'),
+                            message: this.$tc('klaviyo-integration-settings.configs.apiValidation.correctApiMessage'),
+                        });
+                    } else if (data.general_error) {
+                        this.createNotificationError({
+                            message: this.$tc('klaviyo-integration-settings.configs.apiValidation.generalErrorMessage'),
+                        });
+                        this.storeSelectedListValue(null);
+                    } else if (data.incorrect_credentials) {
+                        this.createNotificationError({
+                            title: this.$tc('klaviyo-integration-settings.configs.apiValidation.incorrectCredentialsTitle'),
+                            message: data.incorrect_credentials_message,
+                        });
+                        this.storeSelectedListValue(null);
+                    }
+                })
+                .catch(() => {
                     this.createNotificationError({
-                        message: Shopware.Snippet.tc('klaviyo-integration-settings.configs.apiValidation.generalErrorMessage'),
+                        message: this.$tc('klaviyo-integration-settings.configs.apiValidation.generalErrorMessage'),
                     });
-                    this.storeSelectedListValue(null);
-                } else if (data.incorrect_credentials) {
-                    this.createNotificationError({
-                        title: Shopware.Snippet.tc('klaviyo-integration-settings.configs.apiValidation.incorrectCredentialsTitle'),
-                        message: data.incorrect_credentials_message,
-                    });
-                    this.storeSelectedListValue(null);
-                }
-            }).catch(() => {
-                this.createNotificationError({
-                    message: Shopware.Snippet.tc('klaviyo-integration-settings.configs.apiValidation.generalErrorMessage'),
+                })
+                .finally(() => {
+                    this.apiValidationInProgress = false;
                 });
-            }).finally(() => {
-                this.apiValidationInProgress = false;
-            });
         },
 
         credentialsEmptyValidation(key, value) {
             if (value === undefined || value === '' || value === null) {
                 this.createNotificationError({
-                    message: Shopware.Snippet.tc('klaviyo-integration-settings.configs.apiValidation.emptyErrorMessage', 0, {entityName: Shopware.Snippet.tc('klaviyo-integration-settings.configs.' + key + '.label')}),
+                    message: this.$tc('klaviyo-integration-settings.configs.apiValidation.emptyErrorMessage', 0, {
+                        entityName: this.$tc('klaviyo-integration-settings.configs.' + key + '.label'),
+                    }),
                 });
-                return false
+                return false;
             }
             return true;
         },
+
+        storeSelectedListValue(value) {
+            this.selectedSubscriptionList = value;
+        },
+        
+        async fetchKlaviyoLists() {
+            const privateKey = this.actualConfigData['klavi_overd.config.privateApiKey'];
+
+            if (!privateKey) {
+                this.listsOptions = [];
+                return;
+            }
+            
+            try {
+                const response = await this.klaviyoApiKeyValidatorService.getList(privateKey);
+
+                if (response.status !== 200) {
+                    this.createNotificationError({
+                        message: this.$tc('klaviyo-integration-settings.configs.lists.error'),
+                    });
+                    this.listsOptions = [];
+                    return;
+                }
+
+                const data = response.data.data;
+
+                if (data.length === 0) {
+                    this.createNotificationError({
+                        message: this.$tc('klaviyo-integration-settings.configs.lists.warning'),
+                    });
+                    this.listsOptions = [];
+                    return;
+                }
+
+                this.listsOptions = data.map((item) => ({
+                    label: item.label,
+                    value: item.value,
+                }));
+                
+                if (this.listsOptions.length > 0 && !this.actualConfigData['klavi_overd.config.klaviyoListForSubscribersSync']) {
+                    this.actualConfigData['klavi_overd.config.klaviyoListForSubscribersSync'] = this.listsOptions[0].value;
+                }
+            } catch (error) {
+                this.createNotificationError({
+                    message: this.$tc('klaviyo-integration-settings.configs.lists.error'),
+                });
+                this.listsOptions = [];
+            }
+        },
+        
+        debounce(callback, delay) {
+            if (this.debounceTimeoutId) {
+                clearTimeout(this.debounceTimeoutId);
+            }
+            this.debounceTimeoutId = setTimeout(callback, delay);
+        }
     },
 });

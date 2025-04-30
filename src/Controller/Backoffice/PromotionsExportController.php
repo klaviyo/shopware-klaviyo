@@ -20,7 +20,12 @@ class PromotionsExportController
         $this->promotionsExporter = $promotionsExporter;
     }
 
-    #[Route(path: '/api/klaviyo/integration/promotion/export', defaults: ['auth_required' => false], methods: ['GET'])]
+    #[Route(
+        path: '/api/klaviyo/integration/promotion/export', 
+        name: 'api.klaviyo.integration.promotion.export', 
+        defaults: ['auth_required' => false], 
+        methods: ['GET']
+    )]
     public function export(Context $context, Request $request): KlaviyoBinaryFileResponse
     {
         $promotionId = $request->query->get('id');

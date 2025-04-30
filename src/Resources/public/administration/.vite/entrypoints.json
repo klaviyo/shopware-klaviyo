@@ -1,0 +1,25 @@
+{
+  "base": "/bundles/klavi_overd/administration/",
+  "entryPoints": {
+    "klavi-overd": {
+      "css": [
+        "/bundles/klavi_overd/administration/assets/klavi-overd-BL1VqB0k.css"
+      ],
+      "dynamic": [],
+      "js": [
+        "/bundles/klavi_overd/administration/assets/klavi-overd-BMNxReKw.js"
+      ],
+      "legacy": false,
+      "preload": []
+    }
+  },
+  "legacy": false,
+  "metadatas": {},
+  "version": [
+    "7.1.0",
+    7,
+    1,
+    0
+  ],
+  "viteServer": null
+}

@@ -1,0 +1,25 @@
+{
+  "base": "/bundles/odscheduler/administration/",
+  "entryPoints": {
+    "od-scheduler": {
+      "css": [
+        "/bundles/odscheduler/administration/assets/od-scheduler-CSJ4bNu8.css"
+      ],
+      "dynamic": [],
+      "js": [
+        "/bundles/odscheduler/administration/assets/od-scheduler-CA9FY699.js"
+      ],
+      "legacy": false,
+      "preload": []
+    }
+  },
+  "legacy": false,
+  "metadatas": {},
+  "version": [
+    "7.1.0",
+    7,
+    1,
+    0
+  ],
+  "viteServer": null
+}

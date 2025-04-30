@@ -1,8 +1,9 @@
+import { reactive } from 'vue';
 import template from './klaviyo-integration-settings-order.html.twig';
 import './klaviyo-integration-settings-order.scss';
 
-const {Component, Context} = Shopware;
-const {Criteria} = Shopware.Data;
+const { Component, Context } = Shopware;
+const { Criteria } = Shopware.Data;
 
 Component.register('klaviyo-integration-settings-order', {
     template,
@@ -10,16 +11,16 @@ Component.register('klaviyo-integration-settings-order', {
     props: {
         allConfigs: {
             type: Object,
-            required: true,
+            required: true
         },
         mappingErrorStates: {
             type: Object,
-            required: true,
+            required: true
         }
     },
 
     inject: [
-        'repositoryFactory',
+        'repositoryFactory'
     ],
 
     created() {
@@ -31,9 +32,9 @@ Component.register('klaviyo-integration-settings-order', {
             isLoading: false,
             isSomeMappingsNotFilled: false,
             systemCustomFields: null,
-            // mappingErrorStates: {},
+            localeIso: null,
             configPath: 'klavi_overd.config.orderFieldMapping'
-        }
+        };
     },
 
     computed: {
@@ -47,44 +48,33 @@ Component.register('klaviyo-integration-settings-order', {
             criteria.addFilter(Criteria.equals('customFieldSet.relations.entityName', 'order'));
             criteria.addFilter(Criteria.equals('active', 1));
             criteria.addAssociation('customFieldSet');
-
             return criteria;
         },
 
         noCustomFieldsError() {
-            if (this.systemCustomFields.total === 0) {
+            if (this.systemCustomFields?.total === 0) {
                 return this.$tc('klaviyo-integration-settings.order.fieldMapping.noMappingFieldsError');
             }
-
             return null;
-        },
-
-        customFieldMapping: {
-            get: function () {
-                return this.allConfigs['null'][this.configPath];
-            }
         }
     },
 
     watch: {
-        customFieldMapping: {
-            handler() {
-                const mappingConfig = this.allConfigs['null'][this.configPath];
-
-                Object.keys(mappingConfig).every((mappingKey) => {
+        'allConfigs.null.Klaviyo\\.config\\.orderFieldMapping': {
+            handler(mappingConfig) {
+                Object.keys(mappingConfig).forEach((mappingKey) => {
                     if (mappingConfig[mappingKey].active && !mappingConfig[mappingKey].customLabel) {
-                        this.$set(this.mappingErrorStates, mappingKey, {
+                        this.mappingErrorStates[mappingKey] = {
                             code: 1,
-                            detail: this.$tc('klaviyo-integration-settings.order.fieldMapping.labelNotFilledError'),
-                        });
+                            detail: this.$tc('klaviyo-integration-settings.order.fieldMapping.labelNotFilledError')
+                        };
                     } else {
-                        this.$delete(this.mappingErrorStates, mappingKey);
+                        delete this.mappingErrorStates[mappingKey];
                     }
-                    return true;
                 });
             },
-            deep: true,
-        },
+            deep: true
+        }
     },
 
     methods: {
@@ -92,11 +82,9 @@ Component.register('klaviyo-integration-settings-order', {
             this.isLoading = true;
             this.localeIso = Context.app.fallbackLocale;
 
-            if (this.customFieldMapping === undefined || Array.isArray(this.customFieldMapping)) {
-                /**
-                 * Initialize configuration.
-                 */
-                this.$set(this.allConfigs['null'], this.configPath, {});
+            // Initialize configuration if undefined or array
+            if (!this.allConfigs['null'][this.configPath] || Array.isArray(this.allConfigs['null'][this.configPath])) {
+                this.allConfigs['null'][this.configPath] = {};
             }
 
             this.customFieldRepository.search(this.customFieldCriteria, Context.api)
@@ -113,56 +101,54 @@ Component.register('klaviyo-integration-settings-order', {
             let existingCustomFieldNames = [];
             const systemFieldNames = this.systemCustomFields.map((systemField) => systemField.name);
 
-            Object.keys(this.customFieldMapping).forEach(mappingKey => {
-                if (this.customFieldMapping[mappingKey].active && !this.customFieldMapping[mappingKey].customLabel) {
-                    this.$set(this.mappingErrorStates, mappingKey, {
+            Object.keys(this.allConfigs['null'][this.configPath]).forEach(mappingKey => {
+                if (this.allConfigs['null'][this.configPath][mappingKey].active && !this.allConfigs['null'][this.configPath][mappingKey].customLabel) {
+                    this.mappingErrorStates[mappingKey] = {
                         code: 1,
-                        detail: this.$tc('klaviyo-integration-settings.order.fieldMapping.labelNotFilledError'),
-                    });
+                        detail: this.$tc('klaviyo-integration-settings.order.fieldMapping.labelNotFilledError')
+                    };
                 } else {
-                    this.$set(this.mappingErrorStates, mappingKey, {});
+                    this.mappingErrorStates[mappingKey] = {};
                 }
 
-                existingCustomFieldNames.push(this.customFieldMapping[mappingKey].customFieldName);
+                existingCustomFieldNames.push(this.allConfigs['null'][this.configPath][mappingKey].customFieldName);
 
-                if (systemFieldNames.indexOf(this.customFieldMapping[mappingKey]['customFieldName']) === -1) {
-                    this.$delete(this.mappingErrorStates, mappingKey);
-                    this.$delete(this.customFieldMapping, mappingKey);
+                if (!systemFieldNames.includes(this.allConfigs['null'][this.configPath][mappingKey].customFieldName)) {
+                    delete this.mappingErrorStates[mappingKey];
+                    delete this.allConfigs['null'][this.configPath][mappingKey];
                 }
             });
 
             systemFieldNames.forEach((systemFieldName) => {
                 if (!existingCustomFieldNames.includes(systemFieldName)) {
-                    this.addNewEmptyFieldMapping(this.systemCustomFields.filter((systemField) => systemField.name === systemFieldName)[0]);
+                    const systemField = this.systemCustomFields.find(field => field.name === systemFieldName);
+                    if (systemField) {
+                        this.addNewEmptyFieldMapping(systemField);
+                    }
                 }
             });
         },
 
         getCustomFieldHint(mappingKey) {
-            const systemFieldName = this.customFieldMapping[mappingKey]['customFieldName'];
-            const systemField = this.systemCustomFields.filter((systemField) => systemField.name === systemFieldName)[0] ?? {};
+            const systemFieldName = this.allConfigs['null'][this.configPath][mappingKey]?.customFieldName;
+            const systemField = this.systemCustomFields.find(field => field.name === systemFieldName) ?? {};
 
             return systemField?.config?.label[this.localeIso] ?? systemField?.name ?? '<not_found>';
         },
 
         addNewEmptyFieldMapping(field) {
             const mappingKey = 'mapping_' + this.generateGuid();
-            this.$set(this.customFieldMapping, mappingKey, {
+            this.allConfigs['null'][this.configPath][mappingKey] = {
                 customLabel: '',
                 customFieldName: field.name,
                 active: false
-            });
-            this.$set(this.mappingErrorStates, mappingKey, {});
+            };
+            this.mappingErrorStates[mappingKey] = {};
         },
 
         generateGuid() {
-            let s4 = () => {
-                return Math.floor((1 + Math.random()) * 0x10000)
-                    .toString(16)
-                    .substring(1);
-            }
-
-            return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+            const s4 = () => Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+            return `${s4()}${s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
         }
-    },
+    }
 });

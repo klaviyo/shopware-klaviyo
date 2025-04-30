@@ -22,7 +22,7 @@ final class ScheduleEventJobsHandler extends ScheduledTaskHandler
     public function __construct(
         protected EntityRepository $scheduledTaskRepository,
         private readonly ScheduleBackgroundJob $scheduleBackgroundJob,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
     ) {
         parent::__construct($scheduledTaskRepository, $logger);
     }
