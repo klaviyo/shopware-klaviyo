@@ -62,6 +62,8 @@ class AsyncClient implements ClientInterface
                                 if (
                                     (('The phone number provided either does not exist or is ineligible to receive SMS' ===
                                             $errorDetail)
+                                        || ('The phone number provided either does not exist or is ineligible to receive ChannelType.SMS' ===
+                                            $errorDetail)
                                         || (str_contains($errorDetail, 'Invalid phone number format')))
                                     ||
                                     (('Invalid email address' ===
