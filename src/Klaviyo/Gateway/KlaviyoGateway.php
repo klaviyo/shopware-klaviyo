@@ -495,6 +495,9 @@ class KlaviyoGateway
                         && (false !== strpos(
                             $errorMsg,
                             'The phone number provided either does not exist or is ineligible to receive SMS'
+                        ) || false !== strpos(
+                            $errorMsg,
+                            'The phone number provided either does not exist or is ineligible to receive ChannelType.SMS'
                         ) || (false !== strpos($errorMsg, 'Invalid phone number format')))
                 ) {
                     $orderEvent = $orderEvents[$orderId];
