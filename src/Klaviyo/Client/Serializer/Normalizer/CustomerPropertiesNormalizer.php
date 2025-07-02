@@ -18,7 +18,7 @@ class CustomerPropertiesNormalizer implements NormalizerInterface
     {
         $properties = array_merge(
             [
-                'Birthday' => $object->getBirthday(),
+                'birthday' => $object->getBirthday(),
                 'salesChannelId' => $object->getSalesChannelId(),
                 'salesChannelName' => $object->getSalesChannelName(),
                 'boundedSalesChannelId' => $object->getBoundedSalesChannelId(),

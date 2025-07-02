@@ -98,14 +98,13 @@ class ValidationController extends AbstractController
      */
     public function getSubscriberListsAvailable(RequestDataBag $post): JsonResponse
     {
-        $publicKey = $post->get('publicKey');
         $privateKey = $post->get('privateKey');
 
-        if (empty($publicKey) || empty($privateKey)) {
+        if (empty($privateKey)) {
             return new JsonResponse(['invalid_parameters' => true], Response::HTTP_OK);
         }
 
-        $this->client = $this->clientRegistry->getClientByKeys($privateKey, $publicKey);
+        $this->client = $this->clientRegistry->getClientByKeys($privateKey);
         $result = $this->getAllProfileLists(new GetProfilesListsRequest());
 
         if (empty($this->profileLists)) {
@@ -114,31 +113,6 @@ class ValidationController extends AbstractController
 
         return new JsonResponse(['success' => true, 'data' => $this->profileLists,
         ], Response::HTTP_OK);
-    }
-
-    /**
-     * @Route("/api/_action/od-list-id-validate", name="api.action.od_list_id_validate", methods={"POST"}, defaults={"auth_required"=false})
-     *
-     * @throws /Exception
-     */
-    public function getSubscriberListsByIdAvailable(RequestDataBag $post): JsonResponse
-    {
-        $publicKey = $post->get('publicKey');
-        $privateKey = $post->get('privateKey');
-        $searchedListId = $post->get('listId');
-
-        if (empty($publicKey) || empty($privateKey)) {
-            return new JsonResponse(['invalid_parameters' => true], Response::HTTP_OK);
-        }
-
-        $this->client = $this->clientRegistry->getClientByKeys($privateKey, $publicKey);
-        $result = $this->getAllProfileLists(new GetProfilesListsRequest(null, $searchedListId));
-
-        if (empty($this->profileLists)) {
-            return $result;
-        }
-
-        return new JsonResponse(['success' => true, 'data' => $this->profileLists,], Response::HTTP_OK);
     }
 
     private function parseListNamesFromResponse($response): void

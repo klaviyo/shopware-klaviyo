@@ -22,9 +22,9 @@ Embedded Dependencies:
 
 Documentation
 ---
-* [Installation instruction](./src/Resources/doc/installation.md)
-* [Capabilities and restrictions](./src/Resources/doc/capabilities_and_restrictions.md)
-* [Plugin Implementation Overview](./src/Resources/doc/plugin_implementation_overview.md)
+* [Installation instruction](src/Resources/doc/installation.md)
+* [Capabilities and restrictions](src/Resources/doc/capabilities_and_restrictions.md)
+* [Plugin Implementation Overview](src/Resources/doc/plugin_implementation_overview.md)
 
 Testing
 ---

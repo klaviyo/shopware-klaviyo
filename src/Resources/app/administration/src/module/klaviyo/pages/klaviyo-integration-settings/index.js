@@ -20,7 +20,6 @@ Component.register('klaviyo-integration-settings', {
         return {
             isLoading: false,
             isSaveSuccessful: false,
-            isListIdPresent: false,
             privateKeyFilled: false,
             publicKeyFilled: false,
             listIdFilled: false,
@@ -104,33 +103,8 @@ Component.register('klaviyo-integration-settings', {
                     this.privateKeyFilled = !!this.config['KlaviyoIntegrationPlugin.config.privateApiKey'];
                     this.publicKeyFilled = !!this.config['KlaviyoIntegrationPlugin.config.publicApiKey'];
                     this.listIdFilled = !!this.config['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync'];
-
-                    if (!this.savedListId) {
-                        this.savedListId = this.config['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync'];
-                    } else {
-                        if (this.savedListId !== this.config['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync']) {
-                            if (this.privateKeyFilled && this.publicKeyFilled && this.listIdFilled) {
-                                this.validateNewsletterListId(this.config['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync']);
-                                this.savedListId = this.config['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync'];
-                            }
-                        }
-                    }
                 } else {
                     this.privateKeyFilled = this.publicKeyFilled = this.listIdFilled = true;
-                }
-            },
-            deep: true,
-        },
-
-        newsletterListId: {
-            handler() {
-                const channelId = this.$refs.configComponent.selectedSalesChannelId;
-                const accountEnabled = !!this.config['KlaviyoIntegrationPlugin.config.enabled'];
-
-                if (channelId !== null && accountEnabled) {
-                    if (this.privateKeyFilled && this.publicKeyFilled && this.listIdFilled) {
-                        this.validateNewsletterListId(this.config['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync']);
-                    }
                 }
             },
             deep: true,
@@ -174,44 +148,10 @@ Component.register('klaviyo-integration-settings', {
 
             this.isLoading = true;
 
-            const newsletterListId = this.config['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync'];
-            if (newsletterListId) {
-                if (!this.isListIdPresent) {
-                    this.isLoading = false;
-                    this.isSaveSuccessful = false;
-                    return;
-                }
-            }
-
             this.$refs.configComponent.save().then(() => {
                 this.isSaveSuccessful = true;
             }).finally(() => {
                 this.isLoading = false;
-            });
-        },
-
-        validateNewsletterListId(newsletterListId) {
-            const privateKey = this.config['KlaviyoIntegrationPlugin.config.privateApiKey'];
-            const publicKey = this.config['KlaviyoIntegrationPlugin.config.publicApiKey'];
-
-            this.isListIdPresent = false;
-
-            this.klaviyoApiKeyValidatorService.validateListById(privateKey, publicKey, newsletterListId).then((response) => {
-                if (!response.data || !response.data.data) {
-                    this.isListIdPresent = false;
-                    this.createNotificationError({
-                        message: this.$tc('klaviyo-integration-settings.configs.apiValidation.listNotExistMessage'),
-                    });
-                }
-
-                if (response.data && response.data.data && response.data.data[0].value === newsletterListId) {
-                    this.isListIdPresent = true;
-                }
-            }).catch(() => {
-                this.isListIdPresent = false;
-                this.createNotificationError({
-                    message: this.$tc('klaviyo-integration-settings.configs.apiValidation.listNotExistMessage'),
-                });
             });
         }
     }

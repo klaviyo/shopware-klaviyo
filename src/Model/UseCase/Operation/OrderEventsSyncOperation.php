@@ -5,11 +5,12 @@ namespace Klaviyo\Integration\Model\UseCase\Operation;
 use Klaviyo\Integration\Async\Message\OrderEventSyncMessage;
 use Klaviyo\Integration\Entity\Event\EventEntity;
 use Klaviyo\Integration\Exception\JobRuntimeWarningException;
+use Klaviyo\Integration\Klaviyo\Client\Exception\TranslationException;
 use Klaviyo\Integration\Klaviyo\Gateway\Result\OrderTrackingResult;
 use Klaviyo\Integration\System\Tracking\Event\Order\OrderEvent;
 use Klaviyo\Integration\System\Tracking\Event\Order\OrderTrackingEventsBag;
 use Klaviyo\Integration\System\Tracking\EventsTrackerInterface as Tracker;
-use Od\Scheduler\Model\Job\{JobHandlerInterface, JobResult, Message};
+use Klaviyo\Integration\Od\Scheduler\Model\Job\{JobHandlerInterface, JobResult, Message};
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
@@ -69,6 +70,7 @@ class OrderEventsSyncOperation implements JobHandlerInterface
     {
         $messages = [];
         $result = new JobResult();
+        $translationException = null;
         $context = $message->getContext();
 
         foreach (self::ALLOWED_EVENT_TYPES as $eventType) {
@@ -105,37 +107,41 @@ class OrderEventsSyncOperation implements JobHandlerInterface
                 $eventsBag->add($orderEvent);
             }
 
-            switch ($eventType) {
-                case Tracker::ORDER_EVENT_PLACED:
-                    $trackingResult = $this->eventsTracker->trackPlacedOrders($context, $eventsBag);
-                    break;
-                case Tracker::ORDER_EVENT_ORDERED_PRODUCT:
-                    $trackingResult = $this->eventsTracker->trackOrderedProducts($context, $eventsBag);
-                    break;
-                case Tracker::ORDER_EVENT_CANCELED:
-                    $trackingResult = $this->eventsTracker->trackCanceledOrders($context, $eventsBag);
-                    break;
-                case Tracker::ORDER_EVENT_REFUNDED:
-                    $trackingResult = $this->eventsTracker->trackRefundOrders($context, $eventsBag);
-                    break;
-                case Tracker::ORDER_EVENT_FULFILLED:
-                    $trackingResult = $this->eventsTracker->trackFulfilledOrders($context, $eventsBag);
-                    break;
-                case Tracker::ORDER_EVENT_PAID:
-                    $trackingResult = $this->eventsTracker->trackPaiedOrders($context, $eventsBag);
-                    break;
-                case Tracker::ORDER_EVENT_SHIPPED:
-                    $trackingResult = $this->eventsTracker->trackShippedOrder($context, $eventsBag);
-                    break;
-                case Tracker::ORDER_EVENT_PARTIALLY_PAID:
-                    $trackingResult = $this->eventsTracker->trackPartiallyPaidOrders($context, $eventsBag);
-                    break;
-                case Tracker::ORDER_EVENT_PARTIALLY_SHIPPED:
-                    $trackingResult = $this->eventsTracker->trackPartiallyShippedOrder($context, $eventsBag);
-                    break;
-                default:
-                    $trackingResult = new OrderTrackingResult();
-                    break;
+            try {
+                switch ($eventType) {
+                    case Tracker::ORDER_EVENT_PLACED:
+                        $trackingResult = $this->eventsTracker->trackPlacedOrders($context, $eventsBag);
+                        break;
+                    case Tracker::ORDER_EVENT_ORDERED_PRODUCT:
+                        $trackingResult = $this->eventsTracker->trackOrderedProducts($context, $eventsBag);
+                        break;
+                    case Tracker::ORDER_EVENT_CANCELED:
+                        $trackingResult = $this->eventsTracker->trackCanceledOrders($context, $eventsBag);
+                        break;
+                    case Tracker::ORDER_EVENT_REFUNDED:
+                        $trackingResult = $this->eventsTracker->trackRefundOrders($context, $eventsBag);
+                        break;
+                    case Tracker::ORDER_EVENT_FULFILLED:
+                        $trackingResult = $this->eventsTracker->trackFulfilledOrders($context, $eventsBag);
+                        break;
+                    case Tracker::ORDER_EVENT_PAID:
+                        $trackingResult = $this->eventsTracker->trackPaiedOrders($context, $eventsBag);
+                        break;
+                    case Tracker::ORDER_EVENT_SHIPPED:
+                        $trackingResult = $this->eventsTracker->trackShippedOrder($context, $eventsBag);
+                        break;
+                    case Tracker::ORDER_EVENT_PARTIALLY_PAID:
+                        $trackingResult = $this->eventsTracker->trackPartiallyPaidOrders($context, $eventsBag);
+                        break;
+                    case Tracker::ORDER_EVENT_PARTIALLY_SHIPPED:
+                        $trackingResult = $this->eventsTracker->trackPartiallyShippedOrder($context, $eventsBag);
+                        break;
+                    default:
+                        $trackingResult = new OrderTrackingResult();
+                        break;
+                }
+            } catch (TranslationException $e) {
+                $translationException = $e;
             }
 
             $deleteDataSet = array_map(
@@ -144,7 +150,12 @@ class OrderEventsSyncOperation implements JobHandlerInterface
                 },
                 array_values($events)
             );
+            
             $this->eventsRepository->delete($deleteDataSet, $context);
+
+            if (!is_null($translationException)) {
+                throw $translationException;
+            }
 
             foreach ($trackingResult->getFailedOrdersErrors() as $orderId => $orderErrors) {
                 /** @var \Throwable $error */

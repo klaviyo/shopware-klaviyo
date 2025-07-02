@@ -101,6 +101,7 @@ export default class KlaviyoTracking extends Plugin {
         switch (this.options.cookieConsent) {
             case 'nothing':
                 // In this config, always loading klaviyo cookies
+                this.storage.setItem(this.options.klaviyoInitializedStorageKey, 'true');
                 return true;
             case 'shopware':
             case 'consentmanager':
@@ -123,13 +124,13 @@ export default class KlaviyoTracking extends Plugin {
     isPageInteractionRequired() {
         return this.isAllowToTrack()
             && this.options.afterInteraction
-            && this.storage.getItem(this.options.klaviyoInitializedStorageKey) === null;
+            && this.storage.getItem(this.options.klaviyoInitializedStorageKey) !== null;
     }
 
     canInitializeKlaviyoScript() {
         return !this.options.scriptInitialized
             && this.isAllowToTrack()
-            && !this.isPageInteractionRequired();
+            && this.isPageInteractionRequired();
     }
 
     initKlaviyoScript() {

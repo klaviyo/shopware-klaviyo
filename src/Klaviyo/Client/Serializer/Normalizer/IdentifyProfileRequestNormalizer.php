@@ -21,7 +21,7 @@ class IdentifyProfileRequestNormalizer extends AbstractNormalizer
     {
         $customerProperties = $object->getCustomerProperties();
 
-        return ['data' => ['type' => 'profile', 'attributes' => [
+        $data = ['data' => ['type' => 'profile', 'attributes' => [
             'email' => $customerProperties->getEmail(),
             'phone_number' => $customerProperties->getPhoneNumber(),
             'first_name' => $customerProperties->getFirstName(),
@@ -34,9 +34,27 @@ class IdentifyProfileRequestNormalizer extends AbstractNormalizer
                 'zip' => $customerProperties->getZip(),
             ],
         ]]];
+
+        $properties = array_filter([
+            'birthday' => $customerProperties->getBirthday(),
+            'language' => $customerProperties->getLocaleCode(),
+            'salesChannelId' => $customerProperties->getSalesChannelId(),
+            'salesChannelName' => $customerProperties->getSalesChannelName(),
+            'customerGroup' => $customerProperties->getGroupName(),
+        ]);
+
+        if (!empty($customerProperties->getCustomFields())) {
+            $properties = array_merge($properties, $customerProperties->getCustomFields());
+        }
+
+        if (!empty($properties)) {
+            $data['data']['attributes']['properties'] = $properties;
+        }
+
+        return $data;
     }
 
-    public function supportsNormalization($data, string $format = null): bool
+    public function supportsNormalization($data, string $format = null, array $context = []): bool
     {
         return $data instanceof IdentifyProfileRequest;
     }

@@ -37,31 +37,34 @@ class CartController extends StorefrontController
      */
     public function index(string $mappingId, Request $request, SalesChannelContext $context): Response
     {
-        $this->restorerService->restore($mappingId, $context);
+        $status = $this->restorerService->restore($mappingId, $context);
 
-        if ($context->getCustomer() && isset($context->customerId)) {
-            $request->getSession()->set('customerId', $context->customerId);
-            $data = $this->restorerService->registerCustomerByRestoreCartLink($context);
+        if ($status && ($context->getCustomer() || isset($context->customerId))) {
+            $request->getSession()->set('customerId', $context->customerId ?? $context->getCustomer()->getId());
+            if (!$context->getCustomer()) {
+                $data = $this->restorerService->registerCustomerByRestoreCartLink($context);
 
-            if ($data->count() > 0) {
-                try {
-                    $this->registerRoute->register(
-                        $data->toRequestDataBag(),
-                        $context,
-                        false
-                    );
-                } catch (\Exception $exception) {
-                    $this->logger->error($exception->getMessage());
-                    $this->addFlash(self::DANGER, $this->trans('klaviyo.cart-restore.missing-cart-data-error'));
+                if ($data->count() > 0) {
+                    try {
+                        $this->registerRoute->register(
+                            $data->toRequestDataBag(),
+                            $context,
+                            false
+                        );
+                    } catch (\Exception $exception) {
+                        $this->logger->error($exception->getMessage());
+                        $this->addFlash(self::DANGER, $this->trans('klaviyo.cart-restore.missing-cart-data-error'));
+                        return $this->redirectToRoute('frontend.home.page');
+                    }
+                } else {
+                    $this->addFlash(self::WARNING, $this->trans('klaviyo.cart-restore.missing-cart-data'));
                     return $this->redirectToRoute('frontend.home.page');
                 }
-            } else {
-                $this->addFlash(self::WARNING, $this->trans('klaviyo.cart-restore.missing-cart-data'));
-                return $this->redirectToRoute('frontend.home.page');
             }
-        } else {
+        } elseif (false === $status) {
             $this->addFlash(self::WARNING, $this->trans('klaviyo.cart-restore.missing-cart-data-guest'));
-            return $this->redirectToRoute('frontend.home.page');
+        } else {
+            return $this->redirectToRoute('frontend.checkout.cart.page');
         }
 
         return $this->redirectToRoute('frontend.checkout.confirm.page');

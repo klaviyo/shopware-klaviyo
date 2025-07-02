@@ -72,15 +72,12 @@ class OrderEventRequestTranslator
         Context $context,
         OrderEntity $orderEntity
     ): PlacedOrderEventTrackingRequest {
-        $orderTransaction = $orderEntity->getTransactions() ? $orderEntity->getTransactions()->first() : null;
-        $actualOrderTime = $orderTransaction ? $orderTransaction->getCreatedAt() : $orderEntity->getCreatedAt();
-
         /** @var PlacedOrderEventTrackingRequest $result */
         $result = $this->translateToOrderEventTrackingRequest(
             $context,
             PlacedOrderEventTrackingRequest::class,
             $orderEntity,
-            $actualOrderTime
+            $orderEntity->getOrderDateTime(),
         );
 
         return $result;

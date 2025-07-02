@@ -6,10 +6,10 @@ namespace Klaviyo\Integration\Model\UseCase\Operation;
 
 use Klaviyo\Integration\Model\Channel\GetValidChannels;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
-use Od\Scheduler\Model\Job\GeneratingHandlerInterface;
-use Od\Scheduler\Model\Job\JobHandlerInterface;
-use Od\Scheduler\Model\Job\JobResult;
-use Od\Scheduler\Model\Job\Message;
+use Klaviyo\Integration\Od\Scheduler\Model\Job\GeneratingHandlerInterface;
+use Klaviyo\Integration\Od\Scheduler\Model\Job\JobHandlerInterface;
+use Klaviyo\Integration\Od\Scheduler\Model\Job\JobResult;
+use Klaviyo\Integration\Od\Scheduler\Model\Job\Message;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 class DailyEventProcessExcludedSubscriberSyncOperation implements JobHandlerInterface, GeneratingHandlerInterface

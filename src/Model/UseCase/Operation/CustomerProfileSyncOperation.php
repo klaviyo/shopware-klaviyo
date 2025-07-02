@@ -7,14 +7,14 @@ namespace Klaviyo\Integration\Model\UseCase\Operation;
 use Klaviyo\Integration\Async\Message\CustomerProfileSyncMessage;
 use Klaviyo\Integration\System\Tracking\Event\Customer\ProfileEventsBag;
 use Klaviyo\Integration\System\Tracking\EventsTrackerInterface;
-use Od\Scheduler\Model\Job\JobHandlerInterface;
-use Od\Scheduler\Model\Job\JobResult;
-use Od\Scheduler\Model\Job\Message\InfoMessage;
+use Klaviyo\Integration\Od\Scheduler\Model\Job\JobHandlerInterface;
+use Klaviyo\Integration\Od\Scheduler\Model\Job\JobResult;
+use Klaviyo\Integration\Od\Scheduler\Model\Job\Message\InfoMessage;
 use Shopware\Core\Checkout\Customer\CustomerCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
-use Od\Scheduler\Model\Job\Message\WarningMessage;
+use Klaviyo\Integration\Od\Scheduler\Model\Job\Message\WarningMessage;
 
 class CustomerProfileSyncOperation implements JobHandlerInterface
 {
