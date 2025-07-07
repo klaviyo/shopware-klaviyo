@@ -1,0 +1,81 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <!-- Entity Definition -->
+        <service id="Klaviyo\Integration\Od\Scheduler\Entity\Job\JobDefinition">
+            <tag name="shopware.entity.definition" entity="od_scheduler_job"/>
+        </service>
+        <service id="Klaviyo\Integration\Od\Scheduler\Entity\JobMessage\JobMessageDefinition">
+            <tag name="shopware.entity.definition" entity="od_scheduler_job_message"/>
+        </service>
+        <!-- /Entity Definition -->
+
+        <!-- Job Management Services -->
+        <service id="Klaviyo\Integration\Od\Scheduler\Async\JobExecutionHandler">
+            <argument type="service" id="od-scheduler.plugin.logger"/>
+            <argument type="service" id="Klaviyo\Integration\Od\Scheduler\Model\Job\JobRunner"/>
+            <tag name="messenger.message_handler"/>
+        </service>
+
+        <service id="Klaviyo\Integration\Od\Scheduler\Model\Job\JobRunner">
+            <argument type="service" id="Klaviyo\Integration\Od\Scheduler\Model\MessageManager"/>
+            <argument type="service" id="Klaviyo\Integration\Od\Scheduler\Model\Job\HandlerPool"/>
+            <argument type="service" id="Klaviyo\Integration\Od\Scheduler\Model\Job\JobHelper"/>
+        </service>
+
+        <service id="Klaviyo\Integration\Od\Scheduler\Model\Job\HandlerPool">
+            <argument type="tagged_iterator" tag="od.job_handler" index-by="code" />
+        </service>
+
+        <service id="Klaviyo\Integration\Od\Scheduler\Model\Job\JobHelper">
+            <argument type="service" id="od_scheduler_job.repository"/>
+        </service>
+
+        <service id="Klaviyo\Integration\Od\Scheduler\Model\MessageManager">
+            <argument type="service" id="od_scheduler_job_message.repository"/>
+        </service>
+
+        <service id="Klaviyo\Integration\Od\Scheduler\Model\JobScheduler">
+            <argument type="service" id="od_scheduler_job.repository"/>
+            <argument type="service" id="messenger.transport.native_php_serializer"/>
+            <argument type="service" id="messenger.default_bus"/>
+            <argument type="service" id="Klaviyo\Integration\Od\Scheduler\Model\Job\HandlerPool"/>
+            <argument type="service" id="Klaviyo\Integration\Od\Scheduler\Model\Job\JobHelper"/>
+        </service>
+
+        <service id="Klaviyo\Integration\Od\Scheduler\Controller\Administration\RescheduleController" public="true">
+            <argument type="service" id="Klaviyo\Integration\Od\Scheduler\Model\JobScheduler"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+            <tag name="controller.service_arguments"/>
+        </service>
+        <!-- Job Management Services -->
+        <!-- Decorators -->
+        <service id="Klaviyo\Integration\Od\Scheduler\Decorator\MessageBusDecorator" decorates="messenger.default_bus">
+            <argument type="service" id="Klaviyo\Integration\Od\Scheduler\Decorator\MessageBusDecorator.inner"/>
+            <argument type="service" id="messenger.transport.native_php_serializer"/>
+            <call method="setJobRepository">
+                <argument type="service" id="od_scheduler_job.repository"/>
+            </call>
+        </service>
+        <!-- /Decorators -->
+        <service id="Klaviyo\Integration\Od\Scheduler\Model\Job\JobTreeProvider">
+            <argument type="service" id="od_scheduler_job.repository"/>
+        </service>
+        <service id="od-scheduler.plugin.logger" class="Monolog\Logger">
+            <argument type="string">Od_Scheduler</argument>
+            <argument type="collection">
+                <argument type="service" id="od-scheduler.plugin.rotatingHandler"/>
+            </argument>
+        </service>
+
+        <service id="od-scheduler.plugin.rotatingHandler" class="Monolog\Handler\RotatingFileHandler">
+            <argument type="string">%kernel.logs_dir%/od-scheduler-%kernel.environment%.log</argument>
+        </service>
+    </services>
+</container>

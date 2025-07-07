@@ -8,7 +8,7 @@ use Klaviyo\Integration\Exception\JobRuntimeWarningException;
 use Klaviyo\Integration\Klaviyo\Gateway\Result\OrderTrackingResult;
 use Klaviyo\Integration\System\Tracking\Event\Order\{OrderEvent, OrderTrackingEventsBag};
 use Klaviyo\Integration\System\Tracking\EventsTrackerInterface as Tracker;
-use Od\Scheduler\Model\Job\{JobHandlerInterface, JobResult, Message};
+use Klaviyo\Integration\Od\Scheduler\Model\Job\{JobHandlerInterface, JobResult, Message};
 use Shopware\Core\Checkout\Order\{OrderEntity, OrderStates};
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryStates;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
@@ -63,8 +63,8 @@ class OrderSyncOperation implements JobHandlerInterface
 
         /** @var OrderEntity $order */
         foreach ($orderCollection as $order) {
-            $eventsBags[Tracker::ORDER_EVENT_PLACED]->add(new OrderEvent($order, $order->getCreatedAt()));
-            $eventsBags[Tracker::ORDER_EVENT_ORDERED_PRODUCT]->add(new OrderEvent($order, $order->getCreatedAt()));
+            $eventsBags[Tracker::ORDER_EVENT_PLACED]->add(new OrderEvent($order, $order->getOrderDateTime()));
+            $eventsBags[Tracker::ORDER_EVENT_ORDERED_PRODUCT]->add(new OrderEvent($order, $order->getOrderDateTime()));
 
             $lastTransaction = $order->getTransactions()->last();
             $transactionStateName = $lastTransaction?->getStateMachineState()?->getTechnicalName() ?: null;
@@ -94,12 +94,12 @@ class OrderSyncOperation implements JobHandlerInterface
 
 
             if (OrderStates::STATE_COMPLETED === $orderStateName) {
-                $happenedAt = $order->getUpdatedAt() ?: $order->getCreatedAt();
+                $happenedAt = $order->getUpdatedAt() ?: $order->getOrderDateTime();
                 $eventsBags[Tracker::ORDER_EVENT_FULFILLED]->add(new OrderEvent($order, $happenedAt));
             }
 
             if (OrderStates::STATE_CANCELLED === $orderStateName) {
-                $happenedAt = $order->getUpdatedAt() ?: $order->getCreatedAt();
+                $happenedAt = $order->getUpdatedAt() ?: $order->getOrderDateTime();
                 $eventsBags[Tracker::ORDER_EVENT_CANCELED]->add(new OrderEvent($order, $happenedAt));
             }
 

@@ -1,0 +1,37 @@
+.sub-jobs-container {
+    
+    .sw-data-grid {
+        position: relative;
+    }
+    
+    /* Sub jobs columns */
+    .sw-data-grid__cell--messages,
+    .sw-data-grid__cell--subJobs {
+        .sw-data-grid__cell-content {
+            position: relative;
+            overflow: hidden;
+
+            &:hover {
+                .has-messages,
+                .has-subjobs {
+                    display: none;
+                }
+                .job-messages-show-modal,
+                .sub-job-show-modal {
+                    display: flex;
+                    width: 100%;
+                    justify-content: center;
+                }
+            }
+
+            .job-messages-show-modal,
+            .sub-job-show-modal {
+                display: none;
+                margin: 0 auto;
+                .sw-icon {
+                    margin-right: 10px;
+                }
+            }
+        }
+    }
+}

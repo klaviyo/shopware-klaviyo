@@ -2,7 +2,7 @@
 
 namespace Klaviyo\Integration\Async\Message;
 
-use Od\Scheduler\Async\JobMessageInterface;
+use Klaviyo\Integration\Od\Scheduler\Async\JobMessageInterface;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;

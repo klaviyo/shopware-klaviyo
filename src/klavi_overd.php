@@ -10,7 +10,7 @@ use Klaviyo\Integration\Utils\Lifecycle\Update\UpdateTo105;
 use Klaviyo\Integration\Utils\MigrationHelper;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Local\LocalFilesystemAdapter;
-use Od\Scheduler\OdScheduler;
+use Klaviyo\Integration\Od\Scheduler\OdScheduler;
 use Shopware\Core\Framework\Parameter\AdditionalBundleParameters;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\{ActivateContext, UninstallContext, UpdateContext};

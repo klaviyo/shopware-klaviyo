@@ -1,7 +1,7 @@
 import template from './klaviyo-integration-settings-general.html.twig';
 import './klaviyo-integration-settings-general.scss';
 
-const {Component, Mixin, Utils} = Shopware;
+const {Component, Mixin} = Shopware;
 
 Component.register('klaviyo-integration-settings-general', {
     template,
@@ -48,6 +48,19 @@ Component.register('klaviyo-integration-settings-general', {
                 this.salesChannelSwitched(v);
             }
         },
+        apiKeys: {
+            deep: true,
+            handler: function(newValue, oldValue) {
+                if (newValue.privateKey && (newValue !== oldValue)) {
+                    this.areListsLoading = true;
+                    this.debounce(() => {
+                        this.fetchKlaviyoLists().then(() => { this.areListsLoading = false; })
+                    }, 500);
+                } else {
+                    this.listsOptions = [];
+                }
+            },
+        },
     },
 
     data() {
@@ -55,7 +68,10 @@ Component.register('klaviyo-integration-settings-general', {
             selectedSubscriptionList: null,
             subscriptionListOptions: [],
             isLoading: false,
+            areListsLoading: true,
             apiValidationInProgress: false,
+            listsOptions: [],
+            debounceTimeoutId: null,
             cookieConsentOptions: [
                 {
                     name: 'Nothing',
@@ -81,7 +97,12 @@ Component.register('klaviyo-integration-settings-general', {
         };
     },
 
-    computed : {
+    computed: {
+        apiKeys() {
+            return {
+                privateKey: this.actualConfigData['klavi_overd.config.privateApiKey'],
+            };
+        },
         createBisVariantFieldOptions() {
             return [
                 {
@@ -146,11 +167,15 @@ Component.register('klaviyo-integration-settings-general', {
             }
 
             return options;
+        },
+        createListsOptions() {
+            return this.listsOptions;
         }
     },
 
     created() {
         this.createdComponent();
+        this.fetchKlaviyoLists().then(() => { this.areListsLoading = false; })
     },
 
     methods: {
@@ -271,5 +296,56 @@ Component.register('klaviyo-integration-settings-general', {
             }
             return true;
         },
+        async fetchKlaviyoLists() {
+            const privateKey = this.actualConfigData['klavi_overd.config.privateApiKey'];
+
+            if (!privateKey) {
+                this.listsOptions = [];
+                return;
+            }
+
+            try {
+                const response = await this.klaviyoApiKeyValidatorService.getList(privateKey);
+
+                if (response.status !== 200) {
+                    this.createNotificationError({
+                        message: this.$tc('klaviyo-integration-settings.configs.lists.error'),
+                    });
+                    this.listsOptions = [];
+                    return;
+                }
+
+                const data = response.data.data;
+
+                if (data.length === 0) {
+                    this.createNotificationError({
+                        message: this.$tc('klaviyo-integration-settings.configs.lists.warning'),
+                    });
+                    this.listsOptions = [];
+                    return;
+                }
+
+                this.listsOptions = data.map((item) => ({
+                    label: item.label,
+                    value: item.value,
+                }));
+
+                if (this.listsOptions.length > 0 && !this.actualConfigData['klavi_overd.config.klaviyoListForSubscribersSync']) {
+                    this.actualConfigData['klavi_overd.config.klaviyoListForSubscribersSync'] = this.listsOptions[0].value;
+                }
+            } catch (error) {
+                this.createNotificationError({
+                    message: this.$tc('klaviyo-integration-settings.configs.lists.error'),
+                });
+                this.listsOptions = [];
+            }
+        },
+
+        debounce(callback, delay) {
+            if (this.debounceTimeoutId) {
+                clearTimeout(this.debounceTimeoutId);
+            }
+            this.debounceTimeoutId = setTimeout(callback, delay);
+        }
     },
 });

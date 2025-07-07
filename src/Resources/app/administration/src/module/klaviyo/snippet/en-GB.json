@@ -102,7 +102,7 @@
                 "helpText": "Klaviyo Public API key. You can find it in your Klaviyo account"
             },
             "klaviyoListForSubscribersSync": {
-                "label": "Klaviyo List ID for subscribers sync",
+                "label": "Klaviyo List for subscribers sync",
                 "helpText": "The ID of the Subscribers list in Klaviyo where all Shopware6 subscribers will be added."
             },
             "bisVariantField": {
@@ -191,7 +191,7 @@
                 "generalErrorMessage": "Unable to validate API-keys",
                 "incorrectCredentialsTitle": "Incorrect Credentials",
                 "correctApiMessage": "API-keys are valid",
-                "listNotExistMessage": "In Klaviyo a List with such an ID was not found. Please check the correctness of the List ID."
+                "listNotExistMessage": "In Klaviyo a List that corresponds with the Public key provided is not found!"
             },
             "enableDailySynchronization": {
                 "label": "Enable Daily Subscribers Synchronization",
@@ -221,6 +221,10 @@
                 "confirmActionTitle": "Confirm Action",
                 "confirmLabel": "Confirm",
                 "cancelLabel": "Cancel"
+            },
+            "lists": {
+                "warning": "No lists found for this profile in Klaviyo",
+                "error": "Error retrieving lists from the Klaviyo profile!"
             }
         },
         "customer": {
@@ -280,6 +284,14 @@
                 "failed": "Historical events synchronization failed to schedule",
                 "is_running": "Historical events synchronization is already running",
                 "is_scheduled": "Historical events synchronization is already scheduled"
+            },
+            "modal": {
+                "title": "Historical Events Synchronization",
+                "from_date": "From date",
+                "until_date": "To date",
+                "proceed_button": "Proceed",
+                "cancel_button": "Cancel",
+                "invalid_date_range": "Invalid date range specified for synchronization!"
             }
         },
         "promotion": {

@@ -27,19 +27,22 @@ class CustomerPropertiesTranslator
     private EntityRepository $salesChannelRepository;
     private LocaleCodeProducer $localeCodeProducer;
     private EntityRepository $customerGroupRepository;
+    private EntityRepository $customerRepository;
 
     public function __construct(
         AddressDataHelper $addressHelper,
         ConfigurationRegistry $configurationRegistry,
         EntityRepository $salesChannelRepository,
         LocaleCodeProducer $localeCodeProducer,
-        EntityRepository $customerGroupRepository
+        EntityRepository $customerGroupRepository,
+        EntityRepository $customerRepository
     ) {
         $this->addressHelper = $addressHelper;
         $this->configurationRegistry = $configurationRegistry;
         $this->salesChannelRepository = $salesChannelRepository;
         $this->localeCodeProducer = $localeCodeProducer;
         $this->customerGroupRepository = $customerGroupRepository;
+        $this->customerRepository = $customerRepository;
     }
 
     /**
@@ -137,11 +140,26 @@ class CustomerPropertiesTranslator
         $criteria->addFilter(new EqualsFilter('id', $groupId));
         $group = $this->customerGroupRepository->search($criteria, $context)->first();
 
-        return $group->getName();
+        return $group->getTranslation('name');
+    }
+
+    private function getCustomerAddressAssociation(?CustomerEntity $customer, Context $context): ?CustomerEntity
+    {
+        if (!$customer) {
+            return null;
+        }
+
+        $criteria = new Criteria([$customer->getId()]);
+        $criteria->addAssociation('defaultBillingAddress');
+        $criteria->addAssociation('defaultShippingAddress');
+
+        return $this->customerRepository->search($criteria, $context)->first();
     }
 
     private function guessRelevantCustomerAddress(?CustomerEntity $customerEntity): ?CustomerAddressEntity
     {
+        $customerEntity = $this->getCustomerAddressAssociation($customerEntity, Context::createDefaultContext());
+
         if (!$customerEntity) {
             return null;
         }

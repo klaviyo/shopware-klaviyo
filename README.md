@@ -16,15 +16,11 @@ Requirements
 ---
 * Shopware >= 6.6.0.0
 
-Embedded Dependencies:
----
-* OD Scheduler ^3.0.0
-
 Documentation
 ---
-* [Installation instruction](./src/Resources/doc/installation.md)
-* [Capabilities and restrictions](./src/Resources/doc/capabilities_and_restrictions.md)
-* [Plugin Implementation Overview](./src/Resources/doc/plugin_implementation_overview.md)
+* [Installation instruction](src/Resources/doc/installation.md)
+* [Capabilities and restrictions](src/Resources/doc/capabilities_and_restrictions.md)
+* [Plugin Implementation Overview](src/Resources/doc/plugin_implementation_overview.md)
 
 Testing
 ---

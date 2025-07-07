@@ -1,5 +1,5 @@
 {
-    "version": "3.4.0",
+    "version": "3.4.1",
     "name": "klaviyo/shopware-klaviyo",
     "description": "Shopware 6 plugin for Klaviyo integration",
     "type": "shopware-platform-plugin",
@@ -37,7 +37,6 @@
         }
     },
     "require": {
-        "od/sw6-job-scheduler": "3.0.1",
         "php": "^8.2",
         "shopware/administration": "6.6.*",
         "shopware/core": "6.6.*",
@@ -50,3 +49,4 @@
         }
     }
 }
+
