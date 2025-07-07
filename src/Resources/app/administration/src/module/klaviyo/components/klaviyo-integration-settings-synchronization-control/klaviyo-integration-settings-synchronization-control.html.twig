@@ -5,10 +5,36 @@
             <sw-button-process variant="ghost"
                                :isLoading="historicalEventsJobInteractor.isSynchronizationInProgress"
                                :processSuccess="historicalEventsJobInteractor.isSynchronizationSuccess"
-                               @click="scheduleHistoricalEventsSynchronization"
+                               @click="openHistoricalEventsModal"
                                @process-finish="resetHistoricalEventsSynchronizationState">
                 {{ $tc('klaviyo_integration_plugin.historical_events_tracking.schedule_synchronization.button_label') }}
             </sw-button-process>
+
+            <sw-modal v-if="isHistoricalEventsModalOpen"
+                      :title="$tc('klaviyo_integration_plugin.historical_events_tracking.modal.title')"
+                      variant="small"
+                      @modal-close="closeHistoricalEventsModal">
+                <template #default>
+                    <sw-datepicker
+                            v-model:value="historicalEventsFromDate"
+                            :label="$tc('klaviyo_integration_plugin.historical_events_tracking.modal.from_date')"
+                            :dateType="'date'">
+                    </sw-datepicker>
+                    <sw-datepicker
+                            v-model:value="historicalEventsTillDate"
+                            :label="$tc('klaviyo_integration_plugin.historical_events_tracking.modal.until_date')"
+                            :dateType="'date'">
+                    </sw-datepicker>
+                </template>
+                <template #modal-footer>
+                    <sw-button variant="ghost" @click="closeHistoricalEventsModal">
+                        {{ $tc('klaviyo_integration_plugin.historical_events_tracking.modal.cancel_button') }}
+                    </sw-button>
+                    <sw-button variant="primary" @click="proceedHistoricalEventsSynchronization">
+                        {{ $tc('klaviyo_integration_plugin.historical_events_tracking.modal.proceed_button') }}
+                    </sw-button>
+                </template>
+            </sw-modal>
         {% endblock %}
 
         {% block klaviyo_integration_settings_synchronization_control_subscribers %}

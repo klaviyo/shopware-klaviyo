@@ -73,7 +73,7 @@ https://overdosedigital.atlassian.net/wiki/spaces/KS6PUG/pages/3031007243/Job+Sc
 # Fix: Fixed work of filters in Klaviyo Job Listing.
 
 # New: The back in stock pop up is now available when using the `frontend.cms.buybox.switch` route (SwitchBuyBoxVariantEvent).
-# Fix: Fixed an error when applying promotions. 
+# Fix: Fixed an error when applying promotions.
 # Fix: Fixed a bug when synchronizing customer data.
 # Fix: Fixed a bug with the display of empty jobs after daily synchronization.
 
@@ -171,7 +171,7 @@ https://overdosedigital.atlassian.net/wiki/spaces/KS6PUG/pages/3031007243/Job+Sc
 # Fix: "Subscribers list" admin configuration option is not a select/dropdown with values pulled from Klaviyo service ( if api credentials are valid )
 
 # 2.2.0
-# New: Cart restore link now fills up the address data that customer has provided before abandoning the cart ( if applicable ). 
+# New: Cart restore link now fills up the address data that customer has provided before abandoning the cart ( if applicable ).
 # Fix: Fixed the issue where some customers may see incorrect dates of the events passed to Klaviyo service ( fulfilled order events etc... ).
 
 # 2.1.0
@@ -188,7 +188,7 @@ https://overdosedigital.atlassian.net/wiki/spaces/KS6PUG/pages/3031007243/Job+Sc
 # Fix: Replaced usage of removed classes & files.
 # Fix: Minor changes to extension configuration classes/templates ( at extension configuration page ).
 # New: Job Scheduler Update - implemented compatibility with Shopawre 6.5^ versions.
-# New: Job Scheduler Update - Job scheduler handlers now do extend recommended interfaces. 
+# New: Job Scheduler Update - Job scheduler handlers now do extend recommended interfaces.
 # New: Controller routes now have annotation declaration in new format.
 # New: Some changes that was made do make the extension backward-incompatible. You can see the dependencies in composer.json file.
 
@@ -202,7 +202,7 @@ https://overdosedigital.atlassian.net/wiki/spaces/KS6PUG/pages/3031007243/Job+Sc
 * Fix: Fixed the issue where products had incorrect links ( in klaviyo ) to stores of other languages/domains ( shopware ) if there are numerous domains assigned to single sales channel.
 
 # 1.0.16
-* New: Added sales channel information to Klaviyo customer 
+* New: Added sales channel information to Klaviyo customer
 
 # 1.0.15
 * New: Added compatibility with CookieBot
@@ -210,7 +210,7 @@ https://overdosedigital.atlassian.net/wiki/spaces/KS6PUG/pages/3031007243/Job+Sc
 
 #1.0.14
 * New: Added variant identifier selection for BIS
- 
+
 # 1.0.13
 * New: Added tracking for "PAID" orders
 * New: Added product SKU in "Notify in stock" functionality
@@ -235,7 +235,7 @@ https://overdosedigital.atlassian.net/wiki/spaces/KS6PUG/pages/3031007243/Job+Sc
 * New: Added additional information messages during background job processing
 * New: Job Scheduler Update - added job message correct sort order
 * Fix: Improved plugin uninstallation process
-* Fix: Fixed possible issue with Klaviyo list ID caching 
+* Fix: Fixed possible issue with Klaviyo list ID caching
 * Fix: Fixed possible issue with unsubscribed recipients sync from Klaviyo
 * Fix: Fixed possible issue with order line items background processing
 * Fix: Fixed possible issue with not existing plugin configuration during order synchronization
@@ -249,37 +249,37 @@ https://overdosedigital.atlassian.net/wiki/spaces/KS6PUG/pages/3031007243/Job+Sc
 * Fix: Added translations for all Klaviyo texts
 
 # 1.0.6
- * Fix: We fixed issue with order empty delivery
- * Fix: We fixed issue with checkout tracker categories
- * Fix: We fixed issue with feed generation, when there is no cover picture
+* Fix: We fixed issue with order empty delivery
+* Fix: We fixed issue with checkout tracker categories
+* Fix: We fixed issue with feed generation, when there is no cover picture
 
 # 1.0.5
- * New: Now product manufacturer is being transferred to all product-related Klaviyo events.
- * New: Now Klaviyo account credentials could be configured on sales channel level only.
- * New: Now sales channel Klaviyo account can be disabled to prevent any event processing on associated channel.
- * Fix: We fixed issue with storefront event tracking with A/B testing feature enabled in Klaviyo.
- * Fix: We fixed possible issue with customer data sync.
- * Fix: We fixed possible issue with event processing on channels with wrong credentials/configurations.
- * Fix: We fixed issue with error during order status change via Admin UI.
- * Fix: We fixed issue with historical sync of orders with deleted products.
+* New: Now product manufacturer is being transferred to all product-related Klaviyo events.
+* New: Now Klaviyo account credentials could be configured on sales channel level only.
+* New: Now sales channel Klaviyo account can be disabled to prevent any event processing on associated channel.
+* Fix: We fixed issue with storefront event tracking with A/B testing feature enabled in Klaviyo.
+* Fix: We fixed possible issue with customer data sync.
+* Fix: We fixed possible issue with event processing on channels with wrong credentials/configurations.
+* Fix: We fixed issue with error during order status change via Admin UI.
+* Fix: We fixed issue with historical sync of orders with deleted products.
 
 # 1.0.4
- * New: Job Scheduler Update - enhanced Admin UI and handy message handling.
- * New: We updated Klaviyo Person API workflow.
- * Fix: Fixed issue with processing guest orders.
- * Fix: Fixed issue with the "localhost" product link on tracked order events.
- * Fix: Fixed issue with the Klaviyo Tracking JS on pages with a custom layout.
- * Fix: Removed unnecessary "Catalog Feed Products Count" setting from plugin configuration
+* New: Job Scheduler Update - enhanced Admin UI and handy message handling.
+* New: We updated Klaviyo Person API workflow.
+* Fix: Fixed issue with processing guest orders.
+* Fix: Fixed issue with the "localhost" product link on tracked order events.
+* Fix: Fixed issue with the Klaviyo Tracking JS on pages with a custom layout.
+* Fix: Removed unnecessary "Catalog Feed Products Count" setting from plugin configuration
 
 # 1.0.3
- * Added new feature "Back-in-stock" email notification.
- * Added new feature "Bidirectional (un)subscriber synchronization". Now plugin can synchronize newsletter unsubscribers from the Klaviyo to Shopware and vice versa.
+* Added new feature "Back-in-stock" email notification.
+* Added new feature "Bidirectional (un)subscriber synchronization". Now plugin can synchronize newsletter unsubscribers from the Klaviyo to Shopware and vice versa.
 
 # 1.0.2
- * Performance improvements. Plugin code-base refactoring. Added system job scheduler bundle.
+* Performance improvements. Plugin code-base refactoring. Added system job scheduler bundle.
 
 # 1.0.1
- * Unit and Integration test added.
+* Unit and Integration test added.
 
 # 1.0.0
- * Basic plugin functionality implementation.
+* Basic plugin functionality implementation.

@@ -3,7 +3,7 @@
 namespace Klaviyo\Integration\Async\Message;
 
 use Klaviyo\Integration\Model\UseCase\Operation\OrderSyncOperation;
-use Od\Scheduler\Async\ParentAwareMessageInterface;
+use Klaviyo\Integration\Od\Scheduler\Async\ParentAwareMessageInterface;
 use Shopware\Core\Framework\Context;
 
 class OrderSyncMessage extends AbstractBasicMessage implements ParentAwareMessageInterface

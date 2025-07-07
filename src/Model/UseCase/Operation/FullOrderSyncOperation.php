@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Klaviyo\Integration\Model\UseCase\Operation;
 
 use Doctrine\DBAL\Exception;
+use Klaviyo\Integration\Async\Message\AbstractDateBasedMessage;
+use Klaviyo\Integration\Async\Message\FullOrderSyncMessage;
 use Klaviyo\Integration\Async\Message\OrderSyncMessage;
 use Klaviyo\Integration\Model\Channel\GetValidChannels;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
-use Od\Scheduler\Model\Job\{GeneratingHandlerInterface, JobHandlerInterface, JobResult, Message};
+use Klaviyo\Integration\Od\Scheduler\Model\Job\{GeneratingHandlerInterface, JobHandlerInterface, JobResult, Message};
 use Klaviyo\Integration\System\ConfigService;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -33,7 +35,7 @@ class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerIn
     }
 
     /**
-     * @param OrderSyncMessage $message
+     * @param OrderSyncMessage|FullOrderSyncMessage $message
      * @return JobResult
      * @throws Exception
      */
@@ -59,6 +61,10 @@ class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerIn
                 $criteria->addFilter(new Search\Filter\EqualsAnyFilter('salesChannelId', \array_values($channelIds)));
                 $criteria->setLimit(self::ORDER_BATCH_SIZE);
                 $criteria->setOffset($offset);
+
+                if ($message instanceof AbstractDateBasedMessage) {
+                    $message->applyDateRangeFilter($criteria, 'orderDateTime');
+                }
 
                 $orders = $this->orderRepository->search($criteria, $message->getContext());
                 $orderIds = $orders->getIds();

@@ -9,8 +9,8 @@ class JobInteractor {
     /**
      * @returns {Promise}
      */
-    scheduleSynchronization() {
-        const promise = this.apiService.scheduleSynchronization();
+    scheduleSynchronization(fromDate, tillDate) {
+        const promise = this.apiService.scheduleSynchronization(fromDate, tillDate);
 
         this.isSynchronizationInProgress = true;
         promise.then(function (response) {

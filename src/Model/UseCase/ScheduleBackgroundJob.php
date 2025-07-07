@@ -15,8 +15,8 @@ use Klaviyo\Integration\Model\UseCase\Operation\FullOrderSyncOperation;
 use Klaviyo\Integration\Model\UseCase\Operation\FullSubscriberSyncOperation;
 use Klaviyo\Integration\System\ConfigService;
 use Klaviyo\Integration\System\Scheduling\ExcludedSubscriberSync;
-use Od\Scheduler\Entity\Job\JobEntity;
-use Od\Scheduler\Model\JobScheduler;
+use Klaviyo\Integration\Od\Scheduler\Entity\Job\JobEntity;
+use Klaviyo\Integration\Od\Scheduler\Model\JobScheduler;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -78,7 +78,7 @@ class ScheduleBackgroundJob
      * @throws JobAlreadyScheduledException
      * @throws Exception
      */
-    public function scheduleFullCustomerOrderSyncJob(Context $context): void
+    public function scheduleFullCustomerOrderSyncJob(Context $context, ?string $fromDate = null, ?string $tillDate = null): void
     {
         $this->checkJobStatus(FullCustomerOrderSyncOperation::OPERATION_HANDLER_CODE, $context);
         $currentOffset = $this->configService->getConfigValueWithoutCache(FullCustomerOrderSyncOperation::SYNC_CUSTOMER_OFFSET_CONFIG_KEY) ?? -1;
@@ -88,7 +88,7 @@ class ScheduleBackgroundJob
             $currentOffset = 0;
         }
 
-        $jobMessage = new Message\FullCustomerOrderSyncMessage(Uuid::randomHex(), null, $context, $currentOffset);
+        $jobMessage = new Message\FullCustomerOrderSyncMessage(Uuid::randomHex(), null, $context, $currentOffset, $fromDate, $tillDate);
         $this->scheduler->schedule($jobMessage);
     }
 
@@ -155,7 +155,7 @@ class ScheduleBackgroundJob
      * @throws JobAlreadyScheduledException
      * @throws Exception
      */
-    public function scheduleFullOrderSyncJob(Context $context): void
+    public function scheduleFullOrderSyncJob(Context $context, ?string $fromDate = null, ?string $tillDate = null): void
     {
         $this->checkJobStatus(FullOrderSyncOperation::OPERATION_HANDLER_CODE, $context);
         $currentOffset = $this->configService->getConfigValueWithoutCache(FullOrderSyncOperation::SYNC_ORDER_OFFSET_CONFIG_KEY) ?? -1;
@@ -164,22 +164,8 @@ class ScheduleBackgroundJob
             $this->systemConfigService->set(FullOrderSyncOperation::SYNC_ORDER_OFFSET_CONFIG_KEY, 0);
             $currentOffset = 0;
         }
-        $jobMessage = new Message\FullOrderSyncMessage(Uuid::randomHex(), null, $context, $currentOffset);
-        $this->scheduler->schedule($jobMessage);
-    }
+        $jobMessage = new Message\FullOrderSyncMessage(Uuid::randomHex(), null, $context, $currentOffset, $fromDate, $tillDate);
 
-    /**
-     * @throws JobAlreadyRunningException
-     */
-    public function scheduleFullOrderSyncJobPart(Context $context, int $offset = 0): void
-    {
-        $jobMessage = new Message\FullOrderSyncMessage(Uuid::randomHex(), null, $context, $offset);
-        $this->scheduler->schedule($jobMessage);
-    }
-
-    public function scheduleOrderSyncJob(array $orderIds, string $parentJobId, Context $context): void
-    {
-        $jobMessage = new Message\OrderSyncMessage(Uuid::randomHex(), $parentJobId, $orderIds, null, $context);
         $this->scheduler->schedule($jobMessage);
     }
 

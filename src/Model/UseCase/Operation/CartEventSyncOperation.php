@@ -9,7 +9,7 @@ use Klaviyo\Integration\Entity\CartRequest\CartRequestEntity;
 use Klaviyo\Integration\Model\CartRequestSerializer;
 use Klaviyo\Integration\System\Tracking\Event\Cart\CartEventRequestBag;
 use Klaviyo\Integration\System\Tracking\EventsTrackerInterface;
-use Od\Scheduler\Model\Job\{JobHandlerInterface, JobResult};
+use Klaviyo\Integration\Od\Scheduler\Model\Job\{JobHandlerInterface, JobResult};
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
