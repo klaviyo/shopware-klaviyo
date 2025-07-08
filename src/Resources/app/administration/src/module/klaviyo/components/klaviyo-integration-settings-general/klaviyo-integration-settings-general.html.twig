@@ -80,7 +80,7 @@
             {% block klaviyo_integration_settings_general_public_api_key %}
                 <sw-field
                         v-model="actualConfigData['KlaviyoIntegrationPlugin.config.publicApiKey']"
-                        name="KlaviyoIntegrationPlugin.config.privateApiKey"
+                        name="KlaviyoIntegrationPlugin.config.publicApiKey"
                         type="text"
                         :label="$tc('klaviyo-integration-settings.configs.publicApiKey.label')"
                         :helpText="$tc('klaviyo-integration-settings.configs.publicApiKey.helpText')"
@@ -97,17 +97,19 @@
             {% endblock %}
 
             {% block klaviyo_integration_settings_general_klaviyo_list_for_subscribers_sync %}
-                <sw-field
-                    v-model="actualConfigData['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync']"
-                    name="KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync"
-                    ref="newsletterListId"
-                    type="text"
-                    :label="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.label')"
-                    :helpText="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.helpText')"
-                    :disabled="selectedSalesChannelId === null"
-                    :error="listIdErrorState"
-                    required="required">
-                </sw-field>
+                <sw-single-select
+                        v-model="actualConfigData['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync']"
+                        :label="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.label')"
+                        :help-text="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.helpText')"
+                        name="KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync"
+                        ref="newsletterListId"
+                        :disabled="(selectedSalesChannelId === null) || areListsLoading"
+                        :isLoading="(selectedSalesChannelId !== null) && areListsLoading"
+                        :error="listIdErrorState"
+                        :options="createListsOptions"
+                        @change="onListChange"
+                        required="required">
+                </sw-single-select>
             {% endblock %}
 
             {% block klaviyo_integration_settings_general_varian_for_bis %}

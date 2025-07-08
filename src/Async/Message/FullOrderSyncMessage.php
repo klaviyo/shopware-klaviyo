@@ -1,11 +1,13 @@
-<?php declare(strict_types=1);
+<?php 
+
+declare(strict_types=1);
 
 namespace Klaviyo\Integration\Async\Message;
 
 use Klaviyo\Integration\Model\UseCase\Operation\FullOrderSyncOperation;
 use Shopware\Core\Framework\Context;
 
-class FullOrderSyncMessage extends AbstractBasicMessage
+class FullOrderSyncMessage extends AbstractDateBasedMessage
 {
     protected static string $defaultName = 'Full Order Sync Operation';
 
@@ -15,10 +17,11 @@ class FullOrderSyncMessage extends AbstractBasicMessage
         string   $jobId,
         ?string  $name = null,
         ?Context $context = null,
-        int      $offset = 0
-    )
-    {
-        parent::__construct($jobId, $name, $context);
+        int      $offset = 0,
+        ?string   $fromDate = null,
+        ?string   $tillDate = null
+    ) {
+        parent::__construct($jobId, $name, $context, $fromDate, $tillDate);
         $this->offset = $offset;
     }
 

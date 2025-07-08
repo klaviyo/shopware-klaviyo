@@ -6,7 +6,7 @@ use Composer\Autoload\ClassLoader;
 use Doctrine\DBAL\Connection;
 use Klaviyo\Integration\Utils\{Lifecycle, Lifecycle\Update\UpdateOldTemplate, Lifecycle\Update\UpdateTo105, MigrationHelper};
 use League\Flysystem\{Adapter\Local, Filesystem};
-use Od\Scheduler\OdScheduler;
+use Klaviyo\Integration\Od\Scheduler\OdScheduler;
 use Shopware\Core\Framework\Parameter\AdditionalBundleParameters;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\{ActivateContext, UninstallContext, UpdateContext};

@@ -155,7 +155,7 @@ https://overdosedigital.atlassian.net/wiki/spaces/KS6PUG/pages/3031007243/Job+Sc
 # 1.2.0
 # Feature: Kompatibilität mit „Consentmanager“ von Consentmanager.net hinzugefügt
 # Verbesserung: Die Implementierung des Ereignisses „Checkout gestartet“ im Plugin wurde für eine bessere Kompatibilität mit Checkout-Anpassungen und Plugins (z. B. 1-Schritt-Checkout und andere) überarbeitet.
-# HINWEIS: Wenn Sie beim Auschecken umfangreiche Anpassungen der Plugin-Dateien vorgenommen haben, empfehlen wir Ihnen, die Anpassungen auf Ihrer Seite zu überprüfen und zu überprüfen.   
+# HINWEIS: Wenn Sie beim Auschecken umfangreiche Anpassungen der Plugin-Dateien vorgenommen haben, empfehlen wir Ihnen, die Anpassungen auf Ihrer Seite zu überprüfen und zu überprüfen.
 
 # 1.1.3
 # Fix: Das Ereignis „Rückerstattete Bestellung" wird jetzt angezeigt, nachdem auf die Schaltfläche „Historische Ereignisse synchronisiert" geklickt wurde
@@ -232,37 +232,37 @@ https://overdosedigital.atlassian.net/wiki/spaces/KS6PUG/pages/3031007243/Job+Sc
 * Fix: Übersetzungen für alle Klaviyo-Texte hinzugefügt
 
 #1.0.6
- * Fix: Wir haben das Problem mit der Leerlieferung der Bestellung behoben
- * Fix: Wir haben das Problem mit den Checkout-Tracker-Kategorien behoben
- * Fix: Wir haben ein Problem mit der Feed-Generierung behoben, wenn es kein Titelbild gibt
+* Fix: Wir haben das Problem mit der Leerlieferung der Bestellung behoben
+* Fix: Wir haben das Problem mit den Checkout-Tracker-Kategorien behoben
+* Fix: Wir haben ein Problem mit der Feed-Generierung behoben, wenn es kein Titelbild gibt
 
 #1.0.5
- * Neu: Jetzt wird der Produkthersteller auf alle produktbezogenen Klaviyo-Events übertragen.
- * Neu: Jetzt können Klaviyo-Kontoanmeldeinformationen nur auf Vertriebskanalebene konfiguriert werden.
- * Neu: Jetzt kann das Klaviyo-Konto des Vertriebskanals deaktiviert werden, um die Verarbeitung von Ereignissen auf dem zugehörigen Kanal zu verhindern.
- * Fix: Wir haben ein Problem mit der Storefront-Ereignisverfolgung mit aktivierter A/B-Testfunktion in Klaviyo behoben.
- * Fix: Wir haben ein mögliches Problem mit der Kundendatensynchronisierung behoben.
- * Fix: Wir haben ein potenzielles Ereignisbehandlungsproblem auf Kanälen mit falschen Anmeldeinformationen/Konfigurationen behoben.
- * Fix: Wir haben das Problem mit dem Fehler beim Ändern des Bestellstatus von der Admin-Benutzeroberfläche behoben.
- * Fix: Wir haben das Problem mit der historischen Synchronisierung von Bestellungen mit gelöschten Produkten behoben.
+* Neu: Jetzt wird der Produkthersteller auf alle produktbezogenen Klaviyo-Events übertragen.
+* Neu: Jetzt können Klaviyo-Kontoanmeldeinformationen nur auf Vertriebskanalebene konfiguriert werden.
+* Neu: Jetzt kann das Klaviyo-Konto des Vertriebskanals deaktiviert werden, um die Verarbeitung von Ereignissen auf dem zugehörigen Kanal zu verhindern.
+* Fix: Wir haben ein Problem mit der Storefront-Ereignisverfolgung mit aktivierter A/B-Testfunktion in Klaviyo behoben.
+* Fix: Wir haben ein mögliches Problem mit der Kundendatensynchronisierung behoben.
+* Fix: Wir haben ein potenzielles Ereignisbehandlungsproblem auf Kanälen mit falschen Anmeldeinformationen/Konfigurationen behoben.
+* Fix: Wir haben das Problem mit dem Fehler beim Ändern des Bestellstatus von der Admin-Benutzeroberfläche behoben.
+* Fix: Wir haben das Problem mit der historischen Synchronisierung von Bestellungen mit gelöschten Produkten behoben.
 
 #1.0.4
- * Neu: Job Scheduler Update - verbesserte Admin-Benutzeroberfläche und praktische Nachrichtenbehandlung.
- * Neu: Wir haben den Klaviyo Person API-Workflow aktualisiert.
- * Fix: Problem mit der Verarbeitung von Gastbestellungen behoben.
- * Fix: Das Problem mit dem "localhost"-Produktlink in nachverfolgten Bestellereignissen wurde behoben.
- * Fix: Problem mit Klaviyo Tracking JS auf Seiten mit benutzerdefiniertem Layout behoben.
- * Fix: Unnötige Einstellung "Catalog Feed Products Count" aus der Plugin-Konfiguration entfernt
+* Neu: Job Scheduler Update - verbesserte Admin-Benutzeroberfläche und praktische Nachrichtenbehandlung.
+* Neu: Wir haben den Klaviyo Person API-Workflow aktualisiert.
+* Fix: Problem mit der Verarbeitung von Gastbestellungen behoben.
+* Fix: Das Problem mit dem "localhost"-Produktlink in nachverfolgten Bestellereignissen wurde behoben.
+* Fix: Problem mit Klaviyo Tracking JS auf Seiten mit benutzerdefiniertem Layout behoben.
+* Fix: Unnötige Einstellung "Catalog Feed Products Count" aus der Plugin-Konfiguration entfernt
 
 #1.0.3
- * Neue E-Mail-Benachrichtigungsfunktion "Wieder auf Lager" hinzugefügt.
- * Neue Funktion "Bidirektionale (un)Abonnenten-Synchronisation" hinzugefügt. Jetzt kann das Plugin Newsletter-Abmeldungen von Klaviyo zu Shopware und umgekehrt synchronisieren.
+* Neue E-Mail-Benachrichtigungsfunktion "Wieder auf Lager" hinzugefügt.
+* Neue Funktion "Bidirektionale (un)Abonnenten-Synchronisation" hinzugefügt. Jetzt kann das Plugin Newsletter-Abmeldungen von Klaviyo zu Shopware und umgekehrt synchronisieren.
 
 #1.0.2
- * Leistungsverbesserungen. Refactoring der Plugin-Codebasis. System-Job-Scheduler-Bundle hinzugefügt.
+* Leistungsverbesserungen. Refactoring der Plugin-Codebasis. System-Job-Scheduler-Bundle hinzugefügt.
 
 #1.0.1
- * Einheiten- und Integrationstest hinzugefügt.
+* Einheiten- und Integrationstest hinzugefügt.
 
 #1.0.0
- * Implementierung der grundlegenden Plugin-Funktionalität.
+* Implementierung der grundlegenden Plugin-Funktionalität.

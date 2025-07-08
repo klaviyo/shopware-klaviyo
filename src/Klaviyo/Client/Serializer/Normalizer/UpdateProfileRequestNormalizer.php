@@ -14,7 +14,7 @@ class UpdateProfileRequestNormalizer extends AbstractNormalizer
 
         $properties = array_merge(
             [
-                'Birthday' => $customerProperties->getBirthday(),
+                'birthday' => $customerProperties->getBirthday(),
                 'salesChannelId' => $customerProperties->getSalesChannelId(),
                 'salesChannelName' => $customerProperties->getSalesChannelName(),
                 'boundedSalesChannelId' => $customerProperties->getBoundedSalesChannelId(),

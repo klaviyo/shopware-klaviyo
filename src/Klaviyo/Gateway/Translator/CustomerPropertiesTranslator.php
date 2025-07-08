@@ -25,19 +25,22 @@ class CustomerPropertiesTranslator
     private EntityRepositoryInterface $salesChannelRepository;
     private LocaleCodeProducer $localeCodeProducer;
     private EntityRepositoryInterface $customerGroupRepository;
+    private EntityRepositoryInterface $customerRepository;
 
     public function __construct(
         AddressDataHelper $addressHelper,
         ConfigurationRegistry $configurationRegistry,
         EntityRepositoryInterface $salesChannelRepository,
         LocaleCodeProducer $localeCodeProducer,
-        EntityRepositoryInterface $customerGroupRepository
+        EntityRepositoryInterface $customerGroupRepository,
+        EntityRepositoryInterface $customerRepository
     ) {
         $this->addressHelper = $addressHelper;
         $this->configurationRegistry = $configurationRegistry;
         $this->salesChannelRepository = $salesChannelRepository;
         $this->localeCodeProducer = $localeCodeProducer;
         $this->customerGroupRepository = $customerGroupRepository;
+        $this->customerRepository = $customerRepository;
     }
 
     /**
@@ -133,11 +136,26 @@ class CustomerPropertiesTranslator
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('id', $groupId));
         $group = $this->customerGroupRepository->search($criteria, $context)->first();
-        return $group->getName();
+        return $group->getTranslation('name');
+    }
+
+    private function getCustomerAddressAssociation(?CustomerEntity $customer, Context $context): ?CustomerEntity
+    {
+        if (!$customer) {
+            return null;
+        }
+
+        $criteria = new Criteria([$customer->getId()]);
+        $criteria->addAssociation('defaultBillingAddress');
+        $criteria->addAssociation('defaultShippingAddress');
+
+        return $this->customerRepository->search($criteria, $context)->first();
     }
 
     private function guessRelevantCustomerAddress(?CustomerEntity $customerEntity): ?CustomerAddressEntity
     {
+        $customerEntity = $this->getCustomerAddressAssociation($customerEntity, Context::createDefaultContext());
+        
         if (!$customerEntity) {
             return null;
         }

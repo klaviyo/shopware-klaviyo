@@ -1,10 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Klaviyo\Integration\Model\UseCase\Operation;
 
 use Doctrine\DBAL\Exception;
-use Od\Scheduler\Model\Job\{GeneratingHandlerInterface, JobHandlerInterface, JobResult, Message};
+use Klaviyo\Integration\Async\Message\AbstractDateBasedMessage;
+use Klaviyo\Integration\Od\Scheduler\Model\Job\{GeneratingHandlerInterface, JobHandlerInterface, JobResult, Message};
 use Klaviyo\Integration\Model\Channel\GetValidChannels;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
 use Klaviyo\Integration\System\ConfigService;
@@ -77,6 +79,10 @@ class FullCustomerOrderSyncOperation implements JobHandlerInterface, GeneratingH
                     new EqualsFilter('orderCount', 0),
                     new EqualsAnyFilter('salesChannelId', $channelIds)
                 );
+
+                if ($message instanceof AbstractDateBasedMessage) {
+                    $message->applyDateRangeFilter($criteria);
+                }
 
                 $customers = $this->customerRepository->search($criteria, $message->getContext());
                 $customerIds = $customers->getIds();
