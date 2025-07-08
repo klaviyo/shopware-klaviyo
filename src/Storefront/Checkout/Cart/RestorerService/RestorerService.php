@@ -49,15 +49,15 @@ class RestorerService implements RestorerServiceInterface
         $this->customerRepository = $customerRepository;
     }
 
-    public function restore(string $mappingId, SalesChannelContext $context): void
+    public function restore(string $mappingId, SalesChannelContext $context): bool
     {
         try {
             $mapping = $this->loadMapping($mappingId, $context->getContext());
             if ($mapping == null) {
-                return;
+                return false;
             }
 
-            $mapping->getMappingTable() === CheckoutMappingDefinition::CART_TABLE ? $this->restoreCart(
+            return $mapping->getMappingTable() === CheckoutMappingDefinition::CART_TABLE ? $this->restoreCart(
                 $mapping->getReference(),
                 $context
             ) : $this->restoreOrder($mapping->getReference(), $context);
@@ -92,7 +92,7 @@ class RestorerService implements RestorerServiceInterface
         $data->set('errorRoute', "frontend.checkout.register.page");
         $data->set('accountType', "");
         $data->set('shopware_surname_confirm', "");
-        $data->set('guest', true);
+        $data->set('guest', $context->getCustomer() ? false : true);
 
         $billingData = $this->preparingAddressData($customerBillingAddress);
         $shippingData = $this->preparingAddressData($customerShippingAddress);
@@ -108,13 +108,13 @@ class RestorerService implements RestorerServiceInterface
         return $this->mappingRepository->search(new Criteria([$mappingId]), $context)->first();
     }
 
-    protected function restoreCart(string $token, SalesChannelContext $context): void
+    protected function restoreCart(string $token, SalesChannelContext $context): bool
     {
         $cart = $this->cartRuleLoader->loadByToken($context, $token)->getCart();
-        $this->restoreByCart($cart, $context);
+        return $this->restoreByCart($cart, $context);
     }
 
-    protected function restoreByCart(Cart $cart, SalesChannelContext $context): void
+    protected function restoreByCart(Cart $cart, SalesChannelContext $context): bool
     {
         $result = [];
         foreach ($cart->getLineItems() as $lineItem) {
@@ -126,14 +126,16 @@ class RestorerService implements RestorerServiceInterface
                 $this->cartService->remove($currentCart, $lineItem->getId(), $context);
             }
             $this->cartService->add($currentCart, $result, $context);
+            return true;
         }
+        return false;
     }
 
-    protected function restoreOrder(string $orderId, SalesChannelContext $context): void
+    protected function restoreOrder(string $orderId, SalesChannelContext $context): bool
     {
         $order = $this->getOrderById($orderId, $context->getContext());
         if ($order == null) {
-            return;
+            return false;
         }
 
         if ($customerId = $order->getOrderCustomer()->getCustomer()->getId()) {
@@ -154,7 +156,7 @@ class RestorerService implements RestorerServiceInterface
         }
 
         $cart = $this->orderConverter->convertToCart($order, $context->getContext());
-        $this->restoreByCart($cart, $context);
+        return $this->restoreByCart($cart, $context);
     }
 
     private function getOrderById(string $orderId, Context $context): ?OrderEntity

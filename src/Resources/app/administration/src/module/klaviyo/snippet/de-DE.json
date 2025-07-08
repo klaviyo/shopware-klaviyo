@@ -102,7 +102,7 @@
                 "helpText": "Klaviyo Public API Schlüssel. Du findest ihn in deinem Klaviyo Konto."
             },
             "klaviyoListForSubscribersSync": {
-                "label": "Klaviyo List ID für die Synchronisierung der Abonnenten",
+                "label": "Klaviyo List für die Synchronisierung der Abonnenten",
                 "helpText": "Die ID der Abonnentenliste in Klaviyo, zu der alle Shopware6-Abonnenten hinzugefügt werden sollen."
             },
             "bisVariantField": {
@@ -186,7 +186,7 @@
                 "generalErrorMessage": "API-Schlüssel können nicht validiert werden",
                 "incorrectCredentialsTitle": "Falsche Anmeldeinformationen",
                 "correctApiMessage": "API-keys sind gültig",
-                "listNotExistMessage": "In Klaviyo wurde eine Liste mit einer solchen ID nicht gefunden. Bitte überprüfen Sie die Korrektheit der Listen-ID."
+                "listNotExistMessage": "In Klaviyo wurde keine Liste gefunden, die dem angegebenen öffentlichen Schlüssel entspricht!"
             },
             "enableDailySynchronization": {
                 "label": "Aktivieren Sie die tägliche Abonnentensynchronisierung",
@@ -216,6 +216,10 @@
                 "confirmActionTitle": "Aktion bestätigen",
                 "confirmLabel": "Bestätigen",
                 "cancelLabel": "Abbrechen"
+            },
+            "lists": {
+                "warning": "Für dieses Profil wurden in Klaviyo keine Listen gefunden",
+                "error": "Fehler beim Abrufen der Listen aus dem Klaviyo-Profil!"
             }
         },
         "customer": {
@@ -275,6 +279,14 @@
                 "failed": "Fehler bei Planung der historischen Events Synchronisation.",
                 "is_running": "Historische Events Synchronisation läuft bereits.",
                 "is_scheduled": "Historische Events Synchronisation ist bereits eingeplant."
+            },
+            "modal": {
+                "title": "Synchronisierung historischer Events",
+                "from_date": "Ab Datum",
+                "until_date": "Bis Datum",
+                "proceed_button": "Weitermachen",
+                "cancel_button": "Stornieren",
+                "invalid_date_range": "Für die Synchronisierung wurde ein ungültiger Datumsbereich angegeben!"
             }
         },
         "promotion": {
