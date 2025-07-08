@@ -75,14 +75,13 @@ class ValidationController extends AbstractController
     #[Route(path: '/api/_action/od-get-subscriber-lists', name: 'api.action.od_get_subscriber_lists', defaults: ['auth_required' => false], methods: ['POST'])]
     public function getSubscriberListsAvailable(RequestDataBag $post): JsonResponse
     {
-        $publicKey = $post->get('publicKey');
         $privateKey = $post->get('privateKey');
 
-        if (empty($publicKey) || empty($privateKey)) {
+        if (empty($privateKey)) {
             return new JsonResponse(['invalid_parameters' => true], Response::HTTP_OK);
         }
 
-        $this->client = $this->clientRegistry->getClientByKeys($privateKey, $publicKey);
+        $this->client = $this->clientRegistry->getClientByKeys($privateKey);
         $result = $this->getAllProfileLists(new GetProfilesListsRequest());
 
         if (empty($this->profileLists)) {

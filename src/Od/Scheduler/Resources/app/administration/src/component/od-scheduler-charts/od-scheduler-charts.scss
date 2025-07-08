@@ -1,0 +1,18 @@
+/* Base */
+.od-scheduler-charts {
+    max-width: 1460px;
+    margin: 0 auto;
+    padding: 20px;
+
+    /* Date range */
+    .charts-date-range {
+        max-width: 200px;
+        margin-bottom: 30px;
+    }
+
+    /* charts */
+    .sw-chart {
+        border: 1px solid #d1d9e0;
+        padding: 10px;
+    }
+}

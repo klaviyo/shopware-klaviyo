@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Klaviyo\Integration\Model\UseCase\Operation;
 
 use Doctrine\DBAL\Exception;
-use Od\Scheduler\Model\Job\{GeneratingHandlerInterface, JobHandlerInterface, JobResult, Message};
+use Klaviyo\Integration\Od\Scheduler\Model\Job\{GeneratingHandlerInterface, JobHandlerInterface, JobResult, Message};
 use Klaviyo\Integration\Model\Channel\GetValidChannels;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
 use Klaviyo\Integration\System\ConfigService;

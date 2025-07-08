@@ -6,10 +6,12 @@ class KlaviyoHistoricalEventsSynchronizationApiService extends ApiService {
         this.name = 'klaviyoHistoricalEventsSynchronizationApiService';
     }
 
-    scheduleSynchronization() {
+    scheduleSynchronization(fromDate, tillDate) {
         const headers = this.getBasicHeaders();
         return this.httpClient
-            .post('_action/klaviyo/historical-event-tracking/synchronization/schedule', {}, {headers});
+            .post('_action/klaviyo/historical-event-tracking/synchronization/schedule', {
+                fromDate: fromDate, tillDate: tillDate
+            }, {headers});
     }
 }
 

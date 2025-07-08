@@ -3,7 +3,7 @@
 namespace Klaviyo\Integration\Async\Message;
 
 use Klaviyo\Integration\Model\UseCase\Operation\CustomerProfileSyncOperation;
-use Od\Scheduler\Async\ParentAwareMessageInterface;
+use Klaviyo\Integration\Od\Scheduler\Async\ParentAwareMessageInterface;
 use Shopware\Core\Framework\Context;
 
 class CustomerProfileSyncMessage extends AbstractBasicMessage implements ParentAwareMessageInterface

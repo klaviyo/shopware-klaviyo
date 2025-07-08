@@ -95,16 +95,17 @@
             {% endblock %}
 
             {% block klaviyo_integration_settings_general_klaviyo_list_for_subscribers_sync %}
-                <sw-text-field
-                        v-model:value="actualConfigData['klavi_overd.config.klaviyoListForSubscribersSync']"
-                        name="klavi_overd.config.klaviyoListForSubscribersSync"
-                        ref="newsletterListId"
-                        :label="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.label')"
-                        :helpText="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.helpText')"
-                        :disabled="selectedSalesChannelId === null"
-                        :error="listIdErrorState"
-                        required>
-                </sw-text-field>
+                <sw-single-select name="klavi_overd.config.klaviyoListForSubscribersSync"
+                                  v-model:value="actualConfigData['klavi_overd.config.klaviyoListForSubscribersSync']"
+                                  ref="newsletterListId"
+                                  :label="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.label')"
+                                  :helpText="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.helpText')"
+                                  :error="listIdErrorState"
+                                  :options="createListsOptions"
+                                  :disabled="(selectedSalesChannelId === null) || areListsLoading"
+                                  :isLoading="(selectedSalesChannelId !== null) && areListsLoading"
+                                  required>
+                </sw-single-select>
             {% endblock %}
 
             {% block klaviyo_integration_settings_general_varian_for_bis %}
