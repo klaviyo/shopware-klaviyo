@@ -53,9 +53,7 @@ class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerIn
 
         $offset = $this->configService->getConfigValueWithoutCache(self::SYNC_ORDER_OFFSET_CONFIG_KEY);
 
-        $this->logger->notice("Offset: $offset");
-
-        for ($i = 0; $i < 5; $i++) {
+        do {
             try {
                 $criteria = new Search\Criteria();
                 $criteria->addFilter(new Search\Filter\EqualsAnyFilter('salesChannelId', \array_values($channelIds)));
@@ -66,6 +64,8 @@ class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerIn
                     $message->applyDateRangeFilter($criteria, 'orderDateTime');
                 }
 
+                $this->logger->notice("Offset: $offset");
+
                 $orders = $this->orderRepository->search($criteria, $message->getContext());
                 $orderIds = $orders->getIds();
 
@@ -73,19 +73,17 @@ class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerIn
                     $this->scheduleBackgroundJob->scheduleOrderSync($orderIds, $message->getJobId(), $message->getContext());
                     $result->addMessage(new Message\InfoMessage(\sprintf('Scheduled job for %d orders. Offset: %d', count($orderIds), $offset)));
                     $offset = (int)$offset + self::ORDER_BATCH_SIZE;
-                } else {
-                    $this->logger->notice("All orders have been processed.");
-                    $this->systemConfigService->set(self::SYNC_ORDER_OFFSET_CONFIG_KEY, -1);
-                    $result->addMessage(new Message\InfoMessage('All orders have been processed.'));
-                    return $result;
                 }
             } catch (\Exception $e) {
                 $this->logger->error($e->getMessage(), ['data' => json_encode($e)]);
                 $result->addMessage(new Message\WarningMessage($e->getMessage()));
+                return $result;
             }
-        }
+        } while (!empty($orderIds));
 
-        $this->systemConfigService->set(self::SYNC_ORDER_OFFSET_CONFIG_KEY, $offset);
+        $this->logger->notice("All orders have been processed.");
+        $this->systemConfigService->set(self::SYNC_ORDER_OFFSET_CONFIG_KEY, -1);
+        $result->addMessage(new Message\InfoMessage('All orders have been processed.'));
 
         return $result;
     }
