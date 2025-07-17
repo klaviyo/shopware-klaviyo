@@ -13,6 +13,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
@@ -52,13 +53,12 @@ class FullCustomerSubsSyncOperation implements JobHandlerInterface, GeneratingHa
 
         $offset = $this->configService->getConfigValueWithoutCache(self::SYNC_CUSTOMER_OFFSET_CONFIG_KEY);
 
-        $this->logger->notice("Customers offset : $offset");
-
-        for ($i = 0; $i < 5; $i++) {
+        do {
             try {
                 $criteria = new Criteria();
                 $criteria->setLimit(self::CUSTOMER_BATCH_SIZE);
                 $criteria->setOffset($offset);
+                $criteria->addSorting(new FieldSorting('createdAt', FieldSorting::ASCENDING));
                 $criteria->addFilter(
                     new EqualsFilter('newsletterSalesChannelIds', null),
                     new EqualsAnyFilter('salesChannelId', $channelIds)
@@ -66,6 +66,8 @@ class FullCustomerSubsSyncOperation implements JobHandlerInterface, GeneratingHa
 
                 $customers = $this->customerRepository->search($criteria, $message->getContext());
                 $customerIds = $customers->getIds();
+
+                $this->logger->notice("Customers offset : $offset");
 
                 if (!empty($customerIds)) {
                     $this->scheduleBackgroundJob->scheduleCustomerProfilesSyncJob(
@@ -75,17 +77,17 @@ class FullCustomerSubsSyncOperation implements JobHandlerInterface, GeneratingHa
                     );
                     $result->addMessage(new Message\InfoMessage(\sprintf('Scheduled job for %d customers. Offset: %d', count($customerIds), $offset)));
                     $offset = (int)$offset + self::CUSTOMER_BATCH_SIZE;
-                } else {
-                    $this->logger->notice("All customers have been processed.");
-                    $this->systemConfigService->set(self::SYNC_CUSTOMER_OFFSET_CONFIG_KEY, -1);
-                    $result->addMessage(new Message\InfoMessage('All customers have been processed.'));
-                    return $result;
                 }
             } catch (\Exception $e) {
                 $this->logger->error($e->getMessage(), ['data' => json_encode($e)]);
                 $result->addMessage(new Message\WarningMessage($e->getMessage()));
+                return $result;
             }
-        }
+        } while (!empty($customerIds));
+
+        $this->logger->notice("All customers have been processed.");
+        $this->systemConfigService->set(self::SYNC_CUSTOMER_OFFSET_CONFIG_KEY, -1);
+        $result->addMessage(new Message\InfoMessage('All customers have been processed.'));
 
         return $result;
     }
