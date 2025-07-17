@@ -54,8 +54,6 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
 
         $offset = $this->configService->getConfigValueWithoutCache(self::SYNC_SUBSCRIBER_OFFSET_CONFIG_KEY);
 
-        $this->logger->notice("Sub offset : $offset");
-
         $schedulingResult = $this->scheduleBackgroundJob->scheduleExcludedSubscribersSyncJobs(
             $message->getContext(),
             $message->getJobId(),
@@ -73,7 +71,7 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
             );
         }
 
-        for ($i = 0; $i < 5; $i++) {
+        do {
             try {
                 $criteria = new Criteria();
                 $criteria->setLimit(self::SUBSCRIBER_BATCH_SIZE);
@@ -89,6 +87,9 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
                     ),
                     new EqualsAnyFilter('salesChannelId', $channelIds)
                 );
+
+                $this->logger->notice("Sub offset : $offset");
+
                 $subscribers = $this->subscriberRepository->search($criteria, $message->getContext());
                 $subscriberIds = $subscribers->getIds();
                 if (!empty($subscriberIds)) {
@@ -102,17 +103,17 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
                     );
                     $result->addMessage(new Message\InfoMessage(\sprintf('Scheduled job for %d subscribers. Offset: %d', count($subscriberIds), $offset)));
                     $offset = (int)$offset + self::SUBSCRIBER_BATCH_SIZE;
-                } else {
-                    $this->logger->notice("All subscribers have been processed.");
-                    $this->systemConfigService->set(self::SYNC_SUBSCRIBER_OFFSET_CONFIG_KEY, -1);
-                    $result->addMessage(new Message\InfoMessage('All subscribers have been processed.'));
-                    return $result;
                 }
             } catch (\Exception $e) {
                 $this->logger->error($e->getMessage(), ['data' => json_encode($e)]);
                 $result->addMessage(new Message\WarningMessage($e->getMessage()));
+                return $result;
             }
-        }
+        } while (!empty($subscriberIds));
+
+        $this->logger->notice("All subscribers have been processed.");
+        $this->systemConfigService->set(self::SYNC_SUBSCRIBER_OFFSET_CONFIG_KEY, -1);
+        $result->addMessage(new Message\InfoMessage('All subscribers have been processed.'));
 
         foreach ($schedulingResult->getErrors() as $error) {
             $result->addMessage(new Message\ErrorMessage($error->getMessage()));
