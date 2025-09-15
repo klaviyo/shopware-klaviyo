@@ -20,19 +20,19 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
         $accountEnabled = $this->getBoolConfiguration('enabled', $salesChannelId);
         $privateApiKey = $this->systemConfigService
             ->get('klavi_overd.config.privateApiKey', $salesChannelId);
-        if (!$privateApiKey) {
+        if ($accountEnabled && !$privateApiKey) {
             throw new InvalidConfigurationException('Klaviyo Integration Private Api Key configuration is not defined');
         }
 
         $publicApiKey = $this->systemConfigService
             ->get('klavi_overd.config.publicApiKey', $salesChannelId);
-        if (!$publicApiKey) {
+        if ($accountEnabled && !$publicApiKey) {
             throw new InvalidConfigurationException('Klaviyo Integration Public Api Key configuration is not defined');
         }
 
         $listId = $this->systemConfigService
             ->get('klavi_overd.config.klaviyoListForSubscribersSync', $salesChannelId);
-        if (!$listId) {
+        if ($accountEnabled && !$listId) {
             throw new InvalidConfigurationException(
                 'Klaviyo Integration List For Subscribers configuration is not defined'
             );

@@ -22,7 +22,8 @@ class PaidOrderEventTrackingRequest extends AbstractOrderEventTrackingRequest
         OrderProductItemInfoCollection $products,
         ?Address $billingAddress,
         ?Address $shippingAddress,
-        string $reason
+        string $reason,
+        ?array $customFields
     ) {
         parent::__construct(
             $eventId,
@@ -34,7 +35,8 @@ class PaidOrderEventTrackingRequest extends AbstractOrderEventTrackingRequest
             $discounts,
             $products,
             $billingAddress,
-            $shippingAddress
+            $shippingAddress,
+            $customFields
         );
 
         $this->reason = $reason;

@@ -6,6 +6,7 @@ namespace Klaviyo\Integration\EventListener;
 
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator;
 use Klaviyo\Integration\Model\Channel\GetValidChannelConfig;
+use Klaviyo\Integration\Storefront\Service\Cookie\CookieConsentService;
 use Klaviyo\Integration\System\Tracking\Event\Cart\CartEventRequestBag;
 use Klaviyo\Integration\System\Tracking\EventsTrackerInterface;
 use Klaviyo\Integration\Utils\Logger\ContextHelper;
@@ -32,7 +33,8 @@ class AddedToCartEventListener implements EventSubscriberInterface
         private readonly EventsTrackerInterface $eventsTracker,
         private readonly LoggerInterface $logger,
         private readonly RequestStack $requestStack,
-        private readonly GetValidChannelConfig $getValidChannelConfig
+        private readonly GetValidChannelConfig $getValidChannelConfig,
+        private readonly CookieConsentService $cookieConsentService
     ) {
     }
 
@@ -53,6 +55,11 @@ class AddedToCartEventListener implements EventSubscriberInterface
             $config = $this->getValidChannelConfig->execute($event->getSalesChannelContext()->getSalesChannelId());
 
             if (null === $config || !$config->isTrackAddedToCart()) {
+                return;
+            }
+
+            $consentType = $config->getCookieConsent();
+            if (!$this->cookieConsentService->hasConsent($consentType)) {
                 return;
             }
 
@@ -109,6 +116,11 @@ class AddedToCartEventListener implements EventSubscriberInterface
             $config = $this->getValidChannelConfig->execute($event->getSalesChannelContext()->getSalesChannelId());
 
             if (null === $config || !$config->isTrackAddedToCart()) {
+                return;
+            }
+
+            $consentType = $config->getCookieConsent();
+            if (!$this->cookieConsentService->hasConsent($consentType)) {
                 return;
             }
 
