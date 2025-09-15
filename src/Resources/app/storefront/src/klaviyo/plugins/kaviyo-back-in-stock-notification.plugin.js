@@ -4,12 +4,10 @@ import HttpClient from 'src/service/http-client.service';
 
 export default class KlaviyoBackInStockNotification extends Plugin {
     static options = {
-        submitBtnSelector: '.btn-submit-stock-notification',
         errorCls: 'has-error',
         validCls: 'is-valid',
         emailFieldSelector: '#email',
         subscribeToNewsletterSelector: '#subscribeToNewsletter',
-        newsletterSubscribeApiURL: 'https://a.klaviyo.com/client/subscriptions',
         apiURL: 'https://a.klaviyo.com/client/back-in-stock-subscriptions',
         contentType: 'application/json',
         revision: '2024-10-15',
@@ -22,14 +20,13 @@ export default class KlaviyoBackInStockNotification extends Plugin {
     };
 
     init() {
-        this._client = new HttpClient()
+        this._client = new HttpClient();
 
         this._getFormDataElements();
         this.registerEvents();
     }
 
     _getFormDataElements() {
-        this._submitBtn = DomAccess.querySelector(this.el, this.options.submitBtnSelector);
         this._email = DomAccess.querySelector(this.el, this.options.emailFieldSelector );
         this._subscribeToNewsletter = DomAccess.querySelector(this.el, this.options.subscribeToNewsletterSelector);
         this._successMessage = DomAccess.querySelector(this.el, this.options.successMessageSelector);
@@ -119,49 +116,15 @@ export default class KlaviyoBackInStockNotification extends Plugin {
     }
 
     _proceedNewsletterSubscribe(email) {
-        const data = this._createFormData();
-
-        let body = JSON.stringify({
-            data: {
-                type: 'subscription',
-                attributes: {
-                    profile: {
-                        data: {
-                            type: 'profile',
-                            attributes: {
-                                email: email
-                            }
-                        }
-                    }
-                },
-                relationships: {
-                    list: {
-                        data: {
-                            type: 'list',
-                            id: this.options.listName
-                        }
-                    }
-                }
-            }
-        });
-
-
-        fetch(this.options.newsletterSubscribeApiURL + '/?company_id=' + this.options.publicApiKey, {
-            "headers": {
-                "content-type": this.options.contentType,
-                "revision": this.options.revision,
-            },
-            "body": body,
-            "method": "POST",
-        }).then(response => {
-            this._handleResponse(response);
-
-            if (data.get('subscribe_for_newsletter') === true) {
-                this._proceedNewsletterSubscribe();
-            }
-        }).catch(err => {
-            console.error(err);
-        });
+        if (this._subscribeToNewsletter) {
+            this._client.post(
+                '/form/newsletter',
+                JSON.stringify({
+                    email: email,
+                    option: 'subscribe',
+                })
+            );
+        }
     }
 
     _showSuccessMessage() {

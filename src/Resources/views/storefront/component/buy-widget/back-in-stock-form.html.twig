@@ -57,6 +57,7 @@
                                                                     {% block klaviyo_back_in_stock_modal_email_input %}
                                                                         <input class="form-control" id="email" type="email"
                                                                                name="email"
+                                                                               value="{{ context.customer.email }}"
                                                                                required
                                                                                placeholder="{{ "klaviyo.back-in-stock.modal.email-placeholder"|trans }}">
                                                                     {% endblock %}
