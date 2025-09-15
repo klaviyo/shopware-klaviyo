@@ -72,7 +72,6 @@ class FullCustomerOrderSyncOperation implements JobHandlerInterface, GeneratingH
                 $criteria = new Criteria();
                 $criteria->setLimit(self::CUSTOMER_BATCH_SIZE);
                 $criteria->setOffset($offset);
-                $criteria->addAssociation('order');
                 $criteria->addFilter(
                     new EqualsFilter('orderCount', 0),
                     new EqualsAnyFilter('salesChannelId', $channelIds)

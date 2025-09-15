@@ -155,7 +155,7 @@ class CustomerPropertiesTranslator
     private function guessRelevantCustomerAddress(?CustomerEntity $customerEntity): ?CustomerAddressEntity
     {
         $customerEntity = $this->getCustomerAddressAssociation($customerEntity, Context::createDefaultContext());
-        
+
         if (!$customerEntity) {
             return null;
         }
@@ -178,7 +178,7 @@ class CustomerPropertiesTranslator
         $customFields = [];
 
         foreach ($customer->getCustomFields() ?? [] as $fieldName => $fieldValue) {
-            if (isset($fieldMapping[$fieldName]) && $fieldValue) {
+            if (isset($fieldMapping[$fieldName])) {
                 $customFields[$fieldMapping[$fieldName]] = $fieldValue;
             }
         }

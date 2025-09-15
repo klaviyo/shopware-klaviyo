@@ -11,6 +11,7 @@ use Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\CustomerPropertiesTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\NewsletterSubscriberPropertiesTranslator;
 use Klaviyo\Integration\Model\Channel\GetValidChannelConfig;
+use Klaviyo\Integration\Storefront\Service\Cookie\CookieConsentService;
 use Klaviyo\Integration\Utils\Logger\ContextHelper;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Struct\ArrayStruct;
@@ -36,6 +37,8 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
     private NewsletterSubscriberPropertiesTranslator $newsletterSubscriberPropertiesTranslator;
     private KlaviyoGateway $klaviyoGateway;
 
+    private CookieConsentService $cookieConsentService;
+
     // TODO: make some args as proxy
     public function __construct(
         GetValidChannelConfig $getValidChannelConfig,
@@ -46,7 +49,8 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
         NewsletterSubscriberHelper $newsletterSubscriberHelper,
         RequestStack $requestStack,
         NewsletterSubscriberPropertiesTranslator $newsletterSubscriberPropertiesTranslator,
-        KlaviyoGateway $klaviyoGateway
+        KlaviyoGateway $klaviyoGateway,
+        CookieConsentService $cookieConsentService
     ) {
         $this->getValidChannelConfig = $getValidChannelConfig;
         $this->customerPropertiesTranslator = $customerPropertiesTranslator;
@@ -57,6 +61,7 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
         $this->requestStack = $requestStack;
         $this->newsletterSubscriberPropertiesTranslator = $newsletterSubscriberPropertiesTranslator;
         $this->klaviyoGateway = $klaviyoGateway;
+        $this->cookieConsentService = $cookieConsentService;
     }
 
     public static function getSubscribedEvents(): array
@@ -168,6 +173,11 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
         }
 
         if (!$event->getPage()->hasExtension(self::PDP_EXTENSION)) {
+            return;
+        }
+
+        $consentType = $config->getCookieConsent();
+        if (!$this->cookieConsentService->hasConsent($consentType)) {
             return;
         }
 
