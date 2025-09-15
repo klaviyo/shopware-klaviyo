@@ -182,7 +182,7 @@ class CustomerPropertiesTranslator
         $customFields = [];
 
         foreach ($customer->getCustomFields() ?? [] as $fieldName => $fieldValue) {
-            if (isset($fieldMapping[$fieldName]) && $fieldValue) {
+            if (isset($fieldMapping[$fieldName])) {
                 $customFields[$fieldMapping[$fieldName]] = $fieldValue;
             }
         }

@@ -1,5 +1,19 @@
 # Change Log
 
+## [3.4.3] - 2025-09-11
+
+### Added
+- Add missing cookie consent validation to events
+
+### Fixed
+- Fix translation in plugin
+- Fix Boolean Customer property not synced
+- Fix custom field handling for Order Events
+- Fix warning in FullCustomerOrderSyncOperation
+- Fix subscription through Back In Stock form
+- Fix sales channel configuration validation
+- Fix customer address in Order events
+
 ## [3.4.2] - 2025-07-10
 This release significantly improves efficiency by reducing redundant Klaviyo API calls during sync operations, and it prevents the dispatch of multiple Double Opt-In emails to customers.
 

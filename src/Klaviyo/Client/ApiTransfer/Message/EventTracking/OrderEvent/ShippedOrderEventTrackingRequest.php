@@ -19,7 +19,8 @@ class ShippedOrderEventTrackingRequest extends AbstractOrderEventTrackingRequest
         DiscountInfoCollection $discounts,
         OrderProductItemInfoCollection $products,
         ?Address $billingAddress,
-        ?Address $shippingAddress
+        ?Address $shippingAddress,
+        ?array $customFields
     ) {
         parent::__construct(
             $eventId,
@@ -31,7 +32,8 @@ class ShippedOrderEventTrackingRequest extends AbstractOrderEventTrackingRequest
             $discounts,
             $products,
             $billingAddress,
-            $shippingAddress
+            $shippingAddress,
+            $customFields
         );
     }
 }
