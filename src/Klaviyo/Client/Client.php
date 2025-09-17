@@ -10,6 +10,7 @@ use Klaviyo\Integration\Klaviyo\Client\Exception\ClientException;
 use Klaviyo\Integration\Klaviyo\Client\Exception\EventTrackingOperationRequestFailedException;
 use Klaviyo\Integration\Klaviyo\Client\Exception\TranslationException;
 use Shopware\Core\Framework\Context;
+use Klaviyo\Integration\Utils\Logger\ContextHelper;
 
 class Client implements ClientInterface
 {
@@ -47,6 +48,7 @@ class Client implements ClientInterface
                 }
 
                 $guzzleRequest = $translator->translateRequest($request, $context);
+                $guzzleRequest = $guzzleRequest->withHeader(ContextHelper::PLUGIN_VERSION_HEADER, ContextHelper::fetchPluginVersion());
                 $response = $this->guzzleClient->send($guzzleRequest, $guzzleRequestOptions);
                 $clientResult->addRequestResponse($request, $translator->translateResponse($response));
             } catch (ClientException $exception) {
