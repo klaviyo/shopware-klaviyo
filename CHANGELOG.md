@@ -1,5 +1,19 @@
 # Change Log
 
+## [4.0.1] - 2025-09-11
+
+### Added
+- Add missing cookie consent validation to events
+
+### Fixed
+- Fix translation in plugin
+- Fix Boolean Customer property not synced
+- Fix custom field handling for Order Events
+- Fix warning in FullCustomerOrderSyncOperation
+- Fix subscription through Back In Stock form
+- Fix sales channel configuration validation
+- Fix customer address in Order events
+
 ## [4.0.0] - 2025-07-16
 This release introduces **date-based filtering** for historical event tracking, significantly **reduces redundant Klaviyo API calls** for improved efficiency, and **removes the external `od/sw6-job-scheduler` dependency**, integrating its functionality directly into the plugin.
 
