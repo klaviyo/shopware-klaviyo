@@ -16,7 +16,8 @@ export default class KlaviyoBackInStockNotification extends Plugin {
         errorMessageSelector: '.klaviyo-error',
         errorVariantMessageSelector: '.klaviyo-error-variant',
         notValidEmailMessageSelector: '.klaviyo-email-not-valid',
-        fetchHeaderAccept: "application/json"
+        fetchHeaderAccept: "application/json",
+        version: "unknown"
     };
 
     init() {
@@ -33,6 +34,8 @@ export default class KlaviyoBackInStockNotification extends Plugin {
         this._errorMessage = DomAccess.querySelector(this.el, this.options.errorMessageSelector);
         this._emailNotValid = DomAccess.querySelector(this.el, this.options.notValidEmailMessageSelector);
         this._errorVariantMessage = DomAccess.querySelector(this.el, this.options.errorVariantMessageSelector);
+        const versionEl = document.querySelector('[data-klaviyo-plugin-version]');
+        this.options.version = versionEl ? versionEl.getAttribute('data-klaviyo-plugin-version') : this.options.version;
     }
 
     registerEvents() {
@@ -89,6 +92,7 @@ export default class KlaviyoBackInStockNotification extends Plugin {
                 "accept": this.options.fetchHeaderAccept,
                 "content-type": this.options.contentType,
                 "revision": this.options.revision,
+                "x-sw-plugin-version": this.options.version
             },
             "body": body,
             "method": "POST",
