@@ -102,6 +102,7 @@
             <argument type="service"
                       id="Klaviyo\Integration\Klaviyo\Gateway\Translator\NewsletterSubscriberPropertiesTranslator"/>
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway"/>
+            <argument type="service" id="Klaviyo\Integration\Storefront\Service\Cookie\CookieConsentService" />
             <tag name="kernel.event_subscriber"/>
         </service>
         <service id="Klaviyo\Integration\EventListener\AddedToCartEventListener">
@@ -110,6 +111,7 @@
             <argument type="service" id="monolog.logger.od_klaviyo"/>
             <argument type="service" id="request_stack"/>
             <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannelConfig"/>
+            <argument type="service" id="Klaviyo\Integration\Storefront\Service\Cookie\CookieConsentService" />
             <tag name="kernel.event_subscriber"/>
         </service>
         <service id="Klaviyo\Integration\EventListener\CartEventListeners">
@@ -231,6 +233,11 @@
         <service id="Klaviyo\Integration\System\ConfigService">
             <argument type="service" id="Doctrine\DBAL\Connection"/>
         </service>
+
+        <service id="Klaviyo\Integration\Storefront\Service\Cookie\CookieConsentService">
+            <argument type="service" id="Symfony\Component\HttpFoundation\RequestStack" />
+        </service>
+
     </services>
 
 </container>

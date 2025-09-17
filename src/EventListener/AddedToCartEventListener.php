@@ -6,6 +6,7 @@ namespace Klaviyo\Integration\EventListener;
 
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator;
 use Klaviyo\Integration\Model\Channel\GetValidChannelConfig;
+use Klaviyo\Integration\Storefront\Service\Cookie\CookieConsentService;
 use Klaviyo\Integration\System\Tracking\Event\Cart\CartEventRequestBag;
 use Klaviyo\Integration\System\Tracking\EventsTrackerInterface;
 use Klaviyo\Integration\Utils\Logger\ContextHelper;
@@ -25,19 +26,22 @@ class AddedToCartEventListener implements EventSubscriberInterface
     private LoggerInterface $logger;
     private RequestStack $requestStack;
     private GetValidChannelConfig $getValidChannelConfig;
+    private CookieConsentService $cookieConsentService;
 
     public function __construct(
         CartEventRequestTranslator $cartEventRequestTranslator,
         EventsTrackerInterface $eventsTracker,
         LoggerInterface $logger,
         RequestStack $requestStack,
-        GetValidChannelConfig $getValidChannelConfig
+        GetValidChannelConfig $getValidChannelConfig,
+        CookieConsentService $cookieConsentService
     ) {
         $this->cartEventRequestTranslator = $cartEventRequestTranslator;
         $this->eventsTracker = $eventsTracker;
         $this->logger = $logger;
         $this->requestStack = $requestStack;
         $this->getValidChannelConfig = $getValidChannelConfig;
+        $this->cookieConsentService = $cookieConsentService;
     }
 
     /**
@@ -62,6 +66,11 @@ class AddedToCartEventListener implements EventSubscriberInterface
             $config = $this->getValidChannelConfig->execute($event->getSalesChannelContext()->getSalesChannelId());
 
             if (null === $config || !$config->isTrackAddedToCart()) {
+                return;
+            }
+
+            $consentType = $config->getCookieConsent();
+            if (!$this->cookieConsentService->hasConsent($consentType)) {
                 return;
             }
 
@@ -129,6 +138,11 @@ class AddedToCartEventListener implements EventSubscriberInterface
             $config = $this->getValidChannelConfig->execute($event->getSalesChannelContext()->getSalesChannelId());
 
             if (null === $config || !$config->isTrackAddedToCart()) {
+                return;
+            }
+
+            $consentType = $config->getCookieConsent();
+            if (!$this->cookieConsentService->hasConsent($consentType)) {
                 return;
             }
 

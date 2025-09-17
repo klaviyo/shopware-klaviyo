@@ -145,11 +145,13 @@ class OrderEventRequestTranslator
             ->search($criteria, $context)
             ->first();
 
-        if ($delivery) {
-            return $delivery->getShippingOrderAddress();
+        $shippingOrderAddressId = $delivery?->getShippingOrderAddressId();
+
+        if (!$shippingOrderAddressId) {
+            return null;
         }
 
-        return null;
+        return $this->getOrderAddressById($context, $shippingOrderAddressId);
     }
 
     private function getOrderAddressById(Context $context, string $id): OrderAddressEntity
@@ -298,12 +300,6 @@ class OrderEventRequestTranslator
             $shippingAddress = $billingAddress;
         }
 
-        $orderCustomFields = [];
-
-        if ($className === PlacedOrderEventTrackingRequest::class) {
-            $orderCustomFields = $this->prepareOrderCustomFields($orderEntity);
-        }
-
         /** @var AbstractOrderEventTrackingRequest $request */
         $request = new $className(
             $orderEntity->getId(),
@@ -317,7 +313,7 @@ class OrderEventRequestTranslator
             $billingAddress,
             $shippingAddress,
             $reasonMessage,
-            $orderCustomFields
+            $this->prepareOrderCustomFields($orderEntity)
         );
 
         return $request;
@@ -422,7 +418,7 @@ class OrderEventRequestTranslator
         $customFields = [];
 
         foreach ($order->getCustomFields() ?? [] as $fieldName => $fieldValue) {
-            if (isset($fieldMapping[$fieldName]) && $fieldValue) {
+            if (isset($fieldMapping[$fieldName])) {
                 $customFields[$fieldMapping[$fieldName]] = $fieldValue;
             }
         }
