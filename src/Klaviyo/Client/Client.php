@@ -48,7 +48,12 @@ class Client implements ClientInterface
                 }
 
                 $guzzleRequest = $translator->translateRequest($request, $context);
-                $guzzleRequest = $guzzleRequest->withHeader(ContextHelper::PLUGIN_VERSION_HEADER, ContextHelper::fetchPluginVersion());
+                $versionInfo = ContextHelper::fetchPluginVersion();
+                $guzzleRequest = $guzzleRequest
+                                    ->withHeader('X-Sw-Plugin-Version', $versionInfo['composer_version'])
+                                    ->withHeader('X-Sw-Plugin-Version-db', $versionInfo['db_version'])
+                                    ->withHeader('X-Sw-Version', ContextHelper::fetchShopwareVersion());
+                                    
                 $response = $this->guzzleClient->send($guzzleRequest, $guzzleRequestOptions);
                 $clientResult->addRequestResponse($request, $translator->translateResponse($response));
             } catch (ClientException $exception) {

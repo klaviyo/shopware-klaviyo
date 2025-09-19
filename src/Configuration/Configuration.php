@@ -32,7 +32,8 @@ class Configuration implements ConfigurationInterface
     private bool $isDailySubscribersSynchronization;
     private string $dailySubscribersSyncTime;
     private array $orderCustomFieldMapping;
-    private string $version;
+    private array $versions;
+    private string $shopwareVersion;
 
     public function __construct(
         bool $accountEnabled,
@@ -61,7 +62,8 @@ class Configuration implements ConfigurationInterface
         bool $isDailySubscribersSynchronization,
         string $dailySubscribersSyncTime,
         array $orderCustomFieldMapping,
-        string $version
+        array $versions,
+        string $shopwareVersion
     ) {
         $this->accountEnabled = $accountEnabled;
         $this->privateApiKey = $privateApiKey;
@@ -89,7 +91,8 @@ class Configuration implements ConfigurationInterface
         $this->isDailySubscribersSynchronization = $isDailySubscribersSynchronization;
         $this->dailySubscribersSyncTime = $dailySubscribersSyncTime;
         $this->orderCustomFieldMapping = $orderCustomFieldMapping;
-        $this->version = $version;
+        $this->versions = $versions;
+        $this->shopwareVersion = $shopwareVersion;
     }
 
     public function isAccountEnabled(): bool
@@ -221,9 +224,14 @@ class Configuration implements ConfigurationInterface
     {
         return $this->orderCustomFieldMapping;
     }
-
-    public function getVersion(): string
+    
+    public function getVersions(): array
     {
-        return $this->version;
+        return $this->versions;
+    }
+    
+    public function getShopwareVersion(): string
+    {
+        return $this->shopwareVersion;
     }
 }
