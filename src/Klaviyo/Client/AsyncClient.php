@@ -135,8 +135,12 @@ class AsyncClient implements ClientInterface
 
             try {
                 $guzzleRequest = $translator->translateRequest($request, $context);
-                $guzzleRequest = $guzzleRequest->withHeader(ContextHelper::PLUGIN_VERSION_HEADER, ContextHelper::fetchPluginVersion());
-                
+                $versionInfo = ContextHelper::fetchPluginVersion();
+                $guzzleRequest = $guzzleRequest
+                                    ->withHeader('X-Sw-Plugin-Version', $versionInfo['composer_version'])
+                                    ->withHeader('X-Sw-Plugin-Version-db', $versionInfo['db_version'])
+                                    ->withHeader('X-Sw-Version', ContextHelper::fetchShopwareVersion());
+
                 yield function () use ($guzzleRequest, $guzzleRequestOptions) {
                     return $this->guzzleClient->sendAsync($guzzleRequest, $guzzleRequestOptions);
                 };
