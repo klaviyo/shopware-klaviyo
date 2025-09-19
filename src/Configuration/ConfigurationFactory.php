@@ -130,7 +130,8 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
             $dailySubscribersSynchronization,
             $dailySubscribersSyncTime,
             $orderMapping,
-            ContextHelper::fetchPluginVersion()
+            ContextHelper::fetchPluginVersion(),
+            ContextHelper::fetchShopwareVersion()
         );
     }
 

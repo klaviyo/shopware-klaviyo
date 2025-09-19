@@ -5,12 +5,13 @@ namespace Klaviyo\Integration\Utils\Logger;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Klaviyo\Integration\Utils\Reflection\ReflectionHelper;
+use Shopware\Core\Kernel;
+use Klaviyo\Integration\klavi_overd;
+use Composer\InstalledVersions;
 
 class ContextHelper
 {
-    private static ?string $pluginVersion = null;
-    
-    public const PLUGIN_VERSION_HEADER = 'X-Sw-Plugin-Version';
+    private static ?array $pluginVersions = null;
     
     public static function createContextFromException(\Throwable $exception): array
     {
@@ -82,27 +83,61 @@ class ContextHelper
         return $value;
     }
 
-    public static function fetchPluginVersion(): string
+    /**
+     * Returns Klaviyo plugin versions from composer and database.
+     *
+     * @return array{composer_version: string, db_version: string}
+     */
+    public static function fetchPluginVersion(): array
     {
-        if (self::$pluginVersion !== null) {
-            return self::$pluginVersion;
-        }
-
-        self::$pluginVersion = 'unknown';
-
-        if (class_exists(\Composer\InstalledVersions::class) && \Composer\InstalledVersions::isInstalled('klaviyo/shopware-klaviyo')) {
-            self::$pluginVersion = \Composer\InstalledVersions::getPrettyVersion('klaviyo/shopware-klaviyo');
-        } else {
-            $composerFile = \dirname(__DIR__, 3) . '/composer.json';
-            if (\is_readable($composerFile)) {
-                $data = \json_decode(\file_get_contents($composerFile), true);
-                if (\is_array($data) && isset($data['version']) && \is_string($data['version'])) {
-                    self::$pluginVersion = $data['version'];
-                }
-            }
+        if (self::$pluginVersions !== null) {
+            return self::$pluginVersions;
         }
         
-        return self::$pluginVersion;
+        $composerVersion = 'unknown';
+        $dbVersion = 'unknown';
+
+        try {
+            if (class_exists(InstalledVersions::class) && InstalledVersions::isInstalled('klaviyo/shopware-klaviyo')) {
+                $composerVersion = (string) InstalledVersions::getPrettyVersion('klaviyo/shopware-klaviyo');
+            }
+        } catch (\Throwable $e) {
+        }
+
+        try {
+            $connection = Kernel::getConnection();
+            $baseClass = klavi_overd::class;
+            /** @var string|null $version */
+            $dbVersion = $connection->fetchOne('SELECT `version` FROM `plugin` WHERE `base_class` = :baseClass LIMIT 1', [
+                'baseClass' => $baseClass,
+            ]);
+        } catch (\Throwable $e) {
+        }
+
+        self::$pluginVersions = [
+            'composer_version' => $composerVersion,
+            'db_version' => $dbVersion,
+        ];
+
+        return self::$pluginVersions;
+    }
+
+    /**
+     * Returns Shopware version string.
+     */
+    public static function fetchShopwareVersion(): string
+    {
+        $version = 'unknown';
+        try {
+            if (class_exists(InstalledVersions::class)) {
+                if (InstalledVersions::isInstalled('shopware/core')) {
+                    $version = (string) InstalledVersions::getPrettyVersion('shopware/core');
+                }
+            }
+        } catch (\Throwable $e) {
+        }
+        
+        return $version;
     }
 
     private static function convertRequestToSerializable(Request $request): array
