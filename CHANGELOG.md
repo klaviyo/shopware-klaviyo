@@ -1,5 +1,9 @@
 # Change Log
 
+## [3.4.4] - 2025-09-22
+### Fixed
+- Fix incorrect administration build
+
 ## [3.4.3] - 2025-09-11
 
 ### Added
