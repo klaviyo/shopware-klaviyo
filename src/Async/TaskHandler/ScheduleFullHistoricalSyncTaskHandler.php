@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Klaviyo\Integration\Async\TaskHandler;
 
 use Klaviyo\Integration\Async\Task\ScheduleFullHistoricalSyncTask;
+use Klaviyo\Integration\Exception\JobAlreadyRunningException;
+use Klaviyo\Integration\Exception\JobAlreadyScheduledException;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
 use Klaviyo\Integration\System\ConfigService;
 use Psr\Log\LoggerInterface;
@@ -46,6 +48,8 @@ final class ScheduleFullHistoricalSyncTaskHandler extends ScheduledTaskHandler
                 $this->logger->notice("ScheduleFullHistoricalSyncTask started");
                 $this->scheduleBackgroundJob->scheduleFullOrderSyncJob($context);
             }
+        } catch (JobAlreadyRunningException|JobAlreadyScheduledException $e) {
+            $this->logger->info($e->getMessage());
         } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
         }

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Klaviyo\Integration\Async\TaskHandler;
 
 use Klaviyo\Integration\Async\Task\ScheduleEventJobsTask;
+use Klaviyo\Integration\Exception\JobAlreadyRunningException;
+use Klaviyo\Integration\Exception\JobAlreadyScheduledException;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -34,6 +36,8 @@ final class ScheduleEventJobsHandler extends ScheduledTaskHandler
     {
         try {
             $this->scheduleBackgroundJob->scheduleEventsProcessingJob();
+        } catch (JobAlreadyRunningException|JobAlreadyScheduledException $e) {
+            $this->logger->info($e->getMessage());
         } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
         }

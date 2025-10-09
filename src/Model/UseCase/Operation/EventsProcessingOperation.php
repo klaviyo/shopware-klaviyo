@@ -7,6 +7,8 @@ namespace Klaviyo\Integration\Model\UseCase\Operation;
 use Klaviyo\Integration\Async\Message\EventsProcessingMessage;
 use Klaviyo\Integration\Configuration\ConfigurationRegistry;
 use Klaviyo\Integration\Entity\Event\EventEntity;
+use Klaviyo\Integration\Exception\JobAlreadyRunningException;
+use Klaviyo\Integration\Exception\JobAlreadyScheduledException;
 use Klaviyo\Integration\Model\Channel\GetValidChannels;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
 use Klaviyo\Integration\System\Tracking\EventsTrackerInterface;
@@ -225,6 +227,8 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
                     );
                 }
             }
+        } catch (JobAlreadyRunningException|JobAlreadyScheduledException $e) {
+            $this->logger->info($e->getMessage());
         } catch (\Exception $e) {
             $this->logger->error('Unable to sync job, the reason is:'.$e->getMessage());
         }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace Klaviyo\Integration\Async\TaskHandler;
 
 use Klaviyo\Integration\Async\Task\ScheduleFullCustomerOrderSyncTask;
+use Klaviyo\Integration\Exception\JobAlreadyRunningException;
+use Klaviyo\Integration\Exception\JobAlreadyScheduledException;
 use Klaviyo\Integration\Model\UseCase\Operation\FullCustomerOrderSyncOperation;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
 use Klaviyo\Integration\System\ConfigService;
@@ -39,6 +41,8 @@ final class ScheduleFullCustomerOrderSyncTaskHandler extends ScheduledTaskHandle
                 $this->logger->notice("ScheduleFullCustomerSyncTask started");
                 $this->scheduleBackgroundJob->scheduleFullCustomerOrderSyncJob($context);
             }
+        } catch (JobAlreadyRunningException|JobAlreadyScheduledException $e) {
+            $this->logger->info($e->getMessage());
         } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
         }

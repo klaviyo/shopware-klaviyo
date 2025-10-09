@@ -6,6 +6,8 @@ namespace Klaviyo\Integration\Async\TaskHandler;
 
 use Klaviyo\Integration\Async\Task\ScheduleFullSubscriberSyncTask;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
+use Klaviyo\Integration\Exception\JobAlreadyRunningException;
+use Klaviyo\Integration\Exception\JobAlreadyScheduledException;
 use Klaviyo\Integration\System\ConfigService;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Api\Context\SystemSource;
@@ -46,6 +48,8 @@ final class ScheduleFullSubscriberSyncTaskHandler extends ScheduledTaskHandler
                 $this->logger->notice("ScheduleFullSubscriberSyncTask started");
                 $this->scheduleBackgroundJob->scheduleFullSubscriberSyncJob($context);
             }
+        } catch (JobAlreadyRunningException|JobAlreadyScheduledException $e) {
+            $this->logger->info($e->getMessage());
         } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
         }
