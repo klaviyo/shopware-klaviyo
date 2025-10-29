@@ -19,10 +19,13 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Throwable;
 
 class RestorerService implements RestorerServiceInterface
 {
+    public const CART_RESTORE_SESSION = 'klaviyo_cart_restore_map';
+
     private EntityRepository $mappingRepository;
     private EntityRepository $orderRepository;
     private CartRuleLoader $cartRuleLoader;
@@ -30,6 +33,7 @@ class RestorerService implements RestorerServiceInterface
     private OrderConverter $orderConverter;
     private LoggerInterface $logger;
     private EntityRepository $customerRepository;
+    private RequestStack $requestStack;
 
     public function __construct(
         EntityRepository $mappingRepository,
@@ -38,7 +42,8 @@ class RestorerService implements RestorerServiceInterface
         CartService $cartService,
         OrderConverter $orderConverter,
         LoggerInterface $logger,
-        EntityRepository $customerRepository
+        EntityRepository $customerRepository,
+        RequestStack $requestStack,
     ) {
         $this->mappingRepository = $mappingRepository;
         $this->orderRepository = $orderRepository;
@@ -47,6 +52,7 @@ class RestorerService implements RestorerServiceInterface
         $this->orderConverter = $orderConverter;
         $this->logger = $logger;
         $this->customerRepository = $customerRepository;
+        $this->requestStack = $requestStack;
     }
 
     public function restore(string $mappingId, SalesChannelContext $context): bool
@@ -66,6 +72,7 @@ class RestorerService implements RestorerServiceInterface
                 'Unable to restore the cart',
                 ContextHelper::createContextFromException($throwable)
             );
+            return false;
         }
     }
 
@@ -116,10 +123,22 @@ class RestorerService implements RestorerServiceInterface
 
     protected function restoreByCart(Cart $cart, SalesChannelContext $context): bool
     {
+        $session = $this->requestStack->getCurrentRequest()?->getSession();
+        if ($session === null) {
+            $this->logger->error('Unable to get session for cart restoration');
+            return false;
+        }
+
+        // Store line item ids in session to prevent duplicates during cart merge
+        $restoredLineItems = $session->get(self::CART_RESTORE_SESSION, []);
         $result = [];
         foreach ($cart->getLineItems() as $lineItem) {
             $result[] = $lineItem;
+            // Mark this line item id as restored, so it won't be added again during cart merge
+            $restoredLineItems[$lineItem->getId()] = true;
         }
+        $session->set(self::CART_RESTORE_SESSION, $restoredLineItems);
+
         if (!empty($result)) {
             $currentCart = $this->cartRuleLoader->loadByToken($context, $context->getToken())->getCart();
             foreach ($currentCart->getLineItems() as $lineItem) {
