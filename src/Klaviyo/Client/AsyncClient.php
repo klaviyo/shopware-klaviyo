@@ -13,6 +13,7 @@ use Klaviyo\Integration\Exception\JobRuntimeWarningException;
 use Klaviyo\Integration\Klaviyo\Client\ApiTransfer\Translator\TranslatorsRegistry;
 use Klaviyo\Integration\Klaviyo\Client\Configuration\ConfigurationInterface;
 use Klaviyo\Integration\Klaviyo\Client\Exception\TranslationException;
+use Klaviyo\Integration\Utils\Logger\ContextHelper;
 use Shopware\Core\Framework\Context;
 
 class AsyncClient implements ClientInterface
@@ -136,6 +137,11 @@ class AsyncClient implements ClientInterface
 
             try {
                 $guzzleRequest = $translator->translateRequest($request, $context);
+                $versionInfo = ContextHelper::fetchPluginVersion();
+                $guzzleRequest = $guzzleRequest
+                                    ->withHeader('X-Sw-Plugin-Version', $versionInfo['composer_version'])
+                                    ->withHeader('X-Sw-Plugin-Version-db', $versionInfo['db_version'])
+                                    ->withHeader('X-Sw-Version', ContextHelper::fetchShopwareVersion());
 
                 yield function () use ($guzzleRequest, $guzzleRequestOptions) {
                     return $this->guzzleClient->sendAsync($guzzleRequest, $guzzleRequestOptions);
