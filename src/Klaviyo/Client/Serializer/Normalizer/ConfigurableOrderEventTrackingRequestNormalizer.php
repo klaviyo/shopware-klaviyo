@@ -64,13 +64,6 @@ class ConfigurableOrderEventTrackingRequestNormalizer extends AbstractNormalizer
         /** @var OrderProductItemInfo $product */
         foreach ($object->getProducts() as $product) {
             $categories = array_merge($categories, $product->getCategories());
-
-            $productCategories = '';
-
-            if (!empty($product->getCategories())) {
-                $productCategories = implode(',', $product->getCategories());
-            }
-
             $itemNames[] = $product->getProductName();
             $brands[] = $product->getBrand();
             $normalizedItems[] = [
@@ -82,7 +75,7 @@ class ConfigurableOrderEventTrackingRequestNormalizer extends AbstractNormalizer
                 'RowTotal' => $product->getRowTotal(),
                 'ProductURL' => $product->getProductUrl(),
                 'ImageURL' => $product->getImageUrl(),
-                'Categories' => $productCategories,
+                'Categories' => $product->getCategories(),
                 'Brand' => $product->getBrand(),
             ];
         }
@@ -99,13 +92,9 @@ class ConfigurableOrderEventTrackingRequestNormalizer extends AbstractNormalizer
         $billingAddress = $this->normalizeObject($object->getBillingAddress());
         $shippingAddress = $this->normalizeObject($object->getShippingAddress());
 
-        if (!empty($categories)) {
-            $categories = implode(',', array_unique($categories));
-        }
-
         $properties = [
             'OrderId' => $object->getOrderId(),
-            'Categories' => $categories,
+            'Categories' => array_values(array_unique($categories)),
             'ItemNames' => $itemNames,
             'Brands' => array_unique($brands),
             'DiscountCode' => implode(',', $discountCodes),
