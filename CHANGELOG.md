@@ -1,4 +1,13 @@
 # Change Log
+## [2.21.0] - 2025-10-30
+
+### Added
+- **Added** missing customer data properties (e.g., company, title and extra address line) to the customer sync process for **full data integrity**.
+- **Added** the plugin version number to all API request headers to **aid debugging and support** on external services.
+
+### Fixed
+- **Fixed** a critical bug that caused the creation of **duplicate customer profiles** during data synchronization.
+- **Fixed** an issue where product categories were incorrectly sent as a single string; they are now correctly sent as a **list/array** to meet API requirements.
 
 ## [2.20.0] - 2025-09-11
 
