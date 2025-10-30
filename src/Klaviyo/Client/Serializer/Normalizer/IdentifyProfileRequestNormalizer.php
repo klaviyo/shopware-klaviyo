@@ -28,11 +28,14 @@ class IdentifyProfileRequestNormalizer extends AbstractNormalizer
             'last_name' => $customerProperties->getLastName(),
             'location' => [
                 'address1' => $customerProperties->getAddress(),
+                'address2' => $customerProperties->getAdditionalAddress(),
                 'city' => $customerProperties->getCity(),
                 'country' => $customerProperties->getCountry(),
                 'region' => $customerProperties->getRegion(),
                 'zip' => $customerProperties->getZip(),
             ],
+            'organization' => $customerProperties->getCompany(),
+            'title' => $customerProperties->getTitle(),
         ]]];
 
         $properties = array_filter([
@@ -41,6 +44,14 @@ class IdentifyProfileRequestNormalizer extends AbstractNormalizer
             'salesChannelId' => $customerProperties->getSalesChannelId(),
             'salesChannelName' => $customerProperties->getSalesChannelName(),
             'customerGroup' => $customerProperties->getGroupName(),
+            'accountType' => $customerProperties->getAccountType(),
+            'boundedSalesChannelId' => $customerProperties->getBoundedSalesChannelId(),
+            'boundedSalesChannelName' => $customerProperties->getBoundedSalesChannelName(),
+            'vatId' => $customerProperties->getVatId(),
+            'customerNumber' => $customerProperties->getCustomerNumber(),
+            'customerId' => $customerProperties->getCustomerId(),
+            'affiliateCode' => $customerProperties->getAffiliateCode(),
+            'campaignCode' => $customerProperties->getCampaignCode(),
         ]);
 
         if (!empty($customerProperties->getCustomFields())) {
