@@ -192,8 +192,11 @@ class CustomerPropertiesTranslator
             return null;
         }
 
-        $address = $customerEntity->getActiveBillingAddress();
+        if (!$customerEntity->getActiveBillingAddress() && !$customerEntity->getActiveShippingAddress()) {
+            $customerEntity = $this->getCustomerAddressAssociation($customerEntity, Context::createDefaultContext());
+        }
 
+        $address = $customerEntity->getActiveBillingAddress();
         if ($address && $address->getPhoneNumber()) {
             $phoneNumber = $address->getPhoneNumber();
 
@@ -249,6 +252,16 @@ class CustomerPropertiesTranslator
         $birthday = $customerEntity->getBirthday();
         $customFields = $this->prepareCustomerCustomFields($customerEntity, $customerEntity->getSalesChannelId());
         $localeCode = $this->localeCodeProducer->getLocaleCodeFromContext($customerEntity->getLanguageId(), $context);
+        $title = $customerEntity->getTitle();
+        $accountType = $customerEntity->getCompany() === null ? CustomerEntity::ACCOUNT_TYPE_PRIVATE : CustomerEntity::ACCOUNT_TYPE_BUSINESS;
+        $company = $customerEntity->getCompany();
+        $vatId = $customerEntity->getVatIds() ? implode(', ', $customerEntity->getVatIds()) : null;
+        $additionalAddressLine1 = $customerAddress ? $customerAddress->getAdditionalAddressLine1() : null;
+        $additionalAddressLine2 = $customerAddress ? $customerAddress->getAdditionalAddressLine2() : null;
+        $customerNumber = $customerEntity->getCustomerNumber();
+        $customerId = $customerEntity->getId();
+        $affiliateCode = $customerEntity->getAffiliateCode();
+        $campaignCode = $customerEntity->getCampaignCode();
 
         return new CustomerProperties(
             $customerEntity->getEmail(),
@@ -276,7 +289,17 @@ class CustomerPropertiesTranslator
                 $context
             ),
             $localeCode ?: null,
-            $this->getCustomerGroupName($customerEntity, $context)
+            $this->getCustomerGroupName($customerEntity, $context),
+            $title,
+            $accountType,
+            $company,
+            $vatId,
+            $additionalAddressLine1,
+            $additionalAddressLine2,
+            $customerNumber,
+            $customerId,
+            $affiliateCode,
+            $campaignCode
         );
     }
 }
