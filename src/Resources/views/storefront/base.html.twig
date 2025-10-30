@@ -17,7 +17,11 @@
             <div style="display: none;" data-klaviyo-identity-tracking-component=""
                  data-klaviyo-tracking="true"
                  data-klaviyo-tracking-options="{{ configurationOptions|json_encode }}"
-                 data-klaviyo-identity-tracking-component-options="{{ options|json_encode }}"></div>
+                 data-klaviyo-identity-tracking-component-options="{{ options|json_encode }}"
+                 data-klaviyo-plugin-version="{{ extensionData.configuration.versions.composer_version }}"
+                 data-klaviyo-plugin-version-db="{{ extensionData.configuration.versions.db_version }}"
+                 data-klaviyo-shopware-version="{{ extensionData.configuration.shopwareVersion }}"
+            ></div>
         {% endif %}
     {% endblock %}
 {% endblock %}
