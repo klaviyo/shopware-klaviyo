@@ -74,6 +74,19 @@ class CustomerPropertiesTranslator
 
         $customerCustomFields = $this->prepareCustomerCustomFields($customer, $orderEntity->getSalesChannelId());
         $birthday = $customer ? $customer->getBirthday() : null;
+        $title = $customer ? $customer->getTitle() : null;
+        $accountType = $customer ? (
+            $customer->getCompany() === null ?
+                CustomerEntity::ACCOUNT_TYPE_PRIVATE : CustomerEntity::ACCOUNT_TYPE_BUSINESS
+        ) : null;
+        $company = $customer ? $customer->getCompany() : null;
+        $vatId = $customer && $customer->getVatIds() ? implode(', ', $customer->getVatIds()) : null;
+        $additionalAddressLine1 = $customerAddress ? $customerAddress->getAdditionalAddressLine1() : null;
+        $additionalAddressLine2 = $customerAddress ? $customerAddress->getAdditionalAddressLine2() : null;
+        $customerNumber = $customer ? $customer->getCustomerNumber() : null;
+        $customerId = $customer ? $customer->getId() : null;
+        $affiliateCode = $customer ? $customer->getAffiliateCode() : null;
+        $campaignCode = $customer ? $customer->getCampaignCode() : null;
 
         return new CustomerProperties(
             $customer ? $customer->getEmail() : $orderCustomer->getEmail(),
@@ -101,7 +114,17 @@ class CustomerPropertiesTranslator
                 $context
             ) : null,
             $this->getLocaleCode($orderEntity, $context),
-            $this->getCustomerGroupName($customer, $context)
+            $this->getCustomerGroupName($customer, $context),
+            $title,
+            $accountType,
+            $company,
+            $vatId,
+            $additionalAddressLine1,
+            $additionalAddressLine2,
+            $customerNumber,
+            $customerId,
+            $affiliateCode,
+            $campaignCode
         );
     }
 
