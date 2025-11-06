@@ -76,6 +76,16 @@ class CustomerPropertiesTranslator
 
         $customerCustomFields = $this->prepareCustomerCustomFields($customer, $orderEntity->getSalesChannelId());
         $birthday = $customer?->getBirthday();
+        $title = $customer ? $customer->getTitle() : null;
+        $accountType = $customer ? $customer->getAccountType() : null;
+        $company = $customer ? $customer->getCompany() : null;
+        $vatId = $customer && $customer->getVatIds() ? implode(', ', $customer->getVatIds()) : null;
+        $additionalAddressLine1 = $customerAddress ? $customerAddress->getAdditionalAddressLine1() : null;
+        $additionalAddressLine2 = $customerAddress ? $customerAddress->getAdditionalAddressLine2() : null;
+        $customerNumber = $customer ? $customer->getCustomerNumber() : null;
+        $customerId = $customer ? $customer->getId() : null;
+        $affiliateCode = $customer ? $customer->getAffiliateCode() : null;
+        $campaignCode = $customer ? $customer->getCampaignCode() : null;
 
         return new CustomerProperties(
             $customer ? $customer->getEmail() : $orderCustomer->getEmail(),
@@ -103,7 +113,17 @@ class CustomerPropertiesTranslator
                 $context
             ) : null,
             $this->getLocaleCode($orderEntity, $context),
-            $this->getCustomerGroupName($customer, $context)
+            $this->getCustomerGroupName($customer, $context),
+            $title,
+            $accountType,
+            $company,
+            $vatId,
+            $additionalAddressLine1,
+            $additionalAddressLine2,
+            $customerNumber,
+            $customerId,
+            $affiliateCode,
+            $campaignCode
         );
     }
 
@@ -196,8 +216,15 @@ class CustomerPropertiesTranslator
             return null;
         }
 
-        $address = $customerEntity->getActiveBillingAddress();
+        if (!$customerEntity->getActiveBillingAddress() && !$customerEntity->getActiveShippingAddress()) {
+            $customerEntity = $this->getCustomerAddressAssociation($customerEntity, Context::createDefaultContext());
+        }
 
+        if (!$customerEntity) {
+            return null;
+        }
+
+        $address = $customerEntity->getActiveBillingAddress();
         if ($address && $address->getPhoneNumber()) {
             $phoneNumber = $address->getPhoneNumber();
 
@@ -253,6 +280,16 @@ class CustomerPropertiesTranslator
         $birthday = $customerEntity->getBirthday();
         $customFields = $this->prepareCustomerCustomFields($customerEntity, $customerEntity->getSalesChannelId());
         $localeCode = $this->localeCodeProducer->getLocaleCodeFromContext($customerEntity->getLanguageId(), $context);
+        $title = $customerEntity->getTitle();
+        $accountType = $customerEntity->getAccountType();
+        $company = $customerEntity->getCompany();
+        $vatId = $customerEntity->getVatIds() ? implode(', ', $customerEntity->getVatIds()) : null;
+        $additionalAddressLine1 = $customerAddress?->getAdditionalAddressLine1();
+        $additionalAddressLine2 = $customerAddress?->getAdditionalAddressLine2();
+        $customerNumber = $customerEntity->getCustomerNumber();
+        $customerId = $customerEntity->getId();
+        $affiliateCode = $customerEntity->getAffiliateCode();
+        $campaignCode = $customerEntity->getCampaignCode();
 
         return new CustomerProperties(
             $customerEntity->getEmail(),
@@ -280,7 +317,17 @@ class CustomerPropertiesTranslator
                 $context
             ),
             $localeCode ?: null,
-            $this->getCustomerGroupName($customerEntity, $context)
+            $this->getCustomerGroupName($customerEntity, $context),
+            $title,
+            $accountType,
+            $company,
+            $vatId,
+            $additionalAddressLine1,
+            $additionalAddressLine2,
+            $customerNumber,
+            $customerId,
+            $affiliateCode,
+            $campaignCode
         );
     }
 }
