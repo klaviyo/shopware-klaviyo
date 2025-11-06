@@ -6,9 +6,12 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class CookieConsentService {
 
+    private RequestStack $requestStack;
+
     public function __construct(
-        private readonly RequestStack $requestStack,
+        RequestStack $requestStack
     ) {
+        $this->requestStack = $requestStack;
     }
 
     /**
@@ -18,11 +21,21 @@ class CookieConsentService {
     public function hasConsent(string $consentType): bool
     {
         $request = $this->requestStack->getCurrentRequest();
-        return match ($consentType) {
-            'shopware', 'consentmanager', 'usercentrics' => !!$request->cookies->get('od-klaviyo-track-allow'),
-            'cookiebot' => $this->isCookieBotAllowed(),
-            default => true,
-        };
+        switch ($consentType) {
+            case 'shopware':
+            case 'consentmanager':
+            case 'usercentrics':
+                $isAllowed = !!$request->cookies->get('od-klaviyo-track-allow');
+                break;
+            case 'cookiebot':
+                $isAllowed = $this->isCookieBotAllowed();
+                break;
+            default:
+                $isAllowed = true;
+                break;
+        }
+
+        return $isAllowed;
     }
 
     public function isCookieBotAllowed(): bool
