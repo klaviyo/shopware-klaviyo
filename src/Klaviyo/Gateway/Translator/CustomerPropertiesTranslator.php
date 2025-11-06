@@ -220,6 +220,10 @@ class CustomerPropertiesTranslator
             $customerEntity = $this->getCustomerAddressAssociation($customerEntity, Context::createDefaultContext());
         }
 
+        if (!$customerEntity) {
+            return null;
+        }
+
         $address = $customerEntity->getActiveBillingAddress();
         if ($address && $address->getPhoneNumber()) {
             $phoneNumber = $address->getPhoneNumber();
