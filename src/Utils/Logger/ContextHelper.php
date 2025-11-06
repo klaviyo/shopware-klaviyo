@@ -12,7 +12,7 @@ use Composer\InstalledVersions;
 class ContextHelper
 {
     private static ?array $pluginVersions = null;
-    
+
     public static function createContextFromException(\Throwable $exception): array
     {
         $context = ['exception' => $exception];
@@ -93,7 +93,7 @@ class ContextHelper
         if (self::$pluginVersions !== null) {
             return self::$pluginVersions;
         }
-        
+
         $composerVersion = 'unknown';
         $dbVersion = 'unknown';
 
@@ -111,6 +111,9 @@ class ContextHelper
             $dbVersion = $connection->fetchOne('SELECT `version` FROM `plugin` WHERE `base_class` = :baseClass LIMIT 1', [
                 'baseClass' => $baseClass,
             ]);
+            if ($dbVersion === false || $dbVersion === null) {
+                $dbVersion = 'unknown';
+            }
         } catch (\Throwable $e) {
         }
 
@@ -136,7 +139,7 @@ class ContextHelper
             }
         } catch (\Throwable $e) {
         }
-        
+
         return $version;
     }
 
