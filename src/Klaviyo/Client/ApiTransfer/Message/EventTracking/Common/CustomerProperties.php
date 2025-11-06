@@ -192,8 +192,16 @@ class CustomerProperties implements \JsonSerializable
             'boundedSalesChannelId' => $this->getBoundedSalesChannelId(),
             'boundedSalesChannelName' => $this->getBoundedSalesChannelName(),
             'language' => $this->getLocaleCode(),
-            'customerGroup' => $this->getGroupName()
-
+            'customerGroup' => $this->getGroupName(),
+            'title' => $this->getTitle(),
+            'accountType' => $this->getAccountType(),
+            'company' => $this->getCompany(),
+            'vatId' => $this->getVatId(),
+            'additionalAddress' => $this->getAdditionalAddress(),
+            'customerNumber' => $this->getCustomerNumber(),
+            'customerId' => $this->getCustomerId(),
+            'affiliateCode' => $this->getAffiliateCode(),
+            'campaignCode' => $this->getCampaignCode(),
         ];
 
         foreach ($this->getCustomFields() as $fieldKey => $fieldValue) {
