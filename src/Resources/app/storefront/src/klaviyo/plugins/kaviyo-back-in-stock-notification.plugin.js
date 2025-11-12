@@ -16,7 +16,10 @@ export default class KlaviyoBackInStockNotification extends Plugin {
         errorMessageSelector: '.klaviyo-error',
         errorVariantMessageSelector: '.klaviyo-error-variant',
         notValidEmailMessageSelector: '.klaviyo-email-not-valid',
-        fetchHeaderAccept: "application/json"
+        fetchHeaderAccept: "application/json",
+        composerPluginVersion: null,
+        dbPluginVersion: null,
+        shopwareVersion: null
     };
 
     init() {
@@ -33,6 +36,12 @@ export default class KlaviyoBackInStockNotification extends Plugin {
         this._errorMessage = DomAccess.querySelector(this.el, this.options.errorMessageSelector);
         this._emailNotValid = DomAccess.querySelector(this.el, this.options.notValidEmailMessageSelector);
         this._errorVariantMessage = DomAccess.querySelector(this.el, this.options.errorVariantMessageSelector);
+        const composerPluginVersionEl = document.querySelector('[data-klaviyo-plugin-version]');
+        const dbPluginVersionEl = document.querySelector('[data-klaviyo-plugin-version-db]');
+        const shopwareVersionEl = document.querySelector('[data-klaviyo-shopware-version]');
+        this.options.composerPluginVersion = composerPluginVersionEl ? composerPluginVersionEl.getAttribute('data-klaviyo-plugin-version') : "unknown";
+        this.options.dbPluginVersion = dbPluginVersionEl ? dbPluginVersionEl.getAttribute('data-klaviyo-plugin-version-db') : "unknown";
+        this.options.shopwareVersion = shopwareVersionEl ? shopwareVersionEl.getAttribute('data-klaviyo-shopware-version') : "unknown";
     }
 
     registerEvents() {
@@ -89,6 +98,9 @@ export default class KlaviyoBackInStockNotification extends Plugin {
                 "accept": this.options.fetchHeaderAccept,
                 "content-type": this.options.contentType,
                 "revision": this.options.revision,
+                "x-sw-plugin-version": this.options.composerPluginVersion,
+                "x-sw-plugin-version-db": this.options.dbPluginVersion,
+                "x-sw-version": this.options.shopwareVersion,
             },
             "body": body,
             "method": "POST",
