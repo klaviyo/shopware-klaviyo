@@ -13,12 +13,6 @@ class OrderedProductEventTrackingRequestNormalizer extends AbstractNormalizer
      */
     public function normalize($object, string $format = null, array $context = []): array
     {
-        $categories = '';
-
-        if (!empty($object->getCategories())) {
-            $categories = implode(',', $object->getCategories());
-        }
-
         $properties = [
             'ProductName' => $object->getProductName(),
             'OrderId' => $object->getOrderId(),
@@ -27,12 +21,15 @@ class OrderedProductEventTrackingRequestNormalizer extends AbstractNormalizer
             'Quantity' => $object->getQuantity(),
             'ProductURL' => $object->getProductURL(),
             'ImageURL' => $object->getImageURL(),
-            'Categories' => $categories,
             'ProductBrand' => $object->getProductBrand()
         ];
 
         if ($object->getCustomOptions()) {
             $properties['CustomOptions'] = $object->getCustomOptions();
+        }
+
+        if (!empty($object->getCategories())) {
+            $properties['Categories'] = array_values($object->getCategories());
         }
 
         return [
