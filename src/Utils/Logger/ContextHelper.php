@@ -5,9 +5,14 @@ namespace Klaviyo\Integration\Utils\Logger;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Klaviyo\Integration\Utils\Reflection\ReflectionHelper;
+use Shopware\Core\Kernel;
+use Klaviyo\Integration\klavi_overd;
+use Composer\InstalledVersions;
 
 class ContextHelper
 {
+    private static ?array $pluginVersions = null;
+
     public static function createContextFromException(\Throwable $exception): array
     {
         $context = ['exception' => $exception];
@@ -76,6 +81,66 @@ class ContextHelper
         }
 
         return $value;
+    }
+
+    /**
+     * Returns Klaviyo plugin versions from composer and database.
+     *
+     * @return array{composer_version: string, db_version: string}
+     */
+    public static function fetchPluginVersion(): array
+    {
+        if (self::$pluginVersions !== null) {
+            return self::$pluginVersions;
+        }
+
+        $composerVersion = 'unknown';
+        $dbVersion = 'unknown';
+
+        try {
+            if (class_exists(InstalledVersions::class) && InstalledVersions::isInstalled('klaviyo/shopware-klaviyo')) {
+                $composerVersion = (string) InstalledVersions::getPrettyVersion('klaviyo/shopware-klaviyo');
+            }
+        } catch (\Throwable $e) {
+        }
+
+        try {
+            $connection = Kernel::getConnection();
+            $baseClass = klavi_overd::class;
+            /** @var string|null $version */
+            $dbVersion = $connection->fetchOne('SELECT `version` FROM `plugin` WHERE `base_class` = :baseClass LIMIT 1', [
+                'baseClass' => $baseClass,
+            ]);
+            if ($dbVersion === false || $dbVersion === null) {
+                $dbVersion = 'unknown';
+            }
+        } catch (\Throwable $e) {
+        }
+
+        self::$pluginVersions = [
+            'composer_version' => $composerVersion,
+            'db_version' => $dbVersion,
+        ];
+
+        return self::$pluginVersions;
+    }
+
+    /**
+     * Returns Shopware version string.
+     */
+    public static function fetchShopwareVersion(): string
+    {
+        $version = 'unknown';
+        try {
+            if (class_exists(InstalledVersions::class)) {
+                if (InstalledVersions::isInstalled('shopware/core')) {
+                    $version = (string) InstalledVersions::getPrettyVersion('shopware/core');
+                }
+            }
+        } catch (\Throwable $e) {
+        }
+
+        return $version;
     }
 
     private static function convertRequestToSerializable(Request $request): array
