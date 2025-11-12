@@ -4,6 +4,7 @@ namespace Klaviyo\Integration\Configuration;
 
 use Klaviyo\Integration\Exception\InvalidConfigurationException;
 use Klaviyo\Integration\Struct\PopUpConfiguration;
+use Klaviyo\Integration\Utils\Logger\ContextHelper;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class ConfigurationFactory implements ConfigurationFactoryInterface
@@ -128,7 +129,9 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
             $cookieConsent,
             $dailySubscribersSynchronization,
             $dailySubscribersSyncTime,
-            $orderMapping
+            $orderMapping,
+            ContextHelper::fetchPluginVersion(),
+            ContextHelper::fetchShopwareVersion()
         );
     }
 
