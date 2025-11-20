@@ -10,10 +10,12 @@ use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\CartRuleLoader;
 use Shopware\Core\Checkout\Cart\Order\OrderConverter;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
+use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemCollection;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
@@ -66,6 +68,7 @@ class RestorerService implements RestorerServiceInterface
                 'Unable to restore the cart',
                 ContextHelper::createContextFromException($throwable)
             );
+            return false;
         }
     }
 
@@ -154,6 +157,18 @@ class RestorerService implements RestorerServiceInterface
                 $context->assign(['customerObject' => $customer]);
             }
         }
+
+        if ($order->getLineItems() === null) {
+            return false;
+        }
+
+        $lineItems = new OrderLineItemCollection();
+        foreach ($order->getLineItems() as $lineItem) {
+            $clonedLineItem = clone $lineItem;
+            $clonedLineItem->setId(Uuid::randomHex());
+            $lineItems->add($clonedLineItem);
+        }
+        $order->setLineItems($lineItems);
 
         $cart = $this->orderConverter->convertToCart($order, $context->getContext());
         return $this->restoreByCart($cart, $context);
