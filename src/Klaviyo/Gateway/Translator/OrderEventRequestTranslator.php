@@ -145,7 +145,10 @@ class OrderEventRequestTranslator
             ->search($criteria, $context)
             ->first();
 
-        $shippingOrderAddressId = $delivery?->getShippingOrderAddressId();
+        $shippingOrderAddressId = null;
+        if ($delivery !== null) {
+            $shippingOrderAddressId = $delivery->getShippingOrderAddressId();
+        }
 
         if (!$shippingOrderAddressId) {
             return null;
