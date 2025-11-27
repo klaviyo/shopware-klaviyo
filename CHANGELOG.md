@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.20.0] - 2025-11-27
+### Fixed
+- **Fixed** a PHP 7.4 compatibility issue.
+
 ## [1.19.0] - 2025-10-30
 
 ### Added
