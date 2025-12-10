@@ -10,7 +10,7 @@ export default class KlaviyoBackInStockNotification extends Plugin {
         subscribeToNewsletterSelector: '#subscribeToNewsletter',
         apiURL: 'https://a.klaviyo.com/client/back-in-stock-subscriptions',
         contentType: 'application/json',
-        revision: '2024-10-15',
+        revision: '2025-10-15',
         hiddenCls: 'd-none',
         successMessageSelector: '.klaviyo-success',
         errorMessageSelector: '.klaviyo-error',
