@@ -129,7 +129,11 @@
             <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannelConfig"/>
             <tag name="kernel.event_subscriber"/>
         </service>
-
+        <service id="Klaviyo\Integration\EventListener\TokenChangeSubscriber">
+            <argument type="service" id="klaviyo_checkout_mapping.repository"/>
+            <argument type="service" id="monolog.logger.od_klaviyo"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
         <service id="Klaviyo\Integration\EventListener\GuestCustomerRegisterEventListener">
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator"/>
             <argument type="service" id="Klaviyo\Integration\System\Tracking\EventsTracker"/>
