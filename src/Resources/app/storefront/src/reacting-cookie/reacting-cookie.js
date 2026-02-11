@@ -30,20 +30,20 @@ function eventCallback(updatedCookies) {
 window.addEventListener('CookiebotOnAccept', setCookieConsentAllowed);
 window.addEventListener('CookiebotOnDecline', setCookieOnDecline);
 
-window.addEventListener('UC_UI_CMP_EVENT', function(event) {
+window.addEventListener('UC_CONSENT', (event) => {
+    const SERVICE_NAME = 'klaviyo';
+    const ALL_ACCEPTED = 'ALL_ACCEPTED';
+    const consent = event.detail?.consent || {};
+    const services = consent.services || {};
+    const klaviyoService = Object.values(services).find(service => service?.name?.toLowerCase() === SERVICE_NAME);
 
-    if (event.detail) {
-        switch (event.detail.type) {
-            case 'ACCEPT_ALL':
-                setCookieConsentAllowed();
-                break;
-            case 'DENY_ALL':
-                setCookieOnDecline();
-                break;
-            default:
-                break;
-        }
+    if (klaviyoService) {
+        klaviyoService.consent?.given ? setCookieConsentAllowed() : setCookieOnDecline();
+        return;
     }
+
+    const isAccepted = consent.status === ALL_ACCEPTED;
+    isAccepted ? setCookieConsentAllowed() : setCookieOnDecline();
 });
 
 if (window.cmp_id) {

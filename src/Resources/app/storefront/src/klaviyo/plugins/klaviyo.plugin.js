@@ -2,45 +2,10 @@ import Plugin from 'src/plugin-system/plugin.class';
 import Storage from 'src/helper/storage/storage.helper';
 import KlaviyoCookie from '../util/cookie'
 
-/**
- * This component is responsible for Klaviyo script initialization on storefront.
- * We have some component behavior-defining restrictions from cookie consent and Klaviyo script deferred initialization.
- * There is all possible Klaviyo script initialization cases:
- *
- * Glossary:
- * - "INTERACT" -> Customer interacts with page by scrolling it.
- * - "CONSENT" -> Customer allowed Klaviyo cookies.
- *
- * 1. Preconditions: deferred script initialization is ON
- *    Steps:
- *    A) INTERACT -> nothing happens;
- *    B) CONSENT -> "interacted_with_page" is added to localStorage,
- *                  "od-klaviyo-track-allow" is added to cookies,
- *                  Klaviyo script is initialized.
- *
- * 2. Preconditions: deferred script initialization is ON
- *    Steps:
- *    A) CONSENT -> "interacted_with_page" is added to localStorage,
- *                  "od-klaviyo-track-allow" is added to cookies,
- *                  Klaviyo script is initialized;
- *    B) INTERACT -> nothing happens.
- *
- * 3. Preconditions: deferred script initialization is OFF
- *    Steps:
- *    A) INTERACT -> nothing happens;
- *    B) CONSENT -> "od-klaviyo-track-allow" is added + Klaviyo script is initialized.
- *
- * 4. Preconditions: deferred script initialization is OFF
- *    Steps:
- *    A) CONSENT -> "od-klaviyo-track-allow" is added + Klaviyo script is initialized;
- *    B) INTERACT -> "nothing happens.
- *
- * Note: If deferred script initialization is enabled, customer had interacted with page and reloaded current page
- * or opened next page, Klaviyo script will be initialized immediately
- */
 export default class KlaviyoTracking extends Plugin {
+    static STORAGE_VALUE = '1';
     static options = {
-        klaviyoInitializedStorageKey: 'interacted_with_page',
+        storageKey: 'interacted_with_page',
         scriptInitialized: false,
         afterInteraction: false,
         publicApiKey: '',
@@ -58,17 +23,23 @@ export default class KlaviyoTracking extends Plugin {
     }
 
     registerEvents() {
-        if (this.isPageInteractionRequired()) {
-            window.addEventListener('scroll', function () {
-                this.storage.setItem(this.options.klaviyoInitializedStorageKey, 'true');
-                if (this.canInitializeKlaviyoScript()) {
-                    this.initKlaviyoScript();
-                }
-            }.bind(this), {once: true});
+
+        if (!this.isPageInteractionRequired()) {
+            return;
         }
+
+        window.addEventListener('scroll', function () {
+            this.markAsInteracted();
+            if (!this.options.scriptInitialized && this.isAllowToTrack()) {
+                this.initKlaviyoScript();
+            }
+        }.bind(this), {once: true});
     }
 
     cookiebotOnDecline() {
+        this.unsetKlaviyoCookie();
+        this.options.scriptInitialized = false;
+        this.storage.removeItem(this.options.storageKey);
         const scriptList = document.querySelectorAll("script[type='text/javascript']");
         for (let i = 0; i < scriptList.length; i++) {
             if (typeof scriptList[i].src === 'string' && scriptList[i].src.includes('klaviyo.com')) {
@@ -79,58 +50,57 @@ export default class KlaviyoTracking extends Plugin {
     }
 
     onKlaviyoCookieConsentAllowed() {
-        // As far as cookie accept event can be recognized as "page interaction",
-        // we are set our interaction key to the storage.
         if (this.options.afterInteraction) {
-            this.storage.setItem(this.options.klaviyoInitializedStorageKey, 'true')
+            this.markAsInteracted()
         }
 
         if (this.canInitializeKlaviyoScript()) {
             this.initKlaviyoScript();
         }
 
-        this.addKlaviyoCookie();
+        this.setKlaviyoCookie();
     }
 
     onKlaviyoCookieConsentManagerAllowed() {
-        this.addKlaviyoCookie();
+        this.setKlaviyoCookie();
         this.onKlaviyoCookieConsentAllowed();
     }
 
     isAllowToTrack() {
         switch (this.options.cookieConsent) {
             case 'nothing':
-                // In this config, always loading klaviyo cookies
-                this.storage.setItem(this.options.klaviyoInitializedStorageKey, 'true');
                 return true;
             case 'shopware':
             case 'consentmanager':
             case 'usercentrics':
-                // In this config, shopware default cookies is checked
-                return KlaviyoCookie.getCookie('od-klaviyo-track-allow');
             case 'cookiebot':
-                // In this config, cookiebot cookies is checked
-                try {
-                    return Cookiebot.consent && Cookiebot.consent.marketing;
-                } catch (e) {
-                    console.log('Cookiebot variable is not defined.');
-                    return false;
-                }
+                return KlaviyoCookie.getCookie('od-klaviyo-track-allow');
             default:
                 return false;
         }
     }
 
     isPageInteractionRequired() {
-        return this.isAllowToTrack()
-            && this.options.afterInteraction
-            && this.storage.getItem(this.options.klaviyoInitializedStorageKey) !== null;
+        // Check if the option `Initialize Klaviyo After First Interaction With Page.` is enabled.
+        if (!this.options.afterInteraction) {
+            return false;
+        }
+
+        // Check if the script has already been initialized.
+        if (this.options.scriptInitialized) {
+            return false;
+        }
+
+        // Check if page interaction already happened.
+        return !this.hasPageInteraction();
     }
 
     canInitializeKlaviyoScript() {
-        return !this.options.scriptInitialized
-            && this.isAllowToTrack()
-            && this.isPageInteractionRequired();
+        if (this.isPageInteractionRequired()) {
+            return this.hasPageInteraction();
+        }
+
+        return !this.options.scriptInitialized && this.isAllowToTrack();
     }
 
     initKlaviyoScript() {
@@ -147,9 +117,19 @@ export default class KlaviyoTracking extends Plugin {
         initializer();
     }
 
-    addKlaviyoCookie() {
-        if (KlaviyoCookie.getCookie('od-klaviyo-track-allow') === null) {
-            KlaviyoCookie.setCookie('od-klaviyo-track-allow', 1, 30);
-        }
+    setKlaviyoCookie() {
+        KlaviyoCookie.setCookie('od-klaviyo-track-allow', 'true', 30);
+    }
+
+    unsetKlaviyoCookie() {
+        KlaviyoCookie.setCookie('od-klaviyo-track-allow', '', -1);
+    }
+
+    markAsInteracted() {
+        this.storage.setItem(this.options.storageKey, KlaviyoTracking.STORAGE_VALUE);
+    }
+
+    hasPageInteraction() {
+        return this.storage.getItem(this.options.storageKey) === KlaviyoTracking.STORAGE_VALUE;
     }
 }
