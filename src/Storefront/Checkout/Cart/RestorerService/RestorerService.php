@@ -125,7 +125,8 @@ class RestorerService implements RestorerServiceInterface
 
     protected function restoreByCart(Cart $cart, SalesChannelContext $context): bool
     {
-        $session = $this->requestStack->getCurrentRequest()?->getSession();
+        $request = $this->requestStack->getCurrentRequest();
+        $session = $request !== null ? $request->getSession() : null;
         if ($session === null) {
             $this->logger->error('Unable to get session for cart restoration');
             return false;

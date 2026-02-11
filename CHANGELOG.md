@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.21.0] - 2026-02-05
+
+### Fixed
+- **Fixed** Prevent duplicate products from Abandoned cart mail
+- **Fixed** Prevent uncoupling line items after restoring order
+- **Fixed** Fix cookie consent handling
+
 ## [1.20.0] - 2025-11-27
 ### Fixed
 - **Fixed** a PHP 7.4 compatibility issue.

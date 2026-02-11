@@ -9,9 +9,11 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class RestoreCartSubscriber implements EventSubscriberInterface
 {
-    public function __construct(
-        private readonly RequestStack $requestStack,
-    ) {}
+    private RequestStack $requestStack;
+
+    public function __construct(RequestStack $requestStack) {
+        $this->requestStack = $requestStack;
+    }
 
     public static function getSubscribedEvents(): array
     {
