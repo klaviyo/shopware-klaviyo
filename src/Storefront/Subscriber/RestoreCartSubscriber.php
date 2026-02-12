@@ -29,15 +29,26 @@ class RestoreCartSubscriber implements EventSubscriberInterface
             return;
         }
 
+        if (!$request->hasSession()) {
+            return;
+        }
+
         $session = $request->getSession();
         $restoredLineItems = $session->get(RestorerService::CART_RESTORE_SESSION, []);
         $mergeableLineItems = $event->getMergeableLineItems();
+        $lineItemIdsToRemove = [];
+
         foreach ($mergeableLineItems as $lineItem) {
             // Remove duplicate line items that were already restored by the RestorerService.
-            if (array_key_exists($lineItem->getId(), $restoredLineItems)) {
-                $mergeableLineItems->remove($lineItem->getId());
-                unset($restoredLineItems[$lineItem->getId()]);
+            $lineItemId = $lineItem->getId();
+            if (array_key_exists($lineItemId, $restoredLineItems)) {
+                $lineItemIdsToRemove[] = $lineItemId;
+                unset($restoredLineItems[$lineItemId]);
             }
+        }
+
+        foreach ($lineItemIdsToRemove as $lineItemId) {
+            $mergeableLineItems->remove($lineItemId);
         }
         $session->set(RestorerService::CART_RESTORE_SESSION, $restoredLineItems);
     }

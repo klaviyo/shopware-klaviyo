@@ -46,14 +46,14 @@ class TokenChangeSubscriber implements EventSubscriberInterface
                 new EqualsFilter('mappingTable', CheckoutMappingDefinition::CART_TABLE)
             );
 
-            $mappings = $this->mappingRepository->search($criteria, $event->getContext())->getElements();
+            $mappingIds = $this->mappingRepository->searchIds($criteria, $event->getContext())->getIds();
 
             // Update each mapping with the new token
-            if (!empty($mappings)) {
+            if (!empty($mappingIds)) {
                 $updates = [];
-                foreach ($mappings as $mapping) {
+                foreach ($mappingIds as $mappingId) {
                     $updates[] = [
-                        'id' => $mapping->getId(),
+                        'id' => $mappingId,
                         'reference' => $newToken,
                     ];
                 }

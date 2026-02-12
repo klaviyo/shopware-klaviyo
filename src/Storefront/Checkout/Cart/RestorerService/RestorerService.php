@@ -126,21 +126,20 @@ class RestorerService implements RestorerServiceInterface
     protected function restoreByCart(Cart $cart, SalesChannelContext $context): bool
     {
         $request = $this->requestStack->getCurrentRequest();
-        $session = $request !== null ? $request->getSession() : null;
-        if ($session === null) {
-            $this->logger->error('Unable to get session for cart restoration');
-            return false;
+        $restoredLineItems = [];
+        if ($request->hasSession()) {
+            // Store line item ids in session to prevent duplicates during cart merge.
+            $restoredLineItems = $request->getSession()->get(self::CART_RESTORE_SESSION, []);
         }
-
-        // Store line item ids in session to prevent duplicates during cart merge
-        $restoredLineItems = $session->get(self::CART_RESTORE_SESSION, []);
         $result = [];
         foreach ($cart->getLineItems() as $lineItem) {
             $result[] = $lineItem;
             // Mark this line item id as restored, so it won't be added again during cart merge
             $restoredLineItems[$lineItem->getId()] = true;
         }
-        $session->set(self::CART_RESTORE_SESSION, $restoredLineItems);
+        if ($request->hasSession()) {
+            $request->getSession()->set(self::CART_RESTORE_SESSION, $restoredLineItems);
+        }
 
         if (!empty($result)) {
             $currentCart = $this->cartRuleLoader->loadByToken($context, $context->getToken())->getCart();
@@ -182,10 +181,22 @@ class RestorerService implements RestorerServiceInterface
         }
 
         $lineItems = new OrderLineItemCollection();
+        $idMap = [];
         foreach ($order->getLineItems() as $lineItem) {
             $clonedLineItem = clone $lineItem;
-            $clonedLineItem->setId(Uuid::randomHex());
+            $originalId = $lineItem->getId();
+            $newId = Uuid::randomHex();
+            if ($originalId !== null) {
+                $idMap[$originalId] = $newId;
+            }
+            $clonedLineItem->setId($newId);
             $lineItems->add($clonedLineItem);
+        }
+        foreach ($lineItems as $clonedLineItem) {
+            $oldParentId = $clonedLineItem->getParentId();
+            if ($oldParentId !== null && array_key_exists($oldParentId, $idMap)) {
+                $clonedLineItem->setParentId($idMap[$oldParentId]);
+            }
         }
         $order->setLineItems($lineItems);
 
