@@ -33,7 +33,7 @@ window.addEventListener('CookiebotOnDecline', setCookieOnDecline);
 const SERVICE_NAME = 'klaviyo';
 const ALL_ACCEPTED = 'ALL_ACCEPTED';
 window.addEventListener('UC_CONSENT', (event) => {
-    const consent = event.detail?.consent || {};
+    const consent = (event.detail||{}).consent || {};
     const services = consent.services || {};
     const klaviyoService = Object.values(services).find(function (service) {
         return service && service.name && service.name.toLowerCase() === SERVICE_NAME;
