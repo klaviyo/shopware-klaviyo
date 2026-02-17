@@ -20,7 +20,7 @@ class CookieConsentService {
         $this->requestStack = $requestStack;
     }
     /**
-     * @param string $consentType
+     * @param 'shopware' | 'consentmanager' | 'usercentrics' | 'cookiebot' $consentType
      * @return bool
      */
     public function hasConsent(string $consentType): bool

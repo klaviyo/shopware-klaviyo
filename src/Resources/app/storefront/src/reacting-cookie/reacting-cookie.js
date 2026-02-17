@@ -30,11 +30,10 @@ function eventCallback(updatedCookies) {
 window.addEventListener('CookiebotOnAccept', setCookieConsentAllowed);
 window.addEventListener('CookiebotOnDecline', setCookieOnDecline);
 
-window.addEventListener('UC_CONSENT', function (event) {
-    const SERVICE_NAME = 'klaviyo';
-    const ALL_ACCEPTED = 'ALL_ACCEPTED';
-
-    const consent = (event.detail && event.detail.consent) ? event.detail.consent : {};
+const SERVICE_NAME = 'klaviyo';
+const ALL_ACCEPTED = 'ALL_ACCEPTED';
+window.addEventListener('UC_CONSENT', (event) => {
+    const consent = (event.detail||{}).consent || {};
     const services = consent.services || {};
     const klaviyoService = Object.values(services).find(function (service) {
         return service && service.name && service.name.toLowerCase() === SERVICE_NAME;
