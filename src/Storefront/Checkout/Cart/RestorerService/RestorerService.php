@@ -126,6 +126,10 @@ class RestorerService implements RestorerServiceInterface
     protected function restoreByCart(Cart $cart, SalesChannelContext $context): bool
     {
         $request = $this->requestStack->getCurrentRequest();
+        if ($request === null) {
+            return false;
+        }
+
         $restoredLineItems = [];
         if ($request->hasSession()) {
             // Store line item ids in session to prevent duplicates during cart merge.
