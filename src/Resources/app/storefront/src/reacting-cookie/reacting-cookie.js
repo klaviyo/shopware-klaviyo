@@ -9,12 +9,6 @@ function setCookieConsentAllowed() {
     })
 }
 
-function setCookieConsentManagerAllowed() {
-    Iterator.iterate(PluginManager.getPluginInstances('KlaviyoTracking'), (plugin) => {
-        plugin.onKlaviyoCookieConsentManagerAllowed();
-    })
-}
-
 function setCookieOnDecline() {
     Iterator.iterate(PluginManager.getPluginInstances('KlaviyoTracking'), (plugin) => {
         plugin.cookiebotOnDecline();
@@ -58,5 +52,5 @@ window.addEventListener('UC_CONSENT', (event) => {
 
 if (window.cmp_id) {
     __cmp("addEventListener", ["consentrejected", setCookieOnDecline, false], null);
-    __cmp("addEventListener", ["consentapproved", setCookieConsentManagerAllowed, false], null);
+    __cmp("addEventListener", ["consentapproved", setCookieConsentAllowed, false], null);
 }

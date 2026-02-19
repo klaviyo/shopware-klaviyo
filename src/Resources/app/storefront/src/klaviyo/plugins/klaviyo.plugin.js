@@ -50,6 +50,8 @@ export default class KlaviyoTracking extends Plugin {
     }
 
     onKlaviyoCookieConsentAllowed() {
+        this.setKlaviyoCookie();
+
         if (this.options.afterInteraction) {
             this.markAsInteracted()
         }
@@ -57,15 +59,7 @@ export default class KlaviyoTracking extends Plugin {
         if (this.canInitializeKlaviyoScript()) {
             this.initKlaviyoScript();
         }
-
-        this.setKlaviyoCookie();
     }
-
-    onKlaviyoCookieConsentManagerAllowed() {
-        this.setKlaviyoCookie();
-        this.onKlaviyoCookieConsentAllowed();
-    }
-
     isAllowToTrack() {
         switch (this.options.cookieConsent) {
             case 'nothing':
