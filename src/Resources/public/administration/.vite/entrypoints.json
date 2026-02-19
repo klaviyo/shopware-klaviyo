@@ -3,11 +3,11 @@
   "entryPoints": {
     "klavi-overd": {
       "css": [
-        "/bundles/klavi_overd/administration/assets/klavi-overd-BL1VqB0k.css"
+        "/bundles/klavi_overd/administration/assets/klavi-overd-C00qZRMC.css"
       ],
       "dynamic": [],
       "js": [
-        "/bundles/klavi_overd/administration/assets/klavi-overd-oqTaJAJ2.js"
+        "/bundles/klavi_overd/administration/assets/klavi-overd-DV6UBYIh.js"
       ],
       "legacy": false,
       "preload": []
