@@ -129,7 +129,11 @@
             <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannelConfig"/>
             <tag name="kernel.event_subscriber"/>
         </service>
-
+        <service id="Klaviyo\Integration\EventListener\TokenChangeSubscriber">
+            <argument type="service" id="klaviyo_checkout_mapping.repository"/>
+            <argument type="service" id="monolog.logger.od_klaviyo"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
         <service id="Klaviyo\Integration\EventListener\GuestCustomerRegisterEventListener">
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator"/>
             <argument type="service" id="Klaviyo\Integration\System\Tracking\EventsTracker"/>
@@ -216,6 +220,7 @@
             <argument type="service" id="Shopware\Core\Checkout\Cart\Order\OrderConverter"/>
             <argument type="service" id="monolog.logger.od_klaviyo"/>
             <argument type="service" id="customer.repository"/>
+            <argument type="service" id="request_stack"/>
         </service>
 
         <service id="Klaviyo\Integration\Controller\Api\VersionController" public="true">
@@ -238,6 +243,10 @@
             <argument type="service" id="Symfony\Component\HttpFoundation\RequestStack" />
         </service>
 
+        <service id="Klaviyo\Integration\Storefront\Subscriber\RestoreCartSubscriber" >
+            <argument type="service" id="request_stack"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
     </services>
 
 </container>
