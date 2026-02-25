@@ -6,11 +6,19 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class CookieConsentService {
 
-    public function __construct(
-        private readonly RequestStack $requestStack,
-    ) {
-    }
+    public const MANAGED_CONSENT_TYPES = [
+        'shopware',
+        'consentmanager',
+        'usercentrics',
+        'cookiebot'
+    ];
 
+    private RequestStack $requestStack;
+
+    public function __construct(RequestStack $requestStack)
+    {
+        $this->requestStack = $requestStack;
+    }
     /**
      * @param 'shopware' | 'consentmanager' | 'usercentrics' | 'cookiebot' $consentType
      * @return bool
@@ -18,34 +26,15 @@ class CookieConsentService {
     public function hasConsent(string $consentType): bool
     {
         $request = $this->requestStack->getCurrentRequest();
-        return match ($consentType) {
-            'shopware', 'consentmanager', 'usercentrics' => !!$request->cookies->get('od-klaviyo-track-allow'),
-            'cookiebot' => $this->isCookieBotAllowed(),
-            default => true,
-        };
-    }
 
-    public function isCookieBotAllowed(): bool
-    {
-        $request = $this->requestStack->getCurrentRequest();
-        $data = $request->cookies->get('CookieConsent');
-
-        if (!$data) {
+        if (null === $request) {
             return false;
         }
 
-        $valid_php_json = preg_replace(
-            '/\s*:\s*([a-zA-Z0-9_]+?)([}\[,])/',
-            ':"$1"$2',
-            preg_replace(
-                '/([{\[,])\s*([a-zA-Z0-9_]+?):/',
-                '$1"$2":',
-                str_replace("'", '"', stripslashes($data))
-            )
-        );
+        if (in_array($consentType, self::MANAGED_CONSENT_TYPES, true)) {
+            return (bool) $request->cookies->get('od-klaviyo-track-allow');
+        }
 
-        $CookieConsent = json_decode($valid_php_json, true);
-
-        return !empty($CookieConsent['marketing']) && 'true' === $CookieConsent['marketing'];
+        return true;
     }
 }
