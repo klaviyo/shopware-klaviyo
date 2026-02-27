@@ -1,5 +1,10 @@
 # Change Log
 
+## [1.22.0] - 2026-02-27
+
+### Fixed
+- **Fixed** PHP 7.4 compatibility
+
 ## [1.21.0] - 2026-02-05
 
 ### Fixed
