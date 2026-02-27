@@ -45,7 +45,7 @@ class RestorerService implements RestorerServiceInterface
         OrderConverter $orderConverter,
         LoggerInterface $logger,
         EntityRepository $customerRepository,
-        RequestStack $requestStack,
+        RequestStack $requestStack
     ) {
         $this->mappingRepository = $mappingRepository;
         $this->orderRepository = $orderRepository;
