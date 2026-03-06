@@ -9,12 +9,6 @@ function setCookieConsentAllowed() {
     })
 }
 
-function setCookieConsentManagerAllowed() {
-    Iterator.iterate(PluginManager.getPluginInstances('KlaviyoTracking'), (plugin) => {
-        plugin.onKlaviyoCookieConsentManagerAllowed();
-    })
-}
-
 function setCookieOnDecline() {
     Iterator.iterate(PluginManager.getPluginInstances('KlaviyoTracking'), (plugin) => {
         plugin.cookiebotOnDecline();
@@ -30,23 +24,33 @@ function eventCallback(updatedCookies) {
 window.addEventListener('CookiebotOnAccept', setCookieConsentAllowed);
 window.addEventListener('CookiebotOnDecline', setCookieOnDecline);
 
-window.addEventListener('UC_UI_CMP_EVENT', function(event) {
+const SERVICE_NAME = 'klaviyo';
+const ALL_ACCEPTED = 'ALL_ACCEPTED';
+window.addEventListener('UC_CONSENT', (event) => {
+    const consent = (event.detail||{}).consent || {};
+    const services = consent.services || {};
+    const klaviyoService = Object.values(services).find(function (service) {
+        return service && service.name && service.name.toLowerCase() === SERVICE_NAME;
+    });
 
-    if (event.detail) {
-        switch (event.detail.type) {
-            case 'ACCEPT_ALL':
-                setCookieConsentAllowed();
-                break;
-            case 'DENY_ALL':
-                setCookieOnDecline();
-                break;
-            default:
-                break;
+    if (klaviyoService) {
+        if (klaviyoService.consent && klaviyoService.consent.given) {
+            setCookieConsentAllowed();
+        } else {
+            setCookieOnDecline();
         }
+        return;
+    }
+
+    const isAccepted = (consent.status === ALL_ACCEPTED);
+    if (isAccepted) {
+        setCookieConsentAllowed();
+    } else {
+        setCookieOnDecline();
     }
 });
 
 if (window.cmp_id) {
     __cmp("addEventListener", ["consentrejected", setCookieOnDecline, false], null);
-    __cmp("addEventListener", ["consentapproved", setCookieConsentManagerAllowed, false], null);
+    __cmp("addEventListener", ["consentapproved", setCookieConsentAllowed, false], null);
 }
