@@ -30,4 +30,20 @@ fieldset {
     .no-top-margin {
         margin-top: 0;
     }
+
+    .boolean-config-container {
+        .sw-inherit-wrapper {
+            display: flex;
+            flex-direction: row;
+            justify-content: start;
+            .mt-switch { order: 1; }
+            .sw-inherit-wrapper__toggle-wrapper {
+                order: 2;
+                margin-bottom: 0;
+            }
+            .sw-inherit-wrapper__help-text {
+                margin-left: 10px;
+            }
+        }
+    }
 }

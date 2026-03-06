@@ -1,5 +1,13 @@
 # Change Log
 
+## [4.2.0] - 2026-02-05
+
+### Fixed
+- **Fixed** Prevent duplicate products from Abandoned cart mail
+- **Fixed** Prevent uncoupling line items after restoring order
+- **Fixed** Fix cookie consent handling
+- **Fixed** Fix inheritance option for boolean configurations
+
 ## [4.1.0] - 2025-10-30
 
 ### Added
