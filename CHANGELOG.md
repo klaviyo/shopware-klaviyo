@@ -1,5 +1,12 @@
 # Change Log
 
+## [3.6.0] - 2026-02-05
+
+### Fixed
+- **Fixed** Prevent duplicate products from Abandoned cart mail
+- **Fixed** Prevent uncoupling line items after restoring order
+- **Fixed** Fix cookie consent handling
+
 ## [3.5.0] - 2025-10-30
 
 ### Added
