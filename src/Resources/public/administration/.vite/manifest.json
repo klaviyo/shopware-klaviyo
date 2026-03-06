@@ -1,0 +1,11 @@
+{
+  "main.js": {
+    "file": "assets/klavi-overd-GvNHAZQ7.js",
+    "name": "klavi-overd",
+    "src": "main.js",
+    "isEntry": true,
+    "css": [
+      "assets/klavi-overd-C00qZRMC.css"
+    ]
+  }
+}

@@ -7,18 +7,20 @@ Component.override('sw-product-deliverability-form', {
 
     methods: {
         createdComponent() {
-            if (typeof this.product.stock === 'undefined') {
-                this.product.stock = 0;
+
+            this.$super('createdComponent');
+
+            if (!this.product || !this.parentProduct) {
+                return;
             }
 
-            if (this.product) {
-                if (!this.product.customFields) {
-                    this.product.customFields = {};
-                }
+            if (!this.product.customFields) {
+                this.product.customFields = {};
 
-                if (!this.product.customFields.klaviyo_back_in_stock_disabled) {
-                    this.product.customFields.klaviyo_back_in_stock_disabled = false;
-                }
+            }
+
+            if (!this.parentProduct.customFields) {
+                this.parentProduct.customFields = {};
             }
         }
     }
