@@ -3,7 +3,7 @@
     {% block od_klaviyo_back_in_stock_email_notification %}
         <sw-inherit-wrapper
             v-model="product.customFields.klaviyo_back_in_stock_disabled"
-            :has-parent="!!parentProduct.id"
+            :has-parent="!!(parentProduct && parentProduct.id)"
             :inherited-value="parentProduct && parentProduct.customFields ? parentProduct.customFields.klaviyo_back_in_stock_disabled : null"
         >
             <template #content="props">
