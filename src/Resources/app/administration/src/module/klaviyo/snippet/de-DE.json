@@ -305,6 +305,12 @@
                     "klaviyo-product-feed": "Klaviyo (XML)"
                 }
             }
+        },
+        "sw-product": {
+            "settingsForm": {
+                "labelKlaviyoBackInStockDisabled": "E-Mail-Benachrichtigungen bei Verfügbarkeit deaktivieren",
+                "helpTextKlaviyoBackInStockDisabled": "Blendet das Klaviyo Formular „Wieder auf Lager“ auf der Produktdetailseite aus."
+            }
         }
     }
 }
