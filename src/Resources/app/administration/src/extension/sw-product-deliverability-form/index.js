@@ -16,7 +16,6 @@ Component.override('sw-product-deliverability-form', {
 
             if (!this.product.customFields) {
                 this.product.customFields = {};
-
             }
 
             if (!this.parentProduct.customFields) {
