@@ -10,7 +10,7 @@ Component.override('sw-product-deliverability-form', {
 
             this.$super('createdComponent');
 
-            if (!this.product || !this.parentProduct) {
+            if (!this.product) {
                 return;
             }
 
@@ -18,7 +18,7 @@ Component.override('sw-product-deliverability-form', {
                 this.product.customFields = {};
             }
 
-            if (!this.parentProduct.customFields) {
+            if (this.parentProduct && !this.parentProduct.customFields) {
                 this.parentProduct.customFields = {};
             }
         }

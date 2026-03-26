@@ -3,12 +3,11 @@
     {% block od_klaviyo_back_in_stock_email_notification %}
         <div class="product-klaviyo-deliverability">
             <sw-inherit-wrapper
-                v-if="product.customFields && parentProduct.customFields"
                 v-model:value="product.customFields.klaviyo_back_in_stock_disabled"
                 :label="$tc('sw-product.settingsForm.labelKlaviyoBackInStockDisabled')"
                 :help-text="$tc('sw-product.settingsForm.helpTextKlaviyoBackInStockDisabled')"
                 :has-parent="hasParent"
-                :inherited-value="parentProduct.customFields.klaviyo_back_in_stock_disabled"
+                :inherited-value="(parentProduct && parentProduct.customFields) ? parentProduct.customFields.klaviyo_back_in_stock_disabled : null"
             >
                 <template #content="props">
                     <sw-switch-field
