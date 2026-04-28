@@ -367,15 +367,15 @@ class KlaviyoGateway
     }
 
     /**
-     * @param Context $context
      * @param SalesChannelEntity $salesChannelEntity
+     * @param Context $context
      * @param NewsletterRecipientCollection $recipientCollection
      * @param string $profilesListId
      * @return array
      */
     public function subscribeToKlaviyoList(
-        Context $context,
         SalesChannelEntity $salesChannelEntity,
+        Context $context,
         NewsletterRecipientCollection $recipientCollection,
         string $profilesListId
     ): array {
@@ -402,7 +402,7 @@ class KlaviyoGateway
                 if ($newCollection->count()) {
                     $errors = array_merge(
                         $errors,
-                        $this->subscribeToKlaviyoList($context, $salesChannelEntity, $newCollection, $profilesListId)
+                        $this->subscribeToKlaviyoList($salesChannelEntity, $context, $newCollection, $profilesListId)
                     );
                 }
             }

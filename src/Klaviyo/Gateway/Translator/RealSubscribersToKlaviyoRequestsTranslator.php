@@ -54,24 +54,13 @@ class RealSubscribersToKlaviyoRequestsTranslator
                 null,
                 null,
                 null,
-                $this->resolveLocaleCode($context, $recipientEntity)
+                $this->localeCodeProducer->getOptionalLocaleCodeForLanguage(
+                    $recipientEntity->getLanguageId(),
+                    $context
+                )
             ));
         }
 
         return $profiles;
-    }
-
-    private function resolveLocaleCode(Context $context, NewsletterRecipientEntity $recipientEntity): ?string
-    {
-        try {
-            $code = $this->localeCodeProducer->getLocaleCodeFromContext(
-                $recipientEntity->getLanguageId(),
-                $context
-            );
-
-            return $code !== '' ? $code : null;
-        } catch (\Throwable $e) {
-            return null;
-        }
     }
 }

@@ -42,21 +42,5 @@
         "shopware/core": ">=6.4.4.0, <6.5.0.0",
         "shopware/storefront": ">=6.4.4.0, <6.5.0.0",
         "ext-json": "*"
-    },
-    "scripts": {
-        "lint:php": "find src -name '*.php' -print0 | xargs -0 -n1 php -l",
-        "lint:php:newsletter-language": [
-            "@php -l src/Klaviyo/Gateway/Translator/NewsletterSubscriberPropertiesTranslator.php",
-            "@php -l src/Klaviyo/Gateway/Translator/SubscribersToKlaviyoRequestsTranslator.php",
-            "@php -l src/Klaviyo/Gateway/Translator/RealSubscribersToKlaviyoRequestsTranslator.php",
-            "@php -l src/Klaviyo/Client/ApiTransfer/Message/Profiles/Common/ProfileContactInfo.php",
-            "@php -l src/Klaviyo/Gateway/KlaviyoGateway.php",
-            "@php -l src/Model/UseCase/Operation/SubscriberSyncOperation.php",
-            "@php -l src/Klaviyo/Gateway/Translator/CartEventRequestTranslator.php",
-            "@php -l src/EventListener/AddPluginExtensionToPageDTOEventListener.php",
-            "@php -l src/Klaviyo/Client/Serializer/Normalizer/AddProfilesToListRequestsNormalizer.php",
-            "@php -l src/Klaviyo/Client/Serializer/Normalizer/RealSubscribersToKlaviyoRequestNormalizer.php",
-            "@php -l src/Klaviyo/Client/Serializer/Normalizer/SubscribeToListRequestNormalizer.php"
-        ]
     }
 }

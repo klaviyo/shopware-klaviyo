@@ -18,7 +18,10 @@ class NewsletterSubscriberPropertiesTranslator
 
     public function translateSubscriber(Context $context, NewsletterRecipientEntity $subscriberEntity): CustomerProperties
     {
-        $localeCode = $this->resolveLocaleCode($context, $subscriberEntity);
+        $localeCode = $this->localeCodeProducer->getOptionalLocaleCodeForLanguage(
+            $subscriberEntity->getLanguageId(),
+            $context
+        );
 
         return new CustomerProperties(
             $subscriberEntity->getEmail(),
@@ -39,19 +42,5 @@ class NewsletterSubscriberPropertiesTranslator
             null,
             $localeCode
         );
-    }
-
-    private function resolveLocaleCode(Context $context, NewsletterRecipientEntity $subscriberEntity): ?string
-    {
-        try {
-            $code = $this->localeCodeProducer->getLocaleCodeFromContext(
-                $subscriberEntity->getLanguageId(),
-                $context
-            );
-
-            return $code !== '' ? $code : null;
-        } catch (\Throwable $e) {
-            return null;
-        }
     }
 }
