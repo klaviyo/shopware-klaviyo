@@ -62,7 +62,9 @@
         <service id="Klaviyo\Integration\Klaviyo\Gateway\Translator\UpdateProfileRequestTranslator">
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CustomerPropertiesTranslator"/>
         </service>
-        <service id="Klaviyo\Integration\Klaviyo\Gateway\Translator\NewsletterSubscriberPropertiesTranslator"/>
+        <service id="Klaviyo\Integration\Klaviyo\Gateway\Translator\NewsletterSubscriberPropertiesTranslator">
+            <argument type="service" id="Klaviyo\Integration\Utils\LocaleCodeProducer"/>
+        </service>
         <service id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CartEventRequestTranslator">
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CustomerPropertiesTranslator"/>
             <argument type="service" id="Klaviyo\Integration\Entity\Helper\ProductDataHelper"/>
@@ -76,8 +78,12 @@
         <service id="Klaviyo\Integration\Klaviyo\Gateway\Translator\IdentifyProfileRequestTranslator">
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CustomerPropertiesTranslator"/>
         </service>
-        <service id="Klaviyo\Integration\Klaviyo\Gateway\Translator\SubscribersToKlaviyoRequestsTranslator"/>
-        <service id="Klaviyo\Integration\Klaviyo\Gateway\Translator\RealSubscribersToKlaviyoRequestsTranslator"/>
+        <service id="Klaviyo\Integration\Klaviyo\Gateway\Translator\SubscribersToKlaviyoRequestsTranslator">
+            <argument type="service" id="Klaviyo\Integration\Utils\LocaleCodeProducer"/>
+        </service>
+        <service id="Klaviyo\Integration\Klaviyo\Gateway\Translator\RealSubscribersToKlaviyoRequestsTranslator">
+            <argument type="service" id="Klaviyo\Integration\Utils\LocaleCodeProducer"/>
+        </service>
     </services>
 
 </container>

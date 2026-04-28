@@ -219,7 +219,7 @@ class KlaviyoGateway
         try {
             $errors = [];
             $request = $this->subscribersTranslator
-                ->translateToAddProfilesRequest($recipientCollection, $profilesListId);
+                ->translateToAddProfilesRequest($context, $recipientCollection, $profilesListId);
             $clientResult = $this->clientRegistry
                 ->getClient($salesChannelEntity->getId())
                 ->sendRequests([$request]);
@@ -368,19 +368,21 @@ class KlaviyoGateway
 
     /**
      * @param SalesChannelEntity $salesChannelEntity
+     * @param Context $context
      * @param NewsletterRecipientCollection $recipientCollection
      * @param string $profilesListId
      * @return array
      */
     public function subscribeToKlaviyoList(
         SalesChannelEntity $salesChannelEntity,
+        Context $context,
         NewsletterRecipientCollection $recipientCollection,
         string $profilesListId
     ): array {
         try {
             $errors = [];
             $request = $this->realSubscribersTranslator
-                ->translateToSubscribeRequest($recipientCollection, $profilesListId);
+                ->translateToSubscribeRequest($context, $recipientCollection, $profilesListId);
             $clientResult = $this->clientRegistry
                 ->getClient($salesChannelEntity->getId())
                 ->sendRequests([$request]);
@@ -400,7 +402,7 @@ class KlaviyoGateway
                 if ($newCollection->count()) {
                     $errors = array_merge(
                         $errors,
-                        $this->subscribeToKlaviyoList($salesChannelEntity, $newCollection, $profilesListId)
+                        $this->subscribeToKlaviyoList($salesChannelEntity, $context, $newCollection, $profilesListId)
                     );
                 }
             }

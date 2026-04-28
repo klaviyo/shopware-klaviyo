@@ -39,4 +39,19 @@ class LocaleCodeProducer
 
         return $locale->getCode();
     }
+
+    /**
+     * Locale string for a language id, or null when lookup fails or the code is empty.
+     * Prefer {@see getLocaleCodeFromContext} when a non-empty string must always be returned.
+     */
+    public function getOptionalLocaleCodeForLanguage(string $languageId, Context $context): ?string
+    {
+        try {
+            $code = $this->getLocaleCodeFromContext($languageId, $context);
+
+            return $code !== '' ? $code : null;
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
 }
