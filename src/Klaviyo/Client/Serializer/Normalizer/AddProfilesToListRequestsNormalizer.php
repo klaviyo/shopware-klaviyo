@@ -28,20 +28,27 @@ class AddProfilesToListRequestsNormalizer extends AbstractNormalizer
 
             $emails[] = $profile->getEmail();
 
-            $profiles[] = [
-                'type' => 'profile',
-                'attributes' => [
-                    'email' => $profile->getEmail(),
-                    'subscriptions' => [
-                        'email' => [
-                            'marketing' => [
-                                'consent' => 'SUBSCRIBED',
-                                //TODO Possibly will be added later
-                                //'consented_at' => $profile->getCreatedAt()?->format('Y-m-d\TH:i:s'),
-                            ]
+            $attributes = [
+                'email' => $profile->getEmail(),
+                'subscriptions' => [
+                    'email' => [
+                        'marketing' => [
+                            'consent' => 'SUBSCRIBED',
+                            //TODO Possibly will be added later
+                            //'consented_at' => $profile->getCreatedAt()?->format('Y-m-d\TH:i:s'),
                         ]
                     ]
                 ],
+            ];
+
+            $localeCode = $profile->getLocaleCode();
+            if ($localeCode !== null && $localeCode !== '') {
+                $attributes['properties'] = ['language' => $localeCode];
+            }
+
+            $profiles[] = [
+                'type' => 'profile',
+                'attributes' => $attributes,
             ];
         }
 

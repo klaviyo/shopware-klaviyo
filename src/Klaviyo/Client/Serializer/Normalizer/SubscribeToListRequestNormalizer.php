@@ -27,10 +27,15 @@ class SubscribeToListRequestNormalizer extends AbstractNormalizer
 
             $emails[] = $profile->getEmail();
 
-            $profiles[] = [
+            $item = [
                 'type' => 'profile',
                 'email' => $profile->getEmail(),
             ];
+            $localeCode = $profile->getLocaleCode();
+            if ($localeCode !== null && $localeCode !== '') {
+                $item['properties'] = ['language' => $localeCode];
+            }
+            $profiles[] = $item;
         }
 
         return [

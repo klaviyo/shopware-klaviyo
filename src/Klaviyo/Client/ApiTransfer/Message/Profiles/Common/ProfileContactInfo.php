@@ -12,6 +12,7 @@ class ProfileContactInfo
     private ?string $lastname;
     private ?string $salutation;
     private ?DateTimeInterface $createdAt;
+    private ?string $localeCode;
 
     public function __construct(
         string $customerId,
@@ -19,7 +20,8 @@ class ProfileContactInfo
         string $firstname = null,
         string $lastname = null,
         string $salutation = null,
-        DateTimeInterface $createdAt = null
+        DateTimeInterface $createdAt = null,
+        ?string $localeCode = null
     ) {
         $this->customerId = $customerId;
         $this->email = $email;
@@ -27,6 +29,7 @@ class ProfileContactInfo
         $this->lastname = $lastname;
         $this->salutation = $salutation;
         $this->createdAt = $createdAt;
+        $this->localeCode = $localeCode;
     }
 
     public function getCustomerId(): ?string
@@ -57,5 +60,10 @@ class ProfileContactInfo
     public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->createdAt;
+    }
+
+    public function getLocaleCode(): ?string
+    {
+        return $this->localeCode;
     }
 }

@@ -70,7 +70,10 @@ class CartEventRequestTranslator
             $subscriber = $this->newsletterSubscriberHelper->getSubscriber($subscriberId, $context->getContext());
 
             if ($subscriber) {
-                $customerProperties = $this->newsletterSubscriberPropertiesTranslator->translateSubscriber($subscriber);
+                $customerProperties = $this->newsletterSubscriberPropertiesTranslator->translateSubscriber(
+                    $context->getContext(),
+                    $subscriber
+                );
             } else {
                 throw new \Exception('No customer identification data.');
             }

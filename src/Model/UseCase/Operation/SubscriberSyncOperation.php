@@ -130,6 +130,7 @@ class SubscriberSyncOperation implements JobHandlerInterface
                     //Realtime subscriber sync
                     if (EventsProcessingOperation::REALTIME_SUBSCRIBERS_OPERATION_LABEL === $message->getJobName()) {
                         $result['errors'] = $this->klaviyoGateway->subscribeToKlaviyoList(
+                            $context,
                             $channel,
                             $subscribersCollection,
                             $listId

@@ -29,11 +29,17 @@ class RealSubscribersToKlaviyoRequestNormalizer extends AbstractNormalizer
                 continue;
             }
 
+            $profileAttributes = [
+                'email' => $profile->getEmail(),
+            ];
+            $localeCode = $profile->getLocaleCode();
+            if ($localeCode !== null && $localeCode !== '') {
+                $profileAttributes['properties'] = ['language' => $localeCode];
+            }
+
             $profiles['data'][] = [
                 'type' => 'profile',
-                'attributes' => [
-                    'email' => $profile->getEmail(),
-                ],
+                'attributes' => $profileAttributes,
             ];
 
             $emails[] = $profile->getEmail();
