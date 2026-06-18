@@ -39,7 +39,7 @@ class ClientConfigurationFactory
     public function createByKeys(
         string $privateKey,
         string $publicKey,
-        string $subscribersListId = null
+        ?string $subscribersListId = null
     ): ConfigurationInterface {
         return new Configuration(
             self::AUTHORIZATION_PREKEY . ' ' . $privateKey,
