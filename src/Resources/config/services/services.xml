@@ -102,7 +102,6 @@
             <argument type="service"
                       id="Klaviyo\Integration\Klaviyo\Gateway\Translator\NewsletterSubscriberPropertiesTranslator"/>
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway"/>
-            <argument type="service" id="Klaviyo\Integration\Storefront\Service\Cookie\CookieConsentService" />
             <tag name="kernel.event_subscriber"/>
         </service>
         <service id="Klaviyo\Integration\EventListener\AddedToCartEventListener">
