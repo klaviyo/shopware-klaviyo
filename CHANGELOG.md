@@ -1,4 +1,14 @@
 # Change Log
+## [3.7.0] - 2026-06-09
+
+### Fixed
+- **Fixed** the Back In Stock field visibility and inheritance issues.
+
+### Changed
+- **Changed** the API revision to revision `2026-01-15`.
+
+### Removed
+- **Removed** cookie consent requirement for the `Started Checkout` event.
 
 ## [3.6.0] - 2026-02-05
 
