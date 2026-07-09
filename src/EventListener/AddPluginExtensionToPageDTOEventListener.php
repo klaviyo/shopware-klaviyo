@@ -45,7 +45,7 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
         NewsletterSubscriberHelper $newsletterSubscriberHelper,
         RequestStack $requestStack,
         NewsletterSubscriberPropertiesTranslator $newsletterSubscriberPropertiesTranslator,
-        KlaviyoGateway $klaviyoGateway,
+        KlaviyoGateway $klaviyoGateway
     ) {
         $this->getValidChannelConfig = $getValidChannelConfig;
         $this->customerPropertiesTranslator = $customerPropertiesTranslator;
