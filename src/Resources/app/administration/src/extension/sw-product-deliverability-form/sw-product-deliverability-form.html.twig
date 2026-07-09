@@ -4,15 +4,15 @@
         <div class="product-klaviyo-deliverability">
             <sw-inherit-wrapper
                 v-model:value="product.customFields.klaviyo_back_in_stock_disabled"
-                :has-parent="!!parentProduct.id"
-                :inherited-value="(parentProduct && parentProduct.customFields) ? parentProduct.customFields.klaviyo_back_in_stock_disabled : null"
+                :has-parent="!!(parentProduct && parentProduct.id)"
+                :inherited-value="parentProduct?.customFields?.klaviyo_back_in_stock_disabled"
             >
                 <template #content="props">
                     <mt-switch
                         name="sw-field--product-klaviyo-back-in-stock-disabled"
                         :is-inheritance-field="props.isInheritField"
                         :is-inherited="props.isInherited"
-                        :inherited-value="(parentProduct.customFields||{}).klaviyo_back_in_stock_disabled"
+                        :inherited-value="parentProduct?.customFields?.klaviyo_back_in_stock_disabled"
                         :label="$tc('sw-product.settingsForm.labelKlaviyoBackInStockDisabled')"
                         :help-text="$tc('sw-product.settingsForm.helpTextKlaviyoBackInStockDisabled')"
                         :disabled="!allowEdit"

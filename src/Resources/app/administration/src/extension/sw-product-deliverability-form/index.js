@@ -21,10 +21,6 @@ Component.override('sw-product-deliverability-form', {
                 this.parentProduct.customFields = {};
             }
 
-            if (this.parentProduct && !this.parentProduct.customFields) {
-                this.parentProduct.customFields = {};
-            }
-
         }
     }
 });
