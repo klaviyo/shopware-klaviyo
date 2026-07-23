@@ -306,5 +306,11 @@
                 }
             }
         }
+    },
+    "sw-product": {
+        "settingsForm": {
+            "labelKlaviyoBackInStockDisabled": "Disable Back in Stock email notifications",
+            "helpTextKlaviyoBackInStockDisabled": "Hides the Klaviyo Back In Stock form from the product detail page."
+        }
     }
 }

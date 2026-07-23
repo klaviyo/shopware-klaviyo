@@ -10,7 +10,7 @@ export default class KlaviyoBackInStockNotification extends Plugin {
         subscribeToNewsletterSelector: '#subscribeToNewsletter',
         apiURL: 'https://a.klaviyo.com/client/back-in-stock-subscriptions',
         contentType: 'application/json',
-        revision: '2024-10-15',
+        revision: '2026-01-15',
         hiddenCls: 'd-none',
         successMessageSelector: '.klaviyo-success',
         errorMessageSelector: '.klaviyo-error',
@@ -30,7 +30,7 @@ export default class KlaviyoBackInStockNotification extends Plugin {
     }
 
     _getFormDataElements() {
-        this._email = DomAccess.querySelector(this.el, this.options.emailFieldSelector );
+        this._email = DomAccess.querySelector(this.el, this.options.emailFieldSelector);
         this._subscribeToNewsletter = DomAccess.querySelector(this.el, this.options.subscribeToNewsletterSelector);
         this._successMessage = DomAccess.querySelector(this.el, this.options.successMessageSelector);
         this._errorMessage = DomAccess.querySelector(this.el, this.options.errorMessageSelector);

@@ -11,7 +11,6 @@ use Klaviyo\Integration\Klaviyo\Gateway\KlaviyoGateway;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\CustomerPropertiesTranslator;
 use Klaviyo\Integration\Klaviyo\Gateway\Translator\NewsletterSubscriberPropertiesTranslator;
 use Klaviyo\Integration\Model\Channel\GetValidChannelConfig;
-use Klaviyo\Integration\Storefront\Service\Cookie\CookieConsentService;
 use Klaviyo\Integration\Utils\Logger\ContextHelper;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Struct\ArrayStruct;
@@ -36,9 +35,6 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
     private RequestStack $requestStack;
     private NewsletterSubscriberPropertiesTranslator $newsletterSubscriberPropertiesTranslator;
     private KlaviyoGateway $klaviyoGateway;
-
-    private CookieConsentService $cookieConsentService;
-
     // TODO: make some args as proxy
     public function __construct(
         GetValidChannelConfig $getValidChannelConfig,
@@ -49,8 +45,7 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
         NewsletterSubscriberHelper $newsletterSubscriberHelper,
         RequestStack $requestStack,
         NewsletterSubscriberPropertiesTranslator $newsletterSubscriberPropertiesTranslator,
-        KlaviyoGateway $klaviyoGateway,
-        CookieConsentService $cookieConsentService
+        KlaviyoGateway $klaviyoGateway
     ) {
         $this->getValidChannelConfig = $getValidChannelConfig;
         $this->customerPropertiesTranslator = $customerPropertiesTranslator;
@@ -61,7 +56,6 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
         $this->requestStack = $requestStack;
         $this->newsletterSubscriberPropertiesTranslator = $newsletterSubscriberPropertiesTranslator;
         $this->klaviyoGateway = $klaviyoGateway;
-        $this->cookieConsentService = $cookieConsentService;
     }
 
     public static function getSubscribedEvents(): array
@@ -177,11 +171,6 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
             return;
         }
 
-        $consentType = $config->getCookieConsent();
-        if (!$this->cookieConsentService->hasConsent($consentType)) {
-            return;
-        }
-
         try {
             $context = $event->getSalesChannelContext();
             $salesChannelContext = $event->getSalesChannelContext();
@@ -191,7 +180,7 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
             $this->klaviyoGateway->trackStartedCheckoutRequests($salesChannelContext->getSalesChannelId(), [$eventDTO]);
         } catch (\Throwable $throwable) {
             $this->logger->error(
-                'Could not track Checkout started event after the item qty updated',
+                'Could not track Checkout started event after checkout page loaded',
                 ContextHelper::createContextFromException($throwable)
             );
         }
