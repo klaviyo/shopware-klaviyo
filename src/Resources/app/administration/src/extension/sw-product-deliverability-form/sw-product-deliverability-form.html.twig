@@ -1,9 +1,23 @@
 {% block sw_product_deliverability_form_max_purchase_field %}
     {% parent() %}
     {% block od_klaviyo_back_in_stock_email_notification %}
-        <sw-field v-model="product.customFields.klaviyo_back_in_stock_disabled"
-                  type="switch"
-                  label="Disable back in stock email notifications"
-        />
+        <sw-inherit-wrapper
+            v-model="product.customFields.klaviyo_back_in_stock_disabled"
+            :has-parent="!!(parentProduct && parentProduct.id)"
+            :inherited-value="parentProduct && parentProduct.customFields ? parentProduct.customFields.klaviyo_back_in_stock_disabled : null"
+        >
+            <template #content="props">
+                <sw-field
+                    type="switch"
+                    name="sw-field--product-klaviyo-back-in-stock-enabled"
+                    :map-inheritance="props"
+                    :label="$tc('sw-product.settingsForm.labelKlaviyoBackInStockDisabled')"
+                    :help-text="$tc('sw-product.settingsForm.helpTextKlaviyoBackInStockDisabled')"
+                    :disabled="props.isInherited || !allowEdit"
+                    :value="props.currentValue"
+                    @change="props.updateCurrentValue"
+                />
+            </template>
+        </sw-inherit-wrapper>
     {% endblock %}
 {% endblock %}
