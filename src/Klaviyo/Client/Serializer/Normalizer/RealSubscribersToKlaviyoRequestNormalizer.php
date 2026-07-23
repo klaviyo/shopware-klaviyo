@@ -33,6 +33,13 @@ class RealSubscribersToKlaviyoRequestNormalizer extends AbstractNormalizer
                 'type' => 'profile',
                 'attributes' => [
                     'email' => $profile->getEmail(),
+                    'subscriptions' => [
+                        'email' => [
+                            'marketing' => [
+                                'consent' => 'SUBSCRIBED',
+                            ]
+                        ]
+                    ]
                 ],
             ];
 

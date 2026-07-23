@@ -1,9 +1,29 @@
-{% block sw_product_deliverability_form_max_purchase_field %}
+{% block sw_product_deliverability_form %}
     {% parent() %}
     {% block od_klaviyo_back_in_stock_email_notification %}
-        <sw-field v-model:value="product.customFields.klaviyo_back_in_stock_disabled"
-                  type="switch"
-                  label="Disable back in stock email notifications"
-        />
+        <div class="product-klaviyo-deliverability">
+            <sw-inherit-wrapper
+                v-model:value="product.customFields.klaviyo_back_in_stock_disabled"
+                :has-parent="!!(parentProduct && parentProduct.id)"
+                :inherited-value="parentProduct?.customFields?.klaviyo_back_in_stock_disabled"
+            >
+                <template #content="props">
+                    <mt-switch
+                        name="sw-field--product-klaviyo-back-in-stock-disabled"
+                        :is-inheritance-field="props.isInheritField"
+                        :is-inherited="props.isInherited"
+                        :inherited-value="parentProduct?.customFields?.klaviyo_back_in_stock_disabled"
+                        :label="$tc('sw-product.settingsForm.labelKlaviyoBackInStockDisabled')"
+                        :help-text="$tc('sw-product.settingsForm.helpTextKlaviyoBackInStockDisabled')"
+                        :disabled="!allowEdit"
+                        :model-value="props.currentValue"
+                        bordered
+                        @update:model-value="props.updateCurrentValue"
+                        @inheritance-restore="props.restoreInheritance"
+                        @inheritance-remove="props.removeInheritance"
+                    />
+                </template>
+            </sw-inherit-wrapper>
+        </div>
     {% endblock %}
 {% endblock %}
