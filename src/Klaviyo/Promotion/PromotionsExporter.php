@@ -21,8 +21,8 @@ class PromotionsExporter
 
     public function exportToCSV(
         Context $context,
-        string $salesChannelId = null,
-        string $promotionId = null
+        ?string $salesChannelId = null,
+        ?string $promotionId = null
     ): \SplFileObject {
         $promotions = $this->getPromotions($context, $salesChannelId, $promotionId);
 
@@ -49,7 +49,7 @@ class PromotionsExporter
     private function getPromotions(
         Context $context,
         ?string $salesChannelId,
-        string $promotionId = null
+        ?string $promotionId = null
     ): PromotionCollection {
         $criteria = new Criteria();
         $criteria->addAssociation('individualCodes');

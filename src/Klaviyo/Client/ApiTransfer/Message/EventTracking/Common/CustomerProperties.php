@@ -173,7 +173,7 @@ class CustomerProperties implements \JsonSerializable
         return $this->boundedSalesChannelName;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         $basicData = [
             'id' => $this->getId(),

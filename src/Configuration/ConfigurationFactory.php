@@ -16,7 +16,7 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
         $this->systemConfigService = $systemConfigService;
     }
 
-    public function create(string $salesChannelId = null): ConfigurationInterface
+    public function create(?string $salesChannelId = null): ConfigurationInterface
     {
         $accountEnabled = $this->getBoolConfiguration('enabled', $salesChannelId);
         $privateApiKey = $this->systemConfigService
@@ -105,9 +105,9 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
 
         return new Configuration(
             $accountEnabled,
-            trim($privateApiKey),
-            trim($publicApiKey),
-            trim($listId),
+            trim($privateApiKey ?? ''),
+            trim($publicApiKey ?? ''),
+            trim($listId ?? ''),
             $bisVariantField,
             $orderIdentification,
             $trackDeletedAccountOrders,

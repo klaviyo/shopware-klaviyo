@@ -350,7 +350,7 @@ class KlaviyoGateway
     public function getExcludedSubscribersFromList(
         string $channelId,
         int $count,
-        string $nextPageLink = null
+        ?string $nextPageLink = null
     ): GetExcludedSubscribers\Response {
         $request = new GetExcludedSubscribers\Request($count, $nextPageLink);
         $clientResult = $this->clientRegistry

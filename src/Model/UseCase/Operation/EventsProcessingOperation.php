@@ -328,7 +328,7 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
      *
      * @return bool
      */
-    private function isTimeToRunJob(string $channelId = null): bool
+    private function isTimeToRunJob(?string $channelId = null): bool
     {
         $configuration = $this->configurationRegistry->getConfiguration($channelId);
 
@@ -354,7 +354,7 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
      *
      * @return bool
      */
-    private function isTodayAlreadyRun(string $channelId = null): bool
+    private function isTodayAlreadyRun(?string $channelId = null): bool
     {
         $lastSyncTime = $this->systemConfigService->get(
             self::LAST_EXECUTION_TIME_CONFIG,

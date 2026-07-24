@@ -132,7 +132,7 @@ class ScheduleBackgroundJob
         array $subscriberIds,
         string $parentJobId,
         Context $context,
-        string $name = null
+        ?string $name = null
     ) {
         $jobMessage = new Message\SubscriberSyncMessage(
             Uuid::randomHex(),
