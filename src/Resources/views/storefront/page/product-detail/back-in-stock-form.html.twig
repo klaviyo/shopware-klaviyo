@@ -1,6 +1,7 @@
 {% block klaviyo_back_in_stock_form %}
     {% if page.product.isCloseout and page.product.availableStock < page.product.minPurchase %}
-        <div class="klaviyo-stock-notification-container">
+        {% block klaviyo_back_in_stock_container %}
+            <div class="klaviyo-stock-notification-container">
                 {% set notificationConfigurationOptions = {
                     publicApiKey:  extensionData.configuration.publicApiKey|sw_sanitize,
                     listName: extensionData.configuration.subscribersListId,
@@ -147,5 +148,6 @@
                 </div>
             {% endblock %}
         </div>
+        {% endblock %}
     {% endif %}
 {% endblock %}
