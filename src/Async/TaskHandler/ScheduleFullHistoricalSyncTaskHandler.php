@@ -42,7 +42,7 @@ final class ScheduleFullHistoricalSyncTaskHandler extends ScheduledTaskHandler
             $context = new Context(new SystemSource());
             $offset = $this->configService->getConfigValueWithoutCache(FullOrderSyncOperation::SYNC_ORDER_OFFSET_CONFIG_KEY);
 
-            if ($offset >= 0) {
+            if ($offset !== null && $offset >= 0) {
                 $this->logger->notice("ScheduleFullHistoricalSyncTask started");
                 $this->scheduleBackgroundJob->scheduleFullOrderSyncJob($context);
             }

@@ -213,7 +213,6 @@ Component.register('klaviyo-integration-settings-general', {
                     subscribeBtnBgColor: '',
                     popUpAdditionalClasses: '',
                     cookieConsent: 'shopware',
-                    dailySynchronizationTime: false,
                     oldJobCleanupPeriod: 5,
                     withoutSubscribersSync: false,
                     withoutOrdersSync: false

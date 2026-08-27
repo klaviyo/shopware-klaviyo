@@ -55,9 +55,6 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
         $trackRefundedOrder = $this->getBoolConfiguration('trackRefundedOrder', $salesChannelId);
         $trackPaidOrder = $this->getBoolConfiguration('trackPaidOrder', $salesChannelId);
         $trackShippedOrder = $this->getBoolConfiguration('trackShippedOrder', $salesChannelId);
-        $dailySubscribersSynchronization = $this->getBoolConfiguration('dailySynchronization', $salesChannelId);
-        $dailySubscribersSyncTime =
-            $this->systemConfigService->get('klavi_overd.config.dailySynchronizationTime', $salesChannelId) ?? '';
 
         $trackSubscribedToBackInStock = $this->getBoolConfiguration('trackSubscribedToBackInStock', $salesChannelId);
         $afterInteraction = $this->systemConfigService->getBool(
@@ -127,8 +124,6 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
             $trackSubscribedToBackInStock,
             $popUpConfiguration,
             $cookieConsent,
-            $dailySubscribersSynchronization,
-            $dailySubscribersSyncTime,
             $orderMapping,
             ContextHelper::fetchPluginVersion(),
             ContextHelper::fetchShopwareVersion()
