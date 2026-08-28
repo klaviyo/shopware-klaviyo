@@ -514,45 +514,6 @@
                 </div>
             {% endblock %}
 
-            {% block klaviyo_integration_settings_general_daily_synchronization_flag %}
-            <div class="boolean-config-container">
-                <sw-inherit-wrapper v-if="selectedSalesChannelId === null"
-                                    v-model:value="actualConfigData['klavi_overd.config.dailySynchronization']"
-                                    :label="$tc('klaviyo-integration-settings.configs.enableDailySynchronization.label')"
-                                    :help-text="$tc('klaviyo-integration-settings.configs.enableDailySynchronization.helpText')"
-                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['klavi_overd.config.dailySynchronization']">
-                    <template #content="props">
-                        <mt-switch
-                                :map-inheritance="props"
-                                :disabled="props.isInherited"
-                                v-model="props.currentValue"
-                                @update:model-value="props.updateCurrentValue">
-                        </mt-switch>
-                    </template>
-                </sw-inherit-wrapper>
-            </div>
-            {% endblock %}
-
-            {% block klaviyo_integration_settings_general_daily_synchronization_time %}
-                <sw-inherit-wrapper v-if="selectedSalesChannelId === null && actualConfigData['klavi_overd.config.dailySynchronization']"
-                                    v-model:value="actualConfigData['klavi_overd.config.dailySynchronizationTime']"
-                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['klavi_overd.config.dailySynchronizationTime']">
-                    <template #content="props">
-                        <mt-datepicker
-                                :map-inheritance="props"
-                                v-model:value="props.currentValue"
-                                dateType="time"
-                                dateFormat="H:i"
-                                :time="true"
-                                :disabled="props.isInherited"
-                                :label="$tc('klaviyo-integration-settings.configs.timeDailySynchronization.label')"
-                                :help-text="$tc('klaviyo-integration-settings.configs.timeDailySynchronization.helpText')"
-                                @update:model-value="props.updateCurrentValue">
-                        </mt-datepicker>
-                    </template>
-                </sw-inherit-wrapper>
-            {% endblock %}
-
             {% block klaviyo_integration_settings_general_old_job_cleanup_flag %}
                 <div class="boolean-config-container">
                     <sw-inherit-wrapper v-if="selectedSalesChannelId === null"

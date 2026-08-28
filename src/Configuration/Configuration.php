@@ -29,8 +29,6 @@ class Configuration implements ConfigurationInterface
     private bool $trackSubscribedToBackInStock;
     private PopUpConfiguration $popUpConfiguration;
     private string $cookieConsent;
-    private bool $isDailySubscribersSynchronization;
-    private string $dailySubscribersSyncTime;
     private array $orderCustomFieldMapping;
     private array $versions;
     private string $shopwareVersion;
@@ -59,8 +57,6 @@ class Configuration implements ConfigurationInterface
         bool $trackSubscribedToBackInStock,
         PopUpConfiguration $popUpConfiguration,
         string $cookieConsent,
-        bool $isDailySubscribersSynchronization,
-        string $dailySubscribersSyncTime,
         array $orderCustomFieldMapping,
         array $versions,
         string $shopwareVersion
@@ -88,8 +84,6 @@ class Configuration implements ConfigurationInterface
         $this->trackSubscribedToBackInStock = $trackSubscribedToBackInStock;
         $this->popUpConfiguration = $popUpConfiguration;
         $this->cookieConsent = $cookieConsent;
-        $this->isDailySubscribersSynchronization = $isDailySubscribersSynchronization;
-        $this->dailySubscribersSyncTime = $dailySubscribersSyncTime;
         $this->orderCustomFieldMapping = $orderCustomFieldMapping;
         $this->versions = $versions;
         $this->shopwareVersion = $shopwareVersion;
@@ -208,16 +202,6 @@ class Configuration implements ConfigurationInterface
     public function getCookieConsent(): string
     {
         return $this->cookieConsent;
-    }
-
-    public function isDailySubscribersSynchronization(): bool
-    {
-        return $this->isDailySubscribersSynchronization;
-    }
-
-    public function getDailySubscribersSyncTime(): string
-    {
-        return $this->dailySubscribersSyncTime;
     }
 
     public function getOrderCustomFieldMapping(): array

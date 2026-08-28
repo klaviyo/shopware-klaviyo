@@ -44,10 +44,6 @@ interface ConfigurationInterface
 
     public function getCookieConsent(): string;
 
-    public function isDailySubscribersSynchronization(): bool;
-
-    public function getDailySubscribersSyncTime(): string;
-
     public function getBisVariantField(): string;
 
     public function getOrderCustomFieldMapping(): array;
