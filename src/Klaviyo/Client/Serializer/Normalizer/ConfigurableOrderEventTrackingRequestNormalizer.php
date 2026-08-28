@@ -32,27 +32,21 @@ class ConfigurableOrderEventTrackingRequestNormalizer extends AbstractNormalizer
      */
     public function normalize($object, string $format = null, array $context = []): array
     {
-        if (
-            !empty($context) && !empty($context['eventType'])
-            && in_array(
-                $context['eventType'],
-                [
-                    'FulfilledOrder',
-                    'CancelledOrder',
-                    'ShippedOrder',
-                    'PaidOrder',
-                    'RefundedOrder',
-                    'PartiallyShippedOrder',
-                    'PartiallyPaidOrder',
-                ]
-            )
-        ) {
+        // This normalizer instance is shared/cached per sales channel (see ClientRegistry),
+        // and the same instance handles both a "full" event type (e.g. ShippedOrder) and its
+        // "partial" counterpart (e.g. PartiallyShippedOrder), which reuse the same request DTO
+        // class. The event name must therefore be resolved fresh on every call from a local
+        // variable — never written back to $this->eventName — otherwise a partial event leaves
+        // the instance's default event name permanently overwritten for later, unrelated events.
+        $eventName = $this->eventName;
+
+        if (!empty($context) && !empty($context['eventType'])) {
             if ('PartiallyShippedOrder' === $context['eventType']) {
-                $this->eventName = 'Partially Shipped Order';
+                $eventName = 'Partially Shipped Order';
             }
 
             if ('PartiallyPaidOrder' === $context['eventType']) {
-                $this->eventName = 'Partially Paid Order';
+                $eventName = 'Partially Paid Order';
             }
         }
 
@@ -133,7 +127,7 @@ class ConfigurableOrderEventTrackingRequestNormalizer extends AbstractNormalizer
                         'data' => [
                             'type' => 'metric',
                             'attributes' => [
-                                'name' => $this->eventName,
+                                'name' => $eventName,
                             ],
                         ],
                     ],

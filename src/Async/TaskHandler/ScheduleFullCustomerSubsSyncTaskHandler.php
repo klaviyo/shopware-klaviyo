@@ -40,7 +40,7 @@ class ScheduleFullCustomerSubsSyncTaskHandler extends ScheduledTaskHandler
             $context = new Context(new SystemSource());
             $offset = $this->configService->getConfigValueWithoutCache(FullCustomerSubsSyncOperation::SYNC_CUSTOMER_OFFSET_CONFIG_KEY);
 
-            if ($offset >= 0) {
+            if ($offset !== null && $offset >= 0) {
                 $this->logger->notice("ScheduleFullCustomerSyncTask started");
                 $this->scheduleBackgroundJob->scheduleFullCustomerSubsSyncJob($context);
             }

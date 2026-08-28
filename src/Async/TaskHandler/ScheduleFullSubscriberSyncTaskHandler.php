@@ -48,7 +48,7 @@ class ScheduleFullSubscriberSyncTaskHandler extends ScheduledTaskHandler
             $context = new Context(new SystemSource());
             $offset = $this->configService->getConfigValueWithoutCache(FullSubscriberSyncOperation::SYNC_SUBSCRIBER_OFFSET_CONFIG_KEY);
 
-            if ($offset >= 0) {
+            if ($offset !== null && $offset >= 0) {
                 $this->logger->notice("ScheduleFullSubscriberSyncTask started");
                 $this->scheduleBackgroundJob->scheduleFullSubscriberSyncJob($context);
             }
