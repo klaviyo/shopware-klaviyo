@@ -1,4 +1,12 @@
 # Change Log
+## [3.8.0] - 2026-08-26
+### Fixed
+- **Fixed** Bug in Order Partially Shipped & Partially Paid event
+- **Fixed** Prevent automatic sync customers on plugin installation
+
+### Removed
+- **Removed** automatic daily subscriber sync
+
 ## [3.7.0] - 2026-06-09
 
 ### Fixed
