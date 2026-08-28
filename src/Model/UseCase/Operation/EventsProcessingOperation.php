@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Klaviyo\Integration\Model\UseCase\Operation;
 
 use Klaviyo\Integration\Async\Message\EventsProcessingMessage;
-use Klaviyo\Integration\Configuration\ConfigurationRegistry;
 use Klaviyo\Integration\Entity\Event\EventEntity;
 use Klaviyo\Integration\Model\Channel\GetValidChannels;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
@@ -14,8 +13,6 @@ use Klaviyo\Integration\Od\Scheduler\Model\Job\GeneratingHandlerInterface;
 use Klaviyo\Integration\Od\Scheduler\Model\Job\JobHandlerInterface;
 use Klaviyo\Integration\Od\Scheduler\Model\Job\JobResult;
 use Klaviyo\Integration\Od\Scheduler\Model\Job\Message;
-use Psr\Log\LoggerInterface;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
@@ -24,22 +21,16 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandlerInterface
 {
     public const HANDLER_CODE = 'od-klaviyo-events-sync-handler';
     public const REALTIME_SUBSCRIBERS_OPERATION_LABEL = 'real-time-subscribers-sync-operation';
-    private const LAST_EXECUTION_TIME_CONFIG = 'klavi_overd.config.dailySyncLastTime';
-    private const DATE_FORMAT = 'Y-m-d';
 
     private EntityRepository $eventRepository;
     private EntityRepository $cartEventRequestRepository;
     private ScheduleBackgroundJob $scheduleBackgroundJob;
     private GetValidChannels $getValidChannels;
-    private ConfigurationRegistry $configurationRegistry;
-    private SystemConfigService $systemConfigService;
-    private LoggerInterface $logger;
 
     private JobResult $jobResult;
 
@@ -47,18 +38,12 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
         EntityRepository $eventRepository,
         EntityRepository $cartEventRequestRepository,
         ScheduleBackgroundJob $scheduleBackgroundJob,
-        GetValidChannels $getValidChannels,
-        ConfigurationRegistry $configurationRegistry,
-        SystemConfigService $systemConfigService,
-        LoggerInterface $logger
+        GetValidChannels $getValidChannels
     ) {
         $this->eventRepository = $eventRepository;
         $this->cartEventRequestRepository = $cartEventRequestRepository;
         $this->scheduleBackgroundJob = $scheduleBackgroundJob;
         $this->getValidChannels = $getValidChannels;
-        $this->configurationRegistry = $configurationRegistry;
-        $this->systemConfigService = $systemConfigService;
-        $this->logger = $logger;
     }
 
     /**
@@ -88,8 +73,6 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
         $this->processCartEvents($context, $message->getJobId(), $channelIds);
         $this->processCustomerProfileEvents($context, $message->getJobId(), $channelIds);
         $this->processSubscriberEvents($context, $message->getJobId(), $channelIds);
-
-        $this->processFullSubscriberSyncByTimeEvent($context, $channelIds);
 
         return $this->jobResult;
     }
@@ -207,73 +190,5 @@ class EventsProcessingOperation implements JobHandlerInterface, GeneratingHandle
         $criteria->setLimit(100);
 
         return new RepositoryIterator($this->eventRepository, $context, $criteria);
-    }
-
-    private function processFullSubscriberSyncByTimeEvent(Context $context, array $channelIds): void
-    {
-        $isJobStarted = false;
-
-        try {
-            foreach ($channelIds as $channelId) {
-                if ($this->isTimeToRunJob($channelId)) {
-                    $isJobStarted = true;
-                    $this->scheduleBackgroundJob->scheduleFullSubscriberSyncJob($context);
-
-                    $this->systemConfigService->set(
-                        self::LAST_EXECUTION_TIME_CONFIG,
-                        (new \DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT)
-                    );
-                }
-            }
-        } catch (\Exception $e) {
-            $this->logger->error('Unable to sync job, the reason is:'.$e->getMessage());
-        }
-
-        if ($isJobStarted) {
-            $this->jobResult->addMessage(
-                new Message\InfoMessage('Full subscribers sync event was scheduled.')
-            );
-        }
-    }
-
-    private function isTimeToRunJob(string $channelId = null): bool
-    {
-        $configuration = $this->configurationRegistry->getConfiguration($channelId);
-
-        if (!$configuration->isDailySubscribersSynchronization()) {
-            return false;
-        }
-
-        if ($this->isTodayAlreadyRun($channelId)) {
-            return false;
-        }
-
-        try {
-            $executionTime = new \DateTime($configuration->getDailySubscribersSyncTime());
-        } catch (\Exception) {
-            return false;
-        }
-
-        return $executionTime <= new \DateTime();
-    }
-
-    private function isTodayAlreadyRun(string $channelId = null): bool
-    {
-        $lastSyncTime = $this->systemConfigService->get(
-            self::LAST_EXECUTION_TIME_CONFIG,
-            $channelId
-        );
-
-        if (empty($lastSyncTime)) {
-            return false;
-        }
-
-        try {
-            $lastSyncTimeObject = new \DateTime($lastSyncTime);
-        } catch (\Exception) {
-            return false;
-        }
-
-        return $lastSyncTimeObject->format(self::DATE_FORMAT) === (new \DateTime())->format(self::DATE_FORMAT);
     }
 }
