@@ -60,7 +60,7 @@ class ScheduleBackgroundJob
      * @throws JobAlreadyScheduledException
      * @throws Exception
      */
-    public function scheduleFullSubscriberSyncJob(Context $context): void
+    public function scheduleFullSubscriberSyncJob(Context $context, ?string $fromDate = null, ?string $tillDate = null): void
     {
         $this->checkJobStatus(FullSubscriberSyncOperation::OPERATION_HANDLER_CODE, $context);
         $currentOffset = $this->configService->getConfigValueWithoutCache(FullSubscriberSyncOperation::SYNC_SUBSCRIBER_OFFSET_CONFIG_KEY) ?? -1;
@@ -69,7 +69,7 @@ class ScheduleBackgroundJob
             $this->systemConfigService->set(FullSubscriberSyncOperation::SYNC_SUBSCRIBER_OFFSET_CONFIG_KEY, 0);
             $currentOffset = 0;
         }
-        $jobMessage = new Message\FullSubscriberSyncMessage(Uuid::randomHex(), null, $context, $currentOffset);
+        $jobMessage = new Message\FullSubscriberSyncMessage(Uuid::randomHex(), null, $context, $currentOffset, $fromDate, $tillDate);
         $this->scheduler->schedule($jobMessage);
     }
 
@@ -97,7 +97,7 @@ class ScheduleBackgroundJob
      * @throws JobAlreadyScheduledException
      * @throws Exception
      */
-    public function scheduleFullCustomerSubsSyncJob(Context $context): void
+    public function scheduleFullCustomerSubsSyncJob(Context $context, ?string $fromDate = null, ?string $tillDate = null): void
     {
         $this->checkJobStatus(FullCustomerSubsSyncOperation::OPERATION_HANDLER_CODE, $context);
         $currentOffset = $this->configService->getConfigValueWithoutCache(FullCustomerSubsSyncOperation::SYNC_CUSTOMER_OFFSET_CONFIG_KEY) ?? -1;
@@ -107,7 +107,7 @@ class ScheduleBackgroundJob
             $currentOffset = 0;
         }
 
-        $jobMessage = new Message\FullCustomerSubsSyncMessage(Uuid::randomHex(), null, $context, $currentOffset);
+        $jobMessage = new Message\FullCustomerSubsSyncMessage(Uuid::randomHex(), null, $context, $currentOffset, $fromDate, $tillDate);
         $this->scheduler->schedule($jobMessage);
     }
 

@@ -90,6 +90,21 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
+        <service id="Klaviyo\Integration\Storefront\Service\CustomerIdentityProvider">
+            <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CustomerPropertiesTranslator"/>
+            <argument type="service" id="Klaviyo\Integration\Entity\Helper\NewsletterSubscriberHelper"/>
+            <argument type="service"
+                      id="Klaviyo\Integration\Klaviyo\Gateway\Translator\NewsletterSubscriberPropertiesTranslator"/>
+            <argument type="service" id="Klaviyo\Integration\Storefront\Service\IdentityMarkerCookie"/>
+        </service>
+        <service id="Klaviyo\Integration\Controller\Storefront\IdentityController" public="true">
+            <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannelConfig"/>
+            <argument type="service" id="Klaviyo\Integration\Storefront\Service\CustomerIdentityProvider"/>
+            <argument type="service" id="monolog.logger.od_klaviyo"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
         <service id="Klaviyo\Integration\EventListener\AddPluginExtensionToPageDTOEventListener">
             <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannelConfig"/>
             <argument type="service" id="Klaviyo\Integration\Klaviyo\Gateway\Translator\CustomerPropertiesTranslator"/>
@@ -116,6 +131,16 @@
         <service id="Klaviyo\Integration\EventListener\CartEventListeners">
             <argument type="service" id="klaviyo_checkout_mapping.repository"/>
             <argument type="service" id="monolog.logger.od_klaviyo"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+        <service id="Klaviyo\Integration\Storefront\Service\IdentityMarkerCookie">
+            <argument>%kernel.secret%</argument>
+        </service>
+        <service id="Klaviyo\Integration\EventListener\IdentityMarkerCookieEventListener">
+            <argument type="service" id="request_stack"/>
+            <argument type="service" id="Klaviyo\Integration\Storefront\Service\IdentityMarkerCookie"/>
+            <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannelConfig"/>
+            <argument type="service" id="Klaviyo\Integration\Storefront\Service\Cookie\CookieConsentService"/>
             <tag name="kernel.event_subscriber"/>
         </service>
         <service id="Klaviyo\Integration\EventListener\TokenChangeSubscriber">
@@ -193,6 +218,7 @@
                  decorates="Shopware\Storefront\Controller\NewsletterController">
             <argument type="service" id="Klaviyo\Integration\Decorator\Storefront\Controller\NewsletterControllerDecorator.inner"/>
             <argument type="service" id="Klaviyo\Integration\Model\Channel\GetValidChannelConfig"/>
+            <argument type="service" id="Klaviyo\Integration\Storefront\Service\IdentityMarkerCookie"/>
         </service>
 
         <service id="Klaviyo\Integration\Decorator\Storefront\Framework\Cookie\KlaviyoCookieProvider"

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 declare(strict_types=1);
 
@@ -10,8 +10,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 
 abstract class AbstractDateBasedMessage extends AbstractBasicMessage
 {
-    protected ?string $fromDate;
-    protected ?string $tillDate;
+    // A job serialized before these properties existed must
+    // still unserialize cleanly into this class after a plugin update
+    protected ?string $fromDate = null;
+    protected ?string $tillDate = null;
 
     public function __construct(
         string   $jobId,
@@ -34,7 +36,7 @@ abstract class AbstractDateBasedMessage extends AbstractBasicMessage
     {
         return $this->tillDate;
     }
-    
+
     public function applyDateRangeFilter(Criteria $criteria, string $dateTimeAttr = 'createdAt'): void
     {
         $fromDate = !empty($this->getFromDate()) ? new \DateTime($this->getFromDate()) : null;
@@ -47,9 +49,12 @@ abstract class AbstractDateBasedMessage extends AbstractBasicMessage
         }
 
         if ($tillDate !== null) {
-            $rangeFilter[RangeFilter::LTE] = $tillDate->format('Y-m-d');
+            // Exclusive bound on the day *after* tillDate, not LTE on tillDate itself: the stored
+            // column is a datetime, so an inclusive "<=" on a bare date string would compare against
+            // midnight and exclude almost every record actually on that day.
+            $rangeFilter[RangeFilter::LT] = $tillDate->modify('+1 day')->format('Y-m-d');
         }
-        
+
         if (!empty($rangeFilter)) {
             $criteria->addFilter(new RangeFilter($dateTimeAttr, $rangeFilter));
         }

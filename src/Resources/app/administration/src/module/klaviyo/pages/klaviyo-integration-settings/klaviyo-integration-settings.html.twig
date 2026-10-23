@@ -12,13 +12,10 @@
         {% block klaviyo_integration_settings_actions %}
             <template #smart-bar-actions>
 
-                {% block klaviyo_integration_settings_actions_historical_events_synchronization_control %}
-                    <klaviyo-integration-settings-synchronization-control></klaviyo-integration-settings-synchronization-control>
-                {% endblock %}
-
                 {% block klaviyo_integration_settings_actions_save %}
                     <sw-button-process
                              v-model="isSaveSuccessful"
+                               v-tooltip="saveButtonTooltip"
                                :process-success="isSaveSuccessful"
                                class="klaviyo-integration-settings-save"
                                variant="primary"
@@ -71,20 +68,9 @@
                                                 :selectedSalesChannelId="selectedSalesChannelId"
                                                 :privateKeyErrorState="privateKeyErrorState"
                                                 :publicKeyErrorState="publicKeyErrorState"
-                                                :listIdErrorState="listIdErrorState">
+                                                :listIdErrorState="listIdErrorState"
+                                                @mapping-error-states-changed="mappingErrorStates = $event">
                                         </klaviyo-integration-settings-general>
-                                    {% endblock %}
-
-                                    {% block klaviyo_integration_settings_content_sales_channel_customer %}
-                                        <klaviyo-integration-settings-customer :allConfigs="allConfigs"
-                                                                               :mappingErrorStates="mappingErrorStates">
-                                        </klaviyo-integration-settings-customer>
-                                    {% endblock %}
-
-                                    {% block klaviyo_integration_settings_content_sales_channel_order %}
-                                        <klaviyo-integration-settings-order :allConfigs="allConfigs"
-                                                                            :mappingErrorStates="mappingErrorStates">
-                                        </klaviyo-integration-settings-order>
                                     {% endblock %}
                                 </div>
                             </template>

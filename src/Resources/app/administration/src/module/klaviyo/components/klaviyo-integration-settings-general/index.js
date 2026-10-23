@@ -40,6 +40,8 @@ Component.register('klaviyo-integration-settings-general', {
         },
     },
 
+    emits: ['mapping-error-states-changed'],
+
     watch: {
         selectedSalesChannelId: {
             deep: true,
@@ -48,6 +50,7 @@ Component.register('klaviyo-integration-settings-general', {
                 this.salesChannelSwitched(value);
             },
         },
+
         apiKeys: {
             deep: true,
             handler: function(newValue, oldValue) {
@@ -61,10 +64,18 @@ Component.register('klaviyo-integration-settings-general', {
                 }
             },
         },
+
+        mappingErrorStates: {
+            immediate: true,
+            handler(newValue) {
+                this.$emit('mapping-error-states-changed', newValue);
+            },
+        },
     },
 
     data() {
         return {
+            activeTab: 'general',
             selectedSubscriptionList: null,
             subscriptionListOptions: [],
             isLoading: false,
@@ -145,7 +156,23 @@ Component.register('klaviyo-integration-settings-general', {
         },
         createListsOptions() {
             return this.listsOptions;
-        }
+        },
+
+        // Validates customer/order field mappings directly from allConfigs, independent of
+        // whether the Mapping tab (and its klaviyo-integration-settings-customer/-order
+        // components) has ever been mounted.
+        mappingErrorStates() {
+            return {
+                ...this.buildFieldMappingErrors(
+                    'klavi_overd.config.customerFieldMapping',
+                    this.$tc('klaviyo-integration-settings.customer.fieldMapping.labelNotFilledError'),
+                ),
+                ...this.buildFieldMappingErrors(
+                    'klavi_overd.config.orderFieldMapping',
+                    this.$tc('klaviyo-integration-settings.order.fieldMapping.labelNotFilledError'),
+                ),
+            };
+        },
     },
 
     created() {
@@ -279,7 +306,7 @@ Component.register('klaviyo-integration-settings-general', {
         storeSelectedListValue(value) {
             this.selectedSubscriptionList = value;
         },
-        
+
         async fetchKlaviyoLists() {
             const privateKey = this.actualConfigData['klavi_overd.config.privateApiKey'];
 
@@ -287,7 +314,7 @@ Component.register('klaviyo-integration-settings-general', {
                 this.listsOptions = [];
                 return;
             }
-            
+
             try {
                 const response = await this.klaviyoApiKeyValidatorService.getList(privateKey);
 
@@ -313,7 +340,7 @@ Component.register('klaviyo-integration-settings-general', {
                     label: item.label,
                     value: item.value,
                 }));
-                
+
                 if (this.listsOptions.length > 0 && !this.actualConfigData['klavi_overd.config.klaviyoListForSubscribersSync']) {
                     this.actualConfigData['klavi_overd.config.klaviyoListForSubscribersSync'] = this.listsOptions[0].value;
                 }
@@ -324,12 +351,30 @@ Component.register('klaviyo-integration-settings-general', {
                 this.listsOptions = [];
             }
         },
-        
+
         debounce(callback, delay) {
             if (this.debounceTimeoutId) {
                 clearTimeout(this.debounceTimeoutId);
             }
             this.debounceTimeoutId = setTimeout(callback, delay);
-        }
+        },
+
+        buildFieldMappingErrors(configPath, errorDetail) {
+            const mappingConfig = this.allConfigs?.['null']?.[configPath];
+            const errorStates = {};
+
+            if (!mappingConfig || typeof mappingConfig !== 'object' || Array.isArray(mappingConfig)) {
+                return errorStates;
+            }
+
+            Object.keys(mappingConfig).forEach((mappingKey) => {
+                const mapping = mappingConfig[mappingKey];
+                if (mapping && mapping.active && !mapping.customLabel) {
+                    errorStates[mappingKey] = { code: 1, detail: errorDetail };
+                }
+            });
+
+            return errorStates;
+        },
     },
 });

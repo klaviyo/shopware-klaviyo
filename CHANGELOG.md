@@ -1,4 +1,24 @@
 # Change Log
+## [4.5.0] - 2026-10-14
+### Added
+- **Added** optional date range (from/till) for the subscriber historical sync, matching the order sync.
+- **Added** the cookie `klaviyo_identified`, a pseudonymous marker (a hash of the customer or subscriber id) that tells the storefront whether an identity can be loaded. It is only set after Klaviyo cookie consent and is listed in the "Klaviyo Cookies" consent group. Shops using Shopware's consent banner show it once more to returning visitors after the update.
+### Changed
+- **Changed** the admin settings page into tabs: Credentials, Cookie consent, Tracking, Mapping, Historical sync, Scheduled Sync and Back In Stock.
+- **Changed** the Save button to explain via tooltip why it is disabled (missing credentials or invalid field mapping).
+- **Changed** the historical sync controls to live in the Historical sync tab instead of the page header.
+- **Changed** newsletter subscribers to be identified only after confirming their subscription. Existing `klaviyo_subscriber` cookies are treated as anonymous until the next confirmation. The subscriber marker is only created at confirmation: if it is removed later (the visitor navigates on before giving consent, or declines and later re-accepts), the subscriber stays anonymous until the next confirmation.
+- **Changed** the "Klaviyo Cookies" consent description.
+- **Changed** the "Export in Klaviyo Format" buttons on the promotion list and detail pages to download the CSV through the authenticated admin API instead of a plain browser navigation. A failed download now shows an error notification.
+
+### Fixed
+- **Fixed** historical sync date range excluding records on the last selected day.
+- **Fixed** customer and newsletter subscriber data (email, name, address) being rendered into cacheable storefront HTML. The identity is now loaded client-side from a dedicated no-store endpoint (`/account/klaviyo/identity`).
+- **Fixed** hardened the promotion code export: it is now an authenticated admin API call that requires the `promotion:read` privilege. Integrations exporting codes need that privilege from this version on.
+### Removed
+- **Removed** the Twig blocks `klaviyo_integration_settings_content_sales_channel_customer`, `klaviyo_integration_settings_content_sales_channel_order` and `klaviyo_integration_settings_actions_historical_events_synchronization_control` from the admin settings page template. Their content now lives in the Mapping and Historical sync tabs of `klaviyo-integration-settings-general`; third-party overrides of these blocks must be moved to the tab templates.
+- **Removed** the unused admin template `sw-promotion-list-override/sw-promotion-list.html.twig` (targeted the old `sw-promotion-list` component and was never loaded).
+
 ## [4.4.0] - 2026-08-26
 ### Fixed
 - **Fixed** Bug in Order Partially Shipped & Partially Paid event

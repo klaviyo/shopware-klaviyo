@@ -15,6 +15,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
@@ -59,6 +60,8 @@ class FullCustomerOrderSyncOperation implements JobHandlerInterface, GeneratingH
                 $criteria = new Criteria();
                 $criteria->setLimit(self::CUSTOMER_BATCH_SIZE);
                 $criteria->setOffset($offset);
+                $criteria->addSorting(new FieldSorting('createdAt', FieldSorting::ASCENDING));
+                $criteria->addSorting(new FieldSorting('id', FieldSorting::ASCENDING));
                 $criteria->addFilter(
                     new EqualsFilter('orderCount', 0),
                     new EqualsAnyFilter('salesChannelId', $channelIds)

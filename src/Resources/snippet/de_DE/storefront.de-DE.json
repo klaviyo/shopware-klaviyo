@@ -19,13 +19,23 @@
             }
         },
         "cookie": {
-            "value": "Klaviyo Cookies",
-            "description": "Ermöglicht die Identifizierung des Benutzers, wenn er nicht angemeldet ist!"
+            "description": "Cookies der Klaviyo-Marketing-Integration. Ohne sie findet kein Klaviyo-Tracking statt.",
+            "consent": {
+                "value": "Klaviyo Einwilligungs-Kennzeichen",
+                "description": "Erlaubt dem Shop, das Klaviyo-Tracking-Skript zu laden."
+            },
+            "identified": {
+                "value": "Klaviyo Identitäts-Marker",
+                "description": "Pseudonymer Marker, der dem Shop mitteilt, dass eine Identität für Klaviyo geladen werden darf."
+            }
         },
         "cart-restore": {
             "missing-cart-data": "Ihre bisherigen Warenkorbdaten fehlen.",
             "missing-cart-data-guest": "Die Daten Ihres bisherigen Warenkorbs fehlen.",
             "missing-cart-data-error": "Bei der Wiederherstellung der Warenkorbdaten ist ein Fehler aufgetreten."
         }
+    },
+    "cookie": {
+        "klaviyo": "Klaviyo Cookies"
     }
 }

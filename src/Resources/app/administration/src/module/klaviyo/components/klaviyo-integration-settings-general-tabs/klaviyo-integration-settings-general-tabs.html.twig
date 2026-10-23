@@ -1,0 +1,47 @@
+{% block klaviyo_integration_settings_general_tabs %}
+    <sw-tabs :default-item="activeTab" @new-item-active="onTabChange">
+        <template #default="{ active }">
+            {% block klaviyo_integration_settings_general_tabs_configuration %}
+                <sw-tabs-item name="general" :active-tab="active">
+                    {{ $tc('klaviyo-integration-settings.general.title') }}
+                </sw-tabs-item>
+            {% endblock %}
+
+            {% block klaviyo_integration_settings_general_tabs_cookie_consent %}
+                <sw-tabs-item name="cookie-consent" :active-tab="active">
+                    {{ $tc('klaviyo-integration-settings.cookieConsent.title') }}
+                </sw-tabs-item>
+            {% endblock %}
+
+            {% block klaviyo_integration_settings_general_tabs_sync_settings %}
+                <sw-tabs-item name="tracking" :active-tab="active">
+                    {{ $tc('klaviyo-integration-settings.tracking.title') }}
+                </sw-tabs-item>
+            {% endblock %}
+
+            {% block klaviyo_integration_settings_general_tabs_mapping %}
+                <sw-tabs-item name="mapping" :active-tab="active">
+                    {{ $tc('klaviyo-integration-settings.mapping.title') }}
+                </sw-tabs-item>
+            {% endblock %}
+
+            {% block klaviyo_integration_settings_general_tabs_historical_sync %}
+                <sw-tabs-item name="historical-sync" :active-tab="active">
+                    {{ $tc('klaviyo-integration-settings.historicalSync.title') }}
+                </sw-tabs-item>
+            {% endblock %}
+
+            {% block klaviyo_integration_settings_general_tabs_scheduled_sync %}
+                <sw-tabs-item name="scheduled-sync" :active-tab="active">
+                    {{ $tc('klaviyo-integration-settings.scheduledSync.title') }}
+                </sw-tabs-item>
+            {% endblock %}
+
+            {% block klaviyo_integration_settings_general_tabs_popup %}
+                <sw-tabs-item name="popup" :active-tab="active">
+                    {{ $tc('klaviyo-integration-settings.backInStock.title') }}
+                </sw-tabs-item>
+            {% endblock %}
+        </template>
+    </sw-tabs>
+{% endblock %}

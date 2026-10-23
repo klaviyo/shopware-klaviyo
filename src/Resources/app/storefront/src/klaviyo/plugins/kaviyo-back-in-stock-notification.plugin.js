@@ -1,6 +1,7 @@
 import Plugin from 'src/plugin-system/plugin.class';
 import DomAccess from 'src/helper/dom-access.helper';
 import HttpClient from 'src/service/http-client.service';
+import KlaviyoIdentity from '../util/identity';
 
 export default class KlaviyoBackInStockNotification extends Plugin {
     static options = {
@@ -26,7 +27,28 @@ export default class KlaviyoBackInStockNotification extends Plugin {
         this._client = new HttpClient();
 
         this._getFormDataElements();
+        this._prefillEmail();
         this.registerEvents();
+    }
+
+    _prefillEmail() {
+        const identityComponent = document.querySelector('[data-klaviyo-identity-tracking-component-options]');
+        if (!identityComponent || !this._email) {
+            return;
+        }
+
+        let identityUrl = null;
+        try {
+            identityUrl = JSON.parse(identityComponent.getAttribute('data-klaviyo-identity-tracking-component-options')).identityUrl;
+        } catch (e) {
+            return;
+        }
+
+        KlaviyoIdentity.load(identityUrl).then((identity) => {
+            if (identity && identity.email && !this._email.value) {
+                this._email.value = identity.email;
+            }
+        });
     }
 
     _getFormDataElements() {
