@@ -14,7 +14,6 @@ use Klaviyo\Integration\Model\Channel\GetValidChannelConfig;
 use Klaviyo\Integration\Utils\Logger\ContextHelper;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Struct\ArrayStruct;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Event\SwitchBuyBoxVariantEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Page\GenericPageLoadedEvent;
@@ -27,15 +26,31 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
     public const PDP_EXTENSION = 'klaviyoIntegrationPluginExtension';
 
     private GetValidChannelConfig $getValidChannelConfig;
+    /**
+     * @deprecated unused, identity moved to CustomerIdentityProvider; will be removed in a future release
+     */
     private CustomerPropertiesTranslator $customerPropertiesTranslator;
     private Translator\ProductTranslator $productTranslator;
     private Translator\StartedCheckoutEventTrackingRequestTranslator $startedCheckoutEventTrackingRequestTranslator;
     private LoggerInterface $logger;
+    /**
+     * @deprecated unused, will be removed in a future release
+     */
     private NewsletterSubscriberHelper $newsletterSubscriberHelper;
+    /**
+     * @deprecated unused, will be removed in a future release
+     */
     private RequestStack $requestStack;
+    /**
+     * @deprecated unused, will be removed in a future release
+     */
     private NewsletterSubscriberPropertiesTranslator $newsletterSubscriberPropertiesTranslator;
     private KlaviyoGateway $klaviyoGateway;
-    // TODO: make some args as proxy
+
+    /**
+     * @deprecated $customerPropertiesTranslator, $newsletterSubscriberHelper, $requestStack and
+     * $newsletterSubscriberPropertiesTranslator are unused and will be removed in a future release.
+     */
     public function __construct(
         GetValidChannelConfig $getValidChannelConfig,
         CustomerPropertiesTranslator $customerPropertiesTranslator,
@@ -80,7 +95,6 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
 
             $event->getPage()->addExtension(self::PDP_EXTENSION, new ArrayStruct([
                 'configuration' => $configuration,
-                'customerIdentity' => $this->getCustomerIdentity($salesChannelContext),
             ]));
         } catch (\Throwable $throwable) {
             $this->logger->error(
@@ -134,7 +148,6 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
 
             $event->getSalesChannelContext()->addExtension(self::PDP_EXTENSION, new ArrayStruct([
                 'configuration' => $configuration,
-                'customerIdentity' => $this->getCustomerIdentity($salesChannelContext),
             ]));
 
             $extensionData = $event->getSalesChannelContext()->getExtension(self::PDP_EXTENSION);
@@ -184,29 +197,5 @@ class AddPluginExtensionToPageDTOEventListener implements EventSubscriberInterfa
                 ContextHelper::createContextFromException($throwable)
             );
         }
-    }
-
-    private function getCustomerIdentity(SalesChannelContext $channelContext)
-    {
-        $subscriberId = $this->requestStack->getCurrentRequest()->cookies->get('klaviyo_subscriber') ?? null;
-        $customerIdentity = null;
-
-        if ($customer = $channelContext->getCustomer()) {
-            $customerIdentity = $this->customerPropertiesTranslator->translateCustomer(
-                $channelContext->getContext(),
-                $customer
-            );
-        } elseif ($subscriberId) {
-            $subscriber = $this->newsletterSubscriberHelper->getSubscriber(
-                $subscriberId,
-                $channelContext->getContext()
-            );
-
-            if (null !== $subscriber) {
-                $customerIdentity = $this->newsletterSubscriberPropertiesTranslator->translateSubscriber($subscriber);
-            }
-        }
-
-        return $customerIdentity;
     }
 }

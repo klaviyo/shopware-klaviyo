@@ -40,6 +40,8 @@ Component.register('klaviyo-integration-settings-general', {
         },
     },
 
+    emits: ['mapping-error-states-changed'],
+
     watch: {
         selectedSalesChannelId: {
             deep: true,
@@ -61,10 +63,18 @@ Component.register('klaviyo-integration-settings-general', {
                 }
             },
         },
+
+        mappingErrorStates: {
+            immediate: true,
+            handler(newValue) {
+                this.$emit('mapping-error-states-changed', newValue);
+            },
+        },
     },
 
     data() {
         return {
+            activeTab: 'general',
             selectedSubscriptionList: null,
             subscriptionListOptions: [],
             isLoading: false,
@@ -170,7 +180,23 @@ Component.register('klaviyo-integration-settings-general', {
         },
         createListsOptions() {
             return this.listsOptions;
-        }
+        },
+
+        // Validates customer/order field mappings directly from allConfigs, independent of
+        // whether the Mapping tab (and its klaviyo-integration-settings-customer/-order
+        // components) has ever been mounted.
+        mappingErrorStates() {
+            return {
+                ...this.buildFieldMappingErrors(
+                    'klavi_overd.config.customerFieldMapping',
+                    Shopware.Snippet.tc('klaviyo-integration-settings.customer.fieldMapping.labelNotFilledError'),
+                ),
+                ...this.buildFieldMappingErrors(
+                    'klavi_overd.config.orderFieldMapping',
+                    Shopware.Snippet.tc('klaviyo-integration-settings.order.fieldMapping.labelNotFilledError'),
+                ),
+            };
+        },
     },
 
     created() {
@@ -345,6 +371,28 @@ Component.register('klaviyo-integration-settings-general', {
                 clearTimeout(this.debounceTimeoutId);
             }
             this.debounceTimeoutId = setTimeout(callback, delay);
-        }
+        },
+
+        storeSelectedListValue(value) {
+            this.selectedSubscriptionList = value;
+        },
+
+        buildFieldMappingErrors(configPath, errorDetail) {
+            const mappingConfig = this.allConfigs?.['null']?.[configPath];
+            const errorStates = {};
+
+            if (!mappingConfig || typeof mappingConfig !== 'object' || Array.isArray(mappingConfig)) {
+                return errorStates;
+            }
+
+            Object.keys(mappingConfig).forEach((mappingKey) => {
+                const mapping = mappingConfig[mappingKey];
+                if (mapping && mapping.active && !mapping.customLabel) {
+                    errorStates[mappingKey] = { code: 1, detail: errorDetail };
+                }
+            });
+
+            return errorStates;
+        },
     },
 });

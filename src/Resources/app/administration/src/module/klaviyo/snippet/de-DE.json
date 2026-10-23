@@ -55,35 +55,60 @@
     "klaviyo-integration-settings": {
         "label": "Klaviyo",
         "title": "Klaviyo",
+        "saveButton": {
+            "credentialsRequiredTooltip": "Privater API-Schlüssel, öffentlicher API-Schlüssel und Liste für den Abonnenten-Abgleich müssen vor dem Speichern angegeben werden.",
+            "invalidMappingTooltip": "Bei einem oder mehreren Feld-Mappings fehlt die Bezeichnung. Bitte den Tab \"Mapping\" prüfen."
+        },
         "general": {
-            "title": "Allgemein",
+            "title": "Zugangsdaten",
             "credentialsAlert": "Einstellungen müssen auf Verkaufskanal Ebene durchgeführt sein.",
             "doubleoptinAlert": "Listen sind in allen Klaviyo-Konten standardmäßig auf Double-Opt-In eingestellt. Achten Sie darauf, dass Sie Double Opt-In nicht gleichzeitig in Shopware und Klaviyo aktiviert haben!",
             "initialization": {
                 "label": "Klaviyo nach der ersten Interaktion mit der Seite initialisieren.",
                 "general-label": "Interaktionseinstellungen",
-                "helpText": "Nachdem eun User mit der Seite interagiert hat, werden die Klaviyo-Skripte initialisiert. Bei nachfolgenden Seitenübergängen werden die Skripte sofort initialisiert."
+                "helpText": "Verzögert das Laden des Klaviyo-Trackings, bis ein Besucher zum ersten Mal mit der Seite interagiert (z. B. durch Scrollen). Das kann Ihre Seite schneller laden lassen. Sobald es geladen ist, bleibt es für den Rest des Besuchs aktiv."
             },
-            "cookie": {
-                "title": "Cookie consent"
+            "fieldsets": {
+                "apiCredentials": "API-Zugangsdaten"
             }
+        },
+        "cookieConsent": {
+            "title": "Cookie consent"
+        },
+        "tracking": {
+            "title": "Tracking",
+            "fieldsets": {
+                "storefrontEvents": "Storefront Ereignisse",
+                "orderEvents": "Bestellereignisse",
+                "backInStock": "Wieder auf Lager"
+            }
+        },
+        "mapping": {
+            "title": "Zuordnung"
+        },
+        "historicalSync": {
+            "title": "Historische Synchronisierung",
+            "eventsLabel": "Ereignisse",
+            "subscribersLabel": "Abonnenten"
+        },
+        "scheduledSync": {
+            "title": "Geplante Synchronisierung",
+            "salesChannelAlert": "Um diese Einstellungen zu konfigurieren, wechseln Sie in der Verkaufskanal-Auswahl zu „Alle Verkaufskanäle“.",
+            "fieldsets": {
+                "scheduledSyncSettings": "Einstellungen für geplante Synchronisierung"
+            }
+        },
+        "backInStock": {
+            "title": "Wieder auf Lager"
         },
         "pop-up": {
             "title": "Wieder auf Lager Popup-Stile",
             "open-button-fieldset-label": "Pop-Up öffnen Button",
             "close-button-fieldset-label": "Pop-Up schließen Button",
             "subscribe-button-fieldset-label": "Anmelden Button",
-            "snippet-button-fieldset-label": "Snippet Namen",
             "additional-classes-fieldset-label": "Zusätzliche Klassen",
             "colorLabel": "Farbe",
-            "backgroundLabel": "Hintergrund",
-            "openBtnLabel": "Öffnen Button",
-            "closeBtnLabel": "Schließen Button",
-            "contentMessageLabel": "Inhaltsnachricht",
-            "subscribeBtnLabel": "Anmelden Button",
-            "subscribeCheckboxLabel": "Anmelden Kontrollkästchen-Text",
-            "emailFieldLabel": "E-Mail Feld Etikett",
-            "emailFieldPlaceholder": "E-Mail Feld Platzhalter"
+            "backgroundLabel": "Hintergrund"
         },
         "configs": {
             "credentials": {
@@ -91,34 +116,35 @@
             },
             "enabled": {
                 "label": "Account aktivieren",
-                "helpText": "Durch Aktivieren dieses Schalters kannst du das konfigurierte Klaviyo-Konto für den aktuellen Verkaufskanal aktivieren/deaktivieren."
+                "helpText": "Aktivieren Sie diese Option, um Ihre Klaviyo-Integration für diesen Verkaufskanal zu aktivieren."
             },
             "privateApiKey": {
                 "label": "Klaviyo Private API Schlüssel",
-                "helpText": "Klaviyo Private API Schlüssel. Du findest ihn in deinem Klaviyo Konto."
+                "helpText": "Ihr privater Klaviyo-API-Schlüssel, mit dem Daten sicher an Klaviyo gesendet werden. Sie finden ihn in Klaviyo unter Einstellungen > API-Schlüssel."
             },
             "publicApiKey": {
                 "label": "Klaviyo Public API Schlüssel",
-                "helpText": "Klaviyo Public API Schlüssel. Du findest ihn in deinem Klaviyo Konto."
+                "helpText": "Ihr öffentlicher Klaviyo-API-Schlüssel (auch Site-ID genannt), der vom Tracking-Code in Ihrem Shop verwendet wird. Sie finden ihn in Klaviyo unter Einstellungen > API-Schlüssel."
             },
             "klaviyoListForSubscribersSync": {
                 "label": "Klaviyo List für die Synchronisierung der Abonnenten",
-                "helpText": "Die ID der Abonnentenliste in Klaviyo, zu der alle Shopware6-Abonnenten hinzugefügt werden sollen."
+                "helpText": "Wählen Sie die Liste in Klaviyo aus, zu der die Newsletter-Abonnenten Ihres Shops hinzugefügt werden."
             },
             "bisVariantField": {
                 "label": "Zuordnung von Produktidentifikationsfeldern",
-                "helpText": "Zuordnung der Produktidentifikation. Mit dieser Option können Sie den Typ des Produktidentifikators in allen Ereignissen in Klaviyo auswählen, in denen Produktdaten erwähnt werden.",
+                "helpText": "Legen Sie fest, wie Produkte in den an Klaviyo gesendeten Daten identifiziert werden: über die Produktnummer (die SKU, die Ihre Kunden sehen) oder über die Produkt-ID (die interne Kennung von Shopware). Für die meisten Shops wird die Produktnummer empfohlen.",
                 "productId": "Produkt ID"
             },
             "orderIdentification": {
                 "label": "Zuordnung der Bestellidentifikationsfelder",
-                "helpText": "Wählen Sie die Bestellidentifikationsvariable aus, die an Klaviyo gesendet wird",
+                "helpText": "Legen Sie fest, wie Bestellungen in den an Klaviyo gesendeten Daten identifiziert werden: über die Bestellnummer (die Nummer, die Kunden z. B. auf Rechnungen sehen) oder über die Bestell-ID (die interne Kennung von Shopware).",
                 "orderId": "Order ID",
                 "orderNumber": "Order Nummer"
             },
             "cookieConsent": {
                 "label": "Cookie Consent",
-                "helpText": "Cookie Consent",
+                "helpText": "Wählen Sie aus, welches Cookie-Consent-Tool entscheidet, ob Klaviyo das Verhalten eines Besuchers im Browser verfolgen darf. Wählen Sie \"Nothing\", um Tracking immer zuzulassen, oder wählen Sie das in Ihrem Shop verwendete Tool, damit Klaviyo nur Besucher trackt, die zugestimmt haben.",
+                "scopeNotice": "Diese Einstellung wirkt sich nur auf das Storefront-Tracking aus, das direkt im Browser des Kunden stattfindet, z. B. \"In den Warenkorb\" und \"Produkt angesehen\".",
                 "nothingLabel": "Nothing",
                 "shopwareLabel": "Shopware Default",
                 "cookieBotLabel": "CookieBot",
@@ -127,59 +153,59 @@
             },
             "trackDeletedAccountOrders": {
                 "label": "Übersicht über die Bestellungen eines gelöschten Kontos",
-                "helpText": "Sollen die Bestellevents von gelöschten Kunden zu Klaviyo synchronisiert werden? Hinweis: Wenn diese Funktion aktiviert ist, können doppelte Klaviyo-Profile synchronisiert werden."
+                "helpText": "Standardmäßig werden Bestellungen nicht an Klaviyo übermittelt, wenn das zugehörige Kundenkonto inzwischen gelöscht wurde. Aktivieren Sie diese Option, um sie trotzdem zu übermitteln. Hinweis: Da das gelöschte Konto keinem bestehenden Klaviyo-Profil mehr zugeordnet werden kann, legt Klaviyo möglicherweise ein neues, separates Profil an, anstatt das ursprüngliche Profil des Kunden zu aktualisieren."
             },
             "trackViewedProduct": {
                 "label": "Angesehene Produkte tracken",
-                "helpText": "Soll das \"Viewed Product\" zu Klaviyo übertragen werden?"
+                "helpText": "Sendet ein Ereignis an Klaviyo, sobald ein Kunde eine Produktseite ansieht. Klaviyo kann dies für Erinnerungs-E-Mails (\"Das haben Sie sich angesehen\") und personalisierte Empfehlungen nutzen."
             },
             "trackRecentlyViewedItems": {
                 "label": "Kürzlich angesehene Produkte tracken",
-                "helpText": "Soll das \"Recently Viewed Items\" zu Klaviyo übertragen werden?"
+                "helpText": "Lässt Klaviyo für jeden Kunden einen Verlauf \"Kürzlich angesehene Produkte\" aufbauen, der für personalisierte Empfehlungen in E-Mails und im Shop genutzt werden kann."
             },
             "trackAddedToCart": {
                 "label": "Zum Warenkorb hinzugefügt tracken",
-                "helpText": "Soll das \"Added to Cart Event\" zu Klaviyo übertragen werden?\nDas beeinflusst auch histoirische Events."
+                "helpText": "Sendet ein Ereignis an Klaviyo, wenn ein angemeldeter Kunde ein Produkt in den Warenkorb legt. Damit werden z. B. Erinnerungs-E-Mails für abgebrochene Warenkörbe ausgelöst. Hinweis: Wird nur für angemeldete Kunden erfasst. Wird auch bei der historischen Synchronisierung berücksichtigt."
             },
             "trackStartedCheckout": {
                 "label": "Begonnener Checkout tracken",
-                "helpText": "Soll das \"Started Checkout Event\" zu Klaviyo übertragen werden?\nDas beeinflusst auch histoirische Events."
+                "helpText": "Sendet ein Ereignis an Klaviyo, wenn ein angemeldeter Kunde die Kasse erreicht. Wird häufig genutzt, um Erinnerungs-E-Mails für abgebrochene Bestellvorgänge auszulösen. Wird auch bei der historischen Synchronisierung berücksichtigt."
             },
             "trackPlacedOrder": {
                 "label": "Bestellungen tracken",
-                "helpText": "Soll das \"Placed Order Event\" zu Klaviyo übertragen werden?\nDas beeinflusst auch histoirische Events."
+                "helpText": "Sendet ein Ereignis an Klaviyo, wenn ein Kunde eine Bestellung abschließt. Wird für Bestellbestätigungen und den Kaufverlauf genutzt. Wird auch bei der historischen Synchronisierung berücksichtigt."
             },
             "trackOrderedProduct": {
                 "label": "Bestelltes Produkt tracken",
-                "helpText": "Soll das \"Ordered Product Event\" zu Klaviyo übertragen werden?\nDas beeinflusst auch histoirische Events."
+                "helpText": "Sendet für jedes Produkt einer abgeschlossenen Bestellung ein eigenes Ereignis an Klaviyo. Klaviyo kann dies z. B. für Cross-Selling oder Nachbestell-Erinnerungen nutzen. Wird auch bei der historischen Synchronisierung berücksichtigt."
             },
             "trackFulfilledOrder": {
                 "label": "Ausgelieferte Bestellung tracken",
-                "helpText": "Soll das \"Fulfilled Order Event\" zu Klaviyo übertragen werden?\nDas beeinflusst auch histoirische Events."
+                "helpText": "Sendet ein Ereignis an Klaviyo, wenn der Status einer Bestellung in Shopware auf \"Abgeschlossen\" wechselt. Wird auch bei der historischen Synchronisierung berücksichtigt."
             },
             "trackCancelledOrder": {
                 "label": "Stornierte Bestellung tracken",
-                "helpText": "Soll das \"Cancelled Order Event\" zu Klaviyo übertragen werden?\nDas beeinflusst auch histoirische Events."
+                "helpText": "Sendet ein Ereignis an Klaviyo, wenn der Status einer Bestellung in Shopware auf \"Storniert\" wechselt. Wird auch bei der historischen Synchronisierung berücksichtigt."
             },
             "trackRefundedOrder": {
                 "label": "Erstattete Bestellung tracken",
-                "helpText": "Soll das \"Refunded Order Event\" zu Klaviyo übertragen werden?\nDas beeinflusst auch histoirische Events."
+                "helpText": "Sendet ein Ereignis an Klaviyo, wenn eine Zahlung zu einer Bestellung erstattet wird. Wird auch bei der historischen Synchronisierung berücksichtigt."
             },
             "trackPaidOrder": {
                 "label": "Bezahlt Bestellung tracken",
-                "helpText": "Soll das \"Paid Order Event\" zu Klaviyo übertragen werden?\nDas beeinflusst auch histoirische Events."
+                "helpText": "Sendet ein Ereignis an Klaviyo, wenn eine Zahlung zu einer Bestellung als (teilweise) bezahlt markiert wird. Wird auch bei der historischen Synchronisierung berücksichtigt."
             },
             "trackShippedOrder": {
                 "label": "Ausgeliefert Bestellung tracken",
-                "helpText": "Soll das \"Shipped Order Event\" zu Klaviyo übertragen werden?\nDas beeinflusst auch histoirische Events."
+                "helpText": "Sendet ein Ereignis an Klaviyo, wenn sich der Versandstatus einer Bestellung auf (teilweise) versandt ändert. Wird auch bei der historischen Synchronisierung berücksichtigt."
             },
             "trackSubscribedToBackInStock": {
                 "label": "Wieder auf Lager tracken",
-                "helpText": "Soll das \"Back In Stock Event\" zu Klaviyo übertragen werden?\n"
+                "helpText": "Aktivieren Sie diese Option, um auf Produktseiten ein Anmeldeformular für nicht vorrätige Produkte mit aktivierter Option \"Abverkauf\" anzuzeigen. Kunden können dort ihre E-Mail-Adresse hinterlegen und werden von Klaviyo benachrichtigt, sobald das Produkt wieder verfügbar ist.\n"
             },
             "oldJobCleanup": {
                 "label": "Aktivieren Sie die Bereinigung alter Jobs",
-                "helpText": "Ermöglicht das Bereinigen alter Jobs in der Klaviyo-Stellenanzeige"
+                "helpText": "Entfernt automatisch alte, abgeschlossene Synchronisierungsvorgänge aus der Übersicht, sobald sie das unten gewählte Alter erreicht haben, damit die Übersicht übersichtlich bleibt."
             },
             "oldJobCleanupPeriod": {
                 "after": "Nach",
@@ -195,18 +221,18 @@
             },
             "excludedSubscribersSynchronization": {
                 "label": "Tägliche Synchronisierung der ausgeschlossenen Abonnenten aktivieren",
-                "helpText": "Mit dieser Option können Sie die tägliche geplante Synchronisierung der ausgeschlossenen Abonnenten aktivieren."
+                "helpText": "Einmal täglich prüfen wir bei Klaviyo, welche Kunden sich dort von Marketing-E-Mails abgemeldet haben, und aktualisieren automatisch deren Newsletter-Status in Ihrem Shop entsprechend. So bleiben Ihr Shop und Klaviyo synchron."
             },
             "withoutSubscribersSync": {
                 "label": "Kunden ohne Abonnement für die Synchronisierung aktivieren",
-                "helpText": "Mit dieser Option können Sie in Klaviyo Profile von Kunden erstellen, die kein Abonnement haben, wenn Sie Abonnenten synchronisieren"
+                "helpText": "Wirkt sich nur aus, wenn Sie Ihre Abonnenten über die Schaltfläche unten synchronisieren. In diesem Fall werden zusätzlich Klaviyo-Profile für Kunden gesendet, die den Newsletter nicht abonniert haben – ohne diese Option werden nur abonnierte Kunden berücksichtigt."
             },
             "withoutOrdersSync": {
                 "label": "Synchronisation aktivieren Kunden ohne Auftrag",
-                "helpText": "Diese Option erlaubt es, beim Start der historischen Synchronisation, in Klaviyo Profile von Kunden zu erstellen, die keine Bestellungen haben"
+                "helpText": "Wirkt sich nur aus, wenn Sie Ihre Bestellhistorie über die Schaltfläche unten synchronisieren. Wenn aktiviert, werden zusätzlich Klaviyo-Profile für Kunden gesendet, die noch keine Bestellung aufgegeben haben – ohne diese Option werden nur Kunden mit Bestellungen berücksichtigt."
             },
             "doubleProcessLaunchWarning": {
-                "label": "\"{entityName}\" wird gerade ausgeführt. Bitte beachten Sie, dass das parallele Starten mehrerer Synchronisationen zu Unterbrechungen führen kann, da die Klaviyo-Rate begrenzt ist \"{docUrl}\". Wollen Sie fortfahren?",
+                "label": "\"{entityName}\" wird gerade ausgeführt. Wenn Sie jetzt eine weitere Synchronisierung starten, kann diese aufgrund der Nutzungsgrenzen von Klaviyo fehlschlagen {docUrl}. Möchten Sie trotzdem fortfahren?",
                 "actionCanceled": "Aktion abgebrochen."
             },
             "doubleProcessLaunchWarningPopup": {
@@ -217,6 +243,12 @@
             "lists": {
                 "warning": "Für dieses Profil wurden in Klaviyo keine Listen gefunden",
                 "error": "Fehler beim Abrufen der Listen aus dem Klaviyo-Profil!"
+            },
+            "historicalEvents": {
+                "scopeNotice": "Wählen Sie einen Zeitraum, um vergangene Ereignisse (wie Bestellung aufgegeben oder Bestellung versandt) an Klaviyo zu exportieren. <strong>Warnung</strong>: Diese Synchronisierung kann automatisierte Klaviyo-Flows auslösen. Pausieren Sie aktive Flows, bevor Sie fortfahren, um unbeabsichtigte E-Mails an Kunden zu vermeiden."
+            },
+            "subscriberSync": {
+                "scopeNotice": "Löst eine sofortige vollständige Synchronisierung aller aktiven Shop-Abonnenten mit der von Ihnen konfigurierten Klaviyo-Liste aus.\n\n<strong>Warnung</strong>: Wenn für Ihre Klaviyo-Liste Double-Opt-In aktiviert ist, erhalten unbestätigte Kunden bei der Synchronisierung automatisch eine Opt-In-E-Mail."
             }
         },
         "customer": {
@@ -224,6 +256,7 @@
             "fieldMapping": {
                 "labelNotFilledError": "Feldname muss ausgefüllt sein.",
                 "noMappingFieldsError": "Es gibt keine Kunden-Zusatzfelder.",
+                "loadFieldsError": "Die Kunden-Zusatzfelder konnten nicht geladen werden. Das bestehende Mapping wurde nicht verändert, bitte laden Sie die Seite neu.",
                 "item": {
                     "fieldName": "Zusatzfeld Name",
                     "fieldNamePlaceholder": "Zusatzfeld Typ"
@@ -235,6 +268,7 @@
             "fieldMapping": {
                 "labelNotFilledError": "Feldname muss ausgefüllt sein.",
                 "noMappingFieldsError": "Es gibt keine benutzerdefinierten Bestellfelder für die Zuordnung.",
+                "loadFieldsError": "Die Bestell-Zusatzfelder konnten nicht geladen werden. Das bestehende Mapping wurde nicht verändert, bitte laden Sie die Seite neu.",
                 "item": {
                     "fieldName": "Zusatzfeld Name",
                     "fieldNamePlaceholder": "Zusatzfeld Typ"
@@ -258,7 +292,13 @@
                 "success": "Abonennten Synchronisierung eingeplant.",
                 "failed": "Fehler bei der Planung der Abonennten Synchronisierung.",
                 "is_running": "Abonennten Synchronisierung läuft bereits.",
-                "is_scheduled": "Abonennten Synchronisierung ist bereits eingeplant."
+                "is_scheduled": "Abonennten Synchronisierung ist bereits eingeplant.",
+                "invalid_date_format": "Bitte geben Sie ein gültiges Datum an."
+            },
+            "modal": {
+                "from_date": "Ab Datum",
+                "until_date": "Bis Datum",
+                "invalid_date_range": "Für die Synchronisierung wurde ein ungültiger Datumsbereich angegeben!"
             }
         },
         "historical_events_tracking": {
@@ -275,7 +315,8 @@
                 "success": "Historische Events Synchronisierung eingeplant.",
                 "failed": "Fehler bei Planung der historischen Events Synchronisation.",
                 "is_running": "Historische Events Synchronisation läuft bereits.",
-                "is_scheduled": "Historische Events Synchronisation ist bereits eingeplant."
+                "is_scheduled": "Historische Events Synchronisation ist bereits eingeplant.",
+                "invalid_date_format": "Bitte geben Sie ein gültiges Datum an."
             },
             "modal": {
                 "title": "Synchronisierung historischer Events",
@@ -289,7 +330,8 @@
         "promotion": {
             "exportInKlaviyoFormatButtonLabel": "Export im Klaviyo Format",
             "notification": {
-                "notificationExportErrorMessage": "Beim Exportieren der Aktion ist ein Fehler aufgetreten \"{entityName}\"."
+                "notificationExportErrorMessage": "Beim Exportieren der Aktion ist ein Fehler aufgetreten \"{entityName}\".",
+                "notificationExportFailedMessage": "Der Aktions-Export konnte nicht heruntergeladen werden. Bitte prüfen Sie Ihre Berechtigungen und versuchen Sie es erneut."
             }
         },
         "productComparison": {
