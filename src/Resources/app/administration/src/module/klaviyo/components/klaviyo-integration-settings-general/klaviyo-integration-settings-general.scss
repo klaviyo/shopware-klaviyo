@@ -19,15 +19,18 @@ fieldset {
     .cookie-consent-inheritance {
         margin-top: 20px;
     }
-
-    .klaviyo-interaction-settings {
-        .sw-card__content {
-            padding-top: 0;
-            padding-bottom: 0;
-        }
-    }
-
+    
     .no-top-margin {
         margin-top: 0;
+    }
+}
+
+.klaviyo-integration-settings {
+    .boolean-config-container {
+        margin-bottom: 10px;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
     }
 }

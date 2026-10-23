@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Klaviyo\Integration\Model\UseCase\Operation;
 
 use Doctrine\DBAL\Exception;
+use Klaviyo\Integration\Async\Message\AbstractDateBasedMessage;
 use Klaviyo\Integration\Od\Scheduler\Model\Job\{GeneratingHandlerInterface, JobHandlerInterface, JobResult, Message};
 use Klaviyo\Integration\Model\Channel\GetValidChannels;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
@@ -59,10 +60,15 @@ class FullCustomerSubsSyncOperation implements JobHandlerInterface, GeneratingHa
                 $criteria->setLimit(self::CUSTOMER_BATCH_SIZE);
                 $criteria->setOffset($offset);
                 $criteria->addSorting(new FieldSorting('createdAt', FieldSorting::ASCENDING));
+                $criteria->addSorting(new FieldSorting('id', FieldSorting::ASCENDING));
                 $criteria->addFilter(
                     new EqualsFilter('newsletterSalesChannelIds', null),
                     new EqualsAnyFilter('salesChannelId', $channelIds)
                 );
+
+                if ($message instanceof AbstractDateBasedMessage) {
+                    $message->applyDateRangeFilter($criteria);
+                }
 
                 $customers = $this->customerRepository->search($criteria, $message->getContext());
                 $customerIds = $customers->getIds();

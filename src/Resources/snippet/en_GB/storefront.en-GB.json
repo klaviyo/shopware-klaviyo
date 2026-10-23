@@ -19,13 +19,23 @@
             }
         },
         "cookie": {
-            "value": "Klaviyo Cookies",
-            "description": "Allow to identify the user when not logged in!"
+            "description": "Cookies of the Klaviyo marketing integration. Without them, no Klaviyo tracking takes place.",
+            "consent": {
+                "value": "Klaviyo consent flag",
+                "description": "Allows the shop to load the Klaviyo tracking script."
+            },
+            "identified": {
+                "value": "Klaviyo identity marker",
+                "description": "Pseudonymous marker that tells the shop an identity may be loaded for Klaviyo."
+            }
         },
         "cart-restore": {
             "missing-cart-data": "Your previous cart data is missing.",
             "missing-cart-data-guest": "Your previous guest cart data is missing.",
             "missing-cart-data-error": "An error occurred while restoring cart data."
         }
+    },
+    "cookie": {
+        "klaviyo": "Klaviyo Cookies"
     }
 }

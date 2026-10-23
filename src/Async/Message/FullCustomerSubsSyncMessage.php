@@ -6,7 +6,7 @@ namespace Klaviyo\Integration\Async\Message;
 use Klaviyo\Integration\Model\UseCase\Operation\FullCustomerSubsSyncOperation;
 use Shopware\Core\Framework\Context;
 
-class FullCustomerSubsSyncMessage extends AbstractBasicMessage
+class FullCustomerSubsSyncMessage extends AbstractDateBasedMessage
 {
     protected static string $defaultName = 'Full Customer Sync Operation';
 
@@ -16,9 +16,11 @@ class FullCustomerSubsSyncMessage extends AbstractBasicMessage
         string   $jobId,
         ?string  $name = null,
         ?Context $context = null,
-        int      $offset = 0
+        int      $offset = 0,
+        ?string  $fromDate = null,
+        ?string  $tillDate = null,
     ) {
-        parent::__construct($jobId, $name, $context);
+        parent::__construct($jobId, $name, $context, $fromDate, $tillDate);
         $this->offset = $offset;
     }
     public function getHandlerCode(): string

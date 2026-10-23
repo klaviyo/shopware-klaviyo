@@ -63,7 +63,7 @@ class ConfigurationFactory implements ConfigurationFactoryInterface
         );
 
         $customerMapping = $this->systemConfigService
-                ->get('klavi_overd.config.customerFieldMapping', $salesChannelId) ?? [];
+            ->get('klavi_overd.config.customerFieldMapping', $salesChannelId) ?? [];
         $orderMapping = $this->systemConfigService
             ->get('klavi_overd.config.orderFieldMapping', $salesChannelId) ?? [];
 

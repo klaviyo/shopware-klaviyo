@@ -1,6 +1,7 @@
 import './pages/klaviyo-job-listing';
 import './pages/klaviyo-integration-settings';
 import './components/klaviyo-integration-settings-general';
+import './components/klaviyo-integration-settings-general-tabs';
 import './components/klaviyo-integration-settings-customer';
 import './components/klaviyo-integration-settings-order';
 import './components/klaviyo-integration-settings-synchronization-control';
