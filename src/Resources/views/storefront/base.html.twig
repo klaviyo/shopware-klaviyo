@@ -7,11 +7,10 @@
     {% block base_body_script_klaviyo_integration %}
         {% if page.hasExtension('klaviyoIntegrationPluginExtension') %}
             {% set extensionData = page.getExtension('klaviyoIntegrationPluginExtension') %}
-            {% set options = {'customerIdentityInfo': extensionData.customerIdentity } %}
+            {% set options = {'identityUrl': path('frontend.klaviyo.identity')} %}
             {% set configurationOptions = {
                 'afterInteraction': extensionData.configuration.afterInteraction,
                 'publicApiKey':  extensionData.configuration.publicApiKey|sw_sanitize,
-                'customerId': context.customer.id,
                 'cookieConsent': extensionData.configuration.cookieConsent
             } %}
             <div style="display: none;" data-klaviyo-identity-tracking-component=""

@@ -82,16 +82,44 @@ Component.register('klaviyo-integration-settings', {
             return this.messageBlankErrorState;
         },
 
-        hasError() {
-            const hasMappingErrors = Object.values(this.mappingErrorStates)
+        hasMappingErrors() {
+            return Object.values(this.mappingErrorStates)
                 .filter((state) => state.code !== undefined)
                 .length !== 0;
+        },
 
+        hasError() {
             return !this.privateKeyFilled
                 || !this.publicKeyFilled
                 || !this.listIdFilled
-                || hasMappingErrors;
-        }
+                || this.hasMappingErrors;
+        },
+
+        // Explains why the Save button is disabled - a mapping error is otherwise invisible
+        // unless the admin happens to be on the Mapping tab.
+        saveButtonTooltip() {
+            if (!this.privateKeyFilled || !this.publicKeyFilled || !this.listIdFilled) {
+                return {
+                    message: this.$tc('klaviyo-integration-settings.saveButton.credentialsRequiredTooltip'),
+                    disabled: false,
+                    showOnDisabledElements: true,
+                };
+            }
+
+            if (this.hasMappingErrors) {
+                return {
+                    message: this.$tc('klaviyo-integration-settings.saveButton.invalidMappingTooltip'),
+                    disabled: false,
+                    showOnDisabledElements: true,
+                };
+            }
+
+            return {
+                message: '',
+                disabled: true,
+                showOnDisabledElements: true,
+            };
+        },
     },
 
     watch: {

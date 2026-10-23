@@ -2,6 +2,7 @@ import './component/sw-promotion-list-override';
 import './component/sw-promotion-detail-override';
 import './init/klaviyo-synchronization-service-init';
 import './init/klaviyo-api-keys-validator-service-init';
+import './init/klaviyo-promotion-export-service-init';
 import './init/svg-icons.init';
 import './product-export-templates';
 import './module/klaviyo';

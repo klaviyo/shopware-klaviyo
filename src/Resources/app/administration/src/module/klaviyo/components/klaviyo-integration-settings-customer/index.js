@@ -1,11 +1,31 @@
 import template from './klaviyo-integration-settings-customer.html.twig';
 import './klaviyo-integration-settings-customer.scss';
 
-const { Component, Context } = Shopware;
+const { Component, Context, Mixin } = Shopware;
 const { Criteria } = Shopware.Data;
+
+// This component is destroyed/recreated on every visit to the Mapping tab (v-if-gated), so without
+// caching, switching tabs back and forth would re-fire this Admin API lookup every time. Cached at
+// module scope (not per-instance) so it survives across mounts for the lifetime of the page
+let cachedCustomerCustomFieldsPromise = null;
+
+function fetchSystemCustomFields(customFieldRepository, customFieldCriteria) {
+    if (!cachedCustomerCustomFieldsPromise) {
+        cachedCustomerCustomFieldsPromise = customFieldRepository
+            .search(customFieldCriteria, Context.api)
+            .catch((error) => {
+                cachedCustomerCustomFieldsPromise = null;
+                throw error;
+            });
+    }
+
+    return cachedCustomerCustomFieldsPromise;
+}
 
 Component.register('klaviyo-integration-settings-customer', {
     template,
+
+    mixins: [Mixin.getByName('notification')],
 
     props: {
         allConfigs: {
@@ -63,26 +83,6 @@ Component.register('klaviyo-integration-settings-customer', {
         },
     },
 
-    watch: {
-        customFieldMapping: {
-            handler() {
-                const mappingConfig = this.allConfigs['null'][this.configPath];
-
-                Object.keys(mappingConfig).forEach((mappingKey) => {
-                    if (mappingConfig[mappingKey].active && !mappingConfig[mappingKey].customLabel) {
-                        this.mappingErrorStates[mappingKey] = {
-                            code: 1,
-                            detail: this.$tc('klaviyo-integration-settings.customer.fieldMapping.labelNotFilledError'),
-                        };
-                    } else {
-                        delete this.mappingErrorStates[mappingKey];
-                    }
-                });
-            },
-            deep: true,
-        },
-    },
-
     methods: {
         createdComponent() {
             this.isLoading = true;
@@ -93,35 +93,34 @@ Component.register('klaviyo-integration-settings-customer', {
                 this.allConfigs['null'][this.configPath] = {};
             }
 
-            this.customFieldRepository
-                .search(this.customFieldCriteria, Context.api)
+            fetchSystemCustomFields(this.customFieldRepository, this.customFieldCriteria)
                 .then((customFields) => {
                     this.systemCustomFields = customFields;
+                    this.processCustomFieldMappings();
+                })
+                .catch(() => {
+                    // Without the system field list we cannot prune, so leave the stored mappings untouched
+                    this.createNotificationError({
+                        message: this.$tc('klaviyo-integration-settings.customer.fieldMapping.loadFieldsError'),
+                    });
                 })
                 .finally(() => {
-                    this.processCustomFieldMappings();
                     this.isLoading = false;
                 });
         },
 
         processCustomFieldMappings() {
+            if (!this.systemCustomFields) {
+                return;
+            }
+
             let existingCustomFieldNames = [];
             const systemFieldNames = this.systemCustomFields.map((systemField) => systemField.name);
 
             Object.keys(this.customFieldMapping).forEach((mappingKey) => {
-                if (this.customFieldMapping[mappingKey].active && !this.customFieldMapping[mappingKey].customLabel) {
-                    this.mappingErrorStates[mappingKey] = {
-                        code: 1,
-                        detail: this.$tc('klaviyo-integration-settings.customer.fieldMapping.labelNotFilledError'),
-                    };
-                } else {
-                    this.mappingErrorStates[mappingKey] = {};
-                }
-
                 existingCustomFieldNames.push(this.customFieldMapping[mappingKey].customFieldName);
 
                 if (!systemFieldNames.includes(this.customFieldMapping[mappingKey].customFieldName)) {
-                    delete this.mappingErrorStates[mappingKey];
                     delete this.customFieldMapping[mappingKey];
                 }
             });
@@ -149,7 +148,6 @@ Component.register('klaviyo-integration-settings-customer', {
                 customFieldName: field.name,
                 active: false,
             };
-            this.mappingErrorStates[mappingKey] = {};
         },
 
         generateGuid() {

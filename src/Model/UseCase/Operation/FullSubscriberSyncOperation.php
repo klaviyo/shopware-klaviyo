@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Klaviyo\Integration\Model\UseCase\Operation;
 
+use Klaviyo\Integration\Async\Message\AbstractDateBasedMessage;
 use Klaviyo\Integration\Async\Message\FullSubscriberSyncMessage;
 use Klaviyo\Integration\Model\Channel\GetValidChannels;
 use Klaviyo\Integration\Model\UseCase\ScheduleBackgroundJob;
@@ -14,6 +15,7 @@ use Shopware\Core\Content\Newsletter\SalesChannel\NewsletterSubscribeRoute;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
@@ -76,6 +78,8 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
                 $criteria = new Criteria();
                 $criteria->setLimit(self::SUBSCRIBER_BATCH_SIZE);
                 $criteria->setOffset($offset);
+                $criteria->addSorting(new FieldSorting('createdAt', FieldSorting::ASCENDING));
+                $criteria->addSorting(new FieldSorting('id', FieldSorting::ASCENDING));
                 $criteria->addFilter(
                     new EqualsAnyFilter(
                         'status',
@@ -87,6 +91,10 @@ class FullSubscriberSyncOperation implements JobHandlerInterface, GeneratingHand
                     ),
                     new EqualsAnyFilter('salesChannelId', $channelIds)
                 );
+
+                if ($message instanceof AbstractDateBasedMessage) {
+                    $message->applyDateRangeFilter($criteria);
+                }
 
                 $this->logger->notice("Sub offset : $offset");
 

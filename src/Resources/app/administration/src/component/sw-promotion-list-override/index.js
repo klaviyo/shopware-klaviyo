@@ -3,22 +3,29 @@ import template from './sw-promotion-v2-list.html.twig';
 Shopware.Component.override('sw-promotion-v2-list', {
     template,
 
+    inject: ['klaviyoPromotionExportApiService'],
+
     methods: {
-        getExportUrl() {
-            const basePath = Shopware.Context.api.apiPath;
-
-            return basePath + '/klaviyo/integration/promotion/export';
-        },
-
         sendPromotionToExport(promotionId) {
             if (!promotionId) {
                 return;
             }
-            window.location.href = this.getExportUrl() + '?id=' + promotionId;
+
+            this.downloadPromotionExport(promotionId);
         },
 
         sendGlobalPromotionToExport() {
-            window.location.href = this.getExportUrl();
-        }
-    }
+            this.downloadPromotionExport();
+        },
+
+        downloadPromotionExport(promotionId = null) {
+            return this.klaviyoPromotionExportApiService
+                .downloadCsv(promotionId)
+                .catch(() => {
+                    this.createNotificationError({
+                        message: this.$tc('klaviyo_integration_plugin.promotion.notification.notificationExportFailedMessage'),
+                    });
+                });
+        },
+    },
 });

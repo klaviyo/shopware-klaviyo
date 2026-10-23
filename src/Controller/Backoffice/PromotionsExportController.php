@@ -21,9 +21,9 @@ class PromotionsExportController
     }
 
     #[Route(
-        path: '/api/klaviyo/integration/promotion/export', 
-        name: 'api.klaviyo.integration.promotion.export', 
-        defaults: ['auth_required' => false], 
+        path: '/api/klaviyo/integration/promotion/export',
+        name: 'api.klaviyo.integration.promotion.export',
+        defaults: ['_acl' => ['promotion:read']],
         methods: ['GET']
     )]
     public function export(Context $context, Request $request): KlaviyoBinaryFileResponse
