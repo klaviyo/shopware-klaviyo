@@ -32,7 +32,12 @@ class JobController
     {
         $fromDate = $post->get('fromDate') ?: null;
         $tillDate = $post->get('tillDate') ?: null;
-        
+
+        $dateRangeErrorCode = $this->validateDateRange($fromDate, $tillDate);
+        if ($dateRangeErrorCode !== null) {
+            return new JsonResponse(['isScheduled' => false, 'errorCode' => $dateRangeErrorCode], 200);
+        }
+
         return $this->doScheduleJob(function () use ($context, $fromDate, $tillDate) {
             $this->scheduleBackgroundJob->scheduleFullOrderSyncJob($context, $fromDate, $tillDate);
             $isCustomerSyncOn = $this->systemConfigService->getBool(
@@ -46,16 +51,24 @@ class JobController
     }
 
     #[Route(path:"/api/_action/klaviyo/subscribers/synchronization/schedule", name:"api.action.klaviyo.subscribers.synchronization.schedule", requirements: ['version' => '\d+'], methods:["POST"])]
-    public function scheduleSubscribersSynchronizationAction(Context $context): JsonResponse
+    public function scheduleSubscribersSynchronizationAction(RequestDataBag $post, Context $context): JsonResponse
     {
-        return $this->doScheduleJob(function () use ($context) {
-            $this->scheduleBackgroundJob->scheduleFullSubscriberSyncJob($context);
+        $fromDate = $post->get('fromDate') ?: null;
+        $tillDate = $post->get('tillDate') ?: null;
+
+        $dateRangeErrorCode = $this->validateDateRange($fromDate, $tillDate);
+        if ($dateRangeErrorCode !== null) {
+            return new JsonResponse(['isScheduled' => false, 'errorCode' => $dateRangeErrorCode], 200);
+        }
+
+        return $this->doScheduleJob(function () use ($context, $fromDate, $tillDate) {
+            $this->scheduleBackgroundJob->scheduleFullSubscriberSyncJob($context, $fromDate, $tillDate);
             $isCustomerSyncOn = $this->systemConfigService->getBool(
                 FullCustomerSubsSyncOperation::IS_ENABLED_WITHOUT_SUBSCRIBERS_SYNC
             );
 
             if ($isCustomerSyncOn) {
-                $this->scheduleBackgroundJob->scheduleFullCustomerSubsSyncJob($context);
+                $this->scheduleBackgroundJob->scheduleFullCustomerSubsSyncJob($context, $fromDate, $tillDate);
             }
         });
     }
@@ -77,5 +90,62 @@ class JobController
         }
 
         return new JsonResponse(['isScheduled' => true, 'errorCode' => ''], 200);
+    }
+
+    /**
+     * The parameters are intentionally untyped: they come straight from the request body, so an API
+     * client can send an array or object instead of a string.
+     *
+     * @param mixed $fromDate
+     * @param mixed $tillDate
+     * @return string|null the errorCode to return to the caller, or null if the range is valid
+     */
+    private function validateDateRange($fromDate, $tillDate): ?string
+    {
+        if (!$this->isValidDate($fromDate) || !$this->isValidDate($tillDate)) {
+            return 'INVALID_DATE_FORMAT';
+        }
+
+        if ($fromDate !== null && $tillDate !== null && new \DateTime($fromDate) > new \DateTime($tillDate)) {
+            return 'INVALID_DATE_RANGE';
+        }
+
+        return null;
+    }
+
+    /**
+     * @param mixed $date
+     */
+    private function isValidDate($date): bool
+    {
+        if ($date === null) {
+            return true;
+        }
+
+        if (!is_string($date)) {
+            return false;
+        }
+
+        // \DateTime's constructor is lenient enough to silently normalize a calendar-invalid date
+        // (e.g. "2024-02-30" rolls over to "2024-03-01") instead of throwing, so checkdate() first
+        // guards against that; the try/catch below still catches a malformed time component after
+        // an otherwise-valid date prefix.
+        if (!preg_match('/^(\d{4})-(\d{2})-(\d{2})/', $date, $matches)) {
+            return false;
+        }
+
+        [, $year, $month, $day] = $matches;
+
+        if (!checkdate((int) $month, (int) $day, (int) $year)) {
+            return false;
+        }
+
+        try {
+            new \DateTime($date);
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        return true;
     }
 }

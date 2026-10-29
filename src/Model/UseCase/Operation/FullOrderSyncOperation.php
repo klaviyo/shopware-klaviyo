@@ -59,6 +59,8 @@ class FullOrderSyncOperation implements JobHandlerInterface, GeneratingHandlerIn
                 $criteria->addFilter(new Search\Filter\EqualsAnyFilter('salesChannelId', \array_values($channelIds)));
                 $criteria->setLimit(self::ORDER_BATCH_SIZE);
                 $criteria->setOffset($offset);
+                $criteria->addSorting(new Search\Sorting\FieldSorting('orderDateTime', Search\Sorting\FieldSorting::ASCENDING));
+                $criteria->addSorting(new Search\Sorting\FieldSorting('id', Search\Sorting\FieldSorting::ASCENDING));
 
                 if ($message instanceof AbstractDateBasedMessage) {
                     $message->applyDateRangeFilter($criteria, 'orderDateTime');
