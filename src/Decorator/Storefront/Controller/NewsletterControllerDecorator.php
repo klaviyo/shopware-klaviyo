@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Klaviyo\Integration\Decorator\Storefront\Controller;
 
 use Klaviyo\Integration\Model\Channel\GetValidChannelConfig;
+use Klaviyo\Integration\Storefront\Service\IdentityMarkerCookie;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Framework\Validation\DataBag\QueryDataBag;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -22,7 +23,8 @@ class NewsletterControllerDecorator
      */
     public function __construct(
         private readonly NewsletterController $newsletterController,
-        private readonly GetValidChannelConfig $validChannelConfig
+        private readonly GetValidChannelConfig $validChannelConfig,
+        private readonly IdentityMarkerCookie $identityMarkerCookie,
     ) {
     }
 
@@ -51,6 +53,13 @@ class NewsletterControllerDecorator
                 $cookie = Cookie::create('klaviyo_subscriber', $subscriberId);
                 $cookie->setSecureDefault($request->isSecure());
                 $response->headers->setCookie($cookie);
+
+                // the marker tells the JS to load the identity
+                $this->identityMarkerCookie->set(
+                    $request,
+                    $response,
+                    $this->identityMarkerCookie->valueForSubscriber($subscriberId)
+                );
             }
         }
 

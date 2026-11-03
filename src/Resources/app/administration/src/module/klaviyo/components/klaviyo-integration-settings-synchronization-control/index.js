@@ -16,6 +16,22 @@ Component.register('klaviyo-integration-settings-synchronization-control', {
         Mixin.getByName('notification')
     ],
 
+    props: {
+        actualConfigData: {
+            type: Object,
+            required: true,
+        },
+        allConfigs: {
+            type: Object,
+            required: true,
+        },
+        selectedSalesChannelId: {
+            type: String,
+            required: false,
+            default: null,
+        },
+    },
+
     data() {
         const historicalEventsJobInteractor = new JobInteractor(
             this.klaviyoHistoricalEventsSynchronizationApiService,
@@ -30,9 +46,10 @@ Component.register('klaviyo-integration-settings-synchronization-control', {
             historicalEventsJobInteractor: historicalEventsJobInteractor,
             subscribersSynchronizationJobInteractor: subscribersSynchronizationJobInteractor,
             lastCalledFunction: null,
-            isHistoricalEventsModalOpen: false,
             historicalEventsFromDate: '',
-            historicalEventsTillDate: ''
+            historicalEventsTillDate: '',
+            subscribersFromDate: '',
+            subscribersTillDate: ''
         }
     },
 
@@ -43,20 +60,15 @@ Component.register('klaviyo-integration-settings-synchronization-control', {
     },
 
     methods: {
-        openHistoricalEventsModal() {
-            this.isHistoricalEventsModalOpen = true;
-        },
-
-        closeHistoricalEventsModal() {
-            this.isHistoricalEventsModalOpen = false;
-            this.historicalEventsFromDate = '';
-            this.historicalEventsTillDate = '';
+        checkBoolFieldInheritance(value) {
+            return typeof value !== 'boolean';
         },
 
         proceedHistoricalEventsSynchronization() {
 
-            const fromDate = this.historicalEventsFromDate.length > 0 ? new Date(this.historicalEventsFromDate) : null;
-            const tillDate = this.historicalEventsTillDate.length > 0 ? new Date(this.historicalEventsTillDate) : null;
+            // sw-datepicker emits null (not '') when a date is cleared, so guard on truthiness
+            const fromDate = this.historicalEventsFromDate ? new Date(this.historicalEventsFromDate) : null;
+            const tillDate = this.historicalEventsTillDate ? new Date(this.historicalEventsTillDate) : null;
 
             if (fromDate && tillDate && (fromDate > tillDate)) {
                 this.createNotificationError({
@@ -66,20 +78,18 @@ Component.register('klaviyo-integration-settings-synchronization-control', {
             }
 
             this.scheduleHistoricalEventsSynchronization(
-                this.historicalEventsFromDate,
-                this.historicalEventsTillDate
+                this.historicalEventsFromDate || '',
+                this.historicalEventsTillDate || ''
             );
-            this.closeHistoricalEventsModal();
         },
 
         scheduleHistoricalEventsSynchronization(fromDate, tillDate) {
-            // This method is no longer directly called by the button but kept for compatibility
             if (this.isSwitchingFunctions('scheduleHistoricalEventsSynchronization')) {
                 this.showConfirmation(
                     this.$tc('klaviyo-integration-settings.configs.doubleProcessLaunchWarningPopup.confirmActionTitle'),
-                    this.$tc('klaviyo-integration-settings.configs.doubleProcessLaunchWarning.label', 0, {
+                    this.$t('klaviyo-integration-settings.configs.doubleProcessLaunchWarning.label', {
                         entityName: this.$tc('klaviyo_integration_plugin.subscribers.schedule_synchronization.button_label'),
-                        docUrl: '(<a href="https://developers.klaviyo.com/en/docs/rate_limits_and_error_handling#rate-limits)" target="_blank">see Rate limits, status codes, and errors</a>)'
+                        docUrl: '(<a href="https://developers.klaviyo.com/en/docs/rate_limits_and_error_handling#rate-limits" target="_blank">see Rate limits, status codes, and errors</a>)'
                     }),
                     () => {
                         this.lastCalledFunction = null;
@@ -113,6 +123,16 @@ Component.register('klaviyo-integration-settings-synchronization-control', {
                             'klaviyo_integration_plugin.historical_events_tracking.schedule_synchronization.is_scheduled'
                         )
                     });
+                } else if (response.data.errorCode === 'INVALID_DATE_FORMAT') {
+                    this.createNotificationWarning({
+                        message: this.$tc(
+                            'klaviyo_integration_plugin.historical_events_tracking.schedule_synchronization.invalid_date_format'
+                        )
+                    });
+                } else if (response.data.errorCode === 'INVALID_DATE_RANGE') {
+                    this.createNotificationWarning({
+                        message: this.$tc('klaviyo_integration_plugin.historical_events_tracking.modal.invalid_date_range')
+                    });
                 } else {
                     this.createNotificationWarning({
                         message: this.$tc(
@@ -129,26 +149,45 @@ Component.register('klaviyo-integration-settings-synchronization-control', {
             }.bind(this));
         },
 
-        scheduleSubscribersSynchronization() {
+        proceedSubscribersSynchronization() {
+
+            // sw-datepicker emits null (not '') when a date is cleared, so guard on truthiness
+            const fromDate = this.subscribersFromDate ? new Date(this.subscribersFromDate) : null;
+            const tillDate = this.subscribersTillDate ? new Date(this.subscribersTillDate) : null;
+
+            if (fromDate && tillDate && (fromDate > tillDate)) {
+                this.createNotificationError({
+                    message: this.$tc('klaviyo_integration_plugin.subscribers.modal.invalid_date_range')
+                });
+                return;
+            }
+
+            this.scheduleSubscribersSynchronization(
+                this.subscribersFromDate || '',
+                this.subscribersTillDate || ''
+            );
+        },
+
+        scheduleSubscribersSynchronization(fromDate, tillDate) {
             if (this.isSwitchingFunctions('scheduleSubscribersSynchronization')) {
                 this.showConfirmation(
                     this.$tc('klaviyo-integration-settings.configs.doubleProcessLaunchWarningPopup.confirmActionTitle'),
-                    this.$tc('klaviyo-integration-settings.configs.doubleProcessLaunchWarning.label', 0, {
+                    this.$t('klaviyo-integration-settings.configs.doubleProcessLaunchWarning.label', {
                         entityName: this.$tc('klaviyo_integration_plugin.historical_events_tracking.schedule_synchronization.button_label'),
-                        docUrl: '(<a href="https://developers.klaviyo.com/en/docs/rate_limits_and_error_handling#rate-limits)" target="_blank">see Rate limits, status codes, and errors</a>)'
+                        docUrl: '(<a href="https://developers.klaviyo.com/en/docs/rate_limits_and_error_handling#rate-limits" target="_blank">see Rate limits, status codes, and errors</a>)'
                     }),
                     () => {
                         this.lastCalledFunction = null;
-                        this.performSubscribersSynchronization();
+                        this.performSubscribersSynchronization(fromDate, tillDate);
                     }
                 );
             } else {
-                this.performSubscribersSynchronization();
+                this.performSubscribersSynchronization(fromDate, tillDate);
             }
         },
 
-        performSubscribersSynchronization() {
-            const promise = this.subscribersSynchronizationJobInteractor.scheduleSynchronization();
+        performSubscribersSynchronization(fromDate, tillDate) {
+            const promise = this.subscribersSynchronizationJobInteractor.scheduleSynchronization(fromDate, tillDate);
             promise.then(function (response) {
                 if (response.data.isScheduled) {
                     this.lastCalledFunction = 'scheduleSubscribersSynchronization';
@@ -168,6 +207,16 @@ Component.register('klaviyo-integration-settings-synchronization-control', {
                         message: this.$tc(
                             'klaviyo_integration_plugin.subscribers.schedule_synchronization.is_scheduled'
                         )
+                    });
+                } else if (response.data.errorCode === 'INVALID_DATE_FORMAT') {
+                    this.createNotificationWarning({
+                        message: this.$tc(
+                            'klaviyo_integration_plugin.subscribers.schedule_synchronization.invalid_date_format'
+                        )
+                    });
+                } else if (response.data.errorCode === 'INVALID_DATE_RANGE') {
+                    this.createNotificationWarning({
+                        message: this.$tc('klaviyo_integration_plugin.subscribers.modal.invalid_date_range')
                     });
                 } else {
                     this.createNotificationWarning({
@@ -194,7 +243,7 @@ Component.register('klaviyo-integration-settings-synchronization-control', {
         },
 
         showConfirmation(title, message, onConfirm) {
-            this.$store.dispatch('notification/createNotification', {
+            this.createNotification({
                 title: title,
                 message: message,
                 variant: 'warning',
