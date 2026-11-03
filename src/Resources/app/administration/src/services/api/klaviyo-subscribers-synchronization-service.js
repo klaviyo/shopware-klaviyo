@@ -6,10 +6,12 @@ class KlaviyoSubscribersSynchronizationApiService extends ApiService {
         this.name = 'klaviyoSubscribersSynchronizationApiService';
     }
 
-    scheduleSynchronization() {
+    scheduleSynchronization(fromDate, tillDate) {
         const headers = this.getBasicHeaders();
         return this.httpClient
-            .post('_action/klaviyo/subscribers/synchronization/schedule', {}, {headers});
+            .post('_action/klaviyo/subscribers/synchronization/schedule', {
+                fromDate: fromDate, tillDate: tillDate
+            }, {headers});
     }
 }
 
