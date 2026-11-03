@@ -21,14 +21,17 @@ fieldset {
         margin-top: 20px;
     }
 
-    .klaviyo-interaction-settings {
-        .sw-card__content {
-            padding-top: 0;
-            padding-bottom: 0;
-        }
-    }
-
     .no-top-margin {
         margin-top: 0;
+    }
+
+    .klaviyo-integration-settings-general-tabs {
+        margin-bottom: 20px;
+    }
+
+    .boolean-config-container {
+        .sw-inherit-wrapper {
+            margin-bottom: 0;
+        }
     }
 }

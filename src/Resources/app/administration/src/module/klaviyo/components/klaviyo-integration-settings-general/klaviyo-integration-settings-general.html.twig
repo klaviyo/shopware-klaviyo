@@ -1,117 +1,151 @@
 {% block klaviyo_integration_settings_general %}
     <div>
-        <sw-card :title="$tc('klaviyo-integration-settings.general.initialization.general-label')"
-                 class="klaviyo-interaction-settings">
-            <sw-inherit-wrapper
-                class="cookie-consent-inheritance"
-                v-model="actualConfigData['KlaviyoIntegrationPlugin.config.cookieConsent']"
-                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.cookieConsent']"
-                :label="$tc('klaviyo-integration-settings.configs.cookieConsent.label')"
-                :help-text="$tc('klaviyo-integration-settings.configs.cookieConsent.helpText')">
-                <template #content="props">
-                    <sw-single-select name="KlaviyoIntegrationPlugin.config.cookieConsent"
-                                      labelProperty="label"
-                                      valueProperty="value"
-                                      :options="createCookieConsentOptions"
-                                      :isInherited="props.isInherited"
-                                      :disabled="props.isInherited"
-                                      show-clearable-button
-                                      :value="props.currentValue"
-                                      @change="props.updateCurrentValue">
-                    </sw-single-select>
-                </template>
-            </sw-inherit-wrapper>
+        {% block klaviyo_integration_settings_general_tab_navigation %}
+            <klaviyo-integration-settings-general-tabs
+                    class="klaviyo-integration-settings-general-tabs"
+                    :active-tab="activeTab"
+                    @tab-change="activeTab = $event">
+            </klaviyo-integration-settings-general-tabs>
+        {% endblock %}
 
-            <sw-inherit-wrapper
-                    v-model="actualConfigData['KlaviyoIntegrationPlugin.config.isInitializeKlaviyoAfterInteraction']"
-                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.isInitializeKlaviyoAfterInteraction']"
-                    :customInheritationCheckFunction="checkBoolFieldInheritance">
-                <template #content="props">
-                    <sw-switch-field name="KlaviyoIntegrationPlugin.config.isInitializeKlaviyoAfterInteraction"
-                                     :mapInheritance="props"
-                                     :label="$tc('klaviyo-integration-settings.general.initialization.label')"
-                                     :disabled="props.isInherited"
-                                     :value="props.currentValue"
-                                     :helpText="$tc('klaviyo-integration-settings.general.initialization.helpText')"
-                                     @change="props.updateCurrentValue">
+        <sw-card :title="$tc('klaviyo-integration-settings.general.title')"
+                 v-if="activeTab === 'general'">
+            <sw-container gap="0px 32px" columns="auto 1fr" justify="start" align="center">
+                {% block klaviyo_integration_settings_general_enabled %}
+                    <sw-switch-field
+                            v-if="selectedSalesChannelId !== null"
+                            class="no-top-margin"
+                            v-model="actualConfigData['KlaviyoIntegrationPlugin.config.enabled']"
+                            name="KlaviyoIntegrationPlugin.config.enabled"
+                            :label="$tc('klaviyo-integration-settings.configs.enabled.label')"
+                            :helpText="$tc('klaviyo-integration-settings.configs.enabled.helpText')">
                     </sw-switch-field>
-                </template>
-            </sw-inherit-wrapper>
+                {% endblock %}
+
+                {% block klaviyo_integration_settings_general_test_api %}
+                    <sw-button-process variant="ghost" v-if="selectedSalesChannelId !== null"
+                                       :isLoading="apiValidationInProgress"
+                                       @click="validateApiCredentials">
+                        {{ $tc('klaviyo-integration-settings.configs.apiValidation.buttonLabel') }}
+                    </sw-button-process>
+                {% endblock %}
+            </sw-container>
+
+            <fieldset>
+                <legend>{{ $tc('klaviyo-integration-settings.general.fieldsets.apiCredentials') }}</legend>
+
+                {% block klaviyo_integration_settings_general_credentials_alert %}
+                    <sw-alert v-if="selectedSalesChannelId === null" variant="warning">
+                        {{ $t('klaviyo-integration-settings.general.credentialsAlert') }}
+                    </sw-alert>
+                {% endblock %}
+
+                <sw-container gap="0px 32px" columns="1fr 1fr" v-if="selectedSalesChannelId !== null">
+                    {% block klaviyo_integration_settings_general_private_api_key %}
+                        <sw-password-field
+                                v-model="actualConfigData['KlaviyoIntegrationPlugin.config.privateApiKey']"
+                                name="KlaviyoIntegrationPlugin.config.privateApiKey"
+                                type="text"
+                                :label="$tc('klaviyo-integration-settings.configs.privateApiKey.label')"
+                                :helpText="$tc('klaviyo-integration-settings.configs.privateApiKey.helpText')"
+                                :error="privateKeyErrorState"
+                                required="required">
+                        </sw-password-field>
+                    {% endblock %}
+
+                    {% block klaviyo_integration_settings_general_public_api_key %}
+                        <sw-field
+                                v-model="actualConfigData['KlaviyoIntegrationPlugin.config.publicApiKey']"
+                                name="KlaviyoIntegrationPlugin.config.publicApiKey"
+                                type="text"
+                                :label="$tc('klaviyo-integration-settings.configs.publicApiKey.label')"
+                                :helpText="$tc('klaviyo-integration-settings.configs.publicApiKey.helpText')"
+                                :error="publicKeyErrorState"
+                                required="required">
+                        </sw-field>
+                    {% endblock %}
+                </sw-container>
+
+                {% block klaviyo_integration_settings_general_double_opt_in_alert %}
+                    <sw-alert v-if="selectedSalesChannelId !== null" variant="info">
+                        {{ $t('klaviyo-integration-settings.general.doubleoptinAlert') }}
+                    </sw-alert>
+                {% endblock %}
+
+                {% block klaviyo_integration_settings_general_klaviyo_list_for_subscribers_sync %}
+                    <sw-single-select
+                            v-if="selectedSalesChannelId !== null"
+                            v-model="actualConfigData['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync']"
+                            :label="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.label')"
+                            :help-text="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.helpText')"
+                            name="KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync"
+                            ref="newsletterListId"
+                            :disabled="areListsLoading"
+                            :isLoading="areListsLoading"
+                            :error="listIdErrorState"
+                            :options="createListsOptions"
+                            @change="onListChange"
+                            required="required">
+                    </sw-single-select>
+                {% endblock %}
+            </fieldset>
         </sw-card>
-        <sw-card :title="$tc('klaviyo-integration-settings.general.title')">
-            {% block klaviyo_integration_settings_general_credentials_alert %}
-                <sw-alert v-if="selectedSalesChannelId === null" variant="warning">
-                    {{ $t('klaviyo-integration-settings.general.credentialsAlert') }}
-                </sw-alert>
-            {% endblock %}
 
-            {% block klaviyo_integration_settings_general_test_api %}
-                <sw-button-process variant="ghost" v-if="selectedSalesChannelId !== null"
-                                   :isLoading="apiValidationInProgress"
-                                   @click="validateApiCredentials">
-                    {{ $tc('klaviyo-integration-settings.configs.apiValidation.buttonLabel') }}
-                </sw-button-process>
-            {% endblock %}
+        {% block klaviyo_integration_settings_cookie_consent %}
+            <sw-card :title="$tc('klaviyo-integration-settings.cookieConsent.title')"
+                     v-if="activeTab === 'cookie-consent'">
+                <fieldset>
+                    <legend>{{ $tc('klaviyo-integration-settings.cookieConsent.title') }}</legend>
 
-            {% block klaviyo_integration_settings_general_enabled %}
-                <sw-switch-field
-                        v-if="selectedSalesChannelId !== null"
-                        class="no-top-margin"
-                        v-model="actualConfigData['KlaviyoIntegrationPlugin.config.enabled']"
-                        name="KlaviyoIntegrationPlugin.config.enabled"
-                        :label="$tc('klaviyo-integration-settings.configs.enabled.label')"
-                        :helpText="$tc('klaviyo-integration-settings.configs.enabled.helpText')">
-                </sw-switch-field>
-            {% endblock %}
+                    <sw-inherit-wrapper
+                            class="cookie-consent-inheritance"
+                            v-model="actualConfigData['KlaviyoIntegrationPlugin.config.cookieConsent']"
+                            :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.cookieConsent']"
+                            :label="$tc('klaviyo-integration-settings.configs.cookieConsent.label')"
+                            :help-text="$tc('klaviyo-integration-settings.configs.cookieConsent.helpText')">
+                        <template #content="props">
+                            <sw-single-select name="KlaviyoIntegrationPlugin.config.cookieConsent"
+                                              labelProperty="label"
+                                              valueProperty="value"
+                                              :options="createCookieConsentOptions"
+                                              :isInherited="props.isInherited"
+                                              :disabled="props.isInherited"
+                                              show-clearable-button
+                                              :value="props.currentValue"
+                                              @change="props.updateCurrentValue">
+                            </sw-single-select>
+                        </template>
+                    </sw-inherit-wrapper>
 
-            {% block klaviyo_integration_settings_general_private_api_key %}
-                <sw-password-field
-                        v-model="actualConfigData['KlaviyoIntegrationPlugin.config.privateApiKey']"
-                        name="KlaviyoIntegrationPlugin.config.privateApiKey"
-                        type="text"
-                        :label="$tc('klaviyo-integration-settings.configs.privateApiKey.label')"
-                        :helpText="$tc('klaviyo-integration-settings.configs.privateApiKey.helpText')"
-                        :disabled="selectedSalesChannelId === null"
-                        :error="privateKeyErrorState"
-                        required="required">
-                </sw-password-field>
-            {% endblock %}
+                    <div class="boolean-config-container">
+                        <sw-inherit-wrapper
+                                v-model="actualConfigData['KlaviyoIntegrationPlugin.config.isInitializeKlaviyoAfterInteraction']"
+                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.isInitializeKlaviyoAfterInteraction']"
+                                :customInheritationCheckFunction="checkBoolFieldInheritance">
+                            <template #content="props">
+                                <sw-switch-field name="KlaviyoIntegrationPlugin.config.isInitializeKlaviyoAfterInteraction"
+                                                 :mapInheritance="props"
+                                                 :label="$tc('klaviyo-integration-settings.general.initialization.label')"
+                                                 :helpText="$tc('klaviyo-integration-settings.general.initialization.helpText')"
+                                                 :disabled="props.isInherited"
+                                                 :value="props.currentValue"
+                                                 @change="props.updateCurrentValue">
+                                </sw-switch-field>
+                            </template>
+                        </sw-inherit-wrapper>
+                    </div>
 
-            {% block klaviyo_integration_settings_general_public_api_key %}
-                <sw-field
-                        v-model="actualConfigData['KlaviyoIntegrationPlugin.config.publicApiKey']"
-                        name="KlaviyoIntegrationPlugin.config.publicApiKey"
-                        type="text"
-                        :label="$tc('klaviyo-integration-settings.configs.publicApiKey.label')"
-                        :helpText="$tc('klaviyo-integration-settings.configs.publicApiKey.helpText')"
-                        :disabled="selectedSalesChannelId === null"
-                        :error="publicKeyErrorState"
-                        required="required">
-                </sw-field>
-            {% endblock %}
+                    {% block klaviyo_integration_settings_consent_scope_notice %}
+                        <sw-alert variant="info">
+                            {{ $tc('klaviyo-integration-settings.configs.cookieConsent.scopeNotice') }}
+                        </sw-alert>
+                    {% endblock %}
+                </fieldset>
+            </sw-card>
+        {% endblock %}
 
-            {% block klaviyo_integration_settings_general_double_opt_in_alert %}
-                <sw-alert variant="warning">
-                    {{ $t('klaviyo-integration-settings.general.doubleoptinAlert') }}
-                </sw-alert>
-            {% endblock %}
-
-            {% block klaviyo_integration_settings_general_klaviyo_list_for_subscribers_sync %}
-                <sw-single-select
-                        v-model="actualConfigData['KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync']"
-                        :label="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.label')"
-                        :help-text="$tc('klaviyo-integration-settings.configs.klaviyoListForSubscribersSync.helpText')"
-                        name="KlaviyoIntegrationPlugin.config.klaviyoListForSubscribersSync"
-                        ref="newsletterListId"
-                        :disabled="(selectedSalesChannelId === null) || areListsLoading"
-                        :isLoading="(selectedSalesChannelId !== null) && areListsLoading"
-                        :error="listIdErrorState"
-                        :options="createListsOptions"
-                        @change="onListChange"
-                        required="required">
-                </sw-single-select>
-            {% endblock %}
-
+        <sw-card :title="$tc('klaviyo-integration-settings.mapping.title')"
+                 v-if="activeTab === 'mapping'">
             {% block klaviyo_integration_settings_general_varian_for_bis %}
                 <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.bisVariantField']"
                                     :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.bisVariantField']"
@@ -152,588 +186,515 @@
                 </sw-inherit-wrapper>
             {% endblock %}
 
-            {% block klaviyo_integration_settings_general_track_deleted_account_orders %}
-                <sw-inherit-wrapper
-                        v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackDeletedAccountOrders']"
-                        :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackDeletedAccountOrders']"
-                        :customInheritationCheckFunction="checkBoolFieldInheritance">
-                    <template #content="props">
-                        <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackDeletedAccountOrders"
-                                         :mapInheritance="props"
-                                         :label="$tc('klaviyo-integration-settings.configs.trackDeletedAccountOrders.label')"
-                                         :helpText="$tc('klaviyo-integration-settings.configs.trackDeletedAccountOrders.helpText')"
-                                         :disabled="props.isInherited"
-                                         :value="props.currentValue"
-                                         @change="props.updateCurrentValue">
-                        </sw-switch-field>
-                    </template>
-                </sw-inherit-wrapper>
+            {% block klaviyo_integration_settings_customer_fields %}
+                <klaviyo-integration-settings-customer
+                        :allConfigs="allConfigs"
+                        :mappingErrorStates="mappingErrorStates">
+                </klaviyo-integration-settings-customer>
             {% endblock %}
 
-            {% block klaviyo_integration_settings_general_track_viewed_product %}
-                <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackViewedProduct']"
-                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackViewedProduct']"
-                                    :customInheritationCheckFunction="checkBoolFieldInheritance">
-                    <template #content="props">
-                        <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackViewedProduct"
-                                         :mapInheritance="props"
-                                         :label="$tc('klaviyo-integration-settings.configs.trackViewedProduct.label')"
-                                         :helpText="$tc('klaviyo-integration-settings.configs.trackViewedProduct.helpText')"
-                                         :disabled="props.isInherited"
-                                         :value="props.currentValue"
-                                         @change="props.updateCurrentValue">
-                        </sw-switch-field>
-                    </template>
-                </sw-inherit-wrapper>
-            {% endblock %}
-
-            {% block klaviyo_integration_settings_general_track_recently_viewed_items %}
-                <sw-inherit-wrapper
-                        v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackRecentlyViewedItems']"
-                        :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackRecentlyViewedItems']"
-                        :customInheritationCheckFunction="checkBoolFieldInheritance">
-                    <template #content="props">
-                        <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackRecentlyViewedItems"
-                                         :mapInheritance="props"
-                                         :label="$tc('klaviyo-integration-settings.configs.trackRecentlyViewedItems.label')"
-                                         :helpText="$tc('klaviyo-integration-settings.configs.trackRecentlyViewedItems.helpText')"
-                                         :disabled="props.isInherited"
-                                         :value="props.currentValue"
-                                         @change="props.updateCurrentValue">
-                        </sw-switch-field>
-                    </template>
-                </sw-inherit-wrapper>
-            {% endblock %}
-
-            {% block klaviyo_integration_settings_general_track_added_to_cart %}
-                <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackAddedToCart']"
-                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackAddedToCart']"
-                                    :customInheritationCheckFunction="checkBoolFieldInheritance">
-                    <template #content="props">
-                        <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackAddedToCart"
-                                         :mapInheritance="props"
-                                         :label="$tc('klaviyo-integration-settings.configs.trackAddedToCart.label')"
-                                         :helpText="$tc('klaviyo-integration-settings.configs.trackAddedToCart.helpText')"
-                                         :disabled="props.isInherited"
-                                         :value="props.currentValue"
-                                         @change="props.updateCurrentValue">
-                        </sw-switch-field>
-                    </template>
-                </sw-inherit-wrapper>
-            {% endblock %}
-
-            {% block klaviyo_integration_settings_general_track_started_checkout %}
-                <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackStartedCheckout']"
-                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackStartedCheckout']"
-                                    :customInheritationCheckFunction="checkBoolFieldInheritance">
-                    <template #content="props">
-                        <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackStartedCheckout"
-                                         :mapInheritance="props"
-                                         :label="$tc('klaviyo-integration-settings.configs.trackStartedCheckout.label')"
-                                         :helpText="$tc('klaviyo-integration-settings.configs.trackStartedCheckout.helpText')"
-                                         :disabled="props.isInherited"
-                                         :value="props.currentValue"
-                                         @change="props.updateCurrentValue">
-                        </sw-switch-field>
-                    </template>
-                </sw-inherit-wrapper>
-            {% endblock %}
-
-            {% block klaviyo_integration_settings_general_track_placed_order %}
-                <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackPlacedOrder']"
-                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackPlacedOrder']"
-                                    :customInheritationCheckFunction="checkBoolFieldInheritance">
-                    <template #content="props">
-                        <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackPlacedOrder"
-                                         :mapInheritance="props"
-                                         :label="$tc('klaviyo-integration-settings.configs.trackPlacedOrder.label')"
-                                         :helpText="$tc('klaviyo-integration-settings.configs.trackPlacedOrder.helpText')"
-                                         :disabled="props.isInherited"
-                                         :value="props.currentValue"
-                                         @change="props.updateCurrentValue">
-                        </sw-switch-field>
-                    </template>
-                </sw-inherit-wrapper>
-            {% endblock %}
-
-            {% block klaviyo_integration_settings_general_track_ordered_product %}
-                <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackOrderedProduct']"
-                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackOrderedProduct']"
-                                    :customInheritationCheckFunction="checkBoolFieldInheritance">
-                    <template #content="props">
-                        <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackOrderedProduct"
-                                         :mapInheritance="props"
-                                         :label="$tc('klaviyo-integration-settings.configs.trackOrderedProduct.label')"
-                                         :helpText="$tc('klaviyo-integration-settings.configs.trackOrderedProduct.helpText')"
-                                         :disabled="props.isInherited"
-                                         :value="props.currentValue"
-                                         @change="props.updateCurrentValue">
-                        </sw-switch-field>
-                    </template>
-                </sw-inherit-wrapper>
-            {% endblock %}
-
-            {% block klaviyo_integration_settings_general_order_track %}
-                <fieldset>
-                    <legend>Order status tracking</legend>
-
-                    <sw-container>
-
-                        {% block klaviyo_integration_settings_general_track_fulfilled_order %}
-                            <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackFulfilledOrder']"
-                                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackFulfilledOrder']"
-                                                :customInheritationCheckFunction="checkBoolFieldInheritance">
-                                <template #content="props">
-                                    <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackFulfilledOrder"
-                                                     :mapInheritance="props"
-                                                     :label="$tc('klaviyo-integration-settings.configs.trackFulfilledOrder.label')"
-                                                     :helpText="$tc('klaviyo-integration-settings.configs.trackFulfilledOrder.helpText')"
-                                                     :disabled="props.isInherited"
-                                                     :value="props.currentValue"
-                                                     @change="props.updateCurrentValue">
-                                    </sw-switch-field>
-                                </template>
-                            </sw-inherit-wrapper>
-                        {% endblock %}
-
-                        {% block klaviyo_integration_settings_general_track_cancelled_order %}
-                            <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackCancelledOrder']"
-                                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackCancelledOrder']"
-                                                :customInheritationCheckFunction="checkBoolFieldInheritance">
-                                <template #content="props">
-                                    <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackCancelledOrder"
-                                                     :mapInheritance="props"
-                                                     :label="$tc('klaviyo-integration-settings.configs.trackCancelledOrder.label')"
-                                                     :helpText="$tc('klaviyo-integration-settings.configs.trackCancelledOrder.helpText')"
-                                                     :disabled="props.isInherited"
-                                                     :value="props.currentValue"
-                                                     @change="props.updateCurrentValue">
-                                    </sw-switch-field>
-                                </template>
-                            </sw-inherit-wrapper>
-                        {% endblock %}
-
-                    </sw-container>
-
-                </fieldset>
-            {% endblock %}
-
-            {% block klaviyo_integration_settings_general_order_payment_track %}
-                <fieldset>
-                    <legend>Order payment status</legend>
-
-                    <sw-container>
-
-                        {% block klaviyo_integration_settings_general_track_refunded_order %}
-                            <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackRefundedOrder']"
-                                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackRefundedOrder']"
-                                                :customInheritationCheckFunction="checkBoolFieldInheritance">
-                                <template #content="props">
-                                    <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackRefundedOrder"
-                                                     :mapInheritance="props"
-                                                     :label="$tc('klaviyo-integration-settings.configs.trackRefundedOrder.label')"
-                                                     :helpText="$tc('klaviyo-integration-settings.configs.trackRefundedOrder.helpText')"
-                                                     :disabled="props.isInherited"
-                                                     :value="props.currentValue"
-                                                     @change="props.updateCurrentValue">
-                                    </sw-switch-field>
-                                </template>
-                            </sw-inherit-wrapper>
-                        {% endblock %}
-
-                        {% block klaviyo_integration_settings_general_track_paid_order %}
-                <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackPaidOrder']"
-                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackPaidOrder']"
-                                    :customInheritationCheckFunction="checkBoolFieldInheritance">
-                    <template #content="props">
-                        <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackPaidOrder"
-                                         :mapInheritance="props"
-                                         :label="$tc('klaviyo-integration-settings.configs.trackPaidOrder.label')"
-                                         :helpText="$tc('klaviyo-integration-settings.configs.trackPaidOrder.helpText')"
-                                         :disabled="props.isInherited"
-                                         :value="props.currentValue"
-                                         @change="props.updateCurrentValue">
-                        </sw-switch-field>
-                    </template>
-                </sw-inherit-wrapper>
-            {% endblock %}
-                    </sw-container>
-
-                </fieldset>
-            {% endblock %}
-
-            {% block klaviyo_integration_settings_general_order_delivery_track %}
-                <fieldset>
-                    <legend>Order delivery status</legend>
-
-                    <sw-container>
-
-                        {% block klaviyo_integration_settings_general_track_shipped_order %}
-                            <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackShippedOrder']"
-                                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackShippedOrder']"
-                                                :customInheritationCheckFunction="checkBoolFieldInheritance">
-                                <template #content="props">
-                                    <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackShippedOrder"
-                                                     :mapInheritance="props"
-                                                     :label="$tc('klaviyo-integration-settings.configs.trackShippedOrder.label')"
-                                                     :helpText="$tc('klaviyo-integration-settings.configs.trackShippedOrder.helpText')"
-                                                     :disabled="props.isInherited"
-                                                     :value="props.currentValue"
-                                                     @change="props.updateCurrentValue">
-                                    </sw-switch-field>
-                                </template>
-                            </sw-inherit-wrapper>
-                        {% endblock %}
-
-                    </sw-container>
-
-                </fieldset>
-            {% endblock %}
-
-            {% block klaviyo_integration_settings_general_full_order_sync %}
-                <fieldset>
-                    <legend>Historical Sync Settings</legend>
-
-                    <sw-container>
-
-                        {% block klaviyo_integration_settings_general_without_orders_sync %}
-                            <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.withoutOrdersSync']"
-                                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.withoutOrdersSync']"
-                                                :customInheritationCheckFunction="checkBoolFieldInheritance">
-                                <template #content="props">
-                                    <sw-switch-field name="KlaviyoIntegrationPlugin.config.withoutOrdersSync"
-                                                     :mapInheritance="props"
-                                                     :label="$tc('klaviyo-integration-settings.configs.withoutOrdersSync.label')"
-                                                     :helpText="$tc('klaviyo-integration-settings.configs.withoutOrdersSync.helpText')"
-                                                     :disabled="props.isInherited"
-                                                     :value="props.currentValue"
-                                                     @change="props.updateCurrentValue">
-                                    </sw-switch-field>
-                                </template>
-                            </sw-inherit-wrapper>
-                        {% endblock %}
-
-                    </sw-container>
-
-                </fieldset>
-            {% endblock %}
-
-            {% block klaviyo_integration_settings_general_full_subscriber_sync %}
-                <fieldset>
-                    <legend>Subscribers Sync Settings</legend>
-
-                    <sw-container>
-
-                        {% block klaviyo_integration_settings_general_without_subscribers_sync %}
-                            <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.withoutSubscribersSync']"
-                                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.withoutSubscribersSync']"
-                                                :customInheritationCheckFunction="checkBoolFieldInheritance">
-                                <template #content="props">
-                                    <sw-switch-field name="KlaviyoIntegrationPlugin.config.withoutSubscribersSync"
-                                                     :mapInheritance="props"
-                                                     :label="$tc('klaviyo-integration-settings.configs.withoutSubscribersSync.label')"
-                                                     :helpText="$tc('klaviyo-integration-settings.configs.withoutSubscribersSync.helpText')"
-                                                     :disabled="props.isInherited"
-                                                     :value="props.currentValue"
-                                                     @change="props.updateCurrentValue">
-                                    </sw-switch-field>
-                                </template>
-                            </sw-inherit-wrapper>
-                        {% endblock %}
-
-                    </sw-container>
-
-                </fieldset>
-            {% endblock %}
-
-
-
-            {% block klaviyo_integration_settings_general_track_back_in_stock %}
-                <sw-inherit-wrapper
-                        v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackSubscribedToBackInStock']"
-                        :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackSubscribedToBackInStock']"
-                        :customInheritationCheckFunction="checkBoolFieldInheritance">
-                    <template #content="props">
-                        <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackSubscribedToBackInStock"
-                                         :mapInheritance="props"
-                                         :label="$tc('klaviyo-integration-settings.configs.trackSubscribedToBackInStock.label')"
-                                         :helpText="$tc('klaviyo-integration-settings.configs.trackSubscribedToBackInStock.helpText')"
-                                         :disabled="props.isInherited"
-                                         :value="props.currentValue"
-                                         @change="props.updateCurrentValue">
-                        </sw-switch-field>
-                    </template>
-                </sw-inherit-wrapper>
-            {% endblock %}
-
-            {% block klaviyo_integration_settings_general_excluded_subscribers_synchronization_flag %}
-                <sw-inherit-wrapper v-if="selectedSalesChannelId === null"
-                                    v-model="actualConfigData['KlaviyoIntegrationPlugin.config.excludedSubscribersSynchronization']"
-                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.excludedSubscribersSynchronization']">
-                    <template #content="props">
-                        <sw-switch-field name="KlaviyoIntegrationPlugin.config.excludedSubscribersSynchronization"
-                            :map-inheritance="props"
-                            :label="$tc('klaviyo-integration-settings.configs.excludedSubscribersSynchronization.label')"
-                            :help-text="$tc('klaviyo-integration-settings.configs.excludedSubscribersSynchronization.helpText')"
-                            :disabled="props.isInherited"
-                            :value="props.currentValue"
-                            @change="props.updateCurrentValue"
-                        />
-                    </template>
-                </sw-inherit-wrapper>
-            {% endblock %}
-
-            {% block klaviyo_integration_settings_general_old_job_cleanup_flag %}
-                <sw-inherit-wrapper v-if="selectedSalesChannelId === null"
-                                    v-model="actualConfigData['KlaviyoIntegrationPlugin.config.oldJobCleanup']"
-                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.oldJobCleanup']">
-                    <template #content="props">
-                        <sw-switch-field
-                            :map-inheritance="props"
-                            :label="$tc('klaviyo-integration-settings.configs.oldJobCleanup.label')"
-                            :help-text="$tc('klaviyo-integration-settings.configs.oldJobCleanup.helpText')"
-                            :disabled="props.isInherited"
-                            :value="props.currentValue"
-                            @change="props.updateCurrentValue"
-                        />
-                    </template>
-                </sw-inherit-wrapper>
-            {% endblock %}
-
-            {% block klaviyo_integration_settings_general_old_job_cleanup_period %}
-                <sw-inherit-wrapper v-if="selectedSalesChannelId === null && actualConfigData['KlaviyoIntegrationPlugin.config.oldJobCleanup']"
-                                    v-model="actualConfigData['KlaviyoIntegrationPlugin.config.oldJobCleanupPeriod']"
-                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.oldJobCleanupPeriod']">
-                    <template #content="props">
-                        <sw-single-select name="KlaviyoIntegrationPlugin.config.oldJobCleanupPeriod"
-                                          labelProperty="label"
-                                          valueProperty="value"
-                                          :options="createOldJobCleanupPeriodOptions"
-                                          :isInherited="props.isInherited"
-                                          :disabled="props.isInherited"
-                                          show-clearable-button
-                                          :value="props.currentValue"
-                                          @change="props.updateCurrentValue">
-                        </sw-single-select>
-                    </template>
-                </sw-inherit-wrapper>
+            {% block klaviyo_integration_settings_order_fields %}
+                <klaviyo-integration-settings-order
+                        :allConfigs="allConfigs"
+                        :mappingErrorStates="mappingErrorStates">
+                </klaviyo-integration-settings-order>
             {% endblock %}
         </sw-card>
-        <sw-card
-                :title="$tc('klaviyo-integration-settings.pop-up.title')"
-                v-if="actualConfigData['KlaviyoIntegrationPlugin.config.trackSubscribedToBackInStock']">
-            <fieldset>
-                <legend>{{ $tc('klaviyo-integration-settings.pop-up.open-button-fieldset-label') }}</legend>
-                <sw-container columns="5fr 5fr" gap="16px">
-                    {% block klaviyo_integration_settings_pop_up_show_button %}
-                        <sw-inherit-wrapper
-                                v-model="actualConfigData['KlaviyoIntegrationPlugin.config.popUpOpenBtnColor']"
-                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.popUpOpenBtnColor']"
-                                :customInheritationCheckFunction="checkTextFieldInheritance">
-                            <template #content="props">
-                                <sw-field
-                                        :label="$tc('klaviyo-integration-settings.pop-up.colorLabel')"
-                                        type="colorpicker"
-                                        :map-inheritance="props"
-                                        :value="props.currentValue"
-                                        :disabled="props.isInherited"
-                                        name="KlaviyoIntegrationPlugin.config.popUpOpenBtnColor"
-                                        @input="props.updateCurrentValue"></sw-field>
-                            </template>
-                        </sw-inherit-wrapper>
-                    {% endblock %}
 
-                    {% block klaviyo_integration_settings_pop_up_show_button_bg %}
+        <sw-card :title="$tc('klaviyo-integration-settings.backInStock.title')"
+                 v-if="activeTab === 'popup'">
+            <fieldset>
+                <legend>{{ $tc('klaviyo-integration-settings.tracking.fieldsets.backInStock') }}</legend>
+
+                {% block klaviyo_integration_settings_general_track_back_in_stock %}
+                    <div class="boolean-config-container">
                         <sw-inherit-wrapper
-                                v-model="actualConfigData['KlaviyoIntegrationPlugin.config.popUpOpenBtnBgColor']"
-                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.popUpOpenBtnBgColor']"
-                        >
+                                v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackSubscribedToBackInStock']"
+                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackSubscribedToBackInStock']"
+                                :customInheritationCheckFunction="checkBoolFieldInheritance">
                             <template #content="props">
-                                <sw-field
-                                        :label="$tc('klaviyo-integration-settings.pop-up.backgroundLabel')"
-                                        type="colorpicker"
-                                        :map-inheritance="props"
-                                        :value="props.currentValue"
-                                        :disabled="props.isInherited"
-                                        name="KlaviyoIntegrationPlugin.config.popUpOpenBtnBgColor"
-                                        @input="props.updateCurrentValue"></sw-field>
+                                <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackSubscribedToBackInStock"
+                                                 :mapInheritance="props"
+                                                 :label="$tc('klaviyo-integration-settings.configs.trackSubscribedToBackInStock.label')"
+                                                 :helpText="$tc('klaviyo-integration-settings.configs.trackSubscribedToBackInStock.helpText')"
+                                                 :disabled="props.isInherited"
+                                                 :value="props.currentValue"
+                                                 @change="props.updateCurrentValue">
+                                </sw-switch-field>
                             </template>
                         </sw-inherit-wrapper>
-                    {% endblock %}
-                </sw-container>
+                    </div>
+                {% endblock %}
             </fieldset>
 
-            <fieldset>
-                <legend>{{ $tc('klaviyo-integration-settings.pop-up.close-button-fieldset-label') }}</legend>
-                <sw-container columns="5fr 5fr" gap="16px">
-                    {% block klaviyo_integration_settings_pop_up_hide_button %}
-                        <sw-inherit-wrapper
-                                v-model="actualConfigData['KlaviyoIntegrationPlugin.config.popUpCloseBtnColor']"
-                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.popUpCloseBtnColor']"
-                                :customInheritationCheckFunction="checkTextFieldInheritance">
-                            <template #content="props">
-                                <sw-field
-                                        :label="$tc('klaviyo-integration-settings.pop-up.colorLabel')"
-                                        type="colorpicker"
-                                        :map-inheritance="props"
-                                        :value="props.currentValue"
-                                        :disabled="props.isInherited"
-                                        name="KlaviyoIntegrationPlugin.config.popUpCloseBtnColor"
-                                        @input="props.updateCurrentValue"></sw-field>
-                            </template>
-                        </sw-inherit-wrapper>
-                    {% endblock %}
+            <fieldset v-if="actualConfigData['KlaviyoIntegrationPlugin.config.trackSubscribedToBackInStock']">
+                <legend>{{ $tc('klaviyo-integration-settings.pop-up.title') }}</legend>
 
-                    {% block klaviyo_integration_settings_pop_up_hide_button_bg %}
-                        <sw-inherit-wrapper
-                                v-model="actualConfigData['KlaviyoIntegrationPlugin.config.popUpCloseBtnBgColor']"
-                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.popUpCloseBtnBgColor']"
-                        >
-                            <template #content="props">
-                                <sw-field
-                                        :label="$tc('klaviyo-integration-settings.pop-up.backgroundLabel')"
-                                        type="colorpicker"
-                                        :map-inheritance="props"
-                                        :value="props.currentValue"
-                                        :disabled="props.isInherited"
-                                        name="KlaviyoIntegrationPlugin.config.popUpCloseBtnBgColor"
-                                        @input="props.updateCurrentValue"></sw-field>
-                            </template>
-                        </sw-inherit-wrapper>
-                    {% endblock %}
-                </sw-container>
-            </fieldset>
+                <fieldset>
+                    <legend>{{ $tc('klaviyo-integration-settings.pop-up.open-button-fieldset-label') }}</legend>
+                    <sw-container columns="5fr 5fr" gap="16px">
+                        {% block klaviyo_integration_settings_pop_up_show_button %}
+                            <sw-inherit-wrapper
+                                    v-model="actualConfigData['KlaviyoIntegrationPlugin.config.popUpOpenBtnColor']"
+                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.popUpOpenBtnColor']"
+                                    :customInheritationCheckFunction="checkTextFieldInheritance">
+                                <template #content="props">
+                                    <sw-field
+                                            :label="$tc('klaviyo-integration-settings.pop-up.colorLabel')"
+                                            type="colorpicker"
+                                            :map-inheritance="props"
+                                            :value="props.currentValue"
+                                            :disabled="props.isInherited"
+                                            name="KlaviyoIntegrationPlugin.config.popUpOpenBtnColor"
+                                            @input="props.updateCurrentValue"></sw-field>
+                                </template>
+                            </sw-inherit-wrapper>
+                        {% endblock %}
 
-            <fieldset>
-                <legend>{{ $tc('klaviyo-integration-settings.pop-up.subscribe-button-fieldset-label') }}</legend>
-                <sw-container columns="5fr 5fr" gap="16px">
-                    {% block klaviyo_integration_settings_pop_up_subscribe_button %}
-                        <sw-inherit-wrapper
-                                v-model="actualConfigData['KlaviyoIntegrationPlugin.config.subscribeBtnColor']"
-                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.subscribeBtnColor']"
-                                :customInheritationCheckFunction="checkTextFieldInheritance">
-                            <template #content="props">
-                                <sw-field
-                                        :label="$tc('klaviyo-integration-settings.pop-up.colorLabel')"
-                                        type="colorpicker"
-                                        :map-inheritance="props"
-                                        :value="props.currentValue"
-                                        :disabled="props.isInherited"
-                                        name="KlaviyoIntegrationPlugin.config.subscribeBtnColor"
-                                        @input="props.updateCurrentValue"></sw-field>
-                            </template>
-                        </sw-inherit-wrapper>
-                    {% endblock %}
+                        {% block klaviyo_integration_settings_pop_up_show_button_bg %}
+                            <sw-inherit-wrapper
+                                    v-model="actualConfigData['KlaviyoIntegrationPlugin.config.popUpOpenBtnBgColor']"
+                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.popUpOpenBtnBgColor']">
+                                <template #content="props">
+                                    <sw-field
+                                            :label="$tc('klaviyo-integration-settings.pop-up.backgroundLabel')"
+                                            type="colorpicker"
+                                            :map-inheritance="props"
+                                            :value="props.currentValue"
+                                            :disabled="props.isInherited"
+                                            name="KlaviyoIntegrationPlugin.config.popUpOpenBtnBgColor"
+                                            @input="props.updateCurrentValue"></sw-field>
+                                </template>
+                            </sw-inherit-wrapper>
+                        {% endblock %}
+                    </sw-container>
+                </fieldset>
 
-                    {% block klaviyo_integration_settings_pop_up_subscribe_button_bg %}
-                        <sw-inherit-wrapper
-                                v-model="actualConfigData['KlaviyoIntegrationPlugin.config.subscribeBtnBgColor']"
-                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.subscribeBtnBgColor']"
-                        >
-                            <template #content="props">
-                                <sw-field
-                                        :label="$tc('klaviyo-integration-settings.pop-up.backgroundLabel')"
-                                        type="colorpicker"
-                                        :map-inheritance="props"
-                                        :value="props.currentValue"
-                                        :disabled="props.isInherited"
-                                        name="KlaviyoIntegrationPlugin.config.subscribeBtnBgColor"
-                                        @input="props.updateCurrentValue"></sw-field>
-                            </template>
-                        </sw-inherit-wrapper>
-                    {% endblock %}
-                </sw-container>
-            </fieldset>
+                <fieldset>
+                    <legend>{{ $tc('klaviyo-integration-settings.pop-up.close-button-fieldset-label') }}</legend>
+                    <sw-container columns="5fr 5fr" gap="16px">
+                        {% block klaviyo_integration_settings_pop_up_hide_button %}
+                            <sw-inherit-wrapper
+                                    v-model="actualConfigData['KlaviyoIntegrationPlugin.config.popUpCloseBtnColor']"
+                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.popUpCloseBtnColor']"
+                                    :customInheritationCheckFunction="checkTextFieldInheritance">
+                                <template #content="props">
+                                    <sw-field
+                                            :label="$tc('klaviyo-integration-settings.pop-up.colorLabel')"
+                                            type="colorpicker"
+                                            :map-inheritance="props"
+                                            :value="props.currentValue"
+                                            :disabled="props.isInherited"
+                                            name="KlaviyoIntegrationPlugin.config.popUpCloseBtnColor"
+                                            @input="props.updateCurrentValue"></sw-field>
+                                </template>
+                            </sw-inherit-wrapper>
+                        {% endblock %}
 
-            <fieldset>
-                <legend>{{ $tc('klaviyo-integration-settings.pop-up.snippet-button-fieldset-label') }}</legend>
-                <sw-container columns="5fr 5fr" gap="16px">
-                    {% block klaviyo_integration_settings_pop_up_open_button_snippet %}
-                        <sw-field
-                                :label="$tc('klaviyo-integration-settings.pop-up.openBtnLabel')"
-                                type="text"
-                                value="klaviyo.back-in-stock.modal.openBtnLabel"
-                                disabled></sw-field>
-                    {% endblock %}
+                        {% block klaviyo_integration_settings_pop_up_hide_button_bg %}
+                            <sw-inherit-wrapper
+                                    v-model="actualConfigData['KlaviyoIntegrationPlugin.config.popUpCloseBtnBgColor']"
+                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.popUpCloseBtnBgColor']">
+                                <template #content="props">
+                                    <sw-field
+                                            :label="$tc('klaviyo-integration-settings.pop-up.backgroundLabel')"
+                                            type="colorpicker"
+                                            :map-inheritance="props"
+                                            :value="props.currentValue"
+                                            :disabled="props.isInherited"
+                                            name="KlaviyoIntegrationPlugin.config.popUpCloseBtnBgColor"
+                                            @input="props.updateCurrentValue"></sw-field>
+                                </template>
+                            </sw-inherit-wrapper>
+                        {% endblock %}
+                    </sw-container>
+                </fieldset>
 
-                    {% block klaviyo_integration_settings_pop_up_close_button_snippet %}
-                        <sw-field
-                                :label="$tc('klaviyo-integration-settings.pop-up.closeBtnLabel')"
-                                type="text"
-                                value="klaviyo.back-in-stock.modal.closeBtnLabel"
-                                disabled></sw-field>
-                    {% endblock %}
-                </sw-container>
+                <fieldset>
+                    <legend>{{ $tc('klaviyo-integration-settings.pop-up.subscribe-button-fieldset-label') }}</legend>
+                    <sw-container columns="5fr 5fr" gap="16px">
+                        {% block klaviyo_integration_settings_pop_up_subscribe_button %}
+                            <sw-inherit-wrapper
+                                    v-model="actualConfigData['KlaviyoIntegrationPlugin.config.subscribeBtnColor']"
+                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.subscribeBtnColor']"
+                                    :customInheritationCheckFunction="checkTextFieldInheritance">
+                                <template #content="props">
+                                    <sw-field
+                                            :label="$tc('klaviyo-integration-settings.pop-up.colorLabel')"
+                                            type="colorpicker"
+                                            :map-inheritance="props"
+                                            :value="props.currentValue"
+                                            :disabled="props.isInherited"
+                                            name="KlaviyoIntegrationPlugin.config.subscribeBtnColor"
+                                            @input="props.updateCurrentValue"></sw-field>
+                                </template>
+                            </sw-inherit-wrapper>
+                        {% endblock %}
 
-                <sw-container columns="5fr 5fr" gap="16px">
-                    {% block klaviyo_integration_settings_pop_up_email_field_label_snippet %}
-                        <sw-field
-                                :label="$tc('klaviyo-integration-settings.pop-up.emailFieldLabel')"
-                                type="text"
-                                value="klaviyo.back-in-stock.modal.email"
-                                disabled></sw-field>
-                    {% endblock %}
+                        {% block klaviyo_integration_settings_pop_up_subscribe_button_bg %}
+                            <sw-inherit-wrapper
+                                    v-model="actualConfigData['KlaviyoIntegrationPlugin.config.subscribeBtnBgColor']"
+                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.subscribeBtnBgColor']">
+                                <template #content="props">
+                                    <sw-field
+                                            :label="$tc('klaviyo-integration-settings.pop-up.backgroundLabel')"
+                                            type="colorpicker"
+                                            :map-inheritance="props"
+                                            :value="props.currentValue"
+                                            :disabled="props.isInherited"
+                                            name="KlaviyoIntegrationPlugin.config.subscribeBtnBgColor"
+                                            @input="props.updateCurrentValue"></sw-field>
+                                </template>
+                            </sw-inherit-wrapper>
+                        {% endblock %}
+                    </sw-container>
+                </fieldset>
 
-                    {% block klaviyo_integration_settings_pop_up_close_button_snippet %}
-                        <sw-field
-                                :label="$tc('klaviyo-integration-settings.pop-up.emailFieldPlaceholder')"
-                                type="text"
-                                value="klaviyo.back-in-stock.modal.email-placeholder"
-                                disabled></sw-field>
-                    {% endblock %}
-                </sw-container>
-
-                <sw-container columns="5fr 5fr" gap="16px">
-
-                    {% block klaviyo_integration_settings_pop_up_subscribe_button_snippet %}
-                        <sw-field
-                                :label="$tc('klaviyo-integration-settings.pop-up.subscribeBtnLabel')"
-                                type="text"
-                                value="klaviyo.back-in-stock.modal.subscribeBtnLabel"
-                                disabled></sw-field>
-                    {% endblock %}
-
-                    {% block klaviyo_integration_settings_pop_up_subscribe_checkbox_snippet %}
-                        <sw-field
-                                :label="$tc('klaviyo-integration-settings.pop-up.subscribeCheckboxLabel')"
-                                type="text"
-                                value="klaviyo.back-in-stock.modal.subscribe-to-newsletter"
-                                disabled></sw-field>
-                    {% endblock %}
-                </sw-container>
-
-                <sw-container columns="5fr 5fr" gap="16px">
-                    {% block klaviyo_integration_settings_pop_up_content_message_snippet %}
-                        <sw-field
-                                :label="$tc('klaviyo-integration-settings.pop-up.contentMessageLabel')"
-                                type="text"
-                                value="klaviyo.back-in-stock.modal.contentMessage"
-                                disabled></sw-field>
-                    {% endblock %}
-                </sw-container>
-            </fieldset>
-
-            <fieldset>
-                <legend>{{ $tc('klaviyo-integration-settings.pop-up.additional-classes-fieldset-label') }}</legend>
-                <sw-container gap="16px">
-                    {% block klaviyo_integration_settings_pop_up_additional_classes %}
-                        <sw-inherit-wrapper
-                                v-model="actualConfigData['KlaviyoIntegrationPlugin.config.popUpAdditionalClasses']"
-                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.popUpAdditionalClasses']"
-                                :customInheritationCheckFunction="checkTextFieldInheritance">
-                            <template #content="props">
-                                <sw-field
-                                        type="text"
-                                        :map-inheritance="props"
-                                        :value="props.currentValue"
-                                        :disabled="props.isInherited"
-                                        name="KlaviyoIntegrationPlugin.config.popUpAdditionalClasses"
-                                        @input="props.updateCurrentValue"></sw-field>
-                            </template>
-                        </sw-inherit-wrapper>
-                    {% endblock %}
-                </sw-container>
+                <fieldset>
+                    <legend>{{ $tc('klaviyo-integration-settings.pop-up.additional-classes-fieldset-label') }}</legend>
+                    <sw-container gap="16px">
+                        {% block klaviyo_integration_settings_pop_up_additional_classes %}
+                            <sw-inherit-wrapper
+                                    v-model="actualConfigData['KlaviyoIntegrationPlugin.config.popUpAdditionalClasses']"
+                                    :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.popUpAdditionalClasses']"
+                                    :customInheritationCheckFunction="checkTextFieldInheritance">
+                                <template #content="props">
+                                    <sw-field
+                                            type="text"
+                                            :map-inheritance="props"
+                                            :value="props.currentValue"
+                                            :disabled="props.isInherited"
+                                            name="KlaviyoIntegrationPlugin.config.popUpAdditionalClasses"
+                                            @input="props.updateCurrentValue"></sw-field>
+                                </template>
+                            </sw-inherit-wrapper>
+                        {% endblock %}
+                    </sw-container>
+                </fieldset>
             </fieldset>
         </sw-card>
+
+        <sw-card :title="$tc('klaviyo-integration-settings.tracking.title')"
+                 class="klaviyo-interaction-settings"
+                 v-if="activeTab === 'tracking'">
+            <fieldset>
+                <legend>{{ $tc('klaviyo-integration-settings.tracking.fieldsets.storefrontEvents') }}</legend>
+
+                {% block klaviyo_integration_settings_general_track_viewed_product %}
+                    <div class="boolean-config-container">
+                        <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackViewedProduct']"
+                                            :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackViewedProduct']"
+                                            :customInheritationCheckFunction="checkBoolFieldInheritance">
+                            <template #content="props">
+                                <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackViewedProduct"
+                                                 :mapInheritance="props"
+                                                 :label="$tc('klaviyo-integration-settings.configs.trackViewedProduct.label')"
+                                                 :helpText="$tc('klaviyo-integration-settings.configs.trackViewedProduct.helpText')"
+                                                 :disabled="props.isInherited"
+                                                 :value="props.currentValue"
+                                                 @change="props.updateCurrentValue">
+                                </sw-switch-field>
+                            </template>
+                        </sw-inherit-wrapper>
+                    </div>
+                {% endblock %}
+
+                {% block klaviyo_integration_settings_general_track_recently_viewed_items %}
+                    <div class="boolean-config-container">
+                        <sw-inherit-wrapper
+                                v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackRecentlyViewedItems']"
+                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackRecentlyViewedItems']"
+                                :customInheritationCheckFunction="checkBoolFieldInheritance">
+                            <template #content="props">
+                                <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackRecentlyViewedItems"
+                                                 :mapInheritance="props"
+                                                 :label="$tc('klaviyo-integration-settings.configs.trackRecentlyViewedItems.label')"
+                                                 :helpText="$tc('klaviyo-integration-settings.configs.trackRecentlyViewedItems.helpText')"
+                                                 :disabled="props.isInherited"
+                                                 :value="props.currentValue"
+                                                 @change="props.updateCurrentValue">
+                                </sw-switch-field>
+                            </template>
+                        </sw-inherit-wrapper>
+                    </div>
+                {% endblock %}
+
+                {% block klaviyo_integration_settings_general_track_added_to_cart %}
+                    <div class="boolean-config-container">
+                        <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackAddedToCart']"
+                                            :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackAddedToCart']"
+                                            :customInheritationCheckFunction="checkBoolFieldInheritance">
+                            <template #content="props">
+                                <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackAddedToCart"
+                                                 :mapInheritance="props"
+                                                 :label="$tc('klaviyo-integration-settings.configs.trackAddedToCart.label')"
+                                                 :helpText="$tc('klaviyo-integration-settings.configs.trackAddedToCart.helpText')"
+                                                 :disabled="props.isInherited"
+                                                 :value="props.currentValue"
+                                                 @change="props.updateCurrentValue">
+                                </sw-switch-field>
+                            </template>
+                        </sw-inherit-wrapper>
+                    </div>
+                {% endblock %}
+
+                {% block klaviyo_integration_settings_general_track_started_checkout %}
+                    <div class="boolean-config-container">
+                        <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackStartedCheckout']"
+                                            :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackStartedCheckout']"
+                                            :customInheritationCheckFunction="checkBoolFieldInheritance">
+                            <template #content="props">
+                                <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackStartedCheckout"
+                                                 :mapInheritance="props"
+                                                 :label="$tc('klaviyo-integration-settings.configs.trackStartedCheckout.label')"
+                                                 :helpText="$tc('klaviyo-integration-settings.configs.trackStartedCheckout.helpText')"
+                                                 :disabled="props.isInherited"
+                                                 :value="props.currentValue"
+                                                 @change="props.updateCurrentValue">
+                                </sw-switch-field>
+                            </template>
+                        </sw-inherit-wrapper>
+                    </div>
+                {% endblock %}
+            </fieldset>
+
+            <fieldset>
+                <legend>{{ $tc('klaviyo-integration-settings.tracking.fieldsets.orderEvents') }}</legend>
+
+                {% block klaviyo_integration_settings_general_track_placed_order %}
+                    <div class="boolean-config-container">
+                        <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackPlacedOrder']"
+                                            :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackPlacedOrder']"
+                                            :customInheritationCheckFunction="checkBoolFieldInheritance">
+                            <template #content="props">
+                                <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackPlacedOrder"
+                                                 :mapInheritance="props"
+                                                 :label="$tc('klaviyo-integration-settings.configs.trackPlacedOrder.label')"
+                                                 :helpText="$tc('klaviyo-integration-settings.configs.trackPlacedOrder.helpText')"
+                                                 :disabled="props.isInherited"
+                                                 :value="props.currentValue"
+                                                 @change="props.updateCurrentValue">
+                                </sw-switch-field>
+                            </template>
+                        </sw-inherit-wrapper>
+                    </div>
+                {% endblock %}
+
+                {% block klaviyo_integration_settings_general_track_ordered_product %}
+                    <div class="boolean-config-container">
+                        <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackOrderedProduct']"
+                                            :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackOrderedProduct']"
+                                            :customInheritationCheckFunction="checkBoolFieldInheritance">
+                            <template #content="props">
+                                <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackOrderedProduct"
+                                                 :mapInheritance="props"
+                                                 :label="$tc('klaviyo-integration-settings.configs.trackOrderedProduct.label')"
+                                                 :helpText="$tc('klaviyo-integration-settings.configs.trackOrderedProduct.helpText')"
+                                                 :disabled="props.isInherited"
+                                                 :value="props.currentValue"
+                                                 @change="props.updateCurrentValue">
+                                </sw-switch-field>
+                            </template>
+                        </sw-inherit-wrapper>
+                    </div>
+                {% endblock %}
+
+                {% block klaviyo_integration_settings_general_track_fulfilled_order %}
+                    <div class="boolean-config-container">
+                        <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackFulfilledOrder']"
+                                            :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackFulfilledOrder']"
+                                            :customInheritationCheckFunction="checkBoolFieldInheritance">
+                            <template #content="props">
+                                <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackFulfilledOrder"
+                                                 :mapInheritance="props"
+                                                 :label="$tc('klaviyo-integration-settings.configs.trackFulfilledOrder.label')"
+                                                 :helpText="$tc('klaviyo-integration-settings.configs.trackFulfilledOrder.helpText')"
+                                                 :disabled="props.isInherited"
+                                                 :value="props.currentValue"
+                                                 @change="props.updateCurrentValue">
+                                </sw-switch-field>
+                            </template>
+                        </sw-inherit-wrapper>
+                    </div>
+                {% endblock %}
+
+                {% block klaviyo_integration_settings_general_track_cancelled_order %}
+                    <div class="boolean-config-container">
+                        <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackCancelledOrder']"
+                                            :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackCancelledOrder']"
+                                            :customInheritationCheckFunction="checkBoolFieldInheritance">
+                            <template #content="props">
+                                <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackCancelledOrder"
+                                                 :mapInheritance="props"
+                                                 :label="$tc('klaviyo-integration-settings.configs.trackCancelledOrder.label')"
+                                                 :helpText="$tc('klaviyo-integration-settings.configs.trackCancelledOrder.helpText')"
+                                                 :disabled="props.isInherited"
+                                                 :value="props.currentValue"
+                                                 @change="props.updateCurrentValue">
+                                </sw-switch-field>
+                            </template>
+                        </sw-inherit-wrapper>
+                    </div>
+                {% endblock %}
+
+                {% block klaviyo_integration_settings_general_track_refunded_order %}
+                    <div class="boolean-config-container">
+                        <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackRefundedOrder']"
+                                            :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackRefundedOrder']"
+                                            :customInheritationCheckFunction="checkBoolFieldInheritance">
+                            <template #content="props">
+                                <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackRefundedOrder"
+                                                 :mapInheritance="props"
+                                                 :label="$tc('klaviyo-integration-settings.configs.trackRefundedOrder.label')"
+                                                 :helpText="$tc('klaviyo-integration-settings.configs.trackRefundedOrder.helpText')"
+                                                 :disabled="props.isInherited"
+                                                 :value="props.currentValue"
+                                                 @change="props.updateCurrentValue">
+                                </sw-switch-field>
+                            </template>
+                        </sw-inherit-wrapper>
+                    </div>
+                {% endblock %}
+
+                {% block klaviyo_integration_settings_general_track_paid_order %}
+                    <div class="boolean-config-container">
+                        <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackPaidOrder']"
+                                            :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackPaidOrder']"
+                                            :customInheritationCheckFunction="checkBoolFieldInheritance">
+                            <template #content="props">
+                                <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackPaidOrder"
+                                                 :mapInheritance="props"
+                                                 :label="$tc('klaviyo-integration-settings.configs.trackPaidOrder.label')"
+                                                 :helpText="$tc('klaviyo-integration-settings.configs.trackPaidOrder.helpText')"
+                                                 :disabled="props.isInherited"
+                                                 :value="props.currentValue"
+                                                 @change="props.updateCurrentValue">
+                                </sw-switch-field>
+                            </template>
+                        </sw-inherit-wrapper>
+                    </div>
+                {% endblock %}
+
+                {% block klaviyo_integration_settings_general_track_shipped_order %}
+                    <div class="boolean-config-container">
+                        <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackShippedOrder']"
+                                            :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackShippedOrder']"
+                                            :customInheritationCheckFunction="checkBoolFieldInheritance">
+                            <template #content="props">
+                                <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackShippedOrder"
+                                                 :mapInheritance="props"
+                                                 :label="$tc('klaviyo-integration-settings.configs.trackShippedOrder.label')"
+                                                 :helpText="$tc('klaviyo-integration-settings.configs.trackShippedOrder.helpText')"
+                                                 :disabled="props.isInherited"
+                                                 :value="props.currentValue"
+                                                 @change="props.updateCurrentValue">
+                                </sw-switch-field>
+                            </template>
+                        </sw-inherit-wrapper>
+                    </div>
+                {% endblock %}
+
+                {% block klaviyo_integration_settings_general_track_deleted_account_orders %}
+                    <div class="boolean-config-container">
+                        <sw-inherit-wrapper
+                                v-model="actualConfigData['KlaviyoIntegrationPlugin.config.trackDeletedAccountOrders']"
+                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.trackDeletedAccountOrders']"
+                                :customInheritationCheckFunction="checkBoolFieldInheritance">
+                            <template #content="props">
+                                <sw-switch-field name="KlaviyoIntegrationPlugin.config.trackDeletedAccountOrders"
+                                                 :mapInheritance="props"
+                                                 :label="$tc('klaviyo-integration-settings.configs.trackDeletedAccountOrders.label')"
+                                                 :helpText="$tc('klaviyo-integration-settings.configs.trackDeletedAccountOrders.helpText')"
+                                                 :disabled="props.isInherited"
+                                                 :value="props.currentValue"
+                                                 @change="props.updateCurrentValue">
+                                </sw-switch-field>
+                            </template>
+                        </sw-inherit-wrapper>
+                    </div>
+                {% endblock %}
+            </fieldset>
+        </sw-card>
+
+        {% block klaviyo_integration_settings_historical_sync %}
+            <sw-card :title="$tc('klaviyo-integration-settings.historicalSync.title')"
+                     v-show="activeTab === 'historical-sync'">
+                <klaviyo-integration-settings-synchronization-control
+                        :actualConfigData="actualConfigData"
+                        :allConfigs="allConfigs"
+                        :selectedSalesChannelId="selectedSalesChannelId">
+                </klaviyo-integration-settings-synchronization-control>
+            </sw-card>
+        {% endblock %}
+
+        {% block klaviyo_integration_settings_general_scheduled_sync %}
+            <sw-card :title="$tc('klaviyo-integration-settings.scheduledSync.title')"
+                     v-if="activeTab === 'scheduled-sync'">
+                {% block klaviyo_integration_settings_general_scheduled_sync_sales_channel_alert %}
+                    <sw-alert v-if="selectedSalesChannelId !== null" variant="warning">
+                        {{ $tc('klaviyo-integration-settings.scheduledSync.salesChannelAlert') }}
+                    </sw-alert>
+                {% endblock %}
+
+                <fieldset v-if="selectedSalesChannelId === null">
+                    <legend>{{ $tc('klaviyo-integration-settings.scheduledSync.fieldsets.scheduledSyncSettings') }}</legend>
+
+                    {% block klaviyo_integration_settings_general_excluded_subscribers_synchronization_flag %}
+                        <div class="boolean-config-container">
+                            <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.excludedSubscribersSynchronization']"
+                                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.excludedSubscribersSynchronization']">
+                                <template #content="props">
+                                    <sw-switch-field name="KlaviyoIntegrationPlugin.config.excludedSubscribersSynchronization"
+                                                     :map-inheritance="props"
+                                                     :label="$tc('klaviyo-integration-settings.configs.excludedSubscribersSynchronization.label')"
+                                                     :help-text="$tc('klaviyo-integration-settings.configs.excludedSubscribersSynchronization.helpText')"
+                                                     :disabled="props.isInherited"
+                                                     :value="props.currentValue"
+                                                     @change="props.updateCurrentValue">
+                                    </sw-switch-field>
+                                </template>
+                            </sw-inherit-wrapper>
+                        </div>
+                    {% endblock %}
+
+                    {% block klaviyo_integration_settings_general_old_job_cleanup_flag %}
+                        <div class="boolean-config-container">
+                            <sw-inherit-wrapper v-model="actualConfigData['KlaviyoIntegrationPlugin.config.oldJobCleanup']"
+                                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.oldJobCleanup']">
+                                <template #content="props">
+                                    <sw-switch-field
+                                            :map-inheritance="props"
+                                            :label="$tc('klaviyo-integration-settings.configs.oldJobCleanup.label')"
+                                            :help-text="$tc('klaviyo-integration-settings.configs.oldJobCleanup.helpText')"
+                                            :disabled="props.isInherited"
+                                            :value="props.currentValue"
+                                            @change="props.updateCurrentValue">
+                                    </sw-switch-field>
+                                </template>
+                            </sw-inherit-wrapper>
+                        </div>
+                    {% endblock %}
+
+                    {% block klaviyo_integration_settings_general_old_job_cleanup_period %}
+                        <sw-inherit-wrapper v-if="actualConfigData['KlaviyoIntegrationPlugin.config.oldJobCleanup']"
+                                            v-model="actualConfigData['KlaviyoIntegrationPlugin.config.oldJobCleanupPeriod']"
+                                            :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['KlaviyoIntegrationPlugin.config.oldJobCleanupPeriod']">
+                            <template #content="props">
+                                <sw-single-select name="KlaviyoIntegrationPlugin.config.oldJobCleanupPeriod"
+                                                  labelProperty="label"
+                                                  valueProperty="value"
+                                                  :options="createOldJobCleanupPeriodOptions"
+                                                  :isInherited="props.isInherited"
+                                                  :disabled="props.isInherited"
+                                                  show-clearable-button
+                                                  :value="props.currentValue"
+                                                  @change="props.updateCurrentValue">
+                                </sw-single-select>
+                            </template>
+                        </sw-inherit-wrapper>
+                    {% endblock %}
+                </fieldset>
+            </sw-card>
+        {% endblock %}
     </div>
 {% endblock %}
